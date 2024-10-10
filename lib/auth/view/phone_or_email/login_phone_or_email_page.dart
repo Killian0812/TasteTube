@@ -58,9 +58,9 @@ class _LoginWithPhoneOrEmailPageState extends State<LoginWithPhoneOrEmailPage> {
             ],
           ),
         ),
-        body: TabBarView(children: [
-          LoginPhoneTab.provider(),
-          const LoginEmailTab(),
+        body: const TabBarView(children: [
+          LoginPhoneTab(),
+          LoginEmailTab(),
         ]),
       ),
     );
