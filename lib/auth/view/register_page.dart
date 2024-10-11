@@ -39,7 +39,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 onTap: () {},
               ),
               const SizedBox(height: 200),
-              CustomTextWidget.registerPageMessage,
+              CommonTextWidget.registerPageMessage,
             ],
           ),
         ),
@@ -52,14 +52,14 @@ class _RegisterPageState extends State<RegisterPage> {
           children: [
             const Text(
               "Already have an account?",
-              style: CustomTextStyle.regular,
+              style: CommonTextStyle.regular,
             ),
             GestureDetector(
               onTap: () {
                 context.go('/');
               },
               child: Text("  Login",
-                  style: CustomTextStyle.bold.copyWith(color: Colors.red)),
+                  style: CommonTextStyle.bold.copyWith(color: Colors.red)),
             ),
           ],
         ),

@@ -31,7 +31,7 @@ class AuthButton extends StatelessWidget {
             const SizedBox(width: 50),
             Text(
               title,
-              style: CustomTextStyle.regular,
+              style: CommonTextStyle.regular,
             ),
           ],
         ),

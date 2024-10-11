@@ -1,33 +1,28 @@
 import 'package:flutter/material.dart';
 
-class CustomTextStyle {
+class CommonTextStyle {
   static const TextStyle regular = TextStyle(
-    fontFamily: "Ganh",
     fontStyle: FontStyle.normal,
     color: Colors.black,
     fontSize: 16.0,
   );
   static const TextStyle bold = TextStyle(
-    fontFamily: "Ganh",
     fontWeight: FontWeight.bold,
     color: Colors.black,
     fontSize: 16.0,
   );
   static const TextStyle italic = TextStyle(
-    fontFamily: "Ganh",
     fontStyle: FontStyle.italic,
     color: Colors.black,
     fontSize: 16.0,
   );
   static const TextStyle thin = TextStyle(
-    fontFamily: "Ganh",
     fontStyle: FontStyle.normal,
     fontWeight: FontWeight.w100,
     color: Colors.black,
     fontSize: 16.0,
   );
   static const TextStyle thinItalic = TextStyle(
-    fontFamily: "Ganh",
     fontStyle: FontStyle.italic,
     fontWeight: FontWeight.w100,
     color: Colors.black,
@@ -35,15 +30,44 @@ class CustomTextStyle {
   );
   static TextStyle boldItalic = italic.copyWith(fontWeight: FontWeight.bold);
 }
+class CommonTextStyleContrast {
+  static const TextStyle regular = TextStyle(
+    fontStyle: FontStyle.normal,
+    color: Color.fromARGB(255, 255, 255, 255),
+    fontSize: 16.0,
+  );
+  static const TextStyle bold = TextStyle(
+    fontWeight: FontWeight.bold,
+    color: Color.fromARGB(255, 255, 255, 255),
+    fontSize: 16.0,
+  );
+  static const TextStyle italic = TextStyle(
+    fontStyle: FontStyle.italic,
+    color: Color.fromARGB(255, 255, 255, 255),
+    fontSize: 16.0,
+  );
+  static const TextStyle thin = TextStyle(
+    fontStyle: FontStyle.normal,
+    fontWeight: FontWeight.w100,
+    color: Color.fromARGB(255, 255, 255, 255),
+    fontSize: 16.0,
+  );
+  static const TextStyle thinItalic = TextStyle(
+    fontStyle: FontStyle.italic,
+    fontWeight: FontWeight.w100,
+    color: Color.fromARGB(255, 254, 254, 254),
+    fontSize: 16.0,
+  );
+  static TextStyle boldItalic = italic.copyWith(fontWeight: FontWeight.bold);
+}
 
-class CustomTextWidget {
+class CommonTextWidget {
   static Widget tasteTube = const Row(
     mainAxisSize: MainAxisSize.min,
     children: [
       Text(
         "Taste",
         style: TextStyle(
-          fontFamily: "Ganh",
           fontSize: 50,
           fontWeight: FontWeight.bold,
         ),
@@ -51,21 +75,18 @@ class CustomTextWidget {
       Text(
         "Tube",
         style: TextStyle(
-            fontFamily: "Ganh",
-            fontSize: 50,
-            fontWeight: FontWeight.bold,
-            color: Colors.red),
+            fontSize: 50, fontWeight: FontWeight.bold, color: Colors.red),
       ),
     ],
   );
 
   static Text loginPageMessage = const Text(
     "Continue to our video-sharing platform and discover amazing restaurants! Follow your favorites, explore their unique offerings, and dive into delicious video content.",
-    style: CustomTextStyle.thinItalic,
+    style: CommonTextStyle.thinItalic,
   );
 
   static Text registerPageMessage = const Text(
     "Sign up now and embark on a delightful culinary journey that will tantalize your taste buds and inspire your next meal!",
-    style: CustomTextStyle.thinItalic,
+    style: CommonTextStyle.thinItalic,
   );
 }

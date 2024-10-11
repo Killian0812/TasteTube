@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:taste_tube/auth/view/widget/auth_title.dart';
 import 'package:taste_tube/auth/view/widget/auth_button.dart';
 import 'package:taste_tube/common/text.dart';
+import 'package:taste_tube/common/toast.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -33,15 +34,19 @@ class _LoginPageState extends State<LoginPage> {
               AuthButton(
                 icon: FontAwesomeIcons.facebook,
                 title: "Login with Facebook",
-                onTap: () {},
+                onTap: () {
+                  ToastService.showToast(context, "Facebook", ToastType.info);
+                },
               ),
               AuthButton(
                 icon: FontAwesomeIcons.google,
                 title: "Login with Google",
-                onTap: () {},
+                onTap: () {
+                  ToastService.showToast(context, "Google", ToastType.success);
+                },
               ),
               const SizedBox(height: 200),
-              CustomTextWidget.loginPageMessage,
+              CommonTextWidget.loginPageMessage,
             ],
           ),
         ),
@@ -54,14 +59,14 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             const Text(
               "Don't have an account?",
-              style: CustomTextStyle.regular,
+              style: CommonTextStyle.regular,
             ),
             GestureDetector(
               onTap: () {
                 context.push('/register');
               },
               child: Text("  Register",
-                  style: CustomTextStyle.bold.copyWith(color: Colors.red)),
+                  style: CommonTextStyle.bold.copyWith(color: Colors.red)),
             ),
           ],
         ),

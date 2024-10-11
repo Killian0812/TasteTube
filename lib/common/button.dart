@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/text.dart';
 
-class CustomButton extends StatelessWidget {
+class CommonButton extends StatelessWidget {
   final String text;
   final Color color;
   final Color textColor;
@@ -10,11 +10,11 @@ class CustomButton extends StatelessWidget {
   final bool isDisabled;
   final VoidCallback onPressed;
 
-  const CustomButton({
+  const CommonButton({
     super.key,
     required this.text,
-    this.textColor = CustomColor.activeTextColor,
-    this.color = CustomColor.activeBgColor,
+    this.textColor = CommonColor.activeTextColor,
+    this.color = CommonColor.activeBgColor,
     this.isLoading = false,
     this.isDisabled = false,
     required this.onPressed,
@@ -30,7 +30,7 @@ class CustomButton extends StatelessWidget {
             child: ElevatedButton(
               onPressed: (isLoading || isDisabled) ? null : onPressed,
               style: ElevatedButton.styleFrom(
-                backgroundColor: isDisabled ? CustomColor.greyOutBgColor : color,
+                backgroundColor: isDisabled ? CommonColor.greyOutBgColor : color,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4.0),
                 ),
@@ -41,7 +41,7 @@ class CustomButton extends StatelessWidget {
                 children: [
                   Text(
                     text,
-                    style: CustomTextStyle.bold.copyWith(color: textColor),
+                    style: CommonTextStyle.bold.copyWith(color: textColor),
                   ),
                   if (isLoading) ...[
                     const SizedBox(width: 10),
@@ -50,7 +50,7 @@ class CustomButton extends StatelessWidget {
                       height: 24,
                       child: CircularProgressIndicator(
                         color: isDisabled
-                            ? CustomColor.greyOutTextColor
+                            ? CommonColor.greyOutTextColor
                             : textColor,
                         strokeWidth: 2,
                       ),

@@ -16,12 +16,11 @@ class AuthTitle extends StatelessWidget {
             Text(
               title,
               style: const TextStyle(
-                fontFamily: "Ganh",
                 fontSize: 50,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            CustomTextWidget.tasteTube,
+            CommonTextWidget.tasteTube,
           ],
         ),
         Image.asset('assets/images/tastetube_inverted.png', height: 110),

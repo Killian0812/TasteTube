@@ -160,7 +160,7 @@ class LoginEmailTab extends StatelessWidget {
         builder: (context, state) {
       final cubit = context.read<LoginEmailCubit>();
 
-      return CustomButton(
+      return CommonButton(
         text: "Register",
         isDisabled: (state.confirmPassword != state.password) ||
             state.email.isEmpty ||

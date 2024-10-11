@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logger/logger.dart';
 import 'package:taste_tube/auth/domain/auth_repo.dart';
 import 'package:taste_tube/injection.dart';
 
@@ -6,9 +7,11 @@ import '../../../data/register_request.dart';
 
 class LoginEmailCubit extends Cubit<LoginEmailState> {
   final AuthRepository repository;
+  final Logger logger;
 
   LoginEmailCubit()
       : repository = getIt<AuthRepository>(),
+        logger = getIt<Logger>(),
         super(LoginEmailState(
           email: "",
           password: "",
@@ -38,10 +41,10 @@ class LoginEmailCubit extends Cubit<LoginEmailState> {
     final result = await repository.register(request);
     result.match(
       (apiError) {
-        print('Registration failed: ${apiError.message}');
+        logger.e('Registration failed: ${apiError.message}');
       },
       (response) {
-        print('Registration successful: ${response.accessToken}');
+        logger.i('Registration successful: ${response.accessToken}');
       },
     );
   }

@@ -26,7 +26,7 @@ class _LoginWithPhoneOrEmailPageState extends State<LoginWithPhoneOrEmailPage> {
           centerTitle: true,
           title: const Text(
             "Sign up",
-            style: CustomTextStyle.bold,
+            style: CommonTextStyle.bold,
           ),
           bottom: TabBar(
             onTap: (value) {
@@ -42,7 +42,7 @@ class _LoginWithPhoneOrEmailPageState extends State<LoginWithPhoneOrEmailPage> {
                   FontAwesomeIcons.phone,
                   color: selectedIndex == 0
                       ? Colors.black
-                      : CustomColor.greyOutTextColor,
+                      : CommonColor.greyOutTextColor,
                 ),
                 text: "Phone",
               ),
@@ -51,7 +51,7 @@ class _LoginWithPhoneOrEmailPageState extends State<LoginWithPhoneOrEmailPage> {
                   CupertinoIcons.mail,
                   color: selectedIndex == 1
                       ? Colors.black
-                      : CustomColor.greyOutTextColor,
+                      : CommonColor.greyOutTextColor,
                 ),
                 text: "Email",
               ),

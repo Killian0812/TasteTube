@@ -26,13 +26,13 @@ class LoginPhoneTab extends StatelessWidget {
                     initialCountryCode: "VN",  
                     autofocus: true,  
                     disableLengthCheck: true,  
-                    dropdownTextStyle: CustomTextStyle.regular,  
-                    style: CustomTextStyle.regular,  
+                    dropdownTextStyle: CommonTextStyle.regular,  
+                    style: CommonTextStyle.regular,  
                     onChanged: (phone) {  
                       cubit.editPhone(phone.completeNumber);  
                     },  
                   ),  
-                  CustomButton(  
+                  CommonButton(  
                     text: "Send code",  
                     isDisabled: !state.canSendOtp,  
                     isLoading: state.isLoading,  

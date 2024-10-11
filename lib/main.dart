@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:taste_tube/auth/view/login_page.dart';
 import 'package:taste_tube/auth/view/register_page.dart';
 import 'package:taste_tube/common/color.dart';
+import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/injection.dart';
 
 import 'auth/view/phone_or_email/login_phone_or_email_page.dart';
@@ -30,9 +31,9 @@ class MyApp extends StatelessWidget {
               const TextSelectionThemeData(cursorColor: Colors.red),
           tabBarTheme: TabBarTheme(
             labelColor: Colors.black,
-            unselectedLabelColor: CustomColor.greyOutTextColor,
-            labelStyle: CustomTextStyle.bold,
-            unselectedLabelStyle: CustomTextStyle.boldItalic,
+            unselectedLabelColor: CommonColor.greyOutTextColor,
+            labelStyle: CommonTextStyle.bold,
+            unselectedLabelStyle: CommonTextStyle.boldItalic,
           ),
           appBarTheme: const AppBarTheme(
             backgroundColor: Colors.transparent,
