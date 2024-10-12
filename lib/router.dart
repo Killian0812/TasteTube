@@ -17,12 +17,17 @@ final GoRouter _router = GoRouter(
     GoRoute(
       path: '/login/phone_or_email',
       builder: (BuildContext context, GoRouterState state) =>
-          const LoginWithPhoneOrEmailPage(),
+          const Placeholder(),
     ),
     GoRoute(
       path: '/register',
       builder: (BuildContext context, GoRouterState state) =>
           const RegisterPage(),
+    ),
+    GoRoute(
+      path: '/register/phone_or_email',
+      builder: (BuildContext context, GoRouterState state) =>
+          const RegisterWithPhoneOrEmailPage(),
     ),
   ],
 );

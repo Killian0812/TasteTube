@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/common/button.dart';
+import 'package:taste_tube/common/toast.dart';
 
-import 'login_email_cubit.dart';
+import 'register_email_cubit.dart';
 
-class LoginEmailTab extends StatelessWidget {
-  const LoginEmailTab({super.key});
+class RegisterEmailTab extends StatelessWidget {
+  const RegisterEmailTab({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,17 +14,27 @@ class LoginEmailTab extends StatelessWidget {
       create: (_) => LoginEmailCubit(),
       child: Padding(
         padding: const EdgeInsets.all(20),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              _emailField(context),
-              const SizedBox(height: 16),
-              _passwordField(context),
-              const SizedBox(height: 16),
-              _confirmPasswordField(context),
-              const SizedBox(height: 16),
-              _registerButton(context),
-            ],
+        child: BlocListener<LoginEmailCubit, LoginEmailState>(
+          listener: (context, state) {
+            if (state.toastType != null) {
+              ToastService.showToast(context, state.message!, state.toastType!,
+                  onTap: () {
+                print('Navigate to login page');
+              });
+            }
+          },
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                _emailField(context),
+                const SizedBox(height: 16),
+                _passwordField(context),
+                const SizedBox(height: 16),
+                _confirmPasswordField(context),
+                const SizedBox(height: 16),
+                _registerButton(context),
+              ],
+            ),
           ),
         ),
       ),

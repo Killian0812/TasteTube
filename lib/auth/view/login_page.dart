@@ -26,7 +26,7 @@ class _LoginPageState extends State<LoginPage> {
               const AuthTitle(title: "Sign in to "),
               AuthButton(
                 icon: FontAwesomeIcons.user,
-                title: "Login with phone or email",
+                title: "Continue with phone or email",
                 onTap: () {
                   context.push('/login/phone_or_email');
                 },

@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taste_tube/auth/view/login_page.dart';
+import 'package:taste_tube/auth/view/phone_or_email/register_phone_or_email_page.dart';
 import 'package:taste_tube/auth/view/register_page.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/toast.dart';
+import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/injection.dart';
-
-import 'auth/view/phone_or_email/login_phone_or_email_page.dart';
-import 'common/text.dart';
 
 part 'router.dart';
 

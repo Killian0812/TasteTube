@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:taste_tube/common/text.dart';
 
 enum ToastType {
+  none,
   info,
   success,
   warning,
@@ -16,7 +17,12 @@ class ToastService {
     _fToast.removeCustomToast();
   }
 
-  static void showToast(BuildContext context, String message, ToastType type) {
+  static void showToast(
+    BuildContext context,
+    String message,
+    ToastType type, {
+    VoidCallback? onTap,
+  }) {
     hideToast();
     _fToast.init(context);
 
@@ -39,9 +45,14 @@ class ToastService {
         backgroundColor = Colors.redAccent.withOpacity(0.8);
         icon = Icons.error_outline;
         break;
+      default:
+        backgroundColor = Colors.blueGrey.withOpacity(0.8);
+        icon = Icons.notifications_active_outlined;
+        break;
     }
 
     Widget toast = GestureDetector(
+      onTap: onTap,
       onVerticalDragEnd: (details) {
         if (details.primaryVelocity! < 0) {
           hideToast(); // Remove the toast on swipe up

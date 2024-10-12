@@ -26,7 +26,9 @@ class _RegisterPageState extends State<RegisterPage> {
               AuthButton(
                 icon: FontAwesomeIcons.user,
                 title: "Continue with phone or email",
-                onTap: () {},
+                onTap: () {
+                  context.push('/register/phone_or_email');
+                },
               ),
               AuthButton(
                 icon: FontAwesomeIcons.facebook,
@@ -56,7 +58,7 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             GestureDetector(
               onTap: () {
-                context.go('/');
+                context.go('/login');
               },
               child: Text("  Login",
                   style: CommonTextStyle.bold.copyWith(color: Colors.red)),

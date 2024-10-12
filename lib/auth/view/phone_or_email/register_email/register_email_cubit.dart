@@ -1,6 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
 import 'package:taste_tube/auth/domain/auth_repo.dart';
+import 'package:taste_tube/common/state.dart';
+import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/injection.dart';
 
 import '../../../data/register_request.dart';
@@ -41,10 +43,19 @@ class LoginEmailCubit extends Cubit<LoginEmailState> {
     final result = await repository.register(request);
     result.match(
       (apiError) {
+        emit(state.copyWith(
+          toastType:
+              apiError.statusCode < 500 ? ToastType.warning : ToastType.error,
+          message: apiError.message,
+        ));
         logger.e('Registration failed: ${apiError.message}');
       },
       (response) {
-        logger.i('Registration successful: ${response.accessToken}');
+        emit(state.copyWith(
+          toastType: ToastType.success,
+          message: "Registration successfully!",
+        ));
+        logger.i('Registration successfully: ${response.accessToken}');
       },
     );
   }
@@ -77,7 +88,7 @@ class LoginEmailCubit extends Cubit<LoginEmailState> {
   }
 }
 
-class LoginEmailState {
+class LoginEmailState extends CommonState {
   final String email;
   final String password;
   final String confirmPassword;
@@ -88,6 +99,8 @@ class LoginEmailState {
     required this.password,
     required this.confirmPassword,
     required this.isPasswordVisible,
+    super.toastType,
+    super.message,
   });
 
   LoginEmailState copyWith({
@@ -95,12 +108,16 @@ class LoginEmailState {
     String? password,
     String? confirmPassword,
     bool? isPasswordVisible,
+    ToastType? toastType,
+    String? message,
   }) {
     return LoginEmailState(
       email: email ?? this.email,
       password: password ?? this.password,
       confirmPassword: confirmPassword ?? this.confirmPassword,
       isPasswordVisible: isPasswordVisible ?? this.isPasswordVisible,
+      toastType: toastType ?? this.toastType,
+      message: message ?? this.message,
     );
   }
 }
