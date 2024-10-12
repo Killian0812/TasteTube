@@ -37,6 +37,10 @@ class LoginEmailCubit extends Cubit<LoginEmailState> {
     emit(state.copyWith(confirmPassword: confirmPassword));
   }
 
+  void clearFields() {
+    emit(state.copyWith(email: "", password: "", confirmPassword: ""));
+  }
+
   Future<void> send() async {
     final request = RegisterRequest(state.email, state.password);
 
@@ -53,9 +57,9 @@ class LoginEmailCubit extends Cubit<LoginEmailState> {
       (response) {
         emit(state.copyWith(
           toastType: ToastType.success,
-          message: "Registration successfully!",
+          message: "Registration successful! Logging you in...",
         ));
-        logger.i('Registration successfully: ${response.accessToken}');
+        logger.i('Registration successful: ${response.accessToken}');
       },
     );
   }

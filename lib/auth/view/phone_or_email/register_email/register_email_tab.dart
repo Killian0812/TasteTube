@@ -1,12 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:taste_tube/common/button.dart';
 import 'package:taste_tube/common/toast.dart';
 
 import 'register_email_cubit.dart';
 
-class RegisterEmailTab extends StatelessWidget {
+class RegisterEmailTab extends StatefulWidget {
   const RegisterEmailTab({super.key});
+
+  @override
+  State<RegisterEmailTab> createState() => _RegisterEmailTabState();
+}
+
+class _RegisterEmailTabState extends State<RegisterEmailTab> {
+  late TextEditingController _emailController;
+  late TextEditingController _passwordController;
+  late TextEditingController _confirmPasswordController;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+    _confirmPasswordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,12 +41,21 @@ class RegisterEmailTab extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: BlocListener<LoginEmailCubit, LoginEmailState>(
+          listenWhen: (previous, current) =>
+              current.message != previous.message,
           listener: (context, state) {
             if (state.toastType != null) {
+              if (state.toastType == ToastType.success) {
+                _emailController.clear();
+                _passwordController.clear();
+                _confirmPasswordController.clear();
+                context.read<LoginEmailCubit>().clearFields();
+                Future.delayed(const Duration(seconds: 2), () {
+                  context.go('/login'); // TODO: To home page immediately
+                });
+              }
               ToastService.showToast(context, state.message!, state.toastType!,
-                  onTap: () {
-                print('Navigate to login page');
-              });
+                  duration: const Duration(seconds: 4));
             }
           },
           child: SingleChildScrollView(
@@ -45,6 +80,7 @@ class RegisterEmailTab extends StatelessWidget {
     return BlocBuilder<LoginEmailCubit, LoginEmailState>(
       builder: (context, state) {
         return TextField(
+          controller: _emailController,
           onChanged: (value) =>
               context.read<LoginEmailCubit>().editEmail(value),
           decoration: const InputDecoration(labelText: "Email"),
@@ -63,6 +99,7 @@ class RegisterEmailTab extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
+              controller: _passwordController,
               obscureText: !state.isPasswordVisible,
               onChanged: (value) =>
                   context.read<LoginEmailCubit>().editPassword(value),
@@ -157,6 +194,7 @@ class RegisterEmailTab extends StatelessWidget {
     return BlocBuilder<LoginEmailCubit, LoginEmailState>(
       builder: (context, state) {
         return TextField(
+          controller: _confirmPasswordController,
           obscureText: true,
           onChanged: (value) =>
               context.read<LoginEmailCubit>().editConfirmPassword(value),

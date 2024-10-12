@@ -22,6 +22,7 @@ class ToastService {
     String message,
     ToastType type, {
     VoidCallback? onTap,
+    Duration duration = const Duration(seconds: 3),
   }) {
     hideToast();
     _fToast.init(context);
@@ -85,7 +86,7 @@ class ToastService {
 
     _fToast.showToast(
       child: toast,
-      toastDuration: const Duration(seconds: 3),
+      toastDuration: duration,
       gravity: ToastGravity.TOP,
     );
   }

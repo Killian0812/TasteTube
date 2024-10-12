@@ -23,6 +23,8 @@ dependencies:
   fpdart: ^1.1.0
   logger: ^2.4.0
   fluttertoast: ^8.2.8
+  shared_preferences: ^2.2.3
+  jwt_decoder: ^2.0.1
 
 dev_dependencies:
   flutter_test:

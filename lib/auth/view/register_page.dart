@@ -19,31 +19,36 @@ class _RegisterPageState extends State<RegisterPage> {
       appBar: AppBar(),
       body: Container(
         padding: const EdgeInsets.all(25),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const AuthTitle(title: "Sign up to "),
-              AuthButton(
-                icon: FontAwesomeIcons.user,
-                title: "Continue with phone or email",
-                onTap: () {
-                  context.push('/register/phone_or_email');
-                },
+        child: Column(
+          children: [
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  const AuthTitle(title: "Sign up to "),
+                  AuthButton(
+                    icon: FontAwesomeIcons.user,
+                    title: "Continue with phone or email",
+                    onTap: () {
+                      context.push('/register/phone_or_email');
+                    },
+                  ),
+                  AuthButton(
+                    icon: FontAwesomeIcons.facebook,
+                    title: "Continue with Facebook",
+                    onTap: () {},
+                  ),
+                  AuthButton(
+                    icon: FontAwesomeIcons.google,
+                    title: "Continue with Google",
+                    onTap: () {},
+                  ),
+                ],
               ),
-              AuthButton(
-                icon: FontAwesomeIcons.facebook,
-                title: "Continue with Facebook",
-                onTap: () {},
-              ),
-              AuthButton(
-                icon: FontAwesomeIcons.google,
-                title: "Continue with Google",
-                onTap: () {},
-              ),
-              const SizedBox(height: 200),
-              CommonTextWidget.registerPageMessage,
-            ],
-          ),
+            ),
+            const Spacer(),
+            CommonTextWidget.registerPageMessage,
+            const SizedBox(height: 60),
+          ],
         ),
       ),
       bottomSheet: SizedBox(

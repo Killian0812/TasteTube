@@ -20,35 +20,42 @@ class _LoginPageState extends State<LoginPage> {
       appBar: AppBar(),
       body: Container(
         padding: const EdgeInsets.all(25),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const AuthTitle(title: "Sign in to "),
-              AuthButton(
-                icon: FontAwesomeIcons.user,
-                title: "Continue with phone or email",
-                onTap: () {
-                  context.push('/login/phone_or_email');
-                },
+        child: Column(
+          children: [
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  const AuthTitle(title: "Sign in to "),
+                  AuthButton(
+                    icon: FontAwesomeIcons.user,
+                    title: "Continue with phone or email",
+                    onTap: () {
+                      context.push('/login/phone_or_email');
+                    },
+                  ),
+                  AuthButton(
+                    icon: FontAwesomeIcons.facebook,
+                    title: "Login with Facebook",
+                    onTap: () {
+                      ToastService.showToast(
+                          context, "Facebook", ToastType.info);
+                    },
+                  ),
+                  AuthButton(
+                    icon: FontAwesomeIcons.google,
+                    title: "Login with Google",
+                    onTap: () {
+                      ToastService.showToast(
+                          context, "Google", ToastType.success);
+                    },
+                  ),
+                ],
               ),
-              AuthButton(
-                icon: FontAwesomeIcons.facebook,
-                title: "Login with Facebook",
-                onTap: () {
-                  ToastService.showToast(context, "Facebook", ToastType.info);
-                },
-              ),
-              AuthButton(
-                icon: FontAwesomeIcons.google,
-                title: "Login with Google",
-                onTap: () {
-                  ToastService.showToast(context, "Google", ToastType.success);
-                },
-              ),
-              const SizedBox(height: 200),
-              CommonTextWidget.loginPageMessage,
-            ],
-          ),
+            ),
+            const Spacer(),
+            CommonTextWidget.loginPageMessage,
+            const SizedBox(height: 60),
+          ],
         ),
       ),
       bottomSheet: SizedBox(

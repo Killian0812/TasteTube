@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: Colors.white,
           textSelectionTheme:
               const TextSelectionThemeData(cursorColor: Colors.red),
-          tabBarTheme: TabBarTheme(
+          tabBarTheme: const TabBarTheme(
             labelColor: Colors.black,
             unselectedLabelColor: CommonColor.greyOutTextColor,
             labelStyle: CommonTextStyle.bold,

@@ -2,63 +2,86 @@ import 'package:flutter/material.dart';
 
 class CommonTextStyle {
   static const TextStyle regular = TextStyle(
+    fontFamily: 'Ganh',
     fontStyle: FontStyle.normal,
     color: Colors.black,
     fontSize: 16.0,
   );
   static const TextStyle bold = TextStyle(
+    fontFamily: 'Ganh',
     fontWeight: FontWeight.bold,
     color: Colors.black,
     fontSize: 16.0,
   );
   static const TextStyle italic = TextStyle(
+    fontFamily: 'Ganh',
     fontStyle: FontStyle.italic,
     color: Colors.black,
     fontSize: 16.0,
   );
   static const TextStyle thin = TextStyle(
+    fontFamily: 'Ganh',
     fontStyle: FontStyle.normal,
     fontWeight: FontWeight.w100,
     color: Colors.black,
     fontSize: 16.0,
   );
   static const TextStyle thinItalic = TextStyle(
+    fontFamily: 'Ganh',
     fontStyle: FontStyle.italic,
     fontWeight: FontWeight.w100,
     color: Colors.black,
     fontSize: 16.0,
   );
-  static TextStyle boldItalic = italic.copyWith(fontWeight: FontWeight.bold);
+  static const TextStyle boldItalic = TextStyle(
+    fontFamily: 'Ganh',
+    fontStyle: FontStyle.italic,
+    fontWeight: FontWeight.bold,
+    color: Colors.black,
+    fontSize: 16.0,
+  );
 }
+
 class CommonTextStyleContrast {
   static const TextStyle regular = TextStyle(
+    fontFamily: 'Ganh',
     fontStyle: FontStyle.normal,
-    color: Color.fromARGB(255, 255, 255, 255),
+    color: Colors.white,
     fontSize: 16.0,
   );
   static const TextStyle bold = TextStyle(
+    fontFamily: 'Ganh',
     fontWeight: FontWeight.bold,
-    color: Color.fromARGB(255, 255, 255, 255),
+    color: Colors.white,
     fontSize: 16.0,
   );
   static const TextStyle italic = TextStyle(
+    fontFamily: 'Ganh',
     fontStyle: FontStyle.italic,
-    color: Color.fromARGB(255, 255, 255, 255),
+    color: Colors.white,
     fontSize: 16.0,
   );
   static const TextStyle thin = TextStyle(
+    fontFamily: 'Ganh',
     fontStyle: FontStyle.normal,
     fontWeight: FontWeight.w100,
-    color: Color.fromARGB(255, 255, 255, 255),
+    color: Colors.white,
     fontSize: 16.0,
   );
   static const TextStyle thinItalic = TextStyle(
+    fontFamily: 'Ganh',
     fontStyle: FontStyle.italic,
     fontWeight: FontWeight.w100,
-    color: Color.fromARGB(255, 254, 254, 254),
+    color: Colors.white,
     fontSize: 16.0,
   );
-  static TextStyle boldItalic = italic.copyWith(fontWeight: FontWeight.bold);
+  static const TextStyle boldItalic = TextStyle(
+    fontFamily: 'Ganh',
+    fontStyle: FontStyle.italic,
+    fontWeight: FontWeight.bold,
+    color: Colors.white,
+    fontSize: 16.0,
+  );
 }
 
 class CommonTextWidget {
