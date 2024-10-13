@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:taste_tube/common/text.dart';
 
-Future<void> showConfirmDialog(
+Future<bool?> showConfirmDialog(
   BuildContext context, {
   String? title,
   String? body,
@@ -10,7 +10,7 @@ Future<void> showConfirmDialog(
   VoidCallback? onTapLeft,
   VoidCallback? onTapRight,
 }) {
-  return showDialog<void>(
+  return showDialog<bool>(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
@@ -24,11 +24,10 @@ Future<void> showConfirmDialog(
             ),
             child: Text(leftText),
             onPressed: () {
-              print("DIALOG: NO");
               if (onTapLeft != null) {
                 onTapLeft();
               }
-              Navigator.of(context).pop();
+              Navigator.of(context).pop(false);
             },
           ),
           TextButton(
@@ -37,11 +36,10 @@ Future<void> showConfirmDialog(
             ),
             child: Text(rightText),
             onPressed: () {
-              print("DIALOG: YES");
               if (onTapRight != null) {
                 onTapRight();
               }
-              Navigator.of(context).pop();
+              Navigator.of(context).pop(true);
             },
           ),
         ],

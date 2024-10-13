@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/common/button.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/common/text.dart';
 
+import 'phone_or_email/register_email/register_email_cubit.dart';
+
 class AccountTypeSelectionPage extends StatefulWidget {
-  const AccountTypeSelectionPage({super.key});
+  final String userId;
+  const AccountTypeSelectionPage({required this.userId, super.key});
+
+  static Widget provider(String userId) => BlocProvider(
+        create: (_) => RegisterEmailCubit(),
+        child: AccountTypeSelectionPage(userId: userId),
+      );
 
   @override
   State<AccountTypeSelectionPage> createState() =>
@@ -95,14 +104,19 @@ class _AccountTypeSelectionPageState extends State<AccountTypeSelectionPage> {
                 : const SizedBox(height: 40),
             CommonButton(
               text: "Confirm",
-              onPressed: () {
-                showConfirmDialog(
+              onPressed: () async {
+                await showConfirmDialog(
                   context,
                   title: "Confirm account type",
                   body:
                       'You have selected $selectedRole as your account type.\n'
                       'This selection allows you to enjoy specialized features.\n\n'
                       'Action is irreversible.\n',
+                  onTapRight: () {
+                    context
+                        .read<RegisterEmailCubit>()
+                        .setRole(context, selectedRole, widget.userId);
+                  },
                 );
               },
               isDisabled: selectedRole.isEmpty,

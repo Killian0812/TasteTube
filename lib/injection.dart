@@ -13,8 +13,8 @@ void injectDependencies() {
   getIt.registerSingleton<Logger>(Logger());
   getIt.registerSingleton<Dio>(Dio(BaseOptions(
     baseUrl: Api.baseUrl,
-    connectTimeout: const Duration(seconds: 5),
-    receiveTimeout: const Duration(seconds: 5),
+    connectTimeout: const Duration(seconds: 10),
+    receiveTimeout: const Duration(seconds: 10),
     headers: {'Content-Type': 'application/json'},
   )));
   getIt.registerSingleton<SecureStorage>(SecureStorage());

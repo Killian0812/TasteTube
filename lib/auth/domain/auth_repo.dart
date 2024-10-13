@@ -26,9 +26,23 @@ class AuthRepository {
       final registerResponse = RegisterResponse.fromJson(response.data);
       return Right(registerResponse);
     } on DioException catch (e) {
-      final apiError =
-          ApiError.fromJson(e.response!.statusCode!, e.response?.data);
-      return Left(apiError);
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
+
+  Future<Either<ApiError, SetRoleResponse>> setRole(
+      SetRoleRequest request) async {
+    try {
+      final response = await http.post(
+        Api.setRoleApi,
+        data: request.toJson(),
+      );
+      final setRoleResponse = SetRoleResponse.fromJson(response.data);
+      return Right(setRoleResponse);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
     } catch (e) {
       return Left(ApiError(500, e.toString()));
     }
@@ -44,9 +58,7 @@ class AuthRepository {
       await secureStorage.setRefreshToken(jwtFromHeader(response.headers));
       return Right(loginResponse);
     } on DioException catch (e) {
-      final apiError =
-          ApiError.fromJson(e.response!.statusCode!, e.response?.data);
-      return Left(apiError);
+      return Left(ApiError.fromDioException(e));
     } catch (e) {
       return Left(ApiError(500, e.toString()));
     }

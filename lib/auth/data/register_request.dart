@@ -9,3 +9,15 @@ class RegisterRequest {
         'password': password,
       };
 }
+
+class SetRoleRequest {
+  final String userId;
+  final String role;
+
+  const SetRoleRequest(this.userId, this.role);
+
+  Map<String, dynamic> toJson() => {
+        'userId': userId,
+        'role': role,
+      };
+}

@@ -7,7 +7,8 @@ import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/text.dart';
 
 class LoginWithPhoneOrEmailPage extends StatefulWidget {
-  const LoginWithPhoneOrEmailPage({super.key});
+  final int initialIndex;
+  const LoginWithPhoneOrEmailPage({this.initialIndex = 0, super.key});
 
   @override
   State<LoginWithPhoneOrEmailPage> createState() =>
@@ -18,8 +19,15 @@ class _LoginWithPhoneOrEmailPageState extends State<LoginWithPhoneOrEmailPage> {
   int selectedIndex = 0;
 
   @override
+  void initState() {
+    super.initState();
+    selectedIndex = widget.initialIndex;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return DefaultTabController(
+      initialIndex: widget.initialIndex,
       length: 2,
       child: Scaffold(
         appBar: AppBar(

@@ -11,8 +11,13 @@ final GoRouter _router = GoRouter(
     ),
     GoRoute(
       path: '/home',
-      builder: (BuildContext context, GoRouterState state) =>
-          const Placeholder(),
+      builder: (BuildContext context, GoRouterState state) => Center(
+        child: ElevatedButton(
+            onPressed: () {
+              context.go('/login');
+            },
+            child: const Text('LOGIN')),
+      ),
     ),
     // auth related routes
     GoRoute(
@@ -20,10 +25,11 @@ final GoRouter _router = GoRouter(
       builder: (BuildContext context, GoRouterState state) => const LoginPage(),
     ),
     GoRoute(
-      path: '/login/phone_or_email',
-      builder: (BuildContext context, GoRouterState state) =>
-          const LoginWithPhoneOrEmailPage(),
-    ),
+        path: '/login/phone_or_email',
+        builder: (BuildContext context, GoRouterState state) {
+          final int initialIndex = state.extra as int? ?? 0;
+          return LoginWithPhoneOrEmailPage(initialIndex: initialIndex);
+        }),
     GoRoute(
       path: '/register',
       builder: (BuildContext context, GoRouterState state) =>

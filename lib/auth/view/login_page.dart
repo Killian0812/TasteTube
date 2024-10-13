@@ -30,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
                     icon: FontAwesomeIcons.user,
                     title: "Continue with phone or email",
                     onTap: () {
-                      context.push('/login/phone_or_email');
+                      context.push('/login/phone_or_email', extra: 1);
                     },
                   ),
                   AuthButton(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
 import 'package:taste_tube/auth/domain/auth_repo.dart';
 import 'package:taste_tube/auth/view/register_page.ext.dart';
@@ -46,30 +47,49 @@ class RegisterEmailCubit extends Cubit<RegisterEmailState> {
     final request = RegisterRequest(state.email, state.password);
 
     final result = await repository.register(request);
-    result.match(
-      (apiError) {
-        ToastService.showToast(context, apiError.message!,
-            apiError.statusCode < 500 ? ToastType.warning : ToastType.error,
-            duration: const Duration(seconds: 4));
-        logger.e('Registration failed: ${apiError.message}');
-      },
-      (response) {
-        emit(state.copyWith(succeed: true));
-        ToastService.showToast(
-            context,
-            "Registration successful! Let's customize your account...",
-            ToastType.success,
-            duration: const Duration(seconds: 4));
-        Future.delayed(const Duration(seconds: 2), () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => const AccountTypeSelectionPage()),
-          );
-        });
-        logger.i('Registration successful: ${response.message}');
-      },
-    );
+    result.match((apiError) {
+      ToastService.showToast(context, apiError.message!,
+          apiError.statusCode < 500 ? ToastType.warning : ToastType.error,
+          duration: const Duration(seconds: 4));
+      logger.e('Registration failed: ${apiError.message}');
+    }, (response) {
+      emit(state.copyWith(succeed: true));
+      ToastService.showToast(
+          context,
+          "Registration successful! Let's customize your account...",
+          ToastType.success,
+          duration: const Duration(seconds: 4));
+      Future.delayed(const Duration(seconds: 2), () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  AccountTypeSelectionPage.provider(response.userId)),
+        );
+      });
+      logger.i('Registration successful');
+    });
+  }
+
+  Future<void> setRole(BuildContext context, String role, String userId) async {
+    final request = SetRoleRequest(userId, role);
+
+    final result = await repository.setRole(request);
+    result.match((apiError) {
+      ToastService.showToast(context, apiError.message!,
+          apiError.statusCode < 500 ? ToastType.warning : ToastType.error,
+          duration: const Duration(seconds: 4));
+      logger.e('Set role failed: ${apiError.message}');
+    }, (response) {
+      emit(state.copyWith(succeed: true));
+      ToastService.showToast(context,
+          "Account type selected. Redirecting to login...", ToastType.success,
+          duration: const Duration(seconds: 4));
+      Future.delayed(const Duration(seconds: 2), () {
+        context.go('/login/phone_or_email', extra: 1);
+      });
+      logger.i('Account type selected: ${response.message}');
+    });
   }
 
   PasswordValidation validatePassword(String password) {

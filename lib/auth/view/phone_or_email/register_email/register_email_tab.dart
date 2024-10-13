@@ -40,7 +40,7 @@ class _RegisterEmailTabState extends State<RegisterEmailTab> {
         padding: const EdgeInsets.all(20),
         child: BlocListener<RegisterEmailCubit, RegisterEmailState>(
           listener: (context, state) {
-            if (state.succeed == true) {
+            if (state.succeed) {
               _emailController.clear();
               _passwordController.clear();
               _confirmPasswordController.clear();
@@ -107,7 +107,7 @@ class _RegisterEmailTabState extends State<RegisterEmailTab> {
                 ),
               ),
             ),
-            if (state.password.isNotEmpty) ...[
+            if (_passwordController.text.isNotEmpty) ...[
               const SizedBox(height: 8),
               _passwordRequirements(passwordValidation),
               _passwordStrengthIndicator(passwordValidation),

@@ -32,6 +32,7 @@ class LoginEmailTab extends StatelessWidget {
     return BlocBuilder<LoginEmailCubit, LoginEmailState>(
       builder: (context, state) {
         return TextField(
+          autofocus: true,
           onChanged: (value) =>
               context.read<LoginEmailCubit>().editEmail(value),
           decoration: const InputDecoration(labelText: "Email"),
