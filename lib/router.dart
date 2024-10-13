@@ -1,11 +1,16 @@
 part of 'main.dart';
 
 final GoRouter _router = GoRouter(
-  initialLocation: '/login',
+  initialLocation: '/',
   observers: [CommonNavigatorObserver()],
   routes: [
     GoRoute(
       path: '/',
+      builder: (BuildContext context, GoRouterState state) =>
+          const SplashPage(),
+    ),
+    GoRoute(
+      path: '/home',
       builder: (BuildContext context, GoRouterState state) =>
           const Placeholder(),
     ),
@@ -17,7 +22,7 @@ final GoRouter _router = GoRouter(
     GoRoute(
       path: '/login/phone_or_email',
       builder: (BuildContext context, GoRouterState state) =>
-          const Placeholder(),
+          const LoginWithPhoneOrEmailPage(),
     ),
     GoRoute(
       path: '/register',

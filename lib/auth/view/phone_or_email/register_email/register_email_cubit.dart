@@ -1,20 +1,21 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
 import 'package:taste_tube/auth/domain/auth_repo.dart';
-import 'package:taste_tube/common/state.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/injection.dart';
 
 import '../../../data/register_request.dart';
 
-class LoginEmailCubit extends Cubit<LoginEmailState> {
+class RegisterEmailCubit extends Cubit<RegisterEmailState> {
   final AuthRepository repository;
   final Logger logger;
 
-  LoginEmailCubit()
+  RegisterEmailCubit()
       : repository = getIt<AuthRepository>(),
         logger = getIt<Logger>(),
-        super(LoginEmailState(
+        super(RegisterEmailState(
           email: "",
           password: "",
           confirmPassword: "",
@@ -41,24 +42,27 @@ class LoginEmailCubit extends Cubit<LoginEmailState> {
     emit(state.copyWith(email: "", password: "", confirmPassword: ""));
   }
 
-  Future<void> send() async {
+  Future<void> send(BuildContext context) async {
     final request = RegisterRequest(state.email, state.password);
 
     final result = await repository.register(request);
     result.match(
       (apiError) {
-        emit(state.copyWith(
-          toastType:
-              apiError.statusCode < 500 ? ToastType.warning : ToastType.error,
-          message: apiError.message,
-        ));
+        ToastService.showToast(context, apiError.message!,
+            apiError.statusCode < 500 ? ToastType.warning : ToastType.error,
+            duration: const Duration(seconds: 4));
         logger.e('Registration failed: ${apiError.message}');
       },
       (response) {
-        emit(state.copyWith(
-          toastType: ToastType.success,
-          message: "Registration successful! Logging you in...",
-        ));
+        emit(state.copyWith(succeed: true));
+        ToastService.showToast(
+            context,
+            "Registration successful! Redirecting to login page...",
+            ToastType.success,
+            duration: const Duration(seconds: 4));
+        Future.delayed(const Duration(seconds: 2), () {
+          context.push('/login');
+        });
         logger.i('Registration successful: ${response.accessToken}');
       },
     );
@@ -92,36 +96,34 @@ class LoginEmailCubit extends Cubit<LoginEmailState> {
   }
 }
 
-class LoginEmailState extends CommonState {
+class RegisterEmailState {
   final String email;
   final String password;
   final String confirmPassword;
   final bool isPasswordVisible;
+  final bool succeed;
 
-  LoginEmailState({
+  RegisterEmailState({
     required this.email,
     required this.password,
     required this.confirmPassword,
     required this.isPasswordVisible,
-    super.toastType,
-    super.message,
+    this.succeed = false,
   });
 
-  LoginEmailState copyWith({
+  RegisterEmailState copyWith({
     String? email,
     String? password,
     String? confirmPassword,
     bool? isPasswordVisible,
-    ToastType? toastType,
-    String? message,
+    bool? succeed,
   }) {
-    return LoginEmailState(
+    return RegisterEmailState(
       email: email ?? this.email,
       password: password ?? this.password,
       confirmPassword: confirmPassword ?? this.confirmPassword,
       isPasswordVisible: isPasswordVisible ?? this.isPasswordVisible,
-      toastType: toastType ?? this.toastType,
-      message: message ?? this.message,
+      succeed: succeed ?? this.succeed,
     );
   }
 }

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:taste_tube/common/button.dart';
-import 'package:taste_tube/common/toast.dart';
 
 import 'register_email_cubit.dart';
 
@@ -37,25 +35,15 @@ class _RegisterEmailTabState extends State<RegisterEmailTab> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => LoginEmailCubit(),
+      create: (_) => RegisterEmailCubit(),
       child: Padding(
         padding: const EdgeInsets.all(20),
-        child: BlocListener<LoginEmailCubit, LoginEmailState>(
-          listenWhen: (previous, current) =>
-              current.message != previous.message,
+        child: BlocListener<RegisterEmailCubit, RegisterEmailState>(
           listener: (context, state) {
-            if (state.toastType != null) {
-              if (state.toastType == ToastType.success) {
-                _emailController.clear();
-                _passwordController.clear();
-                _confirmPasswordController.clear();
-                context.read<LoginEmailCubit>().clearFields();
-                Future.delayed(const Duration(seconds: 2), () {
-                  context.go('/login'); // TODO: To home page immediately
-                });
-              }
-              ToastService.showToast(context, state.message!, state.toastType!,
-                  duration: const Duration(seconds: 4));
+            if (state.succeed == true) {
+              _emailController.clear();
+              _passwordController.clear();
+              _confirmPasswordController.clear();
             }
           },
           child: SingleChildScrollView(
@@ -77,12 +65,12 @@ class _RegisterEmailTabState extends State<RegisterEmailTab> {
   }
 
   Widget _emailField(BuildContext context) {
-    return BlocBuilder<LoginEmailCubit, LoginEmailState>(
+    return BlocBuilder<RegisterEmailCubit, RegisterEmailState>(
       builder: (context, state) {
         return TextField(
           controller: _emailController,
           onChanged: (value) =>
-              context.read<LoginEmailCubit>().editEmail(value),
+              context.read<RegisterEmailCubit>().editEmail(value),
           decoration: const InputDecoration(labelText: "Email"),
         );
       },
@@ -90,10 +78,10 @@ class _RegisterEmailTabState extends State<RegisterEmailTab> {
   }
 
   Widget _passwordField(BuildContext context) {
-    return BlocBuilder<LoginEmailCubit, LoginEmailState>(
+    return BlocBuilder<RegisterEmailCubit, RegisterEmailState>(
       builder: (context, state) {
         final passwordValidation =
-            context.read<LoginEmailCubit>().validatePassword(state.password);
+            context.read<RegisterEmailCubit>().validatePassword(state.password);
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,7 +90,7 @@ class _RegisterEmailTabState extends State<RegisterEmailTab> {
               controller: _passwordController,
               obscureText: !state.isPasswordVisible,
               onChanged: (value) =>
-                  context.read<LoginEmailCubit>().editPassword(value),
+                  context.read<RegisterEmailCubit>().editPassword(value),
               decoration: InputDecoration(
                 labelText: "Password",
                 suffixIcon: IconButton(
@@ -112,7 +100,9 @@ class _RegisterEmailTabState extends State<RegisterEmailTab> {
                         : Icons.visibility_off,
                   ),
                   onPressed: () {
-                    context.read<LoginEmailCubit>().togglePasswordVisibility();
+                    context
+                        .read<RegisterEmailCubit>()
+                        .togglePasswordVisibility();
                   },
                 ),
               ),
@@ -191,13 +181,13 @@ class _RegisterEmailTabState extends State<RegisterEmailTab> {
   }
 
   Widget _confirmPasswordField(BuildContext context) {
-    return BlocBuilder<LoginEmailCubit, LoginEmailState>(
+    return BlocBuilder<RegisterEmailCubit, RegisterEmailState>(
       builder: (context, state) {
         return TextField(
           controller: _confirmPasswordController,
           obscureText: true,
           onChanged: (value) =>
-              context.read<LoginEmailCubit>().editConfirmPassword(value),
+              context.read<RegisterEmailCubit>().editConfirmPassword(value),
           decoration: const InputDecoration(labelText: "Confirm Password"),
         );
       },
@@ -205,9 +195,9 @@ class _RegisterEmailTabState extends State<RegisterEmailTab> {
   }
 
   Widget _registerButton(BuildContext context) {
-    return BlocBuilder<LoginEmailCubit, LoginEmailState>(
+    return BlocBuilder<RegisterEmailCubit, RegisterEmailState>(
         builder: (context, state) {
-      final cubit = context.read<LoginEmailCubit>();
+      final cubit = context.read<RegisterEmailCubit>();
 
       return CommonButton(
         text: "Register",
@@ -216,7 +206,7 @@ class _RegisterEmailTabState extends State<RegisterEmailTab> {
             state.password.isEmpty,
         onPressed: () async {
           FocusScope.of(context).unfocus();
-          await cubit.send();
+          await cubit.send(context);
         },
       );
     });

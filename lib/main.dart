@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taste_tube/auth/view/login_page.dart';
-import 'package:taste_tube/auth/view/phone_or_email/register_phone_or_email_page.dart';
 import 'package:taste_tube/auth/view/register_page.dart';
+import 'package:taste_tube/auth/view/phone_or_email/login_phone_or_email_page.dart';
+import 'package:taste_tube/auth/view/phone_or_email/register_phone_or_email_page.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/common/text.dart';
+import 'package:taste_tube/global_bloc/auth/bloc.dart';
 import 'package:taste_tube/injection.dart';
+import 'package:taste_tube/splash/spash_page.dart';
 
 part 'router.dart';
 
@@ -20,25 +24,28 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'TasteTube',
-      routerConfig: _router,
-      theme: ThemeData.light().copyWith(
-          textTheme: Theme.of(context).textTheme.apply(fontFamily: 'Ganh'),
-          scaffoldBackgroundColor: Colors.white,
-          textSelectionTheme:
-              const TextSelectionThemeData(cursorColor: Colors.red),
-          tabBarTheme: const TabBarTheme(
-            labelColor: Colors.black,
-            unselectedLabelColor: CommonColor.greyOutTextColor,
-            labelStyle: CommonTextStyle.bold,
-            unselectedLabelStyle: CommonTextStyle.boldItalic,
-          ),
-          appBarTheme: const AppBarTheme(
-            backgroundColor: Colors.transparent,
-            shadowColor: Colors.transparent,
-            iconTheme: IconThemeData(color: Colors.black),
-          )),
+    return BlocProvider(
+      create: (context) => AuthBloc(),
+      child: MaterialApp.router(
+        title: 'TasteTube',
+        routerConfig: _router,
+        theme: ThemeData.light().copyWith(
+            textTheme: Theme.of(context).textTheme.apply(fontFamily: 'Ganh'),
+            scaffoldBackgroundColor: Colors.white,
+            textSelectionTheme:
+                const TextSelectionThemeData(cursorColor: Colors.red),
+            tabBarTheme: const TabBarTheme(
+              labelColor: Colors.black,
+              unselectedLabelColor: CommonColor.greyOutTextColor,
+              labelStyle: CommonTextStyle.bold,
+              unselectedLabelStyle: CommonTextStyle.boldItalic,
+            ),
+            appBarTheme: const AppBarTheme(
+              backgroundColor: Colors.transparent,
+              shadowColor: Colors.transparent,
+              iconTheme: IconThemeData(color: Colors.black),
+            )),
+      ),
     );
   }
 }
