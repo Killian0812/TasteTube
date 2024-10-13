@@ -10,7 +10,7 @@ import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/global_bloc/auth/bloc.dart';
 import 'package:taste_tube/injection.dart';
-import 'package:taste_tube/splash/spash_page.dart';
+import 'package:taste_tube/splash/splash_page.dart';
 
 part 'router.dart';
 

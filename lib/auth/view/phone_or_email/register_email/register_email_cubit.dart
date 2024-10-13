@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
 import 'package:taste_tube/auth/domain/auth_repo.dart';
+import 'package:taste_tube/auth/view/register_page.ext.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/injection.dart';
 
@@ -57,11 +57,15 @@ class RegisterEmailCubit extends Cubit<RegisterEmailState> {
         emit(state.copyWith(succeed: true));
         ToastService.showToast(
             context,
-            "Registration successful! Redirecting to login page...",
+            "Registration successful! Let's customize your account...",
             ToastType.success,
             duration: const Duration(seconds: 4));
         Future.delayed(const Duration(seconds: 2), () {
-          context.push('/login');
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const AccountTypeSelectionPage()),
+          );
         });
         logger.i('Registration successful: ${response.message}');
       },

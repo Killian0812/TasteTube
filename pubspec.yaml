@@ -19,7 +19,6 @@ dependencies:
   flutter_bloc: ^8.1.6
   intl_phone_field: ^3.2.0
   get_it: ^8.0.0
-  http: ^1.2.2
   fpdart: ^1.1.0
   logger: ^2.4.0
   fluttertoast: ^8.2.8

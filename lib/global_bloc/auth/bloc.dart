@@ -1,9 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/injection.dart';
-import 'package:http/http.dart' as http;
 import 'package:taste_tube/storage.dart';
 
 part 'event.dart';
@@ -11,6 +10,7 @@ part 'state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final secureStorage = getIt<SecureStorage>();
+  final http = getIt<Dio>();
 
   AuthBloc() : super(Initial()) {
     on<CheckAuthEvent>(_checkAuth);
@@ -26,17 +26,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       return;
     }
 
-    final response = await http.post(
-      Uri.parse(Api.refreshApi),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'refreshToken': refreshToken}),
-    );
-
-    if (response.statusCode == 200) {
-      final responseData = jsonDecode(response.body);
-      final authData = AuthData.fromJson(responseData);
+    try {
+      final response = await http.post(
+        Api.refreshApi,
+        data: {'refreshToken': refreshToken},
+      );
+      final authData = AuthData.fromJson(response.data);
       emit(Authenticated(authData));
-    } else {
+    } on DioException {
+      emit(Unauthenticated());
+    } catch (e) {
       emit(Unauthenticated());
     }
   }
