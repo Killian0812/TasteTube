@@ -8,7 +8,7 @@ mixin FlutterSecureStorageMixin on FlutterSecureStorage {
     return await read(key: refreshTokenKey);
   }
 
-  Future<void> setRefreshToken(String refreshToken) async {
+  Future<void> setRefreshToken(String? refreshToken) async {
     await write(key: refreshTokenKey, value: refreshToken);
   }
 

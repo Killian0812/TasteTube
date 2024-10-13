@@ -6,8 +6,7 @@ class CheckAuthEvent extends AuthEvent {}
 
 class LoginEvent extends AuthEvent {
   final AuthData data;
-  final String refreshToken;
-  LoginEvent(this.data, this.refreshToken);
+  LoginEvent(this.data);
 }
 
 class LogoutEvent extends AuthEvent {}

@@ -16,5 +16,7 @@ void injectDependencies() {
   getIt.registerSingleton<LocalStorage>(LocalStorage());
 
   // repositories
-  getIt.registerLazySingleton<AuthRepository>(() => AuthRepository());
+  getIt.registerLazySingleton<AuthRepository>(() => AuthRepository(
+        secureStorage: getIt(),
+      ));
 }

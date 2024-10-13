@@ -7,7 +7,7 @@ class AuthData {
   final String username;
   final String image;
 
-  AuthData({
+  const AuthData({
     required this.accessToken,
     required this.userId,
     required this.email,

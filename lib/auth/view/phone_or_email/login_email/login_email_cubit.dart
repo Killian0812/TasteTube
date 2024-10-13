@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
 import 'package:taste_tube/auth/domain/auth_repo.dart';
 import 'package:taste_tube/common/toast.dart';
+import 'package:taste_tube/global_bloc/auth/bloc.dart';
 import 'package:taste_tube/injection.dart';
 
 import '../../../data/login_request.dart';
@@ -49,9 +50,14 @@ class LoginEmailCubit extends Cubit<LoginEmailState> {
             "Login successfully! Redirecting to home page...",
             ToastType.success,
             duration: const Duration(seconds: 4));
-        Future.delayed(const Duration(seconds: 2), () {
-          context.go('/home');
-        });
+        context.read<AuthBloc>().add(LoginEvent(AuthData(
+              accessToken: response.accessToken,
+              email: response.email,
+              username: response.username,
+              image: response.image,
+              userId: response.userId,
+            )));
+        context.go('/home');
         logger.i('Login successfully: ${response.accessToken}');
       },
     );

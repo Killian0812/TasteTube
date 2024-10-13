@@ -63,7 +63,7 @@ class RegisterEmailCubit extends Cubit<RegisterEmailState> {
         Future.delayed(const Duration(seconds: 2), () {
           context.push('/login');
         });
-        logger.i('Registration successful: ${response.accessToken}');
+        logger.i('Registration successful: ${response.message}');
       },
     );
   }

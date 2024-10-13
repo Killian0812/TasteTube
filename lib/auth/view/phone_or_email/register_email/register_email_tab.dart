@@ -107,8 +107,8 @@ class _RegisterEmailTabState extends State<RegisterEmailTab> {
                 ),
               ),
             ),
-            const SizedBox(height: 8),
             if (state.password.isNotEmpty) ...[
+              const SizedBox(height: 8),
               _passwordRequirements(passwordValidation),
               _passwordStrengthIndicator(passwordValidation),
             ]
