@@ -8,6 +8,10 @@ import 'package:taste_tube/auth/view/phone_or_email/register_phone_or_email_page
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/common/text.dart';
+import 'package:taste_tube/feature/home/view/home_page.dart';
+import 'package:taste_tube/feature/inbox/view/inbox_page.dart';
+import 'package:taste_tube/feature/profile/view/profile_page.dart';
+import 'package:taste_tube/feature/restaurant/view/restautant_page.dart';
 import 'package:taste_tube/global_bloc/auth/bloc.dart';
 import 'package:taste_tube/injection.dart';
 import 'package:taste_tube/splash/splash_page.dart';
@@ -40,6 +44,13 @@ class MyApp extends StatelessWidget {
               labelStyle: CommonTextStyle.bold,
               unselectedLabelStyle: CommonTextStyle.boldItalic,
             ),
+            bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+              unselectedItemColor: Colors.black,
+              selectedItemColor: CommonColor.activeBgColor,
+              selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
+              showUnselectedLabels: true,
+              type: BottomNavigationBarType.fixed,
+            ),
             appBarTheme: const AppBarTheme(
               backgroundColor: Colors.transparent,
               shadowColor: Colors.transparent,
@@ -47,5 +58,58 @@ class MyApp extends StatelessWidget {
             )),
       ),
     );
+  }
+}
+
+class Layout extends StatelessWidget {
+  final int currentIndex;
+  final StatefulNavigationShell shell;
+
+  const Layout({
+    super.key,
+    required this.currentIndex,
+    required this.shell,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: shell,
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: currentIndex,
+          onTap: (index) {
+            shell.goBranch(index);
+          },
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.restaurant_menu),
+              label: 'Restaurant',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.inbox),
+              label: 'Inbox',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            // record or upload new video
+          },
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            side: const BorderSide(color: CommonColor.activeBgColor),
+            borderRadius: BorderRadius.circular(30.0),
+          ),
+          child: const Icon(Icons.add, color: CommonColor.activeBgColor),
+        ));
   }
 }

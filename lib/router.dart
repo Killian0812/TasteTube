@@ -9,17 +9,48 @@ final GoRouter _router = GoRouter(
       builder: (BuildContext context, GoRouterState state) =>
           const SplashPage(),
     ),
-    GoRoute(
-      path: '/home',
-      builder: (BuildContext context, GoRouterState state) => Center(
-        child: ElevatedButton(
-            onPressed: () {
-              context.go('/login');
-            },
-            child: const Text('LOGIN')),
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, shell) => Layout(
+        currentIndex: shell.currentIndex,
+        shell: shell,
       ),
+      branches: [
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/home',
+              builder: (context, state) => const HomePage(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/restaurant',
+              builder: (context, state) => const RestaurantPage(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/inbox',
+              builder: (context, state) => const InboxPage(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/profile',
+              builder: (context, state) => const ProfilePage(),
+            ),
+          ],
+        ),
+      ],
     ),
-    // auth related routes
+
+    // auth routes
     GoRoute(
       path: '/login',
       builder: (BuildContext context, GoRouterState state) => const LoginPage(),
@@ -41,6 +72,23 @@ final GoRouter _router = GoRouter(
           const RegisterWithPhoneOrEmailPage(),
     ),
   ],
+  redirect: (context, state) {
+    final authBloc = context.read<AuthBloc>();
+
+    final isAuthenticated = authBloc.state is Authenticated;
+
+    final protectedRoutes = [
+      '/home',
+      '/profile',
+      '/restaurant',
+    ];
+
+    if (!isAuthenticated && protectedRoutes.contains(state.path)) {
+      return '/login';
+    }
+
+    return null;
+  },
 );
 
 class CommonNavigatorObserver extends NavigatorObserver {

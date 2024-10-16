@@ -57,7 +57,7 @@ class LoginEmailCubit extends Cubit<LoginEmailState> {
               image: response.image,
               userId: response.userId,
             )));
-        context.go('/home');
+        context.go('/profile');
         logger.i('Login successfully: ${response.accessToken}');
       },
     );
