@@ -93,7 +93,7 @@ class RegisterEmailCubit extends Cubit<RegisterEmailState> {
   }
 
   PasswordValidation validatePassword(String password) {
-    bool hasMinLength = password.length >= 8 && password.length <= 20;
+    bool hasMinLength = password.length >= 6 && password.length <= 20;
     bool hasLetterAndNumber =
         RegExp(r'^(?=.*[A-Za-z])(?=.*\d)').hasMatch(password);
     bool hasSpecialChar = RegExp(r'[!@#\$&*~]').hasMatch(password);
@@ -102,12 +102,12 @@ class RegisterEmailCubit extends Cubit<RegisterEmailState> {
         (hasLetterAndNumber ? 1 : 0) +
         (hasSpecialChar ? 1 : 0);
 
-    PasswordStrength strength;
+    PasswordStrength? strength;
     if (strengthScore == 3) {
       strength = PasswordStrength.strong;
     } else if (strengthScore == 2) {
       strength = PasswordStrength.medium;
-    } else {
+    } else if (strengthScore == 1) {
       strength = PasswordStrength.weak;
     }
 
@@ -158,7 +158,7 @@ class PasswordValidation {
   final bool hasMinLength;
   final bool hasLetterAndNumber;
   final bool hasSpecialChar;
-  final PasswordStrength strength;
+  final PasswordStrength? strength;
 
   PasswordValidation({
     required this.hasMinLength,

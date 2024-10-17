@@ -1,6 +1,6 @@
 class Api {
   // exposed local server to internet using ngrok
-  static const baseUrl = 'https://e324-27-73-139-80.ngrok-free.app/api';
+  static const baseUrl = 'https://724f-27-73-139-80.ngrok-free.app/api';
 
   // auth related
   static const loginApi = '/auth';

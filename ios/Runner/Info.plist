@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>TasteTube needs permission for uploading photos from library</string>
+	<key>NSCameraUsageDescription</key>
+	<string>TasteTube need camera permission in order to record video</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>TasteTube need microphone and camera permission in order to record video</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

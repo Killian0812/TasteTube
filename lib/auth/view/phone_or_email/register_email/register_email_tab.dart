@@ -122,7 +122,7 @@ class _RegisterEmailTabState extends State<RegisterEmailTab> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _passwordRequirement("8 characters (20 max)", validation.hasMinLength),
+        _passwordRequirement("6 characters (20 max)", validation.hasMinLength),
         _passwordRequirement(
             "1 letter and 1 number", validation.hasLetterAndNumber),
         _passwordRequirement(
@@ -198,12 +198,13 @@ class _RegisterEmailTabState extends State<RegisterEmailTab> {
     return BlocBuilder<RegisterEmailCubit, RegisterEmailState>(
         builder: (context, state) {
       final cubit = context.read<RegisterEmailCubit>();
-
+      final passwordValidation = cubit.validatePassword(state.password);
       return CommonButton(
         text: "Register",
         isDisabled: (state.confirmPassword != state.password) ||
             state.email.isEmpty ||
-            state.password.isEmpty,
+            state.password.isEmpty ||
+            passwordValidation.strength == null,
         onPressed: () async {
           FocusScope.of(context).unfocus();
           await cubit.send(context);
