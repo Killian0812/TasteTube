@@ -11,7 +11,9 @@ class ApiError {
 
   ApiError.fromDioException(DioException e)
       : statusCode = e.response?.statusCode ?? 500,
-        message = e.response?.data is Map
-            ? e.response!.data['message']
-            : e.response?.data as String?;
+        message = e.response == null
+            ? e.error.toString()
+            : e.response?.data is Map
+                ? e.response!.data['message']
+                : e.response?.data as String?;
 }

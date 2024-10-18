@@ -7,8 +7,10 @@ import 'package:taste_tube/auth/view/register_page.dart';
 import 'package:taste_tube/auth/view/phone_or_email/login_phone_or_email_page.dart';
 import 'package:taste_tube/auth/view/phone_or_email/register_phone_or_email_page.dart';
 import 'package:taste_tube/common/color.dart';
+import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/common/text.dart';
+import 'package:taste_tube/feature/record/camera/camera_page.dart';
 import 'package:taste_tube/feature/home/view/home_page.dart';
 import 'package:taste_tube/feature/inbox/view/inbox_page.dart';
 import 'package:taste_tube/feature/profile/view/profile_page.dart';
@@ -34,6 +36,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    CommonSize.initScreenSize(context);
+    
     return BlocProvider(
       create: (context) => AuthBloc(),
       child: MaterialApp.router(
@@ -79,36 +83,40 @@ class Layout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final path = GoRouterState.of(context).fullPath;
+
     return Scaffold(
         body: shell,
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: currentIndex,
-          onTap: (index) {
-            shell.goBranch(index);
-          },
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.restaurant_menu),
-              label: 'Restaurant',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.inbox),
-              label: 'Inbox',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profile',
-            ),
-          ],
-        ),
+        bottomNavigationBar: path == '/camera'
+            ? null
+            : BottomNavigationBar(
+                currentIndex: currentIndex,
+                onTap: (index) {
+                  shell.goBranch(index);
+                },
+                items: const [
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.home),
+                    label: 'Home',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.restaurant_menu),
+                    label: 'Restaurant',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.inbox),
+                    label: 'Inbox',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.person),
+                    label: 'Profile',
+                  ),
+                ],
+              ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            // record or upload new video
+            context.push('/camera');
           },
           backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(

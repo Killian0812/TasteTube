@@ -38,7 +38,7 @@ class _LoginWithPhoneOrEmailPageState extends State<LoginWithPhoneOrEmailPage> {
           ),
           bottom: TabBar(
             onTap: (value) {
-              FocusScope.of(context).unfocus(); // close keyboard
+              FocusScope.of(context).unfocus(); // Close keyboard
               setState(() {
                 selectedIndex = value;
               });

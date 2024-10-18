@@ -9,7 +9,7 @@ import 'auth/domain/auth_repo.dart';
 final getIt = GetIt.instance;
 
 void injectDependencies() {
-  // app core instances
+  // App core instances
   getIt.registerSingleton<Logger>(Logger());
   getIt.registerSingleton<Dio>(Dio(BaseOptions(
     baseUrl: Api.baseUrl,
@@ -20,7 +20,7 @@ void injectDependencies() {
   getIt.registerSingleton<SecureStorage>(SecureStorage());
   getIt.registerSingleton<LocalStorage>(LocalStorage());
 
-  // repositories
+  // Repositories
   getIt.registerLazySingleton<AuthRepository>(() => AuthRepository(
         secureStorage: getIt(),
         http: getIt(),
