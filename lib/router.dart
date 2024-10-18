@@ -49,6 +49,11 @@ final GoRouter _router = GoRouter(
         ),
       ],
     ),
+    GoRoute(
+      path: '/camera',
+      builder: (BuildContext context, GoRouterState state) =>
+          const CameraPage(),
+    ),
 
     // auth routes
     GoRoute(
