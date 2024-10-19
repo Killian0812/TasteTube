@@ -1,7 +1,13 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:get_thumbnail_video/index.dart';
+import 'package:get_thumbnail_video/video_thumbnail.dart';
+import 'package:taste_tube/common/fallback.dart';
+import 'package:taste_tube/common/loading.dart';
 import 'package:taste_tube/common/theme.dart';
+import 'package:taste_tube/feature/upload/upload_page.dart';
 import 'package:video_player/video_player.dart';
 
 class ReplayPage extends StatefulWidget {
@@ -36,6 +42,7 @@ class _ReplayPageState extends State<ReplayPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -48,7 +55,7 @@ class _ReplayPageState extends State<ReplayPage> {
             future: _initVideoPlayer(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(child: CommonLoadingIndicator.regular);
               } else {
                 return Transform.flip(
                     flipX: widget.recordedWithFrontCamera,
@@ -60,8 +67,17 @@ class _ReplayPageState extends State<ReplayPage> {
             padding: const EdgeInsets.only(bottom: 50.0),
             child: FloatingActionButton(
               backgroundColor: Colors.red,
-              onPressed: () {
-                // To upload page
+              onPressed: () async {
+                final thumbnail = await _createThumbnail();
+                _videoPlayerController.pause();
+                if (context.mounted) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UploadPage(thumbnail: thumbnail),
+                    ),
+                  );
+                }
               },
               shape: const CircleBorder(
                 side: BorderSide(
@@ -79,5 +95,17 @@ class _ReplayPageState extends State<ReplayPage> {
         ],
       ),
     );
+  }
+
+  Future<Uint8List> _createThumbnail() async {
+    try {
+      return await VideoThumbnail.thumbnailData(
+          video: widget.filePath,
+          imageFormat: ImageFormat.JPEG,
+          maxWidth: 128,
+          quality: 100);
+    } catch (e) {
+      return Fallback.fallbackImageBytes;
+    }
   }
 }

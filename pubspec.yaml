@@ -27,8 +27,8 @@ dependencies:
   flutter_secure_storage: ^9.2.2
   dio: ^5.7.0
   camera: ^0.11.0+2
-  path_provider: ^2.1.4
   video_player: ^2.9.2
+  get_thumbnail_video: ^0.6.1
 
 dev_dependencies:
   flutter_test:

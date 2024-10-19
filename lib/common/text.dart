@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:taste_tube/common/color.dart';
 
 class CommonTextStyle {
   static const TextStyle regular = TextStyle(
@@ -98,7 +99,10 @@ class CommonTextWidget {
       Text(
         "Tube",
         style: TextStyle(
-            fontSize: 50, fontWeight: FontWeight.bold, color: Colors.red),
+          fontSize: 50,
+          fontWeight: FontWeight.bold,
+          color: CommonColor.activeBgColor,
+        ),
       ),
     ],
   );

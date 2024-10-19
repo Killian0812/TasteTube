@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taste_tube/common/loading.dart';
 import 'package:taste_tube/common/theme.dart';
 import 'package:taste_tube/feature/record/camera/camera_cubit.dart';
 
@@ -19,6 +20,7 @@ class CameraPage extends StatelessWidget {
     final cubit = context.read<CameraCubit>();
 
     return Scaffold(
+      backgroundColor: Colors.black,
       extendBody: true,
       extendBodyBehindAppBar: true,
       resizeToAvoidBottomInset: false,
@@ -55,7 +57,7 @@ class CameraPage extends StatelessWidget {
         },
         builder: (context, state) {
           if (state is CameraLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: CommonLoadingIndicator.regular);
           } else if (state is CameraInitialized) {
             return Stack(
               fit: StackFit.expand, // Non-positioned child takes fullsize

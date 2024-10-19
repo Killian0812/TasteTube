@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taste_tube/auth/view/widget/auth_title.dart';
 import 'package:taste_tube/auth/view/widget/auth_button.dart';
+import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/common/toast.dart';
 
@@ -73,7 +74,8 @@ class _LoginPageState extends State<LoginPage> {
                 context.push('/register');
               },
               child: Text("  Register",
-                  style: CommonTextStyle.bold.copyWith(color: Colors.red)),
+                  style: CommonTextStyle.bold
+                      .copyWith(color: CommonColor.activeBgColor)),
             ),
           ],
         ),

@@ -7,6 +7,7 @@ import 'package:taste_tube/auth/view/register_page.dart';
 import 'package:taste_tube/auth/view/phone_or_email/login_phone_or_email_page.dart';
 import 'package:taste_tube/auth/view/phone_or_email/register_phone_or_email_page.dart';
 import 'package:taste_tube/common/color.dart';
+import 'package:taste_tube/common/fallback.dart';
 import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/common/text.dart';
@@ -25,6 +26,7 @@ part 'router.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   injectDependencies();
+  await Fallback.prepareFallback();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   ).then((firebaseApp) {});
@@ -37,7 +39,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     CommonSize.initScreenSize(context);
-    
+
     return BlocProvider(
       create: (context) => AuthBloc(),
       child: MaterialApp.router(
@@ -46,8 +48,8 @@ class MyApp extends StatelessWidget {
         theme: ThemeData.light().copyWith(
             textTheme: Theme.of(context).textTheme.apply(fontFamily: 'Ganh'),
             scaffoldBackgroundColor: Colors.white,
-            textSelectionTheme:
-                const TextSelectionThemeData(cursorColor: Colors.red),
+            textSelectionTheme: const TextSelectionThemeData(
+                cursorColor: CommonColor.activeBgColor),
             tabBarTheme: const TabBarTheme(
               labelColor: Colors.black,
               unselectedLabelColor: CommonColor.greyOutTextColor,

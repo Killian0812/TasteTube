@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taste_tube/auth/view/widget/auth_title.dart';
 import 'package:taste_tube/auth/view/widget/auth_button.dart';
+import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/text.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -66,7 +67,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 context.go('/login');
               },
               child: Text("  Login",
-                  style: CommonTextStyle.bold.copyWith(color: Colors.red)),
+                  style: CommonTextStyle.bold
+                      .copyWith(color: CommonColor.activeBgColor)),
             ),
           ],
         ),
