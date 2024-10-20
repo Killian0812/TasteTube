@@ -32,6 +32,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         data: {'refreshToken': refreshToken},
       );
       final authData = AuthData.fromJson(response.data);
+      http.options.headers['Authorization'] = 'Bearer ${authData.accessToken}';
       emit(Authenticated(authData));
     } on DioException {
       emit(Unauthenticated());
@@ -41,11 +42,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   FutureOr<void> _login(LoginEvent event, Emitter<AuthState> emit) async {
+    http.options.headers['Authorization'] = 'Bearer ${event.data.accessToken}';
     emit(Authenticated(event.data));
   }
 
   FutureOr<void> _logout(LogoutEvent event, Emitter<AuthState> emit) async {
     await secureStorage.clearRefreshToken();
+    http.options.headers.remove('Authorization');
     emit(Unauthenticated());
   }
 }

@@ -79,6 +79,7 @@ class LoginEmailTab extends StatelessWidget {
       return CommonButton(
         text: "Login",
         isDisabled: state.email.isEmpty || state.password.isEmpty,
+        isLoading: state.isLoading,
         onPressed: () async {
           FocusScope.of(context).unfocus();
           await cubit.send(context);

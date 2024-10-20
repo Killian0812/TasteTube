@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class RestaurantPage extends StatefulWidget {
-  const RestaurantPage({super.key});
+class ProductPage extends StatefulWidget {
+  const ProductPage({super.key});
 
   @override
-  State<RestaurantPage> createState() => _RestaurantPageState();
+  State<ProductPage> createState() => _ProductPageState();
 }
 
-class _RestaurantPageState extends State<RestaurantPage> {
+class _ProductPageState extends State<ProductPage> {
   int counter = 0;
 
   @override

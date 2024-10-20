@@ -15,7 +15,7 @@ import 'package:taste_tube/feature/record/camera/camera_page.dart';
 import 'package:taste_tube/feature/home/view/home_page.dart';
 import 'package:taste_tube/feature/inbox/view/inbox_page.dart';
 import 'package:taste_tube/feature/profile/view/profile_page.dart';
-import 'package:taste_tube/feature/restaurant/view/restautant_page.dart';
+import 'package:taste_tube/feature/restaurant/view/product_page.dart';
 import 'package:taste_tube/firebase_options.dart';
 import 'package:taste_tube/global_bloc/auth/bloc.dart';
 import 'package:taste_tube/injection.dart';
@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
             textTheme: Theme.of(context).textTheme.apply(fontFamily: 'Ganh'),
             scaffoldBackgroundColor: Colors.white,
             textSelectionTheme: const TextSelectionThemeData(
-                cursorColor: CommonColor.activeBgColor),
+                cursorColor: Colors.black),
             tabBarTheme: const TabBarTheme(
               labelColor: Colors.black,
               unselectedLabelColor: CommonColor.greyOutTextColor,
@@ -103,7 +103,7 @@ class Layout extends StatelessWidget {
                   ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.restaurant_menu),
-                    label: 'Restaurant',
+                    label: 'Product',
                   ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.inbox),

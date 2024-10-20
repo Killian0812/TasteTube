@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
 import 'package:taste_tube/api.dart';
+import 'package:taste_tube/feature/upload/domain/upload_repo.dart';
 import 'package:taste_tube/storage.dart';
 
 import 'auth/domain/auth_repo.dart';
@@ -23,6 +24,9 @@ void injectDependencies() {
   // Repositories
   getIt.registerLazySingleton<AuthRepository>(() => AuthRepository(
         secureStorage: getIt(),
+        http: getIt(),
+      ));
+  getIt.registerLazySingleton<UploadRepository>(() => UploadRepository(
         http: getIt(),
       ));
 }

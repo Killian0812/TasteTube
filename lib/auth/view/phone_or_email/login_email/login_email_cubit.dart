@@ -35,6 +35,8 @@ class LoginEmailCubit extends Cubit<LoginEmailState> {
   }
 
   Future<void> send(BuildContext context) async {
+    if (state.isLoading) return;
+    emit(state.copyWith(isLoading: true));
     final request = LoginRequest(state.email, state.password);
     final result = await repository.login(request);
     result.match(
@@ -68,22 +70,26 @@ class LoginEmailState {
   final String email;
   final String password;
   final bool isPasswordVisible;
+  final bool isLoading;
 
   LoginEmailState({
     required this.email,
     required this.password,
     required this.isPasswordVisible,
+    this.isLoading = false,
   });
 
   LoginEmailState copyWith({
     String? email,
     String? password,
     bool? isPasswordVisible,
+    bool? isLoading,
   }) {
     return LoginEmailState(
       email: email ?? this.email,
       password: password ?? this.password,
       isPasswordVisible: isPasswordVisible ?? this.isPasswordVisible,
+      isLoading: isLoading ?? this.isLoading,
     );
   }
 }

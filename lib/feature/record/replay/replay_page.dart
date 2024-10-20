@@ -69,14 +69,18 @@ class _ReplayPageState extends State<ReplayPage> {
               backgroundColor: Colors.red,
               onPressed: () async {
                 final thumbnail = await _createThumbnail();
-                _videoPlayerController.pause();
+                await _videoPlayerController.pause();
                 if (context.mounted) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => UploadPage(thumbnail: thumbnail),
+                      builder: (context) => UploadPage.provider(
+                        thumbnail,
+                        widget.filePath,
+                        widget.recordedWithFrontCamera,
+                      ),
                     ),
-                  );
+                  ).then((_) async => await _videoPlayerController.play());
                 }
               },
               shape: const CircleBorder(
@@ -102,8 +106,9 @@ class _ReplayPageState extends State<ReplayPage> {
       return await VideoThumbnail.thumbnailData(
           video: widget.filePath,
           imageFormat: ImageFormat.JPEG,
-          maxWidth: 128,
-          quality: 100);
+          maxWidth: 100,
+          maxHeight: 200,
+          quality: 50);
     } catch (e) {
       return Fallback.fallbackImageBytes;
     }

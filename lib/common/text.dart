@@ -108,7 +108,7 @@ class CommonTextWidget {
   );
 
   static Text loginPageMessage = const Text(
-    "Continue to our video-sharing platform and discover amazing restaurants! Follow your favorites, explore their unique offerings, and dive into delicious video content.",
+    "Continue to our video-sharing platform and discover amazing F&B products! Follow your favorites, explore unique offerings, and dive into delicious video content.",
     style: CommonTextStyle.thinItalic,
   );
 

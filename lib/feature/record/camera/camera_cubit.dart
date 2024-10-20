@@ -16,7 +16,11 @@ class CameraCubit extends Cubit<CameraState> {
   Future<void> initCamera() async {
     try {
       _cameras = await availableCameras();
-      final camera = _cameras.elementAt(_currentCameraIndex);
+      final frontCameraIndex = _cameras
+          .indexWhere((cam) => cam.lensDirection == CameraLensDirection.front);
+      // Default front cam if available
+      _currentCameraIndex = frontCameraIndex != -1 ? frontCameraIndex : 0;
+      final camera = _cameras[_currentCameraIndex];
       onFrontCam = camera.lensDirection == CameraLensDirection.front;
       cameraController = CameraController(camera, ResolutionPreset.max);
       await cameraController.initialize();

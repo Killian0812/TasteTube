@@ -26,8 +26,8 @@ final GoRouter _router = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: '/restaurant',
-              builder: (context, state) => const RestaurantPage(),
+              path: '/product',
+              builder: (context, state) => const ProductPage(),
             ),
           ],
         ),
