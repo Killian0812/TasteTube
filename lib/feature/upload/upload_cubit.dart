@@ -1,8 +1,11 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/feature/upload/domain/upload_repo.dart';
 import 'package:taste_tube/injection.dart';
+
+import 'data/upload_video_request.dart';
 
 class UploadCubit extends Cubit<UploadState> {
   final UploadRepository uploadRepository;
@@ -63,20 +66,31 @@ class UploadCubit extends Cubit<UploadState> {
   }
 
   Future<void> uploadVideo() async {
-    // try {
-    //   // Call your upload logic here, you may want to use uploadRepository to handle API interaction
-    //   await uploadRepository.upload(filePath, thumbnail, description,
-    //       selectedVisibility, selectedProducts.toList());
-    //   emit(UploadSuccess());
-    // } catch (e) {
-    //   emit(UploadFailure(e.toString()));
-    // }
+    try {
+      emit(UploadLoading());
+      await uploadRepository.upload(
+          filePath,
+          UploadVideoRequest(
+            title,
+            description,
+            hashtags,
+            recordedWithFrontCamera ? 'FRONT' : 'BACK',
+            base64Encode(thumbnail),
+            [],
+            selectedVisibility,
+          ));
+      emit(UploadSuccess());
+    } catch (e) {
+      emit(UploadFailure(e.toString()));
+    }
   }
 }
 
 abstract class UploadState {}
 
 class UploadInitialized extends UploadState {}
+
+class UploadLoading extends UploadState {}
 
 class UploadSuccess extends UploadState {}
 

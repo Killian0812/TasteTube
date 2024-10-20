@@ -44,31 +44,24 @@ class UploadPage extends StatelessWidget {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  // Title Input
                   TextField(
                     onChanged: (value) => cubit.setTitle(value),
                     decoration: const InputDecoration(
                       labelText: 'Title',
-                      // border: OutlineInputBorder(),
                     ),
                   ),
-
                   const SizedBox(height: 16),
-
-                  // Thumbnail and Description
                   SizedBox(
                     height: 200,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Thumbnail Image
                         Image.memory(
                           cubit.thumbnail,
                           height: 200,
                           fit: BoxFit.contain,
                         ),
                         const SizedBox(width: 16),
-
                         Expanded(
                           child: TextField(
                             onChanged: (value) => cubit.setDescription(value),
@@ -90,10 +83,7 @@ class UploadPage extends StatelessWidget {
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 16),
-
-                  // Display Hashtags
                   BlocBuilder<UploadCubit, UploadState>(
                     builder: (context, state) {
                       return Wrap(
@@ -104,9 +94,7 @@ class UploadPage extends StatelessWidget {
                       );
                     },
                   ),
-
                   const SizedBox(height: 16),
-
                   GestureDetector(
                     onTap: () => _showVisibilityOptions(context, cubit),
                     child: Container(
@@ -131,10 +119,7 @@ class UploadPage extends StatelessWidget {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 16),
-
-                  // Button to open Product Selection bottom sheet
                   GestureDetector(
                     onTap: () => _showProductSelection(context, cubit),
                     child: Container(
@@ -160,15 +145,17 @@ class UploadPage extends StatelessWidget {
                       ),
                     ),
                   ),
-
-                  const SizedBox(height: 20),
-
-                  // Upload Button
-                  CommonButton(
-                    onPressed: () {
-                      cubit.uploadVideo();
+                  const Spacer(),
+                  BlocBuilder<UploadCubit, UploadState>(
+                    builder: (context, state) {
+                      return CommonButton(
+                        isLoading: (state is UploadLoading),
+                        onPressed: () {
+                          cubit.uploadVideo();
+                        },
+                        text: "Upload",
+                      );
                     },
-                    text: "Upload",
                   )
                 ],
               ),

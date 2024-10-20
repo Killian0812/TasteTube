@@ -88,7 +88,7 @@ class RegisterEmailCubit extends Cubit<RegisterEmailState> {
       Future.delayed(const Duration(seconds: 2), () {
         context.go('/login/phone_or_email', extra: 1);
       });
-      logger.i('Account type selected: ${response.message}');
+      logger.i('Account type selected: $response');
     });
   }
 

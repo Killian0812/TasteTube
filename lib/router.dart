@@ -99,7 +99,7 @@ final GoRouter _router = GoRouter(
 class CommonNavigatorObserver extends NavigatorObserver {
   @override
   void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    ToastService.hideToast(); // Hide toast when navigating to a new page
+    // ToastService.hideToast(); // Hide toast when navigating to a new page
     super.didPush(route, previousRoute);
   }
 

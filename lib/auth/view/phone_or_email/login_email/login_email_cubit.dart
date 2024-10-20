@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
 import 'package:taste_tube/auth/domain/auth_repo.dart';
+import 'package:taste_tube/auth/view/register_page.ext.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/global_bloc/auth/bloc.dart';
 import 'package:taste_tube/injection.dart';
@@ -59,7 +60,16 @@ class LoginEmailCubit extends Cubit<LoginEmailState> {
               image: response.image,
               userId: response.userId,
             )));
-        context.go('/profile');
+        if (response.role.isNotEmpty) {
+          context.go('/profile');
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    AccountTypeSelectionPage.provider(response.userId)),
+          );
+        }
         logger.i('Login successfully: ${response.accessToken}');
       },
     );

@@ -32,15 +32,13 @@ class AuthRepository {
     }
   }
 
-  Future<Either<ApiError, SetRoleResponse>> setRole(
-      SetRoleRequest request) async {
+  Future<Either<ApiError, String>> setRole(SetRoleRequest request) async {
     try {
       final response = await http.post(
         Api.setRoleApi,
         data: request.toJson(),
       );
-      final setRoleResponse = SetRoleResponse.fromJson(response.data);
-      return Right(setRoleResponse);
+      return Right(response.data?['message'] ?? "");
     } on DioException catch (e) {
       return Left(ApiError.fromDioException(e));
     } catch (e) {

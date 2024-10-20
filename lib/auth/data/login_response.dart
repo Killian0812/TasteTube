@@ -4,6 +4,7 @@ class LoginResponse {
   final String email;
   final String username;
   final String image;
+  final String role;
 
   const LoginResponse(
     this.accessToken,
@@ -11,6 +12,7 @@ class LoginResponse {
     this.email,
     this.username,
     this.image,
+    this.role,
   );
 
   LoginResponse.fromJson(Map<String, dynamic> json)
@@ -18,5 +20,6 @@ class LoginResponse {
         userId = json['userId'] as String,
         email = json['email'] as String,
         username = json['username'] as String,
-        image = json['image'] as String;
+        image = json['image'] as String,
+        role = json['role'] as String;
 }
