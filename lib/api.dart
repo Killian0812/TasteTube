@@ -9,5 +9,9 @@ class Api {
   static const refreshApi = '/refresh';
 
   // Features
+  // Video upload
   static const uploadVideoApi = '/videos';
+
+  // User
+  static const userApi = '/users/:userId';
 }

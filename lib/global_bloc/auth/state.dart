@@ -6,6 +6,7 @@ class AuthData {
   final String email;
   final String username;
   final String image;
+  final String role;
 
   const AuthData({
     required this.accessToken,
@@ -13,6 +14,7 @@ class AuthData {
     required this.email,
     required this.username,
     required this.image,
+    required this.role,
   });
 
   factory AuthData.fromJson(Map<String, dynamic> json) {
@@ -22,6 +24,7 @@ class AuthData {
       email: json['email'],
       username: json['username'],
       image: json['image'],
+      role: json['role'],
     );
   }
 
@@ -31,6 +34,7 @@ class AuthData {
         'email': email,
         'username': username,
         'image': image,
+        'role': role,
       };
 }
 

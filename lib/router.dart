@@ -6,8 +6,7 @@ final GoRouter _router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (BuildContext context, GoRouterState state) =>
-          const SplashPage(),
+      builder: (context, state) => const SplashPage(),
     ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, shell) => Layout(
@@ -42,8 +41,15 @@ final GoRouter _router = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: '/profile',
-              builder: (context, state) => const ProfilePage(),
+              path: '/user',
+              builder: (context, state) => const SplashPage(),
+            ),
+            GoRoute(
+              path: '/user/:userId',
+              name: 'profile',
+              builder: (context, state) => ProfilePage.provider(
+                state.pathParameters['userId'] ?? '',
+              ),
             ),
           ],
         ),
@@ -51,30 +57,27 @@ final GoRouter _router = GoRouter(
     ),
     GoRoute(
       path: '/camera',
-      builder: (BuildContext context, GoRouterState state) =>
-          CameraPage.provider(),
+      builder: (context, state) => CameraPage.provider(),
     ),
 
     // Auth routes
     GoRoute(
       path: '/login',
-      builder: (BuildContext context, GoRouterState state) => const LoginPage(),
+      builder: (context, state) => const LoginPage(),
     ),
     GoRoute(
         path: '/login/phone_or_email',
-        builder: (BuildContext context, GoRouterState state) {
+        builder: (context, state) {
           final int initialIndex = state.extra as int? ?? 0;
           return LoginWithPhoneOrEmailPage(initialIndex: initialIndex);
         }),
     GoRoute(
       path: '/register',
-      builder: (BuildContext context, GoRouterState state) =>
-          const RegisterPage(),
+      builder: (context, state) => const RegisterPage(),
     ),
     GoRoute(
       path: '/register/phone_or_email',
-      builder: (BuildContext context, GoRouterState state) =>
-          const RegisterWithPhoneOrEmailPage(),
+      builder: (context, state) => const RegisterWithPhoneOrEmailPage(),
     ),
   ],
   redirect: (context, state) {

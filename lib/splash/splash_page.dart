@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:taste_tube/auth/view/register_page.ext.dart';
 import 'package:taste_tube/global_bloc/auth/bloc.dart';
 
 class SplashPage extends StatefulWidget {
@@ -43,7 +44,19 @@ class _SplashPageState extends State<SplashPage>
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is Authenticated) {
-            context.go('/home');
+            if (state.data.role == 'RESTAURANT') {
+              context.goNamed('profile',
+                  pathParameters: {'userId': state.data.userId});
+            } else if (state.data.role == 'CUSTOMER') {
+              context.go('/home');
+            } else {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        AccountTypeSelectionPage.provider(state.data.userId)),
+              );
+            }
           } else if (state is Unauthenticated) {
             context.go('/login');
           }

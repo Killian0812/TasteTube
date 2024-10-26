@@ -59,9 +59,15 @@ class LoginEmailCubit extends Cubit<LoginEmailState> {
               username: response.username,
               image: response.image,
               userId: response.userId,
+              role: response.role,
             )));
         if (response.role.isNotEmpty) {
-          context.go('/profile');
+          if (response.role == 'RESTAURANT') {
+            context.goNamed('profile',
+                pathParameters: {'userId': response.userId});
+          } else {
+            context.go('/home');
+          }
         } else {
           Navigator.push(
             context,
