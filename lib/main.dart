@@ -15,7 +15,7 @@ import 'package:taste_tube/feature/record/camera/camera_page.dart';
 import 'package:taste_tube/feature/home/view/home_page.dart';
 import 'package:taste_tube/feature/inbox/view/inbox_page.dart';
 import 'package:taste_tube/feature/profile/view/profile_page.dart';
-import 'package:taste_tube/feature/restaurant/view/product_page.dart';
+import 'package:taste_tube/feature/product/view/product_page.dart';
 import 'package:taste_tube/firebase_options.dart';
 import 'package:taste_tube/global_bloc/auth/bloc.dart';
 import 'package:taste_tube/injection.dart';
@@ -46,28 +46,29 @@ class MyApp extends StatelessWidget {
         title: 'TasteTube',
         routerConfig: _router,
         theme: ThemeData.light().copyWith(
-            textTheme: Theme.of(context).textTheme.apply(fontFamily: 'Ganh'),
+          textTheme: Theme.of(context).textTheme.apply(fontFamily: 'Ganh'),
             scaffoldBackgroundColor: Colors.white,
             textSelectionTheme: const TextSelectionThemeData(
                 cursorColor: Colors.black),
-            tabBarTheme: const TabBarTheme(
-              labelColor: Colors.black,
-              unselectedLabelColor: CommonColor.greyOutTextColor,
-              labelStyle: CommonTextStyle.bold,
-              unselectedLabelStyle: CommonTextStyle.boldItalic,
-            ),
-            bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-              unselectedItemColor: Colors.black,
-              selectedItemColor: CommonColor.activeBgColor,
-              selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
-              showUnselectedLabels: true,
-              type: BottomNavigationBarType.fixed,
-            ),
-            appBarTheme: const AppBarTheme(
-              backgroundColor: Colors.transparent,
-              shadowColor: Colors.transparent,
-              iconTheme: IconThemeData(color: Colors.black),
-            )),
+          tabBarTheme: const TabBarTheme(
+            labelColor: Colors.black,
+            unselectedLabelColor: CommonColor.greyOutTextColor,
+            labelStyle: CommonTextStyle.bold,
+            unselectedLabelStyle: CommonTextStyle.boldItalic,
+          ),
+          bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+            unselectedItemColor: Colors.black,
+            selectedItemColor: CommonColor.activeBgColor,
+            selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
+            showUnselectedLabels: true,
+            type: BottomNavigationBarType.fixed,
+          ),
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+            iconTheme: IconThemeData(color: Colors.black),
+          ),
+        ),
       ),
     );
   }
