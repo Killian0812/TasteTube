@@ -7,7 +7,7 @@ class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   static Widget provider(String userId) => BlocProvider<ProfileCubit>(
-        create: (context) => ProfileCubit()..init(userId),
+        create: (context) => ProfileCubit(userId)..init(),
         child: const ProfilePage(),
       );
 
@@ -23,7 +23,11 @@ class ProfilePage extends StatelessWidget {
             ),
           );
         }
-        return const Center(child: CommonLoadingIndicator.regular);
+        return Center(child: FloatingActionButton(onPressed: () {
+          final cubit = context.read<ProfileCubit>();
+          cubit.init();
+        }));
+        // return const Center(child: CommonLoadingIndicator.regular);
       },
     );
   }

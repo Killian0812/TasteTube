@@ -5,12 +5,13 @@ import 'package:taste_tube/injection.dart';
 
 class ProfileCubit extends Cubit<ProfileState> {
   final UserRepository repository;
+  final String userId;
 
-  ProfileCubit()
+  ProfileCubit(this.userId)
       : repository = getIt<UserRepository>(),
         super(ProfileLoading());
 
-  Future<void> init(String userId) async {
+  Future<void> init() async {
     final either = await repository.getInfo(userId);
     either.match(
       (apiError) {

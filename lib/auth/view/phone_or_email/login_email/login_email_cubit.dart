@@ -46,6 +46,7 @@ class LoginEmailCubit extends Cubit<LoginEmailState> {
             apiError.statusCode < 500 ? ToastType.warning : ToastType.error,
             duration: const Duration(seconds: 4));
         logger.e('Login failed: ${apiError.message}');
+        emit(state.copyWith(isLoading: false));
       },
       (response) {
         ToastService.showToast(

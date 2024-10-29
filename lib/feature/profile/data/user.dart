@@ -1,15 +1,15 @@
-import 'dart:convert';
+import 'package:taste_tube/feature/video.dart';
 
 class User {
-  final String phone;
-  final String email;
+  final String? phone;
+  final String? email;
   final String username;
-  final String filename;
-  final String image;
-  final List<String>? followers;
-  final List<String>? followings;
-  final List<String> videos;
-  final List<String> likedVideos;
+  final String? filename;
+  final String? image;
+  final int? followers;
+  final int? followings;
+  final List<Video> videos;
+  final List<Video> likedVideos;
 
   User({
     required this.phone,
@@ -25,15 +25,19 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      phone: json['phone'] as String,
-      email: json['email'] as String,
+      phone: json['phone'] as String?,
+      email: json['email'] as String?,
       username: json['username'] as String,
-      filename: json['filename'] as String,
-      image: json['image'] as String,
-      followers: List<String>.from(jsonDecode(json['followers']) ?? []),
-      followings: List<String>.from(jsonDecode(json['followings']) ?? []),
-      videos: List<String>.from(jsonDecode(json['videos'])),
-      likedVideos: List<String>.from(jsonDecode(json['likedVideos'])),
+      filename: json['filename'] as String?,
+      image: json['image'] as String?,
+      followers: json['followers'] as int?,
+      followings: json['followings'] as int?,
+      videos: (json['videos'] as List<dynamic>)
+          .map((videoJson) => Video.fromJson(videoJson as Map<String, dynamic>))
+          .toList(),
+      likedVideos: (json['likedVideos'] as List<dynamic>)
+          .map((videoJson) => Video.fromJson(videoJson as Map<String, dynamic>))
+          .toList(),
     );
   }
 
@@ -46,8 +50,8 @@ class User {
       'image': image,
       'followers': followers,
       'followings': followings,
-      'videos': videos,
-      'likedVideos': likedVideos,
+      'videos': videos.map((video) => video.toJson()).toList(),
+      'likedVideos': likedVideos.map((video) => video.toJson()).toList(),
     };
   }
 }
