@@ -59,6 +59,33 @@ final GoRouter _router = GoRouter(
       path: '/camera',
       builder: (context, state) => CameraPage.provider(),
     ),
+    GoRoute(
+      path: '/watch',
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        final videos = extra?['videos'] as List<Video>?;
+        final initialIndex = extra?['initialIndex'] as int?;
+
+        if (videos == null || initialIndex == null) {
+          return const SplashPage();
+        }
+
+        return WatchPage(
+          videos: videos,
+          initialIndex: initialIndex,
+        );
+      },
+    ),
+    // GoRoute(
+    //   path: '/watch/:videoId',
+    //   builder: (context, state) {
+    //     final videoId = Uri.decodeComponent(state.pathParameters['videoId']!);
+    //     return WatchPage(
+    //       videos: [],
+    //       initialIndex: 0,
+    //     );
+    //   },
+    // ),
 
     // Auth routes
     GoRoute(

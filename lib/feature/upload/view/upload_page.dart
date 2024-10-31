@@ -6,7 +6,7 @@ import 'package:taste_tube/common/button.dart';
 import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/common/toast.dart';
-import 'package:taste_tube/feature/upload/upload_cubit.dart';
+import 'package:taste_tube/feature/upload/view/upload_cubit.dart';
 
 class UploadPage extends StatelessWidget {
   const UploadPage({super.key});

@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/feature/upload/domain/upload_repo.dart';
 import 'package:taste_tube/injection.dart';
 
-import 'data/upload_video_request.dart';
+import '../data/upload_video_request.dart';
 
 class UploadCubit extends Cubit<UploadState> {
   final UploadRepository uploadRepository;

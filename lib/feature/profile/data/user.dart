@@ -6,6 +6,7 @@ class User {
   final String username;
   final String? filename;
   final String? image;
+  final String? bio;
   final int? followers;
   final int? followings;
   final List<Video> videos;
@@ -17,6 +18,7 @@ class User {
     required this.username,
     required this.filename,
     required this.image,
+    required this.bio,
     this.followers,
     this.followings,
     required this.videos,
@@ -30,6 +32,7 @@ class User {
       username: json['username'] as String,
       filename: json['filename'] as String?,
       image: json['image'] as String?,
+      bio: json['bio'] as String?,
       followers: json['followers'] as int?,
       followings: json['followings'] as int?,
       videos: (json['videos'] as List<dynamic>)

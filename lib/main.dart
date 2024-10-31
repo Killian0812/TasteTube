@@ -16,6 +16,8 @@ import 'package:taste_tube/feature/home/view/home_page.dart';
 import 'package:taste_tube/feature/inbox/view/inbox_page.dart';
 import 'package:taste_tube/feature/profile/view/profile_page.dart';
 import 'package:taste_tube/feature/product/view/product_page.dart';
+import 'package:taste_tube/feature/video.dart';
+import 'package:taste_tube/feature/watch/watch_page.dart';
 import 'package:taste_tube/firebase_options.dart';
 import 'package:taste_tube/global_bloc/auth/bloc.dart';
 import 'package:taste_tube/injection.dart';
@@ -47,9 +49,9 @@ class MyApp extends StatelessWidget {
         routerConfig: _router,
         theme: ThemeData.light().copyWith(
           textTheme: Theme.of(context).textTheme.apply(fontFamily: 'Ganh'),
-            scaffoldBackgroundColor: Colors.white,
-            textSelectionTheme: const TextSelectionThemeData(
-                cursorColor: Colors.black),
+          scaffoldBackgroundColor: Colors.white,
+          textSelectionTheme:
+              const TextSelectionThemeData(cursorColor: Colors.black),
           tabBarTheme: const TabBarTheme(
             labelColor: Colors.black,
             unselectedLabelColor: CommonColor.greyOutTextColor,
@@ -90,7 +92,7 @@ class Layout extends StatelessWidget {
 
     return Scaffold(
         body: shell,
-        bottomNavigationBar: path == '/camera'
+        bottomNavigationBar: noBottomNavBarRoutes.contains(path)
             ? null
             : BottomNavigationBar(
                 currentIndex: currentIndex,
@@ -130,3 +132,7 @@ class Layout extends StatelessWidget {
         ));
   }
 }
+
+const List<String> noBottomNavBarRoutes = [
+  '/camera',
+];
