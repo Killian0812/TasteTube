@@ -25,6 +25,23 @@ class UserRepository {
     }
   }
 
+  Future<Either<ApiError, String>> changePassword(String userId,
+      String oldPassword, String newPassword, String matchPassword) async {
+    try {
+      final response = await http
+          .put(Api.changePasswordApi.replaceFirst(':userId', userId), data: {
+        'oldPassword': oldPassword,
+        'newPassword': newPassword,
+        'matchPassword': matchPassword,
+      });
+      return Right(response.data['message'] ?? '');
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
+
   Future<Either<ApiError, User>> updateInfo(
     String userId, {
     String? username,

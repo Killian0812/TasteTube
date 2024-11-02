@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:taste_tube/common/loading.dart';
+import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/profile/data/user.dart';
 import 'package:taste_tube/feature/profile/view/profile_cubit.dart';
 import 'package:taste_tube/feature/video.dart';
@@ -15,8 +16,15 @@ part 'profile_page.ext.dart';
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
-  static Widget provider(String userId) => BlocProvider<ProfileCubit>(
-        create: (context) => ProfileCubit(userId)..init(context),
+  static Widget provider(String userId) => MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => ProfileCubit(userId)..init(context),
+          ),
+          BlocProvider(
+            create: (context) => PasswordCubit(userId),
+          ),
+        ],
         child: const ProfilePage(),
       );
 
@@ -76,7 +84,7 @@ class ProfilePage extends StatelessWidget {
                       const SizedBox(width: 5),
                       ElevatedButton.icon(
                         onPressed: () {
-                          // TODO: Change password dialog
+                          _showChangePasswordDialog(context);
                         },
                         icon: const Icon(Icons.password_rounded),
                         label: const Text('Change password'),

@@ -14,4 +14,5 @@ class Api {
 
   // User
   static const userApi = '/users/:userId';
+  static const changePasswordApi = '/users/:userId/change_password';
 }

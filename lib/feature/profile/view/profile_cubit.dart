@@ -70,3 +70,47 @@ class ProfileFailure extends ProfileState {
 
   ProfileFailure(this.message);
 }
+
+class PasswordCubit extends Cubit<PasswordState> {
+  final UserRepository repository;
+  final String userId;
+  bool isOwner = false;
+
+  PasswordCubit(this.userId)
+      : repository = getIt<UserRepository>(),
+        super(PasswordLoading());
+
+  Future<void> changePassword(
+      String oldPassword, String newPassword, String matchPassword) async {
+    final either = await repository.changePassword(
+      userId,
+      oldPassword,
+      newPassword,
+      matchPassword,
+    );
+    either.match(
+      (apiError) {
+        emit(ChangePasswordFailure(apiError.message!));
+      },
+      (msg) {
+        emit(ChangePasswordSuccess(msg));
+      },
+    );
+  }
+}
+
+abstract class PasswordState {}
+
+class PasswordLoading extends PasswordState {}
+
+class ChangePasswordFailure extends PasswordState {
+  final String message;
+
+  ChangePasswordFailure(this.message);
+}
+
+class ChangePasswordSuccess extends PasswordState {
+  final String message;
+
+  ChangePasswordSuccess(this.message);
+}

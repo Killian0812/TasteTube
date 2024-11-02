@@ -131,3 +131,95 @@ Future<void> _showEditProfileDialog(BuildContext context, User user) {
     },
   );
 }
+
+Future<void> _showChangePasswordDialog(BuildContext context) {
+  final cubit = context.read<PasswordCubit>();
+  final currentPasswordController = TextEditingController();
+  final newPasswordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+
+  return showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+    ),
+    builder: (context) {
+      return BlocListener<PasswordCubit, PasswordState>(
+        bloc: cubit,
+        listener: (context, state) {
+          if (state is ChangePasswordFailure) {
+            ToastService.showToast(context, state.message, ToastType.warning);
+            return;
+          }
+          if (state is ChangePasswordSuccess) {
+            ToastService.showToast(context, state.message, ToastType.success);
+            Navigator.pop(context);
+          }
+        },
+        child: Padding(
+          padding: EdgeInsets.only(
+            left: 16,
+            right: 16,
+            top: 16,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Change password',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: currentPasswordController,
+                obscureText: true,
+                decoration:
+                    const InputDecoration(labelText: 'Current password'),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: newPasswordController,
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'New password'),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: confirmPasswordController,
+                obscureText: true,
+                decoration:
+                    const InputDecoration(labelText: 'Confirm new password'),
+              ),
+              const SizedBox(height: 20),
+              Align(
+                alignment: Alignment.centerRight,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      elevation: 3,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12))),
+                  onPressed: () async {
+                    await cubit.changePassword(
+                      currentPasswordController.text,
+                      newPasswordController.text,
+                      confirmPasswordController.text,
+                    );
+                  },
+                  child: const Text('Change Password',
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
