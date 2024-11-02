@@ -12,6 +12,9 @@ class Api {
   // Video upload
   static const uploadVideoApi = '/videos';
 
+  // Product
+  static const categoryApi = '/product/categories';
+
   // User
   static const userApi = '/users/:userId';
   static const changePasswordApi = '/users/:userId/change_password';

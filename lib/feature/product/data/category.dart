@@ -2,11 +2,15 @@ class Category {
   final String id;
   final String name;
 
-  Category(this.id, this.name);
+  Category({
+    required this.id,
+    required this.name,
+  });
 
-  @override
-  operator ==(other) => other is Category && other.id == id;
-
-  @override
-  int get hashCode => Object.hash(id, name);
+  factory Category.fromJson(Map<String, dynamic> json) {
+    return Category(
+      id: json['_id'] as String,
+      name: json['name'] as String,
+    );
+  }
 }

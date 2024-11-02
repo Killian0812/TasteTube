@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
 import 'package:taste_tube/api.dart';
+import 'package:taste_tube/feature/product/domain/product_repo.dart';
 import 'package:taste_tube/feature/profile/domain/profile_repo.dart';
 import 'package:taste_tube/feature/upload/domain/upload_repo.dart';
 import 'package:taste_tube/storage.dart';
@@ -31,6 +32,9 @@ void injectDependencies() {
         http: getIt(),
       ));
   getIt.registerLazySingleton<UserRepository>(() => UserRepository(
+        http: getIt(),
+      ));
+  getIt.registerLazySingleton<ProductRepository>(() => ProductRepository(
         http: getIt(),
       ));
 }

@@ -1,47 +1,63 @@
 import 'dart:async';
-import 'dart:math';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fpdart/fpdart.dart';
 import 'package:taste_tube/feature/product/data/category.dart';
+import 'package:taste_tube/feature/product/domain/product_repo.dart';
+import 'package:taste_tube/injection.dart';
 
-// TODO: Call APIs
 class CategoryCubit extends Cubit<CategoryState> {
-  CategoryCubit() : super(CategoryState([]));
+  final ProductRepository repository;
 
-  FutureOr<void> fetchCategory() async {
-    final List<Category> categories = [
-      Category("01", "category 01"),
-      Category("02", "category 02"),
-      Category("03", "category 03"),
-      Category("04", "category 04"),
-      Category("05", "category 05"),
-      Category("06", "category 06"),
-      Category("07", "category 07"),
-    ];
-    emit(CategoryLoaded(categories));
+  CategoryCubit()
+      : repository = getIt<ProductRepository>(),
+        super(CategoryState([]));
+
+  Future<void> fetchCategory() async {
+    final result = await repository.fetchCategories();
+    result.fold(
+      (error) => emit(CategoryError(
+          state.categories, error.message ?? 'Error fetching categories')),
+      (categories) => emit(CategoryLoaded(categories)),
+    );
   }
 
-  FutureOr<void> addCategory(String name) async {
-    final newCategory = Category(Random().nextInt(100).toString(), name);
-    final List<Category> updatedCategories = List.from(state.categories)
-      ..add(newCategory);
-    emit(CategoryLoaded(updatedCategories));
+  Future<void> addCategory(String name) async {
+    final result = await repository.addCategory(name);
+    result.fold(
+      (error) => emit(CategoryError(
+          state.categories, error.message ?? 'Error adding category')),
+      (category) {
+        final updatedCategories = List<Category>.from(state.categories)
+          ..add(category);
+        emit(CategoryLoaded(updatedCategories));
+      },
+    );
   }
 
-  FutureOr<void> editCategory(String id, String name) async {
-    final index = state.categories.indexWhere((e) => e.id == id);
-    if (index == -1) {
-      emit(CategoryError(state.categories));
-      return;
-    }
-    state.categories[index] = Category(id, name);
-    emit(CategoryLoaded(state.categories));
+  Future<void> editCategory(String id, String name) async {
+    final result = await repository.updateCategory(id, name);
+    result.fold(
+      (error) => emit(CategoryError(
+          state.categories, error.message ?? 'Error updating category')),
+      (updatedCategory) {
+        final updatedCategories = state.categories.map((category) {
+          return category.id == id ? updatedCategory : category;
+        }).toList();
+        emit(CategoryLoaded(updatedCategories));
+      },
+    );
   }
 
-  void deleteCategory(Category category) async {
-    final newCategories = state.categories.delete(category).toList();
-    emit(CategoryLoaded(newCategories));
+  Future<void> deleteCategory(Category category) async {
+    final result = await repository.deleteCategory(category.id);
+    result.fold(
+      (error) => emit(CategoryError(
+          state.categories, error.message ?? 'Error deleting category')),
+      (_) {
+        final updatedCategories = List<Category>.from(state.categories)
+          ..removeWhere((c) => c.id == category.id);
+        emit(CategoryLoaded(updatedCategories));
+      },
+    );
   }
 }
 
@@ -56,5 +72,6 @@ class CategoryLoaded extends CategoryState {
 }
 
 class CategoryError extends CategoryState {
-  CategoryError(super.categories);
+  final String message;
+  CategoryError(super.categories, this.message);
 }
