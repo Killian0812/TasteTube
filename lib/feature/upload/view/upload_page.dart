@@ -41,124 +41,129 @@ class UploadPage extends StatelessWidget {
           appBar: AppBar(),
           body: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  TextField(
-                    onChanged: (value) => cubit.setTitle(value),
-                    decoration: const InputDecoration(
-                      labelText: 'Title',
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    height: 200,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Image.memory(
-                          cubit.thumbnail,
-                          height: 200,
-                          fit: BoxFit.contain,
+            child: Column(
+              children: [
+                SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      TextField(
+                        onChanged: (value) => cubit.setTitle(value),
+                        decoration: const InputDecoration(
+                          labelText: 'Title',
                         ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: TextField(
-                            onChanged: (value) => cubit.setDescription(value),
-                            decoration: InputDecoration(
-                              labelText: 'Description',
-                              helperMaxLines: 3,
-                              helperText:
-                                  "Describe your content. A well-crafted description can help attract larger audiences.",
-                              hintStyle: CommonTextStyle.italic
-                                  .copyWith(color: Colors.grey),
-                              border: const OutlineInputBorder(),
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        height: 200,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Image.memory(
+                              cubit.thumbnail,
+                              height: 200,
+                              fit: BoxFit.contain,
                             ),
-                            keyboardType: TextInputType.multiline,
-                            expands: true,
-                            maxLines: null,
-                            textAlignVertical: TextAlignVertical.top,
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: TextField(
+                                onChanged: (value) =>
+                                    cubit.setDescription(value),
+                                decoration: InputDecoration(
+                                  labelText: 'Description',
+                                  helperMaxLines: 3,
+                                  helperText:
+                                      "Describe your content. A well-crafted description can help attract larger audiences.",
+                                  hintStyle: CommonTextStyle.italic
+                                      .copyWith(color: Colors.grey),
+                                  border: const OutlineInputBorder(),
+                                ),
+                                keyboardType: TextInputType.multiline,
+                                expands: true,
+                                maxLines: null,
+                                textAlignVertical: TextAlignVertical.top,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      BlocBuilder<UploadCubit, UploadState>(
+                        builder: (context, state) {
+                          return Wrap(
+                            spacing: 8.0,
+                            children: cubit.hashtags
+                                .map((hashtag) => Chip(label: Text(hashtag)))
+                                .toList(),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      GestureDetector(
+                        onTap: () => _showVisibilityOptions(context, cubit),
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text('Visibility: '),
+                              const Spacer(),
+                              BlocBuilder<UploadCubit, UploadState>(
+                                builder: (context, state) {
+                                  return Text(cubit.selectedVisibility);
+                                },
+                              ),
+                              const SizedBox(width: 20),
+                              const Icon(Icons.keyboard_arrow_right),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  BlocBuilder<UploadCubit, UploadState>(
-                    builder: (context, state) {
-                      return Wrap(
-                        spacing: 8.0,
-                        children: cubit.hashtags
-                            .map((hashtag) => Chip(label: Text(hashtag)))
-                            .toList(),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  GestureDetector(
-                    onTap: () => _showVisibilityOptions(context, cubit),
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text('Visibility: '),
-                          const Spacer(),
-                          BlocBuilder<UploadCubit, UploadState>(
-                            builder: (context, state) {
-                              return Text(cubit.selectedVisibility);
-                            },
+                      const SizedBox(height: 16),
+                      GestureDetector(
+                        onTap: () => _showProductSelection(context, cubit),
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          const SizedBox(width: 20),
-                          const Icon(Icons.keyboard_arrow_right),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  GestureDetector(
-                    onTap: () => _showProductSelection(context, cubit),
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text('Attached products: '),
-                          const Spacer(),
-                          BlocBuilder<UploadCubit, UploadState>(
-                            builder: (context, state) {
-                              return Text(
-                                  cubit.selectedProducts.length.toString());
-                            },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text('Attached products: '),
+                              const Spacer(),
+                              BlocBuilder<UploadCubit, UploadState>(
+                                builder: (context, state) {
+                                  return Text(
+                                      cubit.selectedProducts.length.toString());
+                                },
+                              ),
+                              const SizedBox(width: 20),
+                              const Icon(Icons.keyboard_arrow_right),
+                            ],
                           ),
-                          const SizedBox(width: 20),
-                          const Icon(Icons.keyboard_arrow_right),
-                        ],
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                  const Spacer(),
-                  BlocBuilder<UploadCubit, UploadState>(
-                    builder: (context, state) {
-                      return CommonButton(
-                        isLoading: (state is UploadLoading),
-                        onPressed: () {
-                          cubit.uploadVideo();
-                        },
-                        text: "Upload",
-                      );
-                    },
-                  )
-                ],
-              ),
+                ),
+                const Spacer(),
+                BlocBuilder<UploadCubit, UploadState>(
+                  builder: (context, state) {
+                    return CommonButton(
+                      isLoading: (state is UploadLoading),
+                      onPressed: () {
+                        cubit.uploadVideo();
+                      },
+                      text: "Upload",
+                    );
+                  },
+                )
+              ],
             ),
           ),
         ));
