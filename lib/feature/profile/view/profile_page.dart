@@ -1,12 +1,16 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:taste_tube/common/loading.dart';
 import 'package:taste_tube/feature/profile/data/user.dart';
 import 'package:taste_tube/feature/profile/view/profile_cubit.dart';
 import 'package:taste_tube/feature/video.dart';
+
+part 'profile_page.ext.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -219,88 +223,6 @@ class ProfilePage extends StatelessWidget {
       itemBuilder: (context, index) {
         return Image.memory(base64Decode(likedVideos[index].thumbnail ?? ''),
             fit: BoxFit.cover);
-      },
-    );
-  }
-
-  void _showEditProfileDialog(BuildContext context, User user) {
-    final cubit = context.read<ProfileCubit>();
-    final usernameController = TextEditingController(text: user.username);
-    final bioController = TextEditingController(text: user.bio ?? '');
-    final emailController = TextEditingController(text: user.email ?? '');
-    final phoneController = TextEditingController(text: user.phone ?? '');
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            left: 16,
-            right: 16,
-            top: 16,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Edit Profile',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: usernameController,
-                decoration: const InputDecoration(labelText: 'Username'),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: emailController,
-                decoration: const InputDecoration(labelText: 'Email address'),
-              ),
-              TextField(
-                controller: phoneController,
-                decoration: const InputDecoration(labelText: 'Phone number'),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: bioController,
-                decoration: const InputDecoration(labelText: 'Bio'),
-                maxLines: 3,
-              ),
-              const SizedBox(height: 20),
-              Align(
-                alignment: Alignment.centerRight,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      elevation: 3,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12))),
-                  onPressed: () async {
-                    await cubit.updateProfile(
-                      bio: bioController.text,
-                      username: usernameController.text,
-                      email: emailController.text,
-                      phone: phoneController.text,
-                    );
-                    if (context.mounted) Navigator.pop(context);
-                  },
-                  child: const Text('Save',
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black)),
-                ),
-              )
-            ],
-          ),
-        );
       },
     );
   }

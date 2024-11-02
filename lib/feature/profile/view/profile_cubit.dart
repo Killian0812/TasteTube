@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/feature/profile/data/user.dart';
@@ -32,9 +34,16 @@ class ProfileCubit extends Cubit<ProfileState> {
     String? email,
     String? phone,
     String? bio,
+    File? imageFile,
   }) async {
-    final either = await repository.updateInfo(userId,
-        bio: bio, email: email, phone: phone, username: username);
+    final either = await repository.updateInfo(
+      userId,
+      bio: bio,
+      email: email,
+      phone: phone,
+      username: username,
+      imageFile: imageFile,
+    );
     either.match(
       (apiError) {
         emit(ProfileFailure(apiError.message!));

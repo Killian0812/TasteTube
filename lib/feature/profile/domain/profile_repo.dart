@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
@@ -30,15 +31,41 @@ class UserRepository {
     String? email,
     String? phone,
     String? bio,
+    File? imageFile,
   }) async {
     try {
-      final response = await http
-          .put(Api.userApi.replaceFirst(':userId', userId), data: {
-        'username': username,
-        'email': email,
-        'phone': phone,
-        'bio': bio
-      });
+      final formData = FormData();
+
+      // Add user information to the FormData
+      if (username != null) {
+        formData.fields.add(MapEntry('username', username));
+      }
+      if (email != null) {
+        formData.fields.add(MapEntry('email', email));
+      }
+      if (phone != null) {
+        formData.fields.add(MapEntry('phone', phone));
+      }
+      if (bio != null) {
+        formData.fields.add(MapEntry('bio', bio));
+      }
+      if (imageFile != null) {
+        formData.files.add(MapEntry(
+          'image', // The key should match your API's expected key for the image
+          await MultipartFile.fromFile(imageFile.path,
+              filename: imageFile.path.split('/').last),
+        ));
+      }
+
+      final response = await http.post(
+        Api.userApi.replaceFirst(':userId', userId),
+        options: Options(headers: {
+          'Content-Type': 'multipart/form-data',
+          'Accept': 'application/json'
+        }),
+        data: formData,
+      );
+
       final userResponse = User.fromJson(response.data);
       return Right(userResponse);
     } on DioException catch (e) {
