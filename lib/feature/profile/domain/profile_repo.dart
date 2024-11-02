@@ -23,4 +23,28 @@ class UserRepository {
       return Left(ApiError(500, e.toString()));
     }
   }
+
+  Future<Either<ApiError, User>> updateInfo(
+    String userId, {
+    String? username,
+    String? email,
+    String? phone,
+    String? bio,
+  }) async {
+    try {
+      final response = await http
+          .put(Api.userApi.replaceFirst(':userId', userId), data: {
+        'username': username,
+        'email': email,
+        'phone': phone,
+        'bio': bio
+      });
+      final userResponse = User.fromJson(response.data);
+      return Right(userResponse);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
 }

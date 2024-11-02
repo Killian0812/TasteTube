@@ -26,6 +26,24 @@ class ProfileCubit extends Cubit<ProfileState> {
       },
     );
   }
+
+  Future<void> updateProfile({
+    String? username,
+    String? email,
+    String? phone,
+    String? bio,
+  }) async {
+    final either = await repository.updateInfo(userId,
+        bio: bio, email: email, phone: phone, username: username);
+    either.match(
+      (apiError) {
+        emit(ProfileFailure(apiError.message!));
+      },
+      (user) {
+        emit(ProfileSuccess(user: user));
+      },
+    );
+  }
 }
 
 abstract class ProfileState {}

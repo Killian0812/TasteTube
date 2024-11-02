@@ -91,6 +91,7 @@ class Layout extends StatelessWidget {
     final path = GoRouterState.of(context).fullPath;
 
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         body: shell,
         bottomNavigationBar: noBottomNavBarRoutes.contains(path)
             ? null
@@ -119,17 +120,19 @@ class Layout extends StatelessWidget {
                 ],
               ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            context.push('/camera');
-          },
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            side: const BorderSide(color: CommonColor.activeBgColor),
-            borderRadius: BorderRadius.circular(30.0),
-          ),
-          child: const Icon(Icons.add, color: CommonColor.activeBgColor),
-        ));
+        floatingActionButton: Container(
+            margin: const EdgeInsets.only(top: 20),
+            child: FloatingActionButton(
+              onPressed: () {
+                context.push('/camera');
+              },
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                side: const BorderSide(color: CommonColor.activeBgColor),
+                borderRadius: BorderRadius.circular(30.0),
+              ),
+              child: const Icon(Icons.add, color: CommonColor.activeBgColor),
+            )));
   }
 }
 
