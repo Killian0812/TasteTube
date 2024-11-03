@@ -9,7 +9,7 @@ import 'package:taste_tube/common/loading.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/profile/data/user.dart';
 import 'package:taste_tube/feature/profile/view/profile_cubit.dart';
-import 'package:taste_tube/feature/video.dart';
+import 'package:taste_tube/feature/watch/video.dart';
 
 part 'profile_page.ext.dart';
 

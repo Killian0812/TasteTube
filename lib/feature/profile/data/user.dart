@@ -1,4 +1,4 @@
-import 'package:taste_tube/feature/video.dart';
+import 'package:taste_tube/feature/watch/video.dart';
 
 class User {
   final String? phone;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:taste_tube/common/size.dart';
-import 'package:taste_tube/feature/video.dart';
+import 'package:taste_tube/feature/watch/video.dart';
 import 'package:video_player/video_player.dart';
 
 class WatchPage extends StatefulWidget {
