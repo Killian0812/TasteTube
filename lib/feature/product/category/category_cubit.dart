@@ -12,6 +12,7 @@ class CategoryCubit extends Cubit<CategoryState> {
         super(CategoryState([]));
 
   Future<void> fetchCategory() async {
+    emit(CategoryLoading(state.categories));
     final result = await repository.fetchCategories();
     result.fold(
       (error) => emit(CategoryError(
@@ -21,6 +22,7 @@ class CategoryCubit extends Cubit<CategoryState> {
   }
 
   Future<void> addCategory(String name) async {
+    emit(CategoryLoading(state.categories));
     final result = await repository.addCategory(name);
     result.fold(
       (error) => emit(CategoryError(
@@ -34,6 +36,7 @@ class CategoryCubit extends Cubit<CategoryState> {
   }
 
   Future<void> editCategory(String id, String name) async {
+    emit(CategoryLoading(state.categories));
     final result = await repository.updateCategory(id, name);
     result.fold(
       (error) => emit(CategoryError(
@@ -48,6 +51,7 @@ class CategoryCubit extends Cubit<CategoryState> {
   }
 
   Future<void> deleteCategory(Category category) async {
+    emit(CategoryLoading(state.categories));
     final result = await repository.deleteCategory(category.id);
     result.fold(
       (error) => emit(CategoryError(
@@ -65,6 +69,10 @@ class CategoryState {
   final List<Category> categories;
 
   CategoryState(this.categories);
+}
+
+class CategoryLoading extends CategoryState {
+  CategoryLoading(super.categories);
 }
 
 class CategoryLoaded extends CategoryState {

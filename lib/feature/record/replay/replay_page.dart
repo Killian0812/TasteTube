@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:get_thumbnail_video/index.dart';
 import 'package:get_thumbnail_video/video_thumbnail.dart';
+import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/fallback.dart';
 import 'package:taste_tube/common/loading.dart';
 import 'package:taste_tube/common/theme.dart';
@@ -66,7 +67,7 @@ class _ReplayPageState extends State<ReplayPage> {
           Padding(
             padding: const EdgeInsets.only(bottom: 50.0),
             child: FloatingActionButton(
-              backgroundColor: Colors.red,
+              backgroundColor: CommonColor.activeBgColor,
               onPressed: () async {
                 final thumbnail = await _createThumbnail();
                 await _videoPlayerController.pause();

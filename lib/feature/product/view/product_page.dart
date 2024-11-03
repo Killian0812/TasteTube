@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/feature/product/category/category_cubit.dart';
-import 'package:taste_tube/feature/product/category/category_page.dart';
-import 'package:taste_tube/feature/product/menu/menu_page.dart';
+import 'package:taste_tube/feature/product/category/category_tab.dart';
+import 'package:taste_tube/feature/product/product/product_cubit.dart';
+import 'package:taste_tube/feature/product/product/product_tab.dart';
+import 'package:taste_tube/utils/user_data.util.dart';
 
 class ProductPage extends StatefulWidget {
   const ProductPage({super.key});
@@ -43,12 +45,16 @@ class _ProductPageState extends State<ProductPage>
             BlocProvider(
               create: (context) => CategoryCubit()..fetchCategory(),
             ),
+            BlocProvider(
+              create: (context) => ProductCubit()
+                ..fetchProducts(UserDataUtil.getUserId(context)),
+            ),
           ],
           child: TabBarView(
             controller: _tabController,
             children: const [
-              MenuPage(),
-              CategoryPage(),
+              ProductTab(),
+              CategoryTab(),
             ],
           ),
         ),

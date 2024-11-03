@@ -14,6 +14,7 @@ class Api {
 
   // Product
   static const categoryApi = '/product/categories';
+  static const productApi = '/product';
 
   // User
   static const userApi = '/users/:userId';

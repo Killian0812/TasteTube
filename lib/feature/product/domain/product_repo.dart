@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/common/error.dart';
 import 'package:taste_tube/feature/product/data/category.dart';
+import 'package:taste_tube/feature/product/data/product.dart';
 
 class ProductRepository {
   final Dio http;
@@ -55,6 +58,113 @@ class ProductRepository {
   Future<Either<ApiError, void>> deleteCategory(String id) async {
     try {
       await http.delete('${Api.categoryApi}/$id');
+      return const Right(null);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
+
+  Future<Either<ApiError, List<Product>>> fetchProducts(String userId) async {
+    try {
+      final response = await http.get(Api.productApi, queryParameters: {
+        'userId': userId,
+      });
+      final List<dynamic> data = response.data;
+      final products = data.map((json) => Product.fromJson(json)).toList();
+      return Right(products);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
+
+  Future<Either<ApiError, Product>> fetchProductById(String productId) async {
+    try {
+      final response = await http.get('${Api.productApi}/$productId');
+      final product = Product.fromJson(response.data);
+      return Right(product);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
+
+  Future<Either<ApiError, Product>> addProduct(
+    String name,
+    double cost,
+    String currency,
+    String description,
+    int quantity,
+    String categoryId,
+    List<File> images,
+  ) async {
+    try {
+      FormData formData = FormData.fromMap({
+        'name': name,
+        'cost': cost,
+        'currency': currency,
+        'description': description,
+        'quantity': quantity,
+        'category': categoryId,
+        'images': images
+            .map((image) => MultipartFile.fromFileSync(image.path))
+            .toList(),
+      });
+
+      final response = await http.post(Api.productApi, data: formData);
+      final product = Product.fromJson(response.data);
+      return Right(product);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
+
+  Future<Either<ApiError, Product>> updateProduct(
+    String productId,
+    String name,
+    double? cost,
+    String? currency,
+    String? description,
+    int? quantity,
+    String? categoryId,
+    List<File>? newImages,
+    List<String>? removeImageFilenames,
+  ) async {
+    try {
+      FormData formData = FormData.fromMap({
+        'name': name,
+        'cost': cost,
+        'currency': currency,
+        'description': description,
+        'quantity': quantity,
+        'category': categoryId,
+        if (newImages != null)
+          'images': newImages
+              .map((image) => MultipartFile.fromFileSync(image.path))
+              .toList(),
+        if (removeImageFilenames != null) 'removeImages': removeImageFilenames,
+      });
+
+      final response =
+          await http.put('${Api.productApi}/$productId', data: formData);
+      final updatedProduct = Product.fromJson(response.data);
+      return Right(updatedProduct);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
+
+  Future<Either<ApiError, void>> deleteProduct(String productId) async {
+    try {
+      await http.delete('${Api.productApi}/$productId');
       return const Right(null);
     } on DioException catch (e) {
       return Left(ApiError.fromDioException(e));

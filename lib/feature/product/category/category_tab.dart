@@ -1,17 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/product/category/category_cubit.dart';
 import 'package:taste_tube/feature/product/data/category.dart';
 
-class CategoryPage extends StatelessWidget {
-  const CategoryPage({super.key});
+class CategoryTab extends StatelessWidget {
+  const CategoryTab({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
-      child: BlocBuilder<CategoryCubit, CategoryState>(
+      child: BlocConsumer<CategoryCubit, CategoryState>(
+        listener: (context, state) {
+          if (state is CategoryError) {
+            ToastService.showToast(context, state.message, ToastType.error);
+          }
+        },
         builder: (context, state) {
+          if (state is CategoryLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
           final categories = state.categories;
           return Column(
             children: [
@@ -24,35 +35,40 @@ class CategoryPage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Expanded(
-                child: ListView.builder(
-                  itemCount: categories.length,
-                  itemBuilder: (context, index) {
-                    final category = categories[index];
-                    return Card(
-                      elevation: 2,
-                      child: ListTile(
-                        title: Text(category.name),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.edit_outlined),
-                              onPressed: () {
-                                _showEditOrCreateDialog(context,
-                                    category: category);
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete_outline_outlined),
-                              onPressed: () {
-                                _showDeleteDialog(context, category);
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    context.read<CategoryCubit>().fetchCategory();
                   },
+                  child: ListView.builder(
+                    itemCount: categories.length,
+                    itemBuilder: (context, index) {
+                      final category = categories[index];
+                      return Card(
+                        elevation: 2,
+                        child: ListTile(
+                          title: Text(category.name),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.edit_outlined),
+                                onPressed: () {
+                                  _showEditOrCreateDialog(context,
+                                      category: category);
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete_outline_outlined),
+                                onPressed: () {
+                                  _showDeleteDialog(context, category);
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               )
             ],
