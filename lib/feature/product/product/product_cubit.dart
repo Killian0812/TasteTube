@@ -3,12 +3,13 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:taste_tube/common/error.dart';
+import 'package:taste_tube/feature/product/data/category.dart';
 import 'package:taste_tube/feature/product/data/product.dart';
 import 'package:taste_tube/feature/product/domain/product_repo.dart';
 import 'package:taste_tube/injection.dart';
 
 abstract class ProductState {
-  final Map<String, List<Product>> categorizedProducts;
+  final Map<Category, List<Product>> categorizedProducts;
 
   ProductState(this.categorizedProducts);
 }
@@ -21,6 +22,12 @@ class ProductLoading extends ProductState {
   ProductLoading(super.categorizedProducts);
 }
 
+class ProductSuccess extends ProductState {
+  final String message;
+
+  ProductSuccess(super.categorizedProducts, this.message);
+}
+
 class ProductLoaded extends ProductState {
   ProductLoaded(super.categorizedProducts);
 }
@@ -31,14 +38,21 @@ class ProductError extends ProductState {
   ProductError(super.categorizedProducts, this.message);
 }
 
-Map<String, List<Product>> _categorizeProducts(List<Product> products) {
-  final Map<String, List<Product>> categorizedProducts = {};
+class CreateProductError extends ProductState {
+  final String message;
+
+  CreateProductError(super.categorizedProducts, this.message);
+}
+
+Map<Category, List<Product>> _categorizeProducts(List<Product> products) {
+  final Map<Category, List<Product>> categorizedProducts = {};
   for (var product in products) {
-    final categoryId = product.categoryId ?? '';
-    if (categorizedProducts.containsKey(categoryId)) {
-      categorizedProducts[categoryId]!.add(product);
+    final category = Category(
+        id: product.categoryId ?? '', name: product.categoryName ?? '');
+    if (categorizedProducts.containsKey(category)) {
+      categorizedProducts[category]!.add(product);
     } else {
-      categorizedProducts[categoryId] = [product];
+      categorizedProducts[category] = [product];
     }
   }
   return categorizedProducts;
@@ -68,7 +82,7 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
-  Future<void> addProduct(
+  Future<bool> addProduct(
     String name,
     double cost,
     String currency,
@@ -78,23 +92,28 @@ class ProductCubit extends Cubit<ProductState> {
     List<File> images,
   ) async {
     try {
+      emit(ProductLoading(state.categorizedProducts));
       final Either<ApiError, Product> result =
           await productRepository.addProduct(
               name, cost, currency, description, quantity, categoryId, images);
+      bool success = false;
       result.fold(
-        (error) => emit(ProductError(state.categorizedProducts,
+        (error) => emit(CreateProductError(state.categorizedProducts,
             error.message ?? 'Error creating new product')),
         (newProduct) {
+          success = true;
           final updatedProducts = [
             ...state.categorizedProducts.values.expand((list) => list),
             newProduct
           ];
           final categorized = _categorizeProducts(updatedProducts);
-          emit(ProductLoaded(categorized));
+          emit(ProductSuccess(categorized, "New product added"));
         },
       );
+      return success;
     } catch (e) {
-      emit(ProductError(state.categorizedProducts, e.toString()));
+      emit(CreateProductError(state.categorizedProducts, e.toString()));
+      return false;
     }
   }
 

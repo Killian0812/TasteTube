@@ -6,6 +6,7 @@ class Product {
   final String currency;
   final String? description;
   final int quantity;
+  final String? categoryName;
   final String? categoryId;
   final List<ImageData> images;
   final DateTime createdAt;
@@ -19,6 +20,7 @@ class Product {
     required this.currency,
     this.description,
     required this.quantity,
+    this.categoryName,
     this.categoryId,
     required this.images,
     required this.createdAt,
@@ -34,7 +36,8 @@ class Product {
       currency: json['currency'] as String,
       description: json['description'] as String?,
       quantity: json['quantity'] as int,
-      categoryId: json['category'] as String?,
+      categoryName: json['category']['name'] as String?,
+      categoryId: json['category']['_id'] as String?,
       images: (json['images'] as List<dynamic>)
           .map((image) => ImageData.fromJson(image))
           .toList(),

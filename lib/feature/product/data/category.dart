@@ -13,4 +13,17 @@ class Category {
       name: json['name'] as String,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! Category) return false;
+
+    return id == other.id && name == other.name;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^ name.hashCode;
+  }
 }
