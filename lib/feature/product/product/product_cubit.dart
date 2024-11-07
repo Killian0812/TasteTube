@@ -82,7 +82,7 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
-  Future<bool> addProduct(
+  Future<bool> addOrEditProduct(
     String name,
     double cost,
     String currency,
@@ -90,12 +90,16 @@ class ProductCubit extends Cubit<ProductState> {
     int quantity,
     String categoryId,
     List<File> images,
+    Product? product,
   ) async {
     try {
       emit(ProductLoading(state.categorizedProducts));
-      final Either<ApiError, Product> result =
-          await productRepository.addProduct(
-              name, cost, currency, description, quantity, categoryId, images);
+      bool isNew = product == null;
+      final Either<ApiError, Product> result = isNew
+          ? await productRepository.addProduct(
+              name, cost, currency, description, quantity, categoryId, images)
+          : await productRepository.updateProduct(product, name, cost, currency,
+              description, quantity, categoryId, images);
       bool success = false;
       result.fold(
         (error) => emit(CreateProductError(state.categorizedProducts,
@@ -104,10 +108,19 @@ class ProductCubit extends Cubit<ProductState> {
           success = true;
           final updatedProducts = [
             ...state.categorizedProducts.values.expand((list) => list),
-            newProduct
           ];
+          if (isNew) {
+            updatedProducts.add(newProduct);
+          } else {
+            int index =
+                updatedProducts.indexWhere((p) => p.id == newProduct.id);
+            if (index != -1) {
+              updatedProducts[index] = newProduct;
+            }
+          }
           final categorized = _categorizeProducts(updatedProducts);
-          emit(ProductSuccess(categorized, "New product added"));
+          emit(ProductSuccess(
+              categorized, isNew ? "New product added" : "Product updated"));
         },
       );
       return success;
@@ -117,65 +130,50 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
-  Future<void> updateProduct(
-    String productId,
-    String name,
-    double? cost,
-    String? currency,
-    String? description,
-    int? quantity,
-    String? categoryId,
-    List<File>? newImages,
-    List<String>? removeImageFilenames,
-  ) async {
-    try {
-      final Either<ApiError, Product> result =
-          await productRepository.updateProduct(
-        productId,
-        name,
-        cost,
-        currency,
-        description,
-        quantity,
-        categoryId,
-        newImages,
-        removeImageFilenames,
-      );
-      result.fold(
-        (error) => emit(ProductError(state.categorizedProducts,
-            error.message ?? 'Error updating product')),
-        (updatedProduct) {
-          final updatedProducts = state.categorizedProducts.values
-              .expand((list) => list)
-              .map((p) => p.id == updatedProduct.id ? updatedProduct : p)
-              .toList();
-          final categorized = _categorizeProducts(updatedProducts);
-          emit(ProductLoaded(categorized));
-        },
-      );
-    } catch (e) {
-      emit(ProductError(state.categorizedProducts, e.toString()));
-    }
-  }
-
-  Future<void> deleteProduct(String productId) async {
+  Future<bool> deleteProduct(Product deleteProduct) async {
     try {
       final Either<ApiError, void> result =
-          await productRepository.deleteProduct(productId);
+          await productRepository.deleteProduct(deleteProduct.id);
+      bool isDeleted = false;
       result.fold(
         (error) => emit(ProductError(state.categorizedProducts,
             error.message ?? 'Error deleting product')),
         (_) {
+          isDeleted = true;
           final updatedProducts = state.categorizedProducts.values
               .expand((list) => list)
-              .where((product) => product.id != productId)
+              .where((product) => product.id != deleteProduct.id)
               .toList();
           final categorized = _categorizeProducts(updatedProducts);
-          emit(ProductLoaded(categorized));
+          emit(ProductSuccess(
+              categorized, 'Deleted product ${deleteProduct.name}'));
         },
       );
+      return isDeleted;
     } catch (e) {
       emit(ProductError(state.categorizedProducts, e.toString()));
+      return false;
+    }
+  }
+
+  Future<bool> deleteSingleProductImage(
+      String productId, String filename) async {
+    try {
+      final Either<ApiError, void> result =
+          await productRepository.deleteSingleProductImage(productId, filename);
+      bool isDeleted = false;
+      result.fold(
+        (error) => emit(ProductError(state.categorizedProducts,
+            error.message ?? 'Error deleting product image')),
+        (_) {
+          isDeleted = true;
+          emit(ProductLoaded(state.categorizedProducts));
+        },
+      );
+      return isDeleted;
+    } catch (e) {
+      emit(ProductError(state.categorizedProducts, e.toString()));
+      return false;
     }
   }
 }

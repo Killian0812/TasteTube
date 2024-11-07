@@ -1,32 +1,80 @@
 part of 'product_tab.dart';
 
-class CreateProductPage extends StatefulWidget {
+class CreateOrEditProductPage extends StatefulWidget {
   final ProductCubit productCubit;
   final CategoryCubit categoryCubit;
-  const CreateProductPage(
-      {super.key, required this.categoryCubit, required this.productCubit});
+  final Product? product;
+  const CreateOrEditProductPage(
+      {super.key,
+      required this.categoryCubit,
+      required this.productCubit,
+      this.product});
 
   @override
-  State<CreateProductPage> createState() => _CreateProductPageState();
+  State<CreateOrEditProductPage> createState() =>
+      _CreateOrEditProductPageState();
 }
 
-class _CreateProductPageState extends State<CreateProductPage> {
+class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
+  Product? get product => widget.product;
   final ImagePicker _picker = ImagePicker();
-  final nameController = TextEditingController();
-  final costController = TextEditingController();
-  final descriptionController = TextEditingController();
-  final quantityController = TextEditingController(text: "0");
-  String selectedCurrency = 'VND';
-  String? selectedCategory;
+  late TextEditingController nameController;
+  late TextEditingController costController;
+  late TextEditingController descriptionController;
+  late TextEditingController quantityController;
+  late String selectedCurrency;
+  late String? selectedCategory;
   List<File> selectedImages = [];
+
+  @override
+  void initState() {
+    nameController = TextEditingController(text: product?.categoryName);
+    costController = TextEditingController(text: product?.cost.toString());
+    descriptionController = TextEditingController(text: product?.description);
+    quantityController =
+        TextEditingController(text: product?.quantity.toString() ?? '0');
+    selectedCurrency = product?.currency ?? "VND";
+    selectedCategory = product?.categoryId;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final categories = widget.categoryCubit.state.categories;
+    final isEditing = product != null;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create new product'),
+        title: isEditing
+            ? const Text('Edit product')
+            : const Text('Create new product'),
+        actions: [
+          if (isEditing)
+            Padding(
+              padding: const EdgeInsets.only(right: 20),
+              child: IconButton(
+                icon: const Icon(
+                  Icons.delete,
+                  color: Colors.red,
+                ),
+                onPressed: () async {
+                  bool? confirmed = await showConfirmDialog(
+                    context,
+                    title: "Confirm delete product",
+                    body: 'Are you sure you want to delete this product?',
+                  );
+                  if (confirmed != true) {
+                    return;
+                  }
+                  bool isDeleted =
+                      await widget.productCubit.deleteProduct(product!);
+                  if (isDeleted && context.mounted) {
+                    Navigator.of(context).pop();
+                  }
+                },
+              ),
+            ),
+        ],
       ),
       body: BlocListener<ProductCubit, ProductState>(
         bloc: widget.productCubit,
@@ -53,66 +101,8 @@ class _CreateProductPageState extends State<CreateProductPage> {
                 child: const Text('Pick images (Limit: 8)'),
               ),
               const SizedBox(height: 10),
-              if (selectedImages.isNotEmpty)
-                SizedBox(
-                  height: 110,
-                  child: ReorderableListView(
-                    scrollDirection: Axis.horizontal,
-                    onReorder: (int oldIndex, int newIndex) {
-                      setState(() {
-                        if (newIndex > oldIndex) {
-                          newIndex -= 1;
-                        }
-                        final File item = selectedImages.removeAt(oldIndex);
-                        selectedImages.insert(newIndex, item);
-                      });
-                    },
-                    children: [
-                      for (int index = 0;
-                          index < selectedImages.length;
-                          index++)
-                        Stack(
-                          alignment: Alignment.bottomCenter,
-                          clipBehavior: Clip.none,
-                          key: ValueKey(selectedImages[index]),
-                          children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              child: Image.file(
-                                selectedImages[index],
-                                width: 100,
-                                height: 100,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            Positioned(
-                              right: 0,
-                              top: 0,
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    selectedImages.removeAt(index);
-                                  });
-                                },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.red.withOpacity(0.7),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(
-                                    Icons.close,
-                                    color: Colors.white,
-                                    size: 20,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                    ],
-                  ),
-                ),
+              if (isEditing) _uploadedImages(context, widget.productCubit),
+              _selectedImages(),
               const SizedBox(height: 10),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -175,7 +165,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
                 bloc: widget.productCubit,
                 builder: (context, state) {
                   return CommonButton(
-                    text: 'Create',
+                    text: isEditing ? 'Update' : 'Create',
                     isLoading: (state is ProductLoading),
                     onPressed: () async {
                       final String name = nameController.text.trim();
@@ -189,7 +179,8 @@ class _CreateProductPageState extends State<CreateProductPage> {
                       if (name.isNotEmpty &&
                           cost > 0 &&
                           selectedCategory != null) {
-                        bool success = await widget.productCubit.addProduct(
+                        bool success =
+                            await widget.productCubit.addOrEditProduct(
                           name,
                           cost,
                           selectedCurrency,
@@ -197,6 +188,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
                           quantity,
                           selectedCategory!,
                           selectedImages,
+                          product,
                         );
                         if (success && context.mounted) {
                           Navigator.of(context).pop();
@@ -217,6 +209,145 @@ class _CreateProductPageState extends State<CreateProductPage> {
         ),
       ),
     );
+  }
+
+  Widget _uploadedImages(BuildContext context, ProductCubit cubit) {
+    if (product!.images.isEmpty) {
+      return const SizedBox.shrink();
+    } else {
+      return SizedBox(
+        height: 110,
+        child: ReorderableListView(
+          scrollDirection: Axis.horizontal,
+          onReorder: (int oldIndex, int newIndex) {
+            setState(() {
+              if (newIndex > oldIndex) {
+                newIndex -= 1;
+              }
+              final item = product!.images.removeAt(oldIndex);
+              product!.images.insert(newIndex, item);
+            });
+          },
+          children: [
+            for (int index = 0; index < product!.images.length; index++)
+              Stack(
+                alignment: Alignment.bottomCenter,
+                clipBehavior: Clip.none,
+                key: ValueKey(product!.images[index]),
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Image.network(
+                      product!.images[index].url,
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: GestureDetector(
+                      onTap: () async {
+                        bool? confirmed = await showConfirmDialog(
+                          context,
+                          title: "Confirm delete image",
+                          body:
+                              'Are you sure you want to delete this uploaded image?',
+                        );
+                        if (confirmed != true) {
+                          return;
+                        }
+                        bool isDeleted = await cubit.deleteSingleProductImage(
+                            product!.id, product!.images[index].filename);
+                        if (isDeleted) {
+                          setState(() {
+                            product!.images.removeAt(index);
+                          });
+                        }
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.red.withOpacity(0.7),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.close,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+          ],
+        ),
+      );
+    }
+  }
+
+  Widget _selectedImages() {
+    if (selectedImages.isEmpty) {
+      return const SizedBox.shrink();
+    } else {
+      return SizedBox(
+        height: 110,
+        child: ReorderableListView(
+          scrollDirection: Axis.horizontal,
+          onReorder: (int oldIndex, int newIndex) {
+            setState(() {
+              if (newIndex > oldIndex) {
+                newIndex -= 1;
+              }
+              final File item = selectedImages.removeAt(oldIndex);
+              selectedImages.insert(newIndex, item);
+            });
+          },
+          children: [
+            for (int index = 0; index < selectedImages.length; index++)
+              Stack(
+                alignment: Alignment.bottomCenter,
+                clipBehavior: Clip.none,
+                key: ValueKey(selectedImages[index]),
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Image.file(
+                      selectedImages[index],
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedImages.removeAt(index);
+                        });
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.red.withOpacity(0.7),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.close,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+          ],
+        ),
+      );
+    }
   }
 
   Future<List<File>> _pickImages() async {

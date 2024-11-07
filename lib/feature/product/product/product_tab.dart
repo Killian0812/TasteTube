@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:taste_tube/common/button.dart';
+import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/product/category/category_cubit.dart';
 import 'package:taste_tube/feature/product/data/product.dart';
@@ -48,7 +49,7 @@ class ProductTab extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => CreateProductPage(
+                      builder: (_) => CreateOrEditProductPage(
                         categoryCubit: context.read<CategoryCubit>(),
                         productCubit: context.read<ProductCubit>(),
                       ),
@@ -90,7 +91,17 @@ class ProductTab extends StatelessWidget {
                                     Text('${product.cost} ${product.currency}'),
                                 trailing: Text('Quantity: ${product.quantity}'),
                                 onTap: () {
-                                  // Handle product tap
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => CreateOrEditProductPage(
+                                        categoryCubit:
+                                            context.read<CategoryCubit>(),
+                                        productCubit:
+                                            context.read<ProductCubit>(),
+                                        product: product,
+                                      ),
+                                    ),
+                                  );
                                 },
                               );
                             }).toList()

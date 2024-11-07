@@ -126,15 +126,14 @@ class ProductRepository {
   }
 
   Future<Either<ApiError, Product>> updateProduct(
-    String productId,
-    String name,
+    Product product,
+    String? name,
     double? cost,
     String? currency,
     String? description,
     int? quantity,
     String? categoryId,
     List<File>? newImages,
-    List<String>? removeImageFilenames,
   ) async {
     try {
       FormData formData = FormData.fromMap({
@@ -148,11 +147,16 @@ class ProductRepository {
           'images': newImages
               .map((image) => MultipartFile.fromFileSync(image.path))
               .toList(),
-        if (removeImageFilenames != null) 'removeImages': removeImageFilenames,
+        'reordered_images': product.images
+            .map((image) => {
+                  'url': image.url,
+                  'filename': image.filename,
+                })
+            .toList()
       });
 
       final response =
-          await http.put('${Api.productApi}/$productId', data: formData);
+          await http.put('${Api.productApi}/${product.id}', data: formData);
       final updatedProduct = Product.fromJson(response.data);
       return Right(updatedProduct);
     } on DioException catch (e) {
@@ -165,6 +169,19 @@ class ProductRepository {
   Future<Either<ApiError, void>> deleteProduct(String productId) async {
     try {
       await http.delete('${Api.productApi}/$productId');
+      return const Right(null);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
+
+  Future<Either<ApiError, void>> deleteSingleProductImage(
+      String productId, String filename) async {
+    try {
+      await http.delete('${Api.productApi}/$productId/image',
+          data: {'filename': filename});
       return const Right(null);
     } on DioException catch (e) {
       return Left(ApiError.fromDioException(e));
