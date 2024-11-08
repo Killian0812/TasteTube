@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/common/loading.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/profile/data/user.dart';
 import 'package:taste_tube/feature/profile/view/profile_cubit.dart';
 import 'package:taste_tube/feature/watch/video.dart';
+import 'package:taste_tube/global_bloc/auth/bloc.dart';
 
 part 'profile_page.ext.dart';
 
@@ -39,6 +41,39 @@ class ProfilePage extends StatelessWidget {
             appBar: AppBar(
               centerTitle: true,
               title: Text(state.user.username),
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 20),
+                  child: PopupMenuButton<String>(
+                    icon: const Icon(Icons.menu),
+                    onSelected: (result) async {
+                      switch (result) {
+                        case 'Logout':
+                          bool? confirmed = await showConfirmDialog(
+                            context,
+                            title: "Confirm logout",
+                            body: 'Are you sure you want to logout?',
+                          );
+                          if (confirmed != true) {
+                            return;
+                          }
+                          if (context.mounted) {
+                            final authBloc = context.read<AuthBloc>();
+                            authBloc.add(LogoutEvent());
+                            context.go('/login');
+                          }
+                          break;
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      const PopupMenuItem<String>(
+                        value: 'Logout',
+                        child: Text('Logout'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
             body: Column(
               children: [

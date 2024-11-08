@@ -90,49 +90,57 @@ class Layout extends StatelessWidget {
   Widget build(BuildContext context) {
     final path = GoRouterState.of(context).fullPath;
 
-    return Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: shell,
-        bottomNavigationBar: noBottomNavBarRoutes.contains(path)
-            ? null
-            : BottomNavigationBar(
-                currentIndex: currentIndex,
-                onTap: (index) {
-                  shell.goBranch(index);
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is Unauthenticated) {
+          context.go('/login');
+        }
+      },
+      child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          body: shell,
+          bottomNavigationBar: noBottomNavBarRoutes.contains(path)
+              ? null
+              : BottomNavigationBar(
+                  currentIndex: currentIndex,
+                  onTap: (index) {
+                    shell.goBranch(index);
+                  },
+                  items: const [
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.home),
+                      label: 'Home',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.restaurant_menu),
+                      label: 'Product',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.inbox),
+                      label: 'Inbox',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.person),
+                      label: 'Profile',
+                    ),
+                  ],
+                ),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
+          floatingActionButton: Container(
+              margin: const EdgeInsets.only(top: 20),
+              child: FloatingActionButton(
+                onPressed: () {
+                  context.push('/camera');
                 },
-                items: const [
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.home),
-                    label: 'Home',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.restaurant_menu),
-                    label: 'Product',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.inbox),
-                    label: 'Inbox',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.person),
-                    label: 'Profile',
-                  ),
-                ],
-              ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: Container(
-            margin: const EdgeInsets.only(top: 20),
-            child: FloatingActionButton(
-              onPressed: () {
-                context.push('/camera');
-              },
-              backgroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                side: const BorderSide(color: CommonColor.activeBgColor),
-                borderRadius: BorderRadius.circular(30.0),
-              ),
-              child: const Icon(Icons.add, color: CommonColor.activeBgColor),
-            )));
+                backgroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  side: const BorderSide(color: CommonColor.activeBgColor),
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
+                child: const Icon(Icons.add, color: CommonColor.activeBgColor),
+              ))),
+    );
   }
 }
 
