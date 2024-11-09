@@ -1,6 +1,8 @@
 import 'package:camera/camera.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/loading.dart';
 import 'package:taste_tube/common/theme.dart';
 import 'package:taste_tube/feature/record/camera/camera_cubit.dart';
@@ -65,6 +67,7 @@ class CameraPage extends StatelessWidget {
               children: [
                 _cameraPreview(context),
                 _recordButton(context),
+                _uploadButton(context),
               ],
             );
           } else if (state is CameraRecording) {
@@ -99,6 +102,7 @@ class CameraPage extends StatelessWidget {
           bool isRecording = state is CameraRecording;
 
           return FloatingActionButton(
+            heroTag: 'Record',
             backgroundColor: Colors.transparent,
             onPressed: () {
               context.read<CameraCubit>().recordVideo();
@@ -113,16 +117,51 @@ class CameraPage extends StatelessWidget {
                 ? const Icon(
                     size: 35,
                     Icons.stop_rounded,
-                    color: Colors.red,
+                    color: CommonColor.activeBgColor,
                   )
                 : Container(
                     width: 30,
                     height: 30,
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.red,
+                      color: CommonColor.activeBgColor,
                     ),
                   ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _uploadButton(BuildContext context) {
+    return Positioned(
+      bottom: 50,
+      left: 50,
+      child: BlocBuilder<CameraCubit, CameraState>(
+        builder: (context, state) {
+          return FloatingActionButton(
+            heroTag: 'Upload',
+            onPressed: () async {
+              FilePickerResult? result = await FilePicker.platform.pickFiles(
+                type: FileType.video,
+              );
+
+              if (result != null && result.files.single.path != null) {
+                String filePath = result.files.single.path!;
+
+                if (context.mounted) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      fullscreenDialog: true,
+                      builder: (_) => ReplayPage(
+                          filePath: filePath, recordedWithFrontCamera: false),
+                    ),
+                  );
+                }
+              }
+            },
+            child: const Icon(Icons.upload),
           );
         },
       ),

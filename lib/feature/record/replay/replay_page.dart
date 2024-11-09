@@ -67,6 +67,7 @@ class _ReplayPageState extends State<ReplayPage> {
           Padding(
             padding: const EdgeInsets.only(bottom: 50.0),
             child: FloatingActionButton(
+              heroTag: 'Proceed video',
               backgroundColor: CommonColor.activeBgColor,
               onPressed: () async {
                 final thumbnail = await _createThumbnail();

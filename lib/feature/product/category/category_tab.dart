@@ -27,6 +27,7 @@ class CategoryTab extends StatelessWidget {
           return Column(
             children: [
               FloatingActionButton.extended(
+                heroTag: 'Add category',
                 icon: const Icon(Icons.add_card),
                 label: const Text("New category"),
                 onPressed: () {

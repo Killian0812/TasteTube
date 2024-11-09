@@ -6,6 +6,7 @@ import 'package:taste_tube/feature/product/domain/product_repo.dart';
 import 'package:taste_tube/feature/profile/domain/profile_repo.dart';
 import 'package:taste_tube/feature/upload/domain/upload_repo.dart';
 import 'package:taste_tube/storage.dart';
+import 'package:uuid/uuid.dart';
 
 import 'auth/domain/auth_repo.dart';
 
@@ -22,6 +23,7 @@ void injectDependencies() {
   )));
   getIt.registerSingleton<SecureStorage>(SecureStorage());
   getIt.registerSingleton<LocalStorage>(LocalStorage());
+  getIt.registerSingleton<Uuid>(const Uuid());
 
   // Repositories
   getIt.registerLazySingleton<AuthRepository>(() => AuthRepository(

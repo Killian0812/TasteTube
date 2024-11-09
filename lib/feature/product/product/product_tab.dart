@@ -44,6 +44,7 @@ class ProductTab extends StatelessWidget {
           return Column(
             children: [
               FloatingActionButton.extended(
+                heroTag: 'Add product',
                 icon: const Icon(Icons.fastfood_outlined),
                 label: const Text("New product"),
                 onPressed: () {

@@ -1,6 +1,11 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/feature/watch/video.dart';
+import 'package:taste_tube/injection.dart';
+import 'package:uuid/uuid.dart';
 import 'package:video_player/video_player.dart';
 
 class WatchPage extends StatefulWidget {
@@ -79,6 +84,20 @@ class _WatchPageState extends State<WatchPage> {
             Navigator.pop(context);
           },
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 20),
+            child: IconButton(
+              icon: const Icon(
+                Icons.download,
+                color: Colors.white,
+              ),
+              onPressed: () async {
+                await _downloadVideo(widget.videos[currentIndex].url);
+              },
+            ),
+          ),
+        ],
       ),
       body: PageView.builder(
         controller: _pageController,
@@ -91,6 +110,36 @@ class _WatchPageState extends State<WatchPage> {
         },
       ),
     );
+  }
+
+  Future<void> _downloadVideo(String videoUrl) async {
+    try {
+      final uuid = getIt<Uuid>().v4();
+      final directory = await getApplicationDocumentsDirectory();
+      final filePath = '${directory.path}/$uuid';
+
+      final dio = Dio();
+      await dio.download(
+        videoUrl,
+        filePath,
+      );
+
+      Fluttertoast.showToast(
+        msg: "Video downloaded successfully!",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+      );
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "Failed to download video: $e",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+    }
   }
 
   Widget _buildVideoPage(Video video) {
