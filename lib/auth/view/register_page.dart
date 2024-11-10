@@ -25,7 +25,7 @@ class _RegisterPageState extends State<RegisterPage> {
             SingleChildScrollView(
               child: Column(
                 children: [
-                  const AuthTitle(title: "Sign up to "),
+                  const AuthTitle(title: "Register for "),
                   AuthButton(
                     icon: FontAwesomeIcons.user,
                     title: "Continue with phone or email",

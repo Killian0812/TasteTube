@@ -1,18 +1,23 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:logger/logger.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/auth/data/login_request.dart';
 import 'package:taste_tube/auth/data/login_response.dart';
 import 'package:taste_tube/auth/data/register_request.dart';
 import 'package:taste_tube/auth/data/register_response.dart';
 import 'package:taste_tube/common/error.dart';
+import 'package:taste_tube/injection.dart';
 import 'package:taste_tube/storage.dart';
 
 class AuthRepository {
   final SecureStorage secureStorage;
   final Dio http;
+  final Logger logger = getIt();
 
   AuthRepository({required this.secureStorage, required this.http});
 
@@ -60,6 +65,25 @@ class AuthRepository {
     } catch (e) {
       return Left(ApiError(500, e.toString()));
     }
+  }
+
+  Future<LoginResult?> continueWithFacebook() async {
+    try {
+      final LoginResult loginResult = await FacebookAuth.instance.login();
+      final userData = await FacebookAuth.instance.getUserData();
+      // send userData to BE
+      return loginResult;
+    } catch (e) {
+      logger.e("Error getting Facebook auth", error: e);
+      return null;
+    }
+  }
+
+  Future<GoogleSignInAccount?> continueWithGoogle() async {
+    final GoogleSignInAccount? googleUser =
+        await getIt<GoogleSignIn>().signIn();
+    // send googleUser to BE
+    return googleUser;
   }
 
   String? jwtFromHeader(Headers headers) {

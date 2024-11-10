@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/feature/product/domain/product_repo.dart';
@@ -24,6 +25,10 @@ void injectDependencies() {
   getIt.registerSingleton<SecureStorage>(SecureStorage());
   getIt.registerSingleton<LocalStorage>(LocalStorage());
   getIt.registerSingleton<Uuid>(const Uuid());
+  getIt.registerSingleton<GoogleSignIn>(GoogleSignIn(scopes: [
+    'email',
+    'https://www.googleapis.com/auth/contacts.readonly',
+  ]));
 
   // Repositories
   getIt.registerLazySingleton<AuthRepository>(() => AuthRepository(

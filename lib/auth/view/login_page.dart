@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:taste_tube/auth/view/oauth/oauth_cubit.dart';
 import 'package:taste_tube/auth/view/widget/auth_title.dart';
 import 'package:taste_tube/auth/view/widget/auth_button.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/text.dart';
-import 'package:taste_tube/common/toast.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -26,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
             SingleChildScrollView(
               child: Column(
                 children: [
-                  const AuthTitle(title: "Sign in to "),
+                  const AuthTitle(title: "Login to "),
                   AuthButton(
                     icon: FontAwesomeIcons.user,
                     title: "Continue with phone or email",
@@ -37,17 +38,19 @@ class _LoginPageState extends State<LoginPage> {
                   AuthButton(
                     icon: FontAwesomeIcons.facebook,
                     title: "Login with Facebook",
-                    onTap: () {
-                      ToastService.showToast(
-                          context, "Facebook", ToastType.info);
+                    onTap: () async {
+                      await context
+                          .read<OAuthCubit>()
+                          .continueWithFacebook(context);
                     },
                   ),
                   AuthButton(
                     icon: FontAwesomeIcons.google,
                     title: "Login with Google",
-                    onTap: () {
-                      ToastService.showToast(
-                          context, "Google", ToastType.success);
+                    onTap: () async {
+                      await context
+                          .read<OAuthCubit>()
+                          .continueWithGoogle(context);
                     },
                   ),
                 ],

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taste_tube/auth/view/login_page.dart';
+import 'package:taste_tube/auth/view/oauth/oauth_cubit.dart';
 import 'package:taste_tube/auth/view/register_page.dart';
 import 'package:taste_tube/auth/view/phone_or_email/login_phone_or_email_page.dart';
 import 'package:taste_tube/auth/view/phone_or_email/register_phone_or_email_page.dart';
@@ -31,7 +32,9 @@ void main() async {
   await Fallback.prepareFallback();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
-  ).then((firebaseApp) {});
+  ).then((firebaseApp) {
+    getIt.registerSingleton<FirebaseApp>(firebaseApp);
+  });
   runApp(const MyApp());
 }
 
@@ -42,8 +45,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     CommonSize.initScreenSize(context);
 
-    return BlocProvider(
-      create: (context) => AuthBloc(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => AuthBloc(),
+        ),
+        BlocProvider(
+          create: (context) => OAuthCubit(),
+        )
+      ],
       child: MaterialApp.router(
         title: 'TasteTube',
         routerConfig: _router,
