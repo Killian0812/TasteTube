@@ -2,10 +2,12 @@ import 'package:camera/camera.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logger/logger.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/loading.dart';
 import 'package:taste_tube/common/theme.dart';
 import 'package:taste_tube/feature/record/camera/camera_cubit.dart';
+import 'package:taste_tube/injection.dart';
 
 import '../replay/replay_page.dart';
 
@@ -142,23 +144,28 @@ class CameraPage extends StatelessWidget {
           return FloatingActionButton(
             heroTag: 'Upload',
             onPressed: () async {
-              FilePickerResult? result = await FilePicker.platform.pickFiles(
-                type: FileType.video,
-              );
+              try {
+                FilePickerResult? result = await FilePicker.platform.pickFiles(
+                  type: FileType.video,
+                );
 
-              if (result != null && result.files.single.path != null) {
-                String filePath = result.files.single.path!;
+                if (result != null && result.files.single.path != null) {
+                  String filePath = result.files.single.path!;
 
-                if (context.mounted) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      fullscreenDialog: true,
-                      builder: (_) => ReplayPage(
-                          filePath: filePath, recordedWithFrontCamera: false),
-                    ),
-                  );
+                  if (context.mounted) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        fullscreenDialog: true,
+                        builder: (_) => ReplayPage(
+                            filePath: filePath, recordedWithFrontCamera: false),
+                      ),
+                    );
+                  }
                 }
+              } catch (e) {
+                getIt<Logger>().e("Error picking file", error: e);
+                return;
               }
             },
             child: const Icon(Icons.upload),

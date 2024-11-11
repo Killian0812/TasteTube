@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/common/loading.dart';
+import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/profile/data/user.dart';
 import 'package:taste_tube/feature/profile/view/profile_cubit.dart';
@@ -75,92 +76,111 @@ class ProfilePage extends StatelessWidget {
                 ),
               ],
             ),
-            body: Column(
-              children: [
-                const SizedBox(height: 20),
-                CircleAvatar(
-                  radius: 50,
-                  backgroundImage: state.user.image != null
-                      ? NetworkImage(state.user.image!)
-                      : null,
-                  child: state.user.image == null
-                      ? const Icon(Icons.person, size: 50)
-                      : null,
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  state.user.email ?? state.user.phone ?? 'No contact info',
-                  style: const TextStyle(
-                      color: Colors.grey,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildProfileStat('Following', state.user.followings ?? 0),
-                    const SizedBox(width: 20),
-                    _buildProfileStat('Followers', state.user.followers ?? 0),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                if (isOwner)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+            body: RefreshIndicator(
+              onRefresh: () async {
+                context.read<ProfileCubit>().init(context);
+              },
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: SizedBox(
+                  height: CommonSize.screenSize.height -
+                      CommonSize.appBarHeight -
+                      CommonSize.bottomNavBarHeight - 30,
+                  child: Column(
                     children: [
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          _showEditProfileDialog(context, state.user);
-                        },
-                        icon: const Icon(Icons.edit),
-                        label: const Text('Edit profile'),
+                      const SizedBox(height: 20),
+                      CircleAvatar(
+                        radius: 50,
+                        backgroundImage: state.user.image != null
+                            ? NetworkImage(state.user.image!)
+                            : null,
+                        child: state.user.image == null
+                            ? const Icon(Icons.person, size: 50)
+                            : null,
                       ),
-                      const SizedBox(width: 5),
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          _showChangePasswordDialog(context);
-                        },
-                        icon: const Icon(Icons.password_rounded),
-                        label: const Text('Change password'),
+                      const SizedBox(height: 10),
+                      Text(
+                        state.user.email ??
+                            state.user.phone ??
+                            'No contact info',
+                        style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
                       ),
-                    ],
-                  ),
-                const SizedBox(height: 10),
-                (state.user.bio == null || state.user.bio!.isEmpty)
-                    ? const Text('No bio')
-                    : Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                        child: Text(
-                          state.user.bio ?? '',
-                          textAlign: TextAlign.center,
-                        ),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _buildProfileStat(
+                              'Following', state.user.followings ?? 0),
+                          const SizedBox(width: 20),
+                          _buildProfileStat(
+                              'Followers', state.user.followers ?? 0),
+                        ],
                       ),
-                const SizedBox(height: 20),
-                Expanded(
-                  child: DefaultTabController(
-                    length: 2,
-                    child: Column(
-                      children: [
-                        const TabBar(
-                          tabs: [
-                            Tab(icon: Icon(Icons.grid_on)),
-                            Tab(icon: Icon(Icons.favorite)),
+                      const SizedBox(height: 20),
+                      if (isOwner)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                _showEditProfileDialog(context, state.user);
+                              },
+                              icon: const Icon(Icons.edit),
+                              label: const Text('Edit profile'),
+                            ),
+                            const SizedBox(width: 5),
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                _showChangePasswordDialog(context);
+                              },
+                              icon: const Icon(Icons.password_rounded),
+                              label: const Text('Change password'),
+                            ),
                           ],
                         ),
-                        Expanded(
-                          child: TabBarView(
+                      const SizedBox(height: 10),
+                      (state.user.bio == null || state.user.bio!.isEmpty)
+                          ? const Text('No bio')
+                          : Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 30.0),
+                              child: Text(
+                                state.user.bio ?? '',
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                      const SizedBox(height: 20),
+                      Expanded(
+                        child: DefaultTabController(
+                          length: 2,
+                          child: Column(
                             children: [
-                              _buildVideosTab(state.user.videos, isOwner),
-                              _buildLikedVideosTab(state.user.likedVideos),
+                              const TabBar(
+                                tabs: [
+                                  Tab(icon: Icon(Icons.grid_on)),
+                                  Tab(icon: Icon(Icons.favorite)),
+                                ],
+                              ),
+                              Expanded(
+                                child: TabBarView(
+                                  children: [
+                                    _buildVideosTab(state.user.videos, isOwner),
+                                    _buildLikedVideosTab(
+                                        state.user.likedVideos),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
           );
         }

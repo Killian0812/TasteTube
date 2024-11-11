@@ -2,11 +2,15 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:logger/logger.dart';
 import 'package:taste_tube/common/button.dart';
 import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/upload/view/upload_cubit.dart';
+import 'package:taste_tube/injection.dart';
+import 'package:taste_tube/utils/user_data.util.dart';
 
 class UploadPage extends StatelessWidget {
   const UploadPage({super.key});
@@ -33,6 +37,16 @@ class UploadPage extends StatelessWidget {
           if (state is UploadSuccess) {
             ToastService.showToast(
                 context, 'Upload successful', ToastType.success);
+            try {
+              Future.microtask(() {
+                context.goNamed(
+                  'profile',
+                  pathParameters: {'userId': UserDataUtil.getUserId(context)},
+                );
+              });
+            } catch (e) {
+              getIt<Logger>().e(e);
+            }
           } else if (state is UploadFailure) {
             ToastService.showToast(context, state.message, ToastType.error);
           }

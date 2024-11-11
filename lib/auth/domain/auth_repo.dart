@@ -70,7 +70,7 @@ class AuthRepository {
   Future<LoginResult?> continueWithFacebook() async {
     try {
       final LoginResult loginResult = await FacebookAuth.instance.login();
-      final userData = await FacebookAuth.instance.getUserData();
+      // final userData = await FacebookAuth.instance.getUserData();
       // send userData to BE
       return loginResult;
     } catch (e) {
