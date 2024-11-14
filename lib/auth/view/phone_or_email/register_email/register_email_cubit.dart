@@ -86,7 +86,7 @@ class RegisterEmailCubit extends Cubit<RegisterEmailState> {
           "Account type selected. Redirecting to login...", ToastType.success,
           duration: const Duration(seconds: 4));
       Future.delayed(const Duration(seconds: 2), () {
-        context.go('/login/phone_or_email', extra: 1);
+        context.go('/login', extra: 1);
       });
       logger.i('Account type selected: $response');
     });

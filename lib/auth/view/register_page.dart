@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:taste_tube/auth/view/oauth/oauth_cubit.dart';
 import 'package:taste_tube/auth/view/widget/auth_title.dart';
 import 'package:taste_tube/auth/view/widget/auth_button.dart';
 import 'package:taste_tube/common/color.dart';
@@ -36,12 +38,20 @@ class _RegisterPageState extends State<RegisterPage> {
                   AuthButton(
                     icon: FontAwesomeIcons.facebook,
                     title: "Continue with Facebook",
-                    onTap: () {},
+                    onTap: () async {
+                      await context
+                          .read<OAuthCubit>()
+                          .continueWithFacebook(context);
+                    },
                   ),
                   AuthButton(
                     icon: FontAwesomeIcons.google,
                     title: "Continue with Google",
-                    onTap: () {},
+                    onTap: () async {
+                      await context
+                          .read<OAuthCubit>()
+                          .continueWithGoogle(context);
+                    },
                   ),
                 ],
               ),

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>885591194987-h2h2ulqop54v0lilfk618q3iun38et1n.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.885591194987-h2h2ulqop54v0lilfk618q3iun38et1n</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>885591194987-2dg97ho4pa226jqiq3gk5flebv4kgidd.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBfJ1HyKeTGunco_uIiqR0KnAhLOxPFXX4</string>
+	<key>GCM_SENDER_ID</key>
+	<string>885591194987</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.tasteTube</string>
+	<key>PROJECT_ID</key>
+	<string>taste-tube</string>
+	<key>STORAGE_BUCKET</key>
+	<string>taste-tube.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:885591194987:ios:6c96cada4373feaf91a02e</string>
+</dict>
+</plist>

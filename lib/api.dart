@@ -4,6 +4,8 @@ class Api {
 
   // Auth
   static const loginApi = '/auth';
+  static const facebookAuthApi = '/auth/facebook';
+  static const googleAuthApi = '/auth/google';
   static const registerApi = '/register';
   static const setRoleApi = '/register/set_role';
   static const refreshApi = '/refresh';

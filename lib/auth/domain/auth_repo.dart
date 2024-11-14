@@ -67,23 +67,47 @@ class AuthRepository {
     }
   }
 
-  Future<LoginResult?> continueWithFacebook() async {
+  Future<Either<ApiError, LoginResponse>> continueWithFacebook() async {
     try {
-      final LoginResult loginResult = await FacebookAuth.instance.login();
-      // final userData = await FacebookAuth.instance.getUserData();
-      // send userData to BE
-      return loginResult;
+      await FacebookAuth.instance.login();
+      final userData = await FacebookAuth.instance.getUserData();
+      final response = await http.post(
+        Api.facebookAuthApi,
+        data: userData,
+      );
+      final loginResponse = LoginResponse.fromJson(response.data);
+      await secureStorage.setRefreshToken(jwtFromHeader(response.headers));
+      return Right(loginResponse);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
     } catch (e) {
-      logger.e("Error getting Facebook auth", error: e);
-      return null;
+      return Left(ApiError(500, e.toString()));
     }
   }
 
-  Future<GoogleSignInAccount?> continueWithGoogle() async {
-    final GoogleSignInAccount? googleUser =
-        await getIt<GoogleSignIn>().signIn();
-    // send googleUser to BE
-    return googleUser;
+  Future<Either<ApiError, LoginResponse>> continueWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser =
+          await getIt<GoogleSignIn>().signIn();
+      if (googleUser == null) {
+        return const Left(ApiError(500, 'No google user found'));
+      }
+      final response = await http.post(
+        Api.googleAuthApi,
+        data: {
+          'email': googleUser.email,
+          'name': googleUser.displayName,
+          'picture': googleUser.photoUrl,
+        },
+      );
+      final loginResponse = LoginResponse.fromJson(response.data);
+      await secureStorage.setRefreshToken(jwtFromHeader(response.headers));
+      return Right(loginResponse);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
   }
 
   String? jwtFromHeader(Headers headers) {
