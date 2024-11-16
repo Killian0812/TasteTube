@@ -8,6 +8,7 @@ class Video {
   String? thumbnail;
   List<String>? hashtags;
   int likes;
+  int comments;
   String visibility;
   DateTime createdAt;
   DateTime updatedAt;
@@ -22,6 +23,7 @@ class Video {
     this.thumbnail,
     this.hashtags,
     required this.likes,
+    required this.comments,
     required this.visibility,
     required this.createdAt,
     required this.updatedAt,
@@ -38,6 +40,7 @@ class Video {
       thumbnail: json['thumbnail'],
       hashtags: List<String>.from(json['hashtags'] ?? []),
       likes: (json['likes'] as List<dynamic>).length,
+      comments: (json['comments'] as List<dynamic>).length,
       visibility: json['visibility'] ?? 'PUBLIC',
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
@@ -55,6 +58,7 @@ class Video {
       'thumbnail': thumbnail,
       'hashtags': hashtags,
       'likes': likes,
+      'comments': comments,
       'visibility': visibility,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),

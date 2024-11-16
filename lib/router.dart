@@ -64,14 +64,16 @@ final GoRouter _router = GoRouter(
       builder: (context, state) {
         final extra = state.extra as Map<String, dynamic>?;
         final videos = extra?['videos'] as List<Video>?;
+        final owner = extra?['owner'] as User?;
         final initialIndex = extra?['initialIndex'] as int?;
 
-        if (videos == null || initialIndex == null) {
+        if (videos == null || initialIndex == null || owner == null) {
           return const SplashPage();
         }
 
         return WatchPage(
           videos: videos,
+          owner: owner,
           initialIndex: initialIndex,
         );
       },

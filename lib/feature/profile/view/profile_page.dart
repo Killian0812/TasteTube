@@ -85,7 +85,8 @@ class ProfilePage extends StatelessWidget {
                 child: SizedBox(
                   height: CommonSize.screenSize.height -
                       CommonSize.appBarHeight -
-                      CommonSize.bottomNavBarHeight - 30,
+                      CommonSize.bottomNavBarHeight -
+                      30,
                   child: Column(
                     children: [
                       const SizedBox(height: 20),
@@ -167,7 +168,8 @@ class ProfilePage extends StatelessWidget {
                               Expanded(
                                 child: TabBarView(
                                   children: [
-                                    _buildVideosTab(state.user.videos, isOwner),
+                                    _buildVideosTab(
+                                        state.user.videos, isOwner, state.user),
                                     _buildLikedVideosTab(
                                         state.user.likedVideos),
                                   ],
@@ -190,12 +192,19 @@ class ProfilePage extends StatelessWidget {
           );
         }
         return Center(
-          child: FloatingActionButton(
-            heroTag: 'profile reset',
-            onPressed: () {
-              final cubit = context.read<ProfileCubit>();
-              cubit.init(context);
-            },
+          child: Column(
+            children: [
+              const Text('Unexpected error'),
+              const SizedBox(height: 20),
+              FloatingActionButton.extended(
+                heroTag: 'Profile reset',
+                label: const Text('Try again'),
+                onPressed: () {
+                  final cubit = context.read<ProfileCubit>();
+                  cubit.init(context);
+                },
+              ),
+            ],
           ),
         );
       },
@@ -215,7 +224,7 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildVideosTab(List<Video> videos, bool isOwner) {
+  Widget _buildVideosTab(List<Video> videos, bool isOwner, User owner) {
     return GridView.builder(
       padding: const EdgeInsets.all(8.0),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -227,8 +236,11 @@ class ProfilePage extends StatelessWidget {
       itemBuilder: (context, index) {
         return GestureDetector(
           onTap: () {
-            context.push('/watch',
-                extra: {'videos': videos, 'initialIndex': index});
+            context.push('/watch', extra: {
+              'videos': videos,
+              'initialIndex': index,
+              'owner': owner,
+            });
           },
           child: Stack(
             children: [

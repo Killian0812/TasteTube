@@ -2,10 +2,12 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:taste_tube/common/size.dart';
+import 'package:taste_tube/feature/profile/data/user.dart';
 import 'package:taste_tube/feature/watch/video.dart';
 import 'package:taste_tube/injection.dart';
 import 'package:uuid/uuid.dart';
@@ -13,11 +15,13 @@ import 'package:video_player/video_player.dart';
 
 class WatchPage extends StatefulWidget {
   final List<Video> videos;
+  final User owner;
   final int initialIndex;
 
   const WatchPage({
     super.key,
     required this.videos,
+    required this.owner,
     required this.initialIndex,
   });
 
@@ -147,13 +151,13 @@ class _WatchPageState extends State<WatchPage> {
         onPageChanged: _onPageChanged,
         itemBuilder: (context, index) {
           final video = widget.videos[index];
-          return _buildVideoPage(video);
+          return _buildVideoPage(video, widget.owner);
         },
       ),
     );
   }
 
-  Widget _buildVideoPage(Video video) {
+  Widget _buildVideoPage(Video video, User owner) {
     return Center(
       child: _videoController.value.isInitialized
           ? Stack(
@@ -267,6 +271,80 @@ class _WatchPageState extends State<WatchPage> {
                       ),
                     ),
                   ),
+                // Owner avatar
+                Align(
+                  alignment: const Alignment(0.9, 0.0),
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: CircleAvatar(
+                        radius: 20,
+                        foregroundImage: NetworkImage(owner.image!)),
+                  ),
+                ),
+                // Video interactions
+                Align(
+                  alignment: const Alignment(0.9, 0.15),
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      // Comment
+                    },
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          FontAwesomeIcons.solidHeart,
+                          color: Colors.white,
+                          size: 40,
+                        ),
+                        Text(
+                          video.likes.toString(),
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: const Alignment(0.9, 0.3),
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      // Like
+                    },
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          FontAwesomeIcons.solidCommentDots,
+                          color: Colors.white,
+                          size: 40,
+                        ),
+                        Text(
+                          video.comments.toString(),
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: const Alignment(0.9, 0.42),
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      // Share
+                    },
+                    child: const Icon(
+                      FontAwesomeIcons.share,
+                      color: Colors.white,
+                      size: 30,
+                    ),
+                  ),
+                ),
               ],
             )
           : const CircularProgressIndicator(

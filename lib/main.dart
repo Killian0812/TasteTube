@@ -12,6 +12,7 @@ import 'package:taste_tube/common/fallback.dart';
 import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/common/text.dart';
+import 'package:taste_tube/feature/profile/data/user.dart';
 import 'package:taste_tube/feature/record/camera/camera_page.dart';
 import 'package:taste_tube/feature/home/view/home_page.dart';
 import 'package:taste_tube/feature/inbox/view/inbox_page.dart';
