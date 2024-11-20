@@ -1,5 +1,8 @@
 class Video {
-  String userId;
+  String id;
+  String ownerId;
+  String ownerUsername;
+  String ownerImage;
   String url;
   String filename;
   String? direction;
@@ -7,6 +10,7 @@ class Video {
   String? description;
   String? thumbnail;
   List<String>? hashtags;
+  bool userLiked;
   int likes;
   int comments;
   String visibility;
@@ -14,7 +18,10 @@ class Video {
   DateTime updatedAt;
 
   Video({
-    required this.userId,
+    required this.id,
+    required this.ownerId,
+    required this.ownerUsername,
+    required this.ownerImage,
     required this.url,
     required this.filename,
     this.direction,
@@ -22,6 +29,7 @@ class Video {
     this.description,
     this.thumbnail,
     this.hashtags,
+    required this.userLiked,
     required this.likes,
     required this.comments,
     required this.visibility,
@@ -31,7 +39,10 @@ class Video {
 
   factory Video.fromJson(Map<String, dynamic> json) {
     return Video(
-      userId: json['userId'],
+      id: json['_id'],
+      ownerId: json['userId']['_id'],
+      ownerUsername: json['userId']['username'],
+      ownerImage: json['userId']['image'],
       url: json['url'],
       filename: json['filename'],
       direction: json['direction'],
@@ -39,29 +50,12 @@ class Video {
       description: json['description'],
       thumbnail: json['thumbnail'],
       hashtags: List<String>.from(json['hashtags'] ?? []),
+      userLiked: json['userLiked'] as bool,
       likes: (json['likes'] as List<dynamic>).length,
       comments: (json['comments'] as List<dynamic>).length,
       visibility: json['visibility'] ?? 'PUBLIC',
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'userId': userId,
-      'url': url,
-      'filename': filename,
-      'direction': direction,
-      'title': title,
-      'description': description,
-      'thumbnail': thumbnail,
-      'hashtags': hashtags,
-      'likes': likes,
-      'comments': comments,
-      'visibility': visibility,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
-    };
   }
 }

@@ -11,7 +11,7 @@ import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/profile/data/user.dart';
 import 'package:taste_tube/feature/profile/view/profile_cubit.dart';
-import 'package:taste_tube/feature/watch/video.dart';
+import 'package:taste_tube/feature/watch/data/video.dart';
 import 'package:taste_tube/global_bloc/auth/bloc.dart';
 
 part 'profile_page.ext.dart';
@@ -171,7 +171,7 @@ class ProfilePage extends StatelessWidget {
                                     _buildVideosTab(
                                         state.user.videos, isOwner, state.user),
                                     _buildLikedVideosTab(
-                                        state.user.likedVideos),
+                                        []), // TODO: Fetch liked videos
                                   ],
                                 ),
                               ),

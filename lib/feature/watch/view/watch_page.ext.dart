@@ -1,48 +1,22 @@
-import 'dart:io';
+part of 'watch_page.dart';
 
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:gallery_saver/gallery_saver.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:taste_tube/common/size.dart';
-import 'package:taste_tube/feature/profile/data/user.dart';
-import 'package:taste_tube/feature/watch/video.dart';
-import 'package:taste_tube/injection.dart';
-import 'package:uuid/uuid.dart';
-import 'package:video_player/video_player.dart';
-
-class WatchPage extends StatefulWidget {
-  final List<Video> videos;
-  final User owner;
-  final int initialIndex;
-
-  const WatchPage({
-    super.key,
-    required this.videos,
-    required this.owner,
-    required this.initialIndex,
-  });
+// Wrap in cubit
+class SingleVideo extends StatefulWidget {
+  final Video video;
+  const SingleVideo({super.key, required this.video});
 
   @override
-  State<WatchPage> createState() => _WatchPageState();
+  State<SingleVideo> createState() => _SingleVideoState();
 }
 
-class _WatchPageState extends State<WatchPage> {
-  late PageController _pageController;
+class _SingleVideoState extends State<SingleVideo> {
   late VideoPlayerController _videoController;
-  late int currentIndex;
-  bool _isScrubbing = false; // Track if scrubbing
-  bool _isDownloading = false; // Track if downloading
-  double _downloadProgress = 0.0;
+  bool _isScrubbing = false;
 
   @override
   void initState() {
     super.initState();
-    currentIndex = widget.initialIndex;
-    _pageController = PageController(initialPage: currentIndex);
-    _initializeVideoPlayer(widget.videos[currentIndex].url);
+    _initializeVideoPlayer(widget.video.url);
   }
 
   Future<void> _initializeVideoPlayer(String videoUrl) async {
@@ -61,103 +35,13 @@ class _WatchPageState extends State<WatchPage> {
 
   @override
   void dispose() {
+    _videoController.removeListener(() {});
     _videoController.dispose();
-    _pageController.dispose();
     super.dispose();
-  }
-
-  void _onPageChanged(int index) {
-    setState(() {
-      currentIndex = index;
-      _videoController.removeListener(() {});
-      _videoController.dispose(); // Dispose old one, aync
-      _initializeVideoPlayer(
-          widget.videos[currentIndex].url); // Play the new one
-    });
-  }
-
-  Future<void> _downloadVideo(String url) async {
-    try {
-      setState(() {
-        _isDownloading = true;
-      });
-
-      Directory directory = await getTemporaryDirectory();
-      String filePath = "${directory.path}/${getIt<Uuid>().v4()}.mp4";
-
-      Dio dio = Dio();
-      await dio.download(
-        url,
-        filePath,
-        onReceiveProgress: (received, total) {
-          setState(() {
-            _downloadProgress = received / total;
-          });
-        },
-      );
-      bool? savedToGallery = await GallerySaver.saveVideo(filePath);
-      if (savedToGallery != true) throw Exception('Error saving to gallery');
-      Fluttertoast.showToast(
-          msg: 'Download complete',
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.TOP);
-    } catch (e) {
-      Fluttertoast.showToast(
-          msg: 'Download failed: $e', gravity: ToastGravity.TOP);
-    } finally {
-      setState(() {
-        _isDownloading = false;
-        _downloadProgress = 0.0;
-      });
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBody: true,
-      extendBodyBehindAppBar: true,
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 20),
-            child: IconButton(
-              icon: const Icon(
-                Icons.download,
-                color: Colors.white,
-              ),
-              onPressed: () async {
-                await _downloadVideo(widget.videos[currentIndex].url);
-              },
-            ),
-          ),
-        ],
-      ),
-      body: PageView.builder(
-        controller: _pageController,
-        scrollDirection: Axis.vertical,
-        itemCount: widget.videos.length,
-        onPageChanged: _onPageChanged,
-        itemBuilder: (context, index) {
-          final video = widget.videos[index];
-          return _buildVideoPage(video, widget.owner);
-        },
-      ),
-    );
-  }
-
-  Widget _buildVideoPage(Video video, User owner) {
     return Center(
       child: _videoController.value.isInitialized
           ? Stack(
@@ -203,35 +87,6 @@ class _WatchPageState extends State<WatchPage> {
                         ),
                       )),
                 ),
-                // Top download progress bar
-                if (_isDownloading)
-                  Align(
-                    alignment: Alignment.topCenter,
-                    child: Container(
-                      margin: const EdgeInsets.only(top: 20),
-                      padding: const EdgeInsets.all(10.0),
-                      width: CommonSize.screenSize.width / 2,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: const Color.fromRGBO(0, 0, 0, 0.5),
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          LinearProgressIndicator(
-                            value: _downloadProgress,
-                            backgroundColor: Colors.transparent,
-                            color: Colors.white,
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            '${(_downloadProgress * 100).toStringAsFixed(0)}%',
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
                 // Video Scrub
                 GestureDetector(
                   onHorizontalDragStart: (details) {
@@ -281,7 +136,7 @@ class _WatchPageState extends State<WatchPage> {
                     },
                     child: CircleAvatar(
                         radius: 20,
-                        foregroundImage: NetworkImage(owner.image!)),
+                        foregroundImage: NetworkImage(widget.video.ownerImage)),
                   ),
                 ),
                 // Video interactions
@@ -290,18 +145,20 @@ class _WatchPageState extends State<WatchPage> {
                   child: GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTap: () {
-                      // Comment
+                      // Like
                     },
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(
+                        Icon(
                           FontAwesomeIcons.solidHeart,
-                          color: Colors.white,
+                          color: widget.video.userLiked
+                              ? Colors.red
+                              : Colors.white,
                           size: 40,
                         ),
                         Text(
-                          video.likes.toString(),
+                          widget.video.likes.toString(),
                           style: const TextStyle(color: Colors.white),
                         ),
                       ],
@@ -313,7 +170,8 @@ class _WatchPageState extends State<WatchPage> {
                   child: GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTap: () {
-                      // Like
+                      // Comment
+                      // Fetch comments
                     },
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -324,7 +182,7 @@ class _WatchPageState extends State<WatchPage> {
                           size: 40,
                         ),
                         Text(
-                          video.comments.toString(),
+                          widget.video.comments.toString(),
                           style: const TextStyle(color: Colors.white),
                         ),
                       ],
@@ -336,7 +194,7 @@ class _WatchPageState extends State<WatchPage> {
                   child: GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTap: () {
-                      // Share
+                      // TODO: Share
                     },
                     child: const Icon(
                       FontAwesomeIcons.share,
