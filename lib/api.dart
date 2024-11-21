@@ -13,6 +13,9 @@ class Api {
   // Features
   // Video upload
   static const uploadVideoApi = '/videos';
+  static const videoApi = '/videos/:videoId';
+  static const videoLikeApi = '/videos/:videoId/like';
+  static const videoCommentApi = '/videos/:videoId/comment';
 
   // Product
   static const categoryApi = '/product/categories';

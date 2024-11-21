@@ -2,17 +2,22 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gallery_saver/gallery_saver.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/common/size.dart';
+import 'package:taste_tube/feature/watch/data/comment.dart';
 import 'package:taste_tube/feature/watch/data/video.dart';
+import 'package:taste_tube/feature/watch/view/single_video_cubit.dart';
 import 'package:taste_tube/injection.dart';
 import 'package:uuid/uuid.dart';
 import 'package:video_player/video_player.dart';
 
-part 'watch_page.ext.dart';
+part 'single_video_page.dart';
 
 class WatchPage extends StatefulWidget {
   final List<Video> videos;
@@ -127,7 +132,10 @@ class _WatchPageState extends State<WatchPage> {
         itemBuilder: (context, index) {
           final video = widget.videos[index];
           return Stack(alignment: Alignment.center, children: [
-            SingleVideo(video: video),
+            BlocProvider(
+              create: (context) => SingleVideoCubit(video)..fetchDependency(),
+              child: SingleVideo(video: video),
+            ),
             if (_isDownloading) // Top download progress bar
               Align(
                 alignment: Alignment.topCenter,

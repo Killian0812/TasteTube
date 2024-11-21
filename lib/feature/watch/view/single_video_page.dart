@@ -1,6 +1,5 @@
 part of 'watch_page.dart';
 
-// Wrap in cubit & use BlocBuilder
 class SingleVideo extends StatefulWidget {
   final Video video;
   const SingleVideo({super.key, required this.video});
@@ -9,7 +8,8 @@ class SingleVideo extends StatefulWidget {
   State<SingleVideo> createState() => _SingleVideoState();
 }
 
-class _SingleVideoState extends State<SingleVideo> {
+class _SingleVideoState extends State<SingleVideo>
+    with AutomaticKeepAliveClientMixin {
   late VideoPlayerController _videoController;
   bool _isScrubbing = false;
   bool _isDescriptionExpanded = false;
@@ -47,6 +47,7 @@ class _SingleVideoState extends State<SingleVideo> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Center(
       child: _videoController.value.isInitialized
           ? Stack(
@@ -181,6 +182,9 @@ class _SingleVideoState extends State<SingleVideo> {
                     : _videoController.play();
               });
             },
+            onDoubleTap: () async {
+              await context.read<SingleVideoCubit>().likeVideo();
+            },
             child: SizedBox(
               height: CommonSize.screenSize.height / 2,
               width: CommonSize.screenSize.width,
@@ -235,36 +239,48 @@ class _SingleVideoState extends State<SingleVideo> {
       );
 
   Widget _videoLikes() => Align(
-        alignment: const Alignment(0.9, 0.0),
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () {
-            // Like
-          },
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                FontAwesomeIcons.solidHeart,
-                color: widget.video.userLiked ? Colors.red : Colors.white,
-                size: 40,
-              ),
-              Text(
-                widget.video.likes.toString(),
-                style: const TextStyle(color: Colors.white),
-              ),
-            ],
-          ),
-        ),
-      );
+      alignment: const Alignment(0.9, 0.0),
+      child: BlocBuilder<SingleVideoCubit, SingleVideoState>(
+        builder: (context, state) {
+          final loading = state is SingleVideoLoading;
+          return GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () async {
+              if (!state.video.userLiked) {
+                await context.read<SingleVideoCubit>().likeVideo();
+              } else {
+                await context.read<SingleVideoCubit>().unlikeVideo();
+              }
+            },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  FontAwesomeIcons.solidHeart,
+                  color: (loading || !state.video.userLiked)
+                      ? Colors.white
+                      : Colors.red,
+                  size: 40,
+                ),
+                if (!loading)
+                  Text(
+                    state.video.likes.toString(),
+                    style: const TextStyle(color: Colors.white),
+                  ),
+              ],
+            ),
+          );
+        },
+      ));
 
   Widget _videoComments() => Align(
         alignment: const Alignment(0.9, 0.15),
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTap: () {
-            // Comment
-            // Fetch comments
+          onTap: () async {
+            final cubit = context.read<SingleVideoCubit>();
+            await cubit.fetchComments();
+            if (mounted) _showCommentsBottomSheet(context, cubit);
           },
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -274,14 +290,176 @@ class _SingleVideoState extends State<SingleVideo> {
                 color: Colors.white,
                 size: 40,
               ),
-              Text(
-                widget.video.comments.toString(),
-                style: const TextStyle(color: Colors.white),
+              BlocBuilder<SingleVideoCubit, SingleVideoState>(
+                builder: (context, state) {
+                  if (state is SingleVideoLoading) {
+                    return const SizedBox.shrink();
+                  }
+                  return Text(
+                    state.video.comments.toString(),
+                    style: const TextStyle(color: Colors.white),
+                  );
+                },
               ),
             ],
           ),
         ),
       );
+
+  void _showCommentsBottomSheet(BuildContext context, SingleVideoCubit cubit) {
+    final TextEditingController commentController = TextEditingController();
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.black87,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return FractionallySizedBox(
+          heightFactor: 0.6,
+          child: LayoutBuilder(
+            builder: (context, constraints) => Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    child: Center(
+                      child: Text(
+                        "Comments",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Divider(color: Colors.grey),
+                  Expanded(
+                    child: BlocBuilder<SingleVideoCubit, SingleVideoState>(
+                      bloc: cubit,
+                      builder: (context, state) {
+                        final comments = state.comments.reversed.toList();
+
+                        if (comments.isEmpty) {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(20.0),
+                              child: Text(
+                                "Be the first to comment!",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 18),
+                              ),
+                            ),
+                          );
+                        }
+
+                        return ListView.builder(
+                          padding: const EdgeInsets.only(top: 30),
+                          itemCount: comments.length,
+                          itemBuilder: (context, index) {
+                            final comment = comments[index];
+                            return _buildCommentTile(comment, cubit);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  _buildCommentInputField(context, commentController, cubit),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildCommentInputField(BuildContext context,
+      TextEditingController commentController, SingleVideoCubit cubit) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: commentController,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                hintText: "Add a comment...",
+                hintStyle: const TextStyle(color: Colors.white54),
+                filled: true,
+                fillColor: Colors.white12,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+              ),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.send, color: Colors.white),
+            onPressed: () {
+              if (commentController.text.isNotEmpty) {
+                cubit.postComment(commentController.text);
+                commentController.clear();
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCommentTile(Comment comment, SingleVideoCubit cubit) {
+    final String formattedDate =
+        DateFormat.yMMMd().add_jm().format(comment.createdAt);
+
+    return ListTile(
+      onLongPress: () async {
+        bool? confirmed = await showConfirmDialog(
+          context,
+          title: "Confirm delete comment",
+          body: 'Are you sure you want to delete this comment?',
+          contrast: true,
+        );
+        if (confirmed != true) {
+          return;
+        }
+        await cubit.deleteComment(comment.id);
+      },
+      contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+      leading: CircleAvatar(
+        backgroundImage: NetworkImage(comment.avatar),
+      ),
+      title: Text(
+        comment.username,
+        style:
+            const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+      ),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            comment.text,
+            style: const TextStyle(color: Colors.white),
+          ),
+          const SizedBox(height: 5),
+          Text(
+            formattedDate,
+            style: TextStyle(color: Colors.grey[400], fontSize: 12),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _videoShare() => Align(
         alignment: const Alignment(0.9, 0.27),
@@ -304,4 +482,7 @@ class _SingleVideoState extends State<SingleVideo> {
     final seconds = twoDigits(duration.inSeconds.remainder(60));
     return "$minutes:$seconds";
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

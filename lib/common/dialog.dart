@@ -7,20 +7,34 @@ Future<bool?> showConfirmDialog(
   String? body,
   String leftText = "Cancel",
   String rightText = "Confirm",
+  bool contrast = false,
   VoidCallback? onTapLeft,
   VoidCallback? onTapRight,
 }) {
+  final actionTextStyle =
+      contrast ? CommonTextStyleContrast.regular : CommonTextStyle.regular;
   return showDialog<bool>(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
+        backgroundColor: contrast ? Colors.black87 : null,
         contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
-        title: title != null ? Text(title) : null,
-        content: body != null ? Text(body) : null,
+        title: title != null
+            ? Text(
+                title,
+                style: TextStyle(color: contrast ? Colors.white : null),
+              )
+            : null,
+        content: body != null
+            ? Text(
+                body,
+                style: TextStyle(color: contrast ? Colors.white : null),
+              )
+            : null,
         actions: <Widget>[
           TextButton(
             style: TextButton.styleFrom(
-              textStyle: CommonTextStyle.regular,
+              textStyle: actionTextStyle,
             ),
             child: Text(leftText),
             onPressed: () {
@@ -32,7 +46,7 @@ Future<bool?> showConfirmDialog(
           ),
           TextButton(
             style: TextButton.styleFrom(
-              textStyle: CommonTextStyle.regular,
+              textStyle: actionTextStyle,
             ),
             child: Text(rightText),
             onPressed: () {
