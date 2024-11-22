@@ -18,9 +18,20 @@ class _SingleVideoState extends State<SingleVideo>
       widget.video.description != null &&
       widget.video.description!.length > 100;
 
+  late FocusNode _focusNode;
+  Comment? _replyingComment;
+
   @override
   void initState() {
     super.initState();
+    _focusNode = FocusNode();
+    _focusNode.addListener(() {
+      if (!_focusNode.hasFocus) {
+        setState(() {
+          _replyingComment = null;
+        });
+      }
+    });
     _initializeVideoPlayer(widget.video.url);
   }
 
@@ -42,6 +53,7 @@ class _SingleVideoState extends State<SingleVideo>
   void dispose() {
     _videoController.removeListener(() {});
     _videoController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -340,7 +352,6 @@ class _SingleVideoState extends State<SingleVideo>
                       ),
                     ),
                   ),
-                  const Divider(color: Colors.grey),
                   Expanded(
                     child: BlocBuilder<SingleVideoCubit, SingleVideoState>(
                       bloc: cubit,
@@ -389,10 +400,13 @@ class _SingleVideoState extends State<SingleVideo>
         children: [
           Expanded(
             child: TextField(
+              focusNode: _focusNode,
               controller: commentController,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                hintText: "Add a comment...",
+                hintText: _replyingComment != null
+                    ? 'Replying to ${_replyingComment!.username}'
+                    : "Add a comment...",
                 hintStyle: const TextStyle(color: Colors.white54),
                 filled: true,
                 fillColor: Colors.white12,
@@ -408,7 +422,8 @@ class _SingleVideoState extends State<SingleVideo>
             icon: const Icon(Icons.send, color: Colors.white),
             onPressed: () {
               if (commentController.text.isNotEmpty) {
-                cubit.postComment(commentController.text);
+                cubit.postComment(commentController.text,
+                    replyingTo: _replyingComment);
                 commentController.clear();
               }
             },
@@ -419,10 +434,11 @@ class _SingleVideoState extends State<SingleVideo>
   }
 
   Widget _buildCommentTile(Comment comment, SingleVideoCubit cubit) {
-    final String formattedDate =
-        DateFormat.yMMMd().add_jm().format(comment.createdAt);
+    final String relativeTime =
+        timeago.format(comment.createdAt, allowFromNow: true);
+    final expansionTileController = ExpansionTileController();
 
-    return ListTile(
+    return GestureDetector(
       onLongPress: () async {
         bool? confirmed = await showConfirmDialog(
           context,
@@ -433,30 +449,119 @@ class _SingleVideoState extends State<SingleVideo>
         if (confirmed != true) {
           return;
         }
-        await cubit.deleteComment(comment.id);
+        await cubit.deleteComment(comment);
       },
-      contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-      leading: CircleAvatar(
-        backgroundImage: NetworkImage(comment.avatar),
-      ),
-      title: Text(
-        comment.username,
-        style:
-            const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-      ),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: ExpansionTile(
+        controller: expansionTileController,
+        tilePadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 30),
+        leading: CircleAvatar(
+          backgroundImage: NetworkImage(comment.avatar),
+        ),
+        title: Text(
+          comment.username,
+          style:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              comment.text,
+              style: const TextStyle(color: Colors.white),
+            ),
+            const SizedBox(height: 5),
+            Row(
+              children: [
+                Text(
+                  relativeTime,
+                  style: TextStyle(
+                    color: Colors.grey[400],
+                    fontSize: 12,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+                const SizedBox(width: 30),
+                if (comment.replies.isNotEmpty)
+                  Text(
+                    '${comment.replies.length} replies',
+                    style: TextStyle(
+                      color: Colors.grey[400],
+                      fontSize: 12,
+                    ),
+                  ),
+                const SizedBox(width: 30),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _replyingComment = comment;
+                    });
+                    expansionTileController.expand();
+                    _focusNode.requestFocus();
+                  },
+                  child: Text(
+                    'Reply',
+                    style: TextStyle(
+                      color: Colors.grey[400],
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        trailing: const SizedBox.shrink(),
+        childrenPadding: const EdgeInsets.only(left: 30),
         children: [
-          Text(
-            comment.text,
-            style: const TextStyle(color: Colors.white),
-          ),
-          const SizedBox(height: 5),
-          Text(
-            formattedDate,
-            style: TextStyle(color: Colors.grey[400], fontSize: 12),
-          ),
+          for (Comment reply in comment.replies.reversed)
+            _buildReplyTile(reply, cubit)
         ],
+      ),
+    );
+  }
+
+  Widget _buildReplyTile(Comment reply, SingleVideoCubit cubit) {
+    final String relativeTime = timeago.format(reply.createdAt);
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onLongPress: () async {
+        bool? confirmed = await showConfirmDialog(
+          context,
+          title: "Confirm delete comment",
+          body: 'Are you sure you want to delete this comment?',
+          contrast: true,
+        );
+        if (confirmed != true) {
+          return;
+        }
+        await cubit.deleteComment(reply);
+      },
+      child: ListTile(
+        contentPadding: const EdgeInsets.only(left: 40.0, right: 10.0),
+        leading: CircleAvatar(
+          backgroundImage: NetworkImage(reply.avatar),
+        ),
+        title: Text(
+          reply.username,
+          style:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              reply.text,
+              style: const TextStyle(color: Colors.white),
+            ),
+            const SizedBox(height: 5),
+            Text(
+              relativeTime,
+              style: TextStyle(color: Colors.grey[400], fontSize: 12),
+            ),
+          ],
+        ),
       ),
     );
   }

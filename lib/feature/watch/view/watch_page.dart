@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gallery_saver/gallery_saver.dart';
-import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:taste_tube/common/dialog.dart';
@@ -16,6 +15,7 @@ import 'package:taste_tube/feature/watch/view/single_video_cubit.dart';
 import 'package:taste_tube/injection.dart';
 import 'package:uuid/uuid.dart';
 import 'package:video_player/video_player.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 part 'single_video_page.dart';
 

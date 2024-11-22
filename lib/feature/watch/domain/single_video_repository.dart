@@ -41,11 +41,18 @@ class SingleVideoRepository {
   }
 
   Future<Either<ApiError, Comment>> postComment(
-      String videoId, String text) async {
+    String videoId,
+    String text, {
+    Comment? replyingTo,
+  }) async {
     try {
       final response = await http.post(
-          Api.videoCommentApi.replaceFirst(':videoId', videoId),
-          data: {'text': text});
+        Api.videoCommentApi.replaceFirst(':videoId', videoId),
+        data: {
+          'text': text,
+          if (replyingTo != null) 'parentCommentId': replyingTo.id
+        },
+      );
       final comment = Comment.fromJson(response.data);
       return Right(comment);
     } on DioException catch (e) {

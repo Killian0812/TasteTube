@@ -5,6 +5,8 @@ class Comment {
   String avatar;
   String text;
   DateTime createdAt;
+  String? parentCommentId;
+  List<Comment> replies;
 
   Comment({
     required this.id,
@@ -13,6 +15,8 @@ class Comment {
     required this.avatar,
     required this.text,
     required this.createdAt,
+    this.parentCommentId,
+    required this.replies,
   });
 
   factory Comment.fromJson(Map<String, dynamic> json) {
@@ -23,6 +27,10 @@ class Comment {
       avatar: json['userId']['image'],
       text: json['text'],
       createdAt: DateTime.parse(json['createdAt']),
+      parentCommentId: json['parentCommentId'],
+      replies: (json['replies'] as List<dynamic>)
+          .map((comment) => Comment.fromJson(comment as Map<String, dynamic>))
+          .toList(),
     );
   }
 }

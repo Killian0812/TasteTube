@@ -74,14 +74,29 @@ class SingleVideoCubit extends Cubit<SingleVideoState> {
     }
   }
 
-  Future<void> postComment(String text) async {
+  Future<void> postComment(String text, {Comment? replyingTo}) async {
     try {
-      final result = await singleVideoRepo.postComment(state.video.id, text);
+      final result = await singleVideoRepo.postComment(
+        state.video.id,
+        text,
+        replyingTo: replyingTo,
+      );
       result.fold(
         (error) => emit(SingleVideoError(state.video, state.comments,
             error.message ?? 'Error commenting video')),
         (comment) {
-          emit(SingleVideoLoaded(state.video, state.comments..add(comment)));
+          state.video.comments++;
+          if (replyingTo == null) {
+            emit(SingleVideoLoaded(state.video, state.comments..add(comment)));
+          }
+          final parentCommentIndex = state.comments.indexWhere(
+            (c) => c.id == replyingTo!.id,
+          );
+          if (parentCommentIndex != -1) {
+            final parentComment = state.comments[parentCommentIndex];
+            parentComment.replies.add(comment);
+            emit(SingleVideoLoaded(state.video, List.from(state.comments)));
+          }
         },
       );
     } catch (e) {
@@ -89,21 +104,34 @@ class SingleVideoCubit extends Cubit<SingleVideoState> {
     }
   }
 
-  Future<void> deleteComment(String commentId) async {
+  Future<void> deleteComment(Comment comment) async {
     try {
       final result =
-          await singleVideoRepo.deleteComment(state.video.id, commentId);
+          await singleVideoRepo.deleteComment(state.video.id, comment.id);
       result.fold(
         (error) => emit(SingleVideoError(state.video, state.comments,
             error.message ?? 'Error deleting comment')),
         (success) {
-          emit(SingleVideoLoaded(
-            state.video,
-            state.comments
-              ..removeWhere(
-                (comment) => comment.id == commentId,
-              ),
-          ));
+          state.video.comments--;
+          if (comment.parentCommentId == null) {
+            emit(SingleVideoLoaded(
+              state.video,
+              state.comments
+                ..removeWhere(
+                  (c) => c.id == comment.id,
+                ),
+            ));
+          }
+          final parentCommentIndex = state.comments.indexWhere(
+            (c) => c.id == comment.parentCommentId,
+          );
+          if (parentCommentIndex != -1) {
+            final parentComment = state.comments[parentCommentIndex];
+            parentComment.replies.removeWhere(
+              (c) => c.id == comment.id,
+            );
+            emit(SingleVideoLoaded(state.video, List.from(state.comments)));
+          }
         },
       );
     } catch (e) {
