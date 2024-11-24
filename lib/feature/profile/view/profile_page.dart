@@ -169,7 +169,7 @@ class ProfilePage extends StatelessWidget {
                                 child: TabBarView(
                                   children: [
                                     _buildVideosTab(
-                                        state.user.videos, isOwner, state.user),
+                                        state.user.videos.reversed.toList(), isOwner, state.user),
                                     _buildLikedVideosTab(
                                         []), // TODO: Fetch liked videos
                                   ],

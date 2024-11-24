@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taste_tube/feature/product/data/product.dart';
+import 'package:taste_tube/feature/product/domain/product_repo.dart';
 import 'package:taste_tube/feature/upload/domain/upload_repo.dart';
 import 'package:taste_tube/injection.dart';
 
@@ -9,6 +11,7 @@ import '../data/upload_video_request.dart';
 
 class UploadCubit extends Cubit<UploadState> {
   final UploadRepository uploadRepository;
+  final ProductRepository productRepository;
   final Uint8List thumbnail;
   final String filePath;
   final bool recordedWithFrontCamera;
@@ -16,25 +19,15 @@ class UploadCubit extends Cubit<UploadState> {
   String description = '';
   String selectedVisibility = 'PUBLIC';
   List<String> hashtags = [];
-  Set<String> selectedProducts = {};
-  List<String> availableProducts = [
-    // TODO: change to Product model
-    'Product1',
-    'Product2',
-    'Product3',
-    'Product4',
-    'Product5',
-    'Product6',
-    'Product7',
-    'Product8',
-    'Product9',
-    'Product10',
-  ];
+  Set<String> selectedProductIds = {};
+  List<Product> availableProducts = [];
+
   UploadCubit({
     required this.thumbnail,
     required this.filePath,
     required this.recordedWithFrontCamera,
   })  : uploadRepository = getIt(),
+        productRepository = getIt(),
         super(UploadInitialized());
 
   void setTitle(String value) {
@@ -56,11 +49,27 @@ class UploadCubit extends Cubit<UploadState> {
     emit(UploadInitialized());
   }
 
-  void toggleProductSelection(String product, bool selected) {
+  Future<void> fetchProducts(String userId) async {
+    try {
+      final result = await productRepository.fetchProducts(userId);
+      result.fold(
+        (error) =>
+            emit(UploadFailure(error.message ?? 'Error fetching products')),
+        (products) {
+          availableProducts = products;
+          emit(UploadInitialized());
+        },
+      );
+    } catch (e) {
+      emit(UploadFailure(e.toString()));
+    }
+  }
+
+  void toggleProductSelection(Product product, bool selected) {
     if (selected) {
-      selectedProducts.add(product);
+      selectedProductIds.add(product.id);
     } else {
-      selectedProducts.remove(product);
+      selectedProductIds.remove(product.id);
     }
     emit(UploadInitialized());
   }
@@ -76,7 +85,7 @@ class UploadCubit extends Cubit<UploadState> {
             hashtags,
             recordedWithFrontCamera ? 'FRONT' : 'BACK',
             base64Encode(thumbnail),
-            [],
+            selectedProductIds.toList(),
             selectedVisibility,
           ));
       emit(UploadSuccess());

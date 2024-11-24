@@ -1,10 +1,12 @@
+import 'dart:convert';
+
 class UploadVideoRequest {
   final String title;
   final String description;
   final List<String> hashtags;
   final String direction;
   final String thumbnail;
-  final List<String> products; // TODO: change to Product model
+  final List<String> productIds;
   final String visibility;
 
   const UploadVideoRequest(
@@ -13,7 +15,7 @@ class UploadVideoRequest {
     this.hashtags,
     this.direction,
     this.thumbnail,
-    this.products,
+    this.productIds,
     this.visibility,
   );
 
@@ -21,10 +23,10 @@ class UploadVideoRequest {
     return {
       'title': title,
       'description': description,
-      'hashtags': hashtags,
+      'hashtags': jsonEncode(hashtags),
       'direction': direction,
       'thumbnail': thumbnail,
-      'products': products,
+      'productIds': jsonEncode(productIds),
       'visibility': visibility,
     };
   }

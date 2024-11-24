@@ -1,3 +1,5 @@
+import 'package:taste_tube/feature/product/data/product.dart';
+
 class Video {
   String id;
   String ownerId;
@@ -10,6 +12,7 @@ class Video {
   String? description;
   String? thumbnail;
   List<String>? hashtags;
+  List<Product> products;
   bool userLiked;
   int likes;
   int comments;
@@ -29,6 +32,7 @@ class Video {
     this.description,
     this.thumbnail,
     this.hashtags,
+    required this.products,
     required this.userLiked,
     required this.likes,
     required this.comments,
@@ -50,6 +54,10 @@ class Video {
       description: json['description'],
       thumbnail: json['thumbnail'],
       hashtags: List<String>.from(json['hashtags'] ?? []),
+      products: (json['products'] as List<dynamic>)
+          .map((productJson) =>
+              Product.fromJson(productJson as Map<String, dynamic>))
+          .toList(),
       userLiked: json['userLiked'] as bool,
       likes: (json['likes'] as List<dynamic>).length,
       comments: (json['comments'] as List<dynamic>).length,

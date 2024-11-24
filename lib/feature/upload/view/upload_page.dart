@@ -25,7 +25,7 @@ class UploadPage extends StatelessWidget {
           thumbnail: thumbnail,
           filePath: filePath,
           recordedWithFrontCamera: recordedWithFrontCamera,
-        ),
+        )..fetchProducts(UserDataUtil.getUserId(context)),
         child: const UploadPage(),
       );
 
@@ -152,8 +152,8 @@ class UploadPage extends StatelessWidget {
                               const Spacer(),
                               BlocBuilder<UploadCubit, UploadState>(
                                 builder: (context, state) {
-                                  return Text(
-                                      cubit.selectedProducts.length.toString());
+                                  return Text(cubit.selectedProductIds.length
+                                      .toString());
                                 },
                               ),
                               const SizedBox(width: 20),
@@ -220,8 +220,19 @@ class UploadPage extends StatelessWidget {
                 return BlocBuilder<UploadCubit, UploadState>(
                   builder: (context, state) {
                     return CheckboxListTile(
-                      title: Text(product),
-                      value: cubit.selectedProducts.contains(product),
+                      title: Row(
+                        children: [
+                          Image.network(
+                            product.images[0].url,
+                            width: 45,
+                            height: 45,
+                            fit: BoxFit.cover,
+                          ),
+                          const SizedBox(width: 25),
+                          Text(product.name),
+                        ],
+                      ),
+                      value: cubit.selectedProductIds.contains(product.id),
                       onChanged: (bool? selected) {
                         cubit.toggleProductSelection(
                             product, selected ?? false);

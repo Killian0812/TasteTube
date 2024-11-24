@@ -75,6 +75,17 @@ class SingleVideoRepository {
     }
   }
 
+  Future<Either<ApiError, bool>> deleteVideo(String videoId) async {
+    try {
+      await http.delete(Api.videoApi.replaceFirst(':videoId', videoId));
+      return const Right(true);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
+
   Future<Either<ApiError, bool>> likeVideo(String videoId) async {
     try {
       await http.post(Api.videoLikeApi.replaceFirst(':videoId', videoId));

@@ -35,6 +35,16 @@ class SingleVideoError extends SingleVideoState {
   SingleVideoError(super.video, super.comments, this.message);
 }
 
+class DeleteVideoSuccess extends SingleVideoState {
+  DeleteVideoSuccess(super.video, super.comments);
+}
+
+class DeleteVideoError extends SingleVideoState {
+  final String message;
+
+  DeleteVideoError(super.video, super.comments, this.message);
+}
+
 class SingleVideoCubit extends Cubit<SingleVideoState> {
   final Video video;
   final SingleVideoRepository singleVideoRepo;
@@ -136,6 +146,19 @@ class SingleVideoCubit extends Cubit<SingleVideoState> {
       );
     } catch (e) {
       emit(SingleVideoError(state.video, state.comments, e.toString()));
+    }
+  }
+
+  Future<void> deleteVideo(Video video) async {
+    try {
+      final result = await singleVideoRepo.deleteVideo(state.video.id);
+      result.fold(
+          (error) => emit(DeleteVideoError(state.video, state.comments,
+              error.message ?? 'Error deleting video')), (success) {
+        emit(DeleteVideoSuccess(state.video, state.comments));
+      });
+    } catch (e) {
+      emit(DeleteVideoError(state.video, state.comments, e.toString()));
     }
   }
 

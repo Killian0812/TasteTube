@@ -60,37 +60,51 @@ class _SingleVideoState extends State<SingleVideo>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Center(
-      child: _videoController.value.isInitialized
-          ? Stack(
-              alignment: Alignment.bottomCenter,
-              children: [
-                // Video display
-                SizedBox.expand(
-                  child: FittedBox(
-                    fit: BoxFit.cover,
-                    child: SizedBox(
-                      width: _videoController.value.size.width,
-                      height: _videoController.value.size.height,
-                      child: VideoPlayer(_videoController),
+    final bool isVideoOwner =
+        widget.video.ownerId == UserDataUtil.getUserId(context);
+    return BlocListener<SingleVideoCubit, SingleVideoState>(
+      listener: (context, state) {
+        if (state is DeleteVideoSuccess) {
+          Navigator.of(context).pop();
+          return;
+        }
+        if (state is DeleteVideoError) {
+          ToastService.showToast(context, state.message, ToastType.error);
+        }
+      },
+      child: Center(
+        child: _videoController.value.isInitialized
+            ? Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  // Video display
+                  SizedBox.expand(
+                    child: FittedBox(
+                      fit: BoxFit.cover,
+                      child: SizedBox(
+                        width: _videoController.value.size.width,
+                        height: _videoController.value.size.height,
+                        child: VideoPlayer(_videoController),
+                      ),
                     ),
                   ),
-                ),
-                _videoInfo(),
-                // Center play/pause icon
-                _videoPauseButton(),
-                // Video Scrub
-                _videoScrubber(),
-                // Time indicator
-                if (_isScrubbing || !_videoController.value.isPlaying)
-                  _timeIndicator(),
-                // Video interactions
-                _videoLikes(),
-                _videoComments(),
-                _videoShare(),
-              ],
-            )
-          : const CircularProgressIndicator(color: Colors.white),
+                  _videoInfo(),
+                  // Center play/pause icon
+                  _videoPauseButton(),
+                  // Video Scrub
+                  _videoScrubber(),
+                  // Time indicator
+                  if (_isScrubbing || !_videoController.value.isPlaying)
+                    _timeIndicator(),
+                  // Video interactions
+                  _videoLikes(),
+                  _videoComments(),
+                  _videoShare(),
+                  if (isVideoOwner) _videoSettings(),
+                ],
+              )
+            : const CircularProgressIndicator(color: Colors.white),
+      ),
     );
   }
 
@@ -104,6 +118,37 @@ class _SingleVideoState extends State<SingleVideo>
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Attached products
+              if (widget.video.products.isNotEmpty)
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    _showAttachedProduct(context, widget.video.products);
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 15),
+                    padding: const EdgeInsets.all(10),
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(5)),
+                      color: Colors.black54,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          FontAwesomeIcons.bagShopping,
+                          size: 16,
+                          color: CommonColor.activeBgColor,
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          'Attached products: ${widget.video.products.length.toString()}',
+                          style: CommonTextStyleContrast.bold,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               // Owner info
               GestureDetector(
                   behavior: HitTestBehavior.opaque,
@@ -182,6 +227,166 @@ class _SingleVideoState extends State<SingleVideo>
           ),
         ),
       );
+
+  void _showAttachedProduct(BuildContext context, List<Product> products) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color.fromRGBO(31, 31, 31, 1),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        int currentIndex = 0;
+        return FractionallySizedBox(
+          heightFactor: 0.6,
+          child: StatefulBuilder(
+            builder: (context, snapshot) {
+              return Padding(
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (products.length > 1)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              Icons.arrow_back_ios,
+                              color: currentIndex > 0
+                                  ? Colors.white
+                                  : Colors.transparent,
+                            ),
+                            onPressed: () {
+                              if (currentIndex > 0) {
+                                snapshot(() {
+                                  currentIndex--;
+                                });
+                              }
+                            },
+                          ),
+                          Text(
+                            'Product ${currentIndex + 1} of ${products.length}',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              Icons.arrow_forward_ios,
+                              color: currentIndex < products.length - 1
+                                  ? Colors.white
+                                  : Colors.transparent,
+                            ),
+                            onPressed: () {
+                              if (currentIndex < products.length - 1) {
+                                snapshot(() {
+                                  currentIndex++;
+                                });
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    Expanded(
+                      child: PageView.builder(
+                        itemCount: products.length,
+                        onPageChanged: (index) {
+                          setState(() {
+                            currentIndex = index;
+                          });
+                        },
+                        itemBuilder: (context, index) {
+                          final product = products[currentIndex];
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Swappable product images
+                              Expanded(
+                                child: PageView(
+                                  children: product.images.map((image) {
+                                    return Image.network(image.url,
+                                        fit: BoxFit.cover);
+                                  }).toList(),
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              // Product Info
+                              Text(
+                                product.name,
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              if (product.description != null)
+                                Text(
+                                  product.description!,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              Text(
+                                '${product.cost.toString()} ${product.currency}',
+                                style: const TextStyle(
+                                    fontSize: 16, color: Colors.green),
+                              ),
+                              const SizedBox(height: 10),
+                              // Action Buttons
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        // Add to cart functionality
+                                      },
+                                      style: OutlinedButton.styleFrom(
+                                          backgroundColor: Colors.transparent,
+                                          side: const BorderSide(
+                                              color:
+                                                  CommonColor.activeBgColor)),
+                                      child: const Text(
+                                        'Add to Cart',
+                                        style: TextStyle(
+                                            color: CommonColor.activeBgColor),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        // Buy now functionality
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            CommonColor.activeBgColor,
+                                      ),
+                                      child: const Text(
+                                        'Buy Now',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
 
   Widget _videoPauseButton() => Align(
         alignment: Alignment.center,
@@ -323,7 +528,7 @@ class _SingleVideoState extends State<SingleVideo>
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.black87,
+      backgroundColor: const Color.fromRGBO(31, 31, 31, 1),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -580,6 +785,85 @@ class _SingleVideoState extends State<SingleVideo>
           ),
         ),
       );
+
+  Widget _videoSettings() => Align(
+        alignment: const Alignment(0.9, 0.39),
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            final cubit = context.read<SingleVideoCubit>();
+            _showVideoOptions(context, cubit);
+          },
+          child: const Icon(
+            Icons.more_horiz,
+            color: Colors.white,
+            size: 30,
+          ),
+        ),
+      );
+
+  void _showVideoOptions(BuildContext context, SingleVideoCubit cubit) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color.fromRGBO(31, 31, 31, 1),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.edit, color: Colors.white),
+                title: const Text(
+                  'Edit Video',
+                  style: TextStyle(color: Colors.white),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              const Divider(color: Colors.white30),
+              ListTile(
+                leading: const Icon(Icons.delete, color: Colors.redAccent),
+                title: const Text(
+                  'Delete Video',
+                  style: TextStyle(color: Colors.redAccent),
+                ),
+                onTap: () async {
+                  bool? confirmed = await showConfirmDialog(
+                    context,
+                    title: "Confirm delete video",
+                    body: 'Are you sure you want to delete this video?',
+                    contrast: true,
+                  );
+                  if (confirmed != true) {
+                    return;
+                  }
+                  await cubit.deleteVideo(widget.video);
+                  if (context.mounted) Navigator.pop(context);
+                },
+              ),
+              const Divider(color: Colors.white30),
+              ListTile(
+                leading: const Icon(Icons.cancel, color: Colors.white),
+                title: const Text(
+                  'Cancel',
+                  style: TextStyle(color: Colors.white),
+                ),
+                onTap: () {
+                  Navigator.pop(context); // Close the bottom sheet
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   String _formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
