@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:taste_tube/feature/home/explore/explore_page.dart';
 import 'package:taste_tube/feature/home/reviews/reviews_page.dart';
 
@@ -36,13 +37,21 @@ class _HomePageState extends State<HomePage>
             Tab(text: 'Reviews'),
           ],
         ),
-        body: TabBarView(
-          controller: _tabController,
-          children: const [
-            ExplorePage(),
-            ReviewsPage(),
-          ],
-        ),
+        body: Stack(alignment: Alignment.topRight, children: [
+          TabBarView(
+            controller: _tabController,
+            children: const [
+              ExplorePage(),
+              ReviewsPage(),
+            ],
+          ),
+          IconButton(
+            onPressed: () {
+              context.push('/search');
+            },
+            icon: const Icon(Icons.search),
+          )
+        ]),
       ),
     );
   }

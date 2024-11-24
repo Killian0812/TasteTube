@@ -10,6 +10,7 @@ class User {
   final String? bio;
   final int? followers;
   final int? followings;
+  final String? role;
   final List<Video> videos;
 
   User({
@@ -22,6 +23,7 @@ class User {
     required this.bio,
     this.followers,
     this.followings,
+    this.role,
     required this.videos,
   });
 
@@ -36,6 +38,7 @@ class User {
       bio: json['bio'] as String?,
       followers: json['followers'] as int?,
       followings: json['followings'] as int?,
+      role: json['role'] as String?,
       videos: (json['videos'] as List<dynamic>)
           .map((videoJson) => Video.fromJson(videoJson as Map<String, dynamic>))
           .toList(),

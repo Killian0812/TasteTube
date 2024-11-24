@@ -21,6 +21,9 @@ class Api {
   static const categoryApi = '/product/categories';
   static const productApi = '/product';
 
+  // Content
+  static const searchApi = '/content/search';
+
   // User
   static const userApi = '/users/:userId';
   static const changePasswordApi = '/users/:userId/change_password';

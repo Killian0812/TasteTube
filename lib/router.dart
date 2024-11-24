@@ -42,7 +42,7 @@ final GoRouter _router = GoRouter(
           routes: [
             GoRoute(
               path: '/user',
-              builder: (context, state) => const SplashPage(),
+              builder: (context, state) => const ProfileSkeletonPage(),
             ),
             GoRoute(
               path: '/user/:userId',
@@ -58,6 +58,10 @@ final GoRouter _router = GoRouter(
     GoRoute(
       path: '/camera',
       builder: (context, state) => CameraPage.provider(),
+    ),
+    GoRoute(
+      path: '/search',
+      builder: (context, state) => SearchPage.provider(),
     ),
     GoRoute(
       path: '/watch',

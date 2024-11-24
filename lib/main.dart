@@ -17,11 +17,13 @@ import 'package:taste_tube/feature/home/view/home_page.dart';
 import 'package:taste_tube/feature/inbox/view/inbox_page.dart';
 import 'package:taste_tube/feature/profile/view/profile_page.dart';
 import 'package:taste_tube/feature/product/view/product_page.dart';
+import 'package:taste_tube/feature/search/view/search_page.dart';
 import 'package:taste_tube/feature/watch/data/video.dart';
 import 'package:taste_tube/feature/watch/view/watch_page.dart';
 import 'package:taste_tube/firebase_options.dart';
 import 'package:taste_tube/global_bloc/auth/bloc.dart';
 import 'package:taste_tube/injection.dart';
+import 'package:taste_tube/skeleton/profile_skeleton.dart';
 import 'package:taste_tube/splash/splash_page.dart';
 
 part 'router.dart';
@@ -98,8 +100,6 @@ class Layout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final path = GoRouterState.of(context).fullPath;
-
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is Unauthenticated) {
@@ -109,32 +109,30 @@ class Layout extends StatelessWidget {
       child: Scaffold(
           resizeToAvoidBottomInset: false,
           body: shell,
-          bottomNavigationBar: noBottomNavBarRoutes.contains(path)
-              ? null
-              : BottomNavigationBar(
-                  currentIndex: currentIndex,
-                  onTap: (index) {
-                    shell.goBranch(index);
-                  },
-                  items: const [
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.home),
-                      label: 'Home',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.restaurant_menu),
-                      label: 'Product',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.inbox),
-                      label: 'Inbox',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.person),
-                      label: 'Profile',
-                    ),
-                  ],
-                ),
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: currentIndex,
+            onTap: (index) {
+              shell.goBranch(index);
+            },
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.restaurant_menu),
+                label: 'Product',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.inbox),
+                label: 'Inbox',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person),
+                label: 'Profile',
+              ),
+            ],
+          ),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerDocked,
           floatingActionButton: Container(
@@ -153,7 +151,3 @@ class Layout extends StatelessWidget {
     );
   }
 }
-
-const List<String> noBottomNavBarRoutes = [
-  '/camera',
-];

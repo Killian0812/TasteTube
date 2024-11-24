@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:taste_tube/common/constant.dart';
 import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/common/loading.dart';
 import 'package:taste_tube/common/size.dart';
@@ -15,6 +16,83 @@ import 'package:taste_tube/feature/watch/data/video.dart';
 import 'package:taste_tube/global_bloc/auth/bloc.dart';
 
 part 'profile_page.ext.dart';
+
+class _OwnerProfileInteractions extends StatelessWidget {
+  final User user;
+  const _OwnerProfileInteractions({required this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ElevatedButton.icon(
+          onPressed: () {
+            _showEditProfileDialog(context, user);
+          },
+          icon: const Icon(Icons.edit),
+          label: const Text('Edit profile'),
+        ),
+        const SizedBox(width: 5),
+        ElevatedButton.icon(
+          onPressed: () {
+            _showChangePasswordDialog(context);
+          },
+          icon: const Icon(Icons.password_rounded),
+          label: const Text('Change password'),
+        ),
+      ],
+    );
+  }
+}
+
+class _GuestProfileInteractions extends StatelessWidget {
+  final User user;
+  const _GuestProfileInteractions({required this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    if (user.role == AccountType.customer.value()) {
+      return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        ElevatedButton.icon(
+          onPressed: () {
+            // TODO: Follow/Unfollow this user
+          },
+          icon: const Icon(Icons.add_business),
+          label: const Text('Follow'),
+        )
+      ]);
+    }
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ElevatedButton.icon(
+          onPressed: () {
+            // TODO: Follow/Unfollow this user
+          },
+          icon: const Icon(Icons.add_business),
+          label: const Text('Follow'),
+        ),
+        const SizedBox(width: 5),
+        ElevatedButton.icon(
+          onPressed: () {
+            // TODO: To send review camera page
+          },
+          icon: const Icon(Icons.reviews),
+          label: const Text('Send review'),
+        ),
+        const SizedBox(width: 5),
+        ElevatedButton.icon(
+          onPressed: () {
+            // TODO: To send review camera page
+          },
+          icon: const Icon(Icons.food_bank),
+          label: const Text('View product'),
+        ),
+      ],
+    );
+  }
+}
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -43,37 +121,38 @@ class ProfilePage extends StatelessWidget {
               centerTitle: true,
               title: Text(state.user.username),
               actions: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 20),
-                  child: PopupMenuButton<String>(
-                    icon: const Icon(Icons.menu),
-                    onSelected: (result) async {
-                      switch (result) {
-                        case 'Logout':
-                          bool? confirmed = await showConfirmDialog(
-                            context,
-                            title: "Confirm logout",
-                            body: 'Are you sure you want to logout?',
-                          );
-                          if (confirmed != true) {
-                            return;
-                          }
-                          if (context.mounted) {
-                            final authBloc = context.read<AuthBloc>();
-                            authBloc.add(LogoutEvent());
-                            context.go('/login');
-                          }
-                          break;
-                      }
-                    },
-                    itemBuilder: (context) => [
-                      const PopupMenuItem<String>(
-                        value: 'Logout',
-                        child: Text('Logout'),
-                      ),
-                    ],
+                if (isOwner)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 20),
+                    child: PopupMenuButton<String>(
+                      icon: const Icon(Icons.menu),
+                      onSelected: (result) async {
+                        switch (result) {
+                          case 'Logout':
+                            bool? confirmed = await showConfirmDialog(
+                              context,
+                              title: "Confirm logout",
+                              body: 'Are you sure you want to logout?',
+                            );
+                            if (confirmed != true) {
+                              return;
+                            }
+                            if (context.mounted) {
+                              final authBloc = context.read<AuthBloc>();
+                              authBloc.add(LogoutEvent());
+                              context.go('/login');
+                            }
+                            break;
+                        }
+                      },
+                      itemBuilder: (context) => [
+                        const PopupMenuItem<String>(
+                          value: 'Logout',
+                          child: Text('Logout'),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
               ],
             ),
             body: RefreshIndicator(
@@ -121,27 +200,8 @@ class ProfilePage extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 20),
-                      if (isOwner)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ElevatedButton.icon(
-                              onPressed: () {
-                                _showEditProfileDialog(context, state.user);
-                              },
-                              icon: const Icon(Icons.edit),
-                              label: const Text('Edit profile'),
-                            ),
-                            const SizedBox(width: 5),
-                            ElevatedButton.icon(
-                              onPressed: () {
-                                _showChangePasswordDialog(context);
-                              },
-                              icon: const Icon(Icons.password_rounded),
-                              label: const Text('Change password'),
-                            ),
-                          ],
-                        ),
+                      if (isOwner) _OwnerProfileInteractions(user: state.user),
+                      if (!isOwner) _GuestProfileInteractions(user: state.user),
                       const SizedBox(height: 10),
                       (state.user.bio == null || state.user.bio!.isEmpty)
                           ? const Text('No bio')
@@ -169,7 +229,9 @@ class ProfilePage extends StatelessWidget {
                                 child: TabBarView(
                                   children: [
                                     _buildVideosTab(
-                                        state.user.videos.reversed.toList(), isOwner, state.user),
+                                        state.user.videos.reversed.toList(),
+                                        isOwner,
+                                        state.user),
                                     _buildLikedVideosTab(
                                         []), // TODO: Fetch liked videos
                                   ],
