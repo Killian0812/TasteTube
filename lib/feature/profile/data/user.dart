@@ -8,8 +8,8 @@ class User {
   final String? filename;
   final String? image;
   final String? bio;
-  final int? followers;
-  final int? followings;
+  final List<String> followers;
+  final List<String> followings;
   final String? role;
   final List<Video> videos;
 
@@ -21,8 +21,8 @@ class User {
     required this.filename,
     required this.image,
     required this.bio,
-    this.followers,
-    this.followings,
+    required this.followers,
+    required this.followings,
     this.role,
     required this.videos,
   });
@@ -36,12 +36,34 @@ class User {
       filename: json['filename'] as String?,
       image: json['image'] as String?,
       bio: json['bio'] as String?,
-      followers: json['followers'] as int?,
-      followings: json['followings'] as int?,
+      followers: (json['followers'] as List<dynamic>)
+          .map((followerId) => followerId as String)
+          .toList(),
+      followings: (json['followings'] as List<dynamic>)
+          .map((followerId) => followerId as String)
+          .toList(),
       role: json['role'] as String?,
       videos: (json['videos'] as List<dynamic>)
           .map((videoJson) => Video.fromJson(videoJson as Map<String, dynamic>))
           .toList(),
+    );
+  }
+
+  User copyWith({
+    final List<String>? followers,
+  }) {
+    return User(
+      id: id,
+      phone: phone,
+      email: email,
+      username: username,
+      filename: filename,
+      image: image,
+      bio: bio,
+      followers: followers ?? this.followers,
+      followings: followings,
+      role: role,
+      videos: videos,
     );
   }
 }

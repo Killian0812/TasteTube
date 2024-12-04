@@ -53,6 +53,22 @@ class ProfileCubit extends Cubit<ProfileState> {
       },
     );
   }
+
+  Future<void> followUser(User user, String currentUserId) async {
+    final success = await repository.followUser(userId);
+    if (success) {
+      user.followers.add(currentUserId);
+      emit(ProfileSuccess(user: user));
+    }
+  }
+
+  Future<void> unfollowUser(User user, String currentUserId) async {
+    final success = await repository.unfollowUser(userId);
+    if (success) {
+      user.followers.removeWhere((e) => e == currentUserId);
+      emit(ProfileSuccess(user: user));
+    }
+  }
 }
 
 abstract class ProfileState {}

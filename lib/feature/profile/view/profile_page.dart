@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/constant.dart';
 import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/common/loading.dart';
@@ -14,83 +15,147 @@ import 'package:taste_tube/feature/profile/data/user.dart';
 import 'package:taste_tube/feature/profile/view/profile_cubit.dart';
 import 'package:taste_tube/feature/watch/data/video.dart';
 import 'package:taste_tube/global_bloc/auth/bloc.dart';
+import 'package:taste_tube/utils/user_data.util.dart';
 
 part 'profile_page.ext.dart';
 
 class _OwnerProfileInteractions extends StatelessWidget {
-  final User user;
-  const _OwnerProfileInteractions({required this.user});
+  final ProfileCubit cubit;
+  const _OwnerProfileInteractions({required this.cubit});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        ElevatedButton.icon(
-          onPressed: () {
-            _showEditProfileDialog(context, user);
-          },
-          icon: const Icon(Icons.edit),
-          label: const Text('Edit profile'),
-        ),
-        const SizedBox(width: 5),
-        ElevatedButton.icon(
-          onPressed: () {
-            _showChangePasswordDialog(context);
-          },
-          icon: const Icon(Icons.password_rounded),
-          label: const Text('Change password'),
-        ),
-      ],
+    return BlocBuilder(
+      bloc: cubit,
+      builder: (context, state) {
+        if (state is ProfileSuccess) {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton.icon(
+                onPressed: () {
+                  _showEditProfileDialog(context, state.user);
+                },
+                icon: const Icon(Icons.edit),
+                label: const Text('Edit profile'),
+              ),
+              const SizedBox(width: 5),
+              ElevatedButton.icon(
+                onPressed: () {
+                  _showChangePasswordDialog(context);
+                },
+                icon: const Icon(Icons.password_rounded),
+                label: const Text('Change password'),
+              ),
+            ],
+          );
+        } else {
+          return CommonLoadingIndicator.regular;
+        }
+      },
     );
   }
 }
 
 class _GuestProfileInteractions extends StatelessWidget {
-  final User user;
-  const _GuestProfileInteractions({required this.user});
+  final ProfileCubit cubit;
+  const _GuestProfileInteractions({required this.cubit});
 
   @override
   Widget build(BuildContext context) {
-    if (user.role == AccountType.customer.value()) {
-      return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        ElevatedButton.icon(
-          onPressed: () {
-            // TODO: Follow/Unfollow this user
-          },
-          icon: const Icon(Icons.add_business),
-          label: const Text('Follow'),
-        )
-      ]);
-    }
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        ElevatedButton.icon(
-          onPressed: () {
-            // TODO: Follow/Unfollow this user
-          },
-          icon: const Icon(Icons.add_business),
-          label: const Text('Follow'),
-        ),
-        const SizedBox(width: 5),
-        ElevatedButton.icon(
-          onPressed: () {
-            // TODO: To send review camera page
-          },
-          icon: const Icon(Icons.reviews),
-          label: const Text('Send review'),
-        ),
-        const SizedBox(width: 5),
-        ElevatedButton.icon(
-          onPressed: () {
-            // TODO: To send review camera page
-          },
-          icon: const Icon(Icons.food_bank),
-          label: const Text('View product'),
-        ),
-      ],
-    );
+    final currentUserId = UserDataUtil.getUserId(context);
+    return BlocBuilder(
+        bloc: cubit,
+        builder: (context, state) {
+          if (state is ProfileSuccess) {
+            final followed = state.user.followers.contains(currentUserId);
+
+            if (state.user.role == AccountType.customer.value()) {
+              return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    followed == true
+                        ? ElevatedButton.icon(
+                            onPressed: () async {
+                              await context
+                                  .read<ProfileCubit>()
+                                  .unfollowUser(state.user, currentUserId);
+                            },
+                            icon: const Icon(Icons.person_remove_rounded),
+                            label: const Text('Unfollow'),
+                          )
+                        : ElevatedButton.icon(
+                            onPressed: () async {
+                              await context
+                                  .read<ProfileCubit>()
+                                  .followUser(state.user, currentUserId);
+                            },
+                            icon: const Icon(
+                              Icons.add_business,
+                              color: Colors.white,
+                            ),
+                            label: const Text(
+                              'Follow',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            style: TextButton.styleFrom(
+                                backgroundColor: CommonColor.activeBgColor),
+                          ),
+                  ]);
+            }
+
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                followed == true
+                    ? ElevatedButton.icon(
+                        onPressed: () async {
+                          await context
+                              .read<ProfileCubit>()
+                              .unfollowUser(state.user, currentUserId);
+                        },
+                        icon: const Icon(Icons.person_remove_rounded),
+                        label: const Text('Unfollow'),
+                      )
+                    : ElevatedButton.icon(
+                        onPressed: () async {
+                          await context
+                              .read<ProfileCubit>()
+                              .followUser(state.user, currentUserId);
+                        },
+                        icon: const Icon(
+                          Icons.add_business,
+                          color: Colors.white,
+                        ),
+                        label: const Text(
+                          'Follow',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        style: TextButton.styleFrom(
+                            backgroundColor: CommonColor.activeBgColor),
+                      ),
+                const SizedBox(width: 5),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    // TODO: To send review camera page
+                  },
+                  icon: const Icon(Icons.reviews),
+                  label: const Text('Send review'),
+                ),
+                const SizedBox(width: 5),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    // TODO: To send review camera page
+                  },
+                  icon: const Icon(Icons.food_bank),
+                  label: const Text('View product'),
+                ),
+              ],
+            );
+          } else {
+            return CommonLoadingIndicator.regular;
+          }
+        });
   }
 }
 
@@ -113,9 +178,12 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ProfileCubit, ProfileState>(
       builder: (context, state) {
-        final isOwner = context.read<ProfileCubit>().isOwner;
+        final cubit = context.read<ProfileCubit>();
+        final isOwner = cubit.isOwner;
 
         if (state is ProfileSuccess) {
+          final isRestaurant =
+              state.user.role == AccountType.restaurant.value();
           return Scaffold(
             appBar: AppBar(
               centerTitle: true,
@@ -157,7 +225,7 @@ class ProfilePage extends StatelessWidget {
             ),
             body: RefreshIndicator(
               onRefresh: () async {
-                context.read<ProfileCubit>().init(context);
+                cubit.init(context);
               },
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -193,15 +261,15 @@ class ProfilePage extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           _buildProfileStat(
-                              'Following', state.user.followings ?? 0),
+                              'Following', state.user.followings.length),
                           const SizedBox(width: 20),
                           _buildProfileStat(
-                              'Followers', state.user.followers ?? 0),
+                              'Followers', state.user.followers.length),
                         ],
                       ),
                       const SizedBox(height: 20),
-                      if (isOwner) _OwnerProfileInteractions(user: state.user),
-                      if (!isOwner) _GuestProfileInteractions(user: state.user),
+                      if (isOwner) _OwnerProfileInteractions(cubit: cubit),
+                      if (!isOwner) _GuestProfileInteractions(cubit: cubit),
                       const SizedBox(height: 10),
                       (state.user.bio == null || state.user.bio!.isEmpty)
                           ? const Text('No bio')
@@ -216,14 +284,22 @@ class ProfilePage extends StatelessWidget {
                       const SizedBox(height: 20),
                       Expanded(
                         child: DefaultTabController(
-                          length: 2,
+                          length: (isRestaurant ? 2 : 1) + (isOwner ? 1 : 0),
                           child: Column(
                             children: [
-                              const TabBar(
-                                tabs: [
-                                  Tab(icon: Icon(Icons.grid_on)),
-                                  Tab(icon: Icon(Icons.favorite)),
-                                ],
+                              TabBar(
+                                tabs: isRestaurant
+                                    ? [
+                                        const Tab(icon: Icon(Icons.grid_on)),
+                                        const Tab(icon: Icon(Icons.reviews)),
+                                        if (isOwner)
+                                          const Tab(icon: Icon(Icons.favorite)),
+                                      ]
+                                    : [
+                                        const Tab(icon: Icon(Icons.grid_on)),
+                                        if (isOwner)
+                                          const Tab(icon: Icon(Icons.favorite)),
+                                      ],
                               ),
                               Expanded(
                                 child: TabBarView(
@@ -232,8 +308,12 @@ class ProfilePage extends StatelessWidget {
                                         state.user.videos.reversed.toList(),
                                         isOwner,
                                         state.user),
-                                    _buildLikedVideosTab(
-                                        []), // TODO: Fetch liked videos
+                                    if (isRestaurant)
+                                      _buildReviewsTab(
+                                          []), // TODO: Fetch reviews
+                                    if (isOwner)
+                                      _buildLikedVideosTab(
+                                          []), // TODO: Fetch liked videos
                                   ],
                                 ),
                               ),
@@ -262,7 +342,6 @@ class ProfilePage extends StatelessWidget {
                 heroTag: 'Profile reset',
                 label: const Text('Try again'),
                 onPressed: () {
-                  final cubit = context.read<ProfileCubit>();
                   cubit.init(context);
                 },
               ),
@@ -359,6 +438,23 @@ class ProfilePage extends StatelessWidget {
       itemCount: likedVideos.length,
       itemBuilder: (context, index) {
         return Image.memory(base64Decode(likedVideos[index].thumbnail ?? ''),
+            fit: BoxFit.cover);
+      },
+    );
+  }
+
+  Widget _buildReviewsTab(List<Video> reviews) {
+    // TODO: May change model
+    return GridView.builder(
+      padding: const EdgeInsets.all(8.0),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 5,
+        mainAxisSpacing: 5,
+      ),
+      itemCount: reviews.length,
+      itemBuilder: (context, index) {
+        return Image.memory(base64Decode(reviews[index].thumbnail ?? ''),
             fit: BoxFit.cover);
       },
     );

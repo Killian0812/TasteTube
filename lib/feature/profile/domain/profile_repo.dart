@@ -91,4 +91,36 @@ class UserRepository {
       return Left(ApiError(500, e.toString()));
     }
   }
+
+  Future<bool> followUser(String userId) async {
+    try {
+      final response =
+          await http.put(Api.followUserApi.replaceFirst(':userId', userId));
+      final Map<String, dynamic> json = response.data;
+      final code = json['code'] as int?;
+      if (code == 0) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> unfollowUser(String userId) async {
+    try {
+      final response =
+          await http.put(Api.unfollowUserApi.replaceFirst(':userId', userId));
+      final Map<String, dynamic> json = response.data;
+      final code = json['code'] as int?;
+      if (code == 0) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
 }
