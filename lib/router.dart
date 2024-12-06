@@ -28,6 +28,10 @@ final GoRouter _router = GoRouter(
               path: '/product',
               builder: (context, state) => const ProductPage(),
             ),
+            GoRoute(
+              path: '/shop',
+              builder: (context, state) => const ShopPage(),
+            ),
           ],
         ),
         StatefulShellBranch(
@@ -57,7 +61,8 @@ final GoRouter _router = GoRouter(
     ),
     GoRoute(
       path: '/camera',
-      builder: (context, state) => CameraPage.provider(),
+      builder: (context, state) =>
+          CameraPage.provider(reviewTarget: state.extra as User?),
     ),
     GoRoute(
       path: '/search',

@@ -6,17 +6,22 @@ import 'package:logger/logger.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/loading.dart';
 import 'package:taste_tube/common/theme.dart';
+import 'package:taste_tube/feature/profile/data/user.dart';
 import 'package:taste_tube/feature/record/camera/camera_cubit.dart';
 import 'package:taste_tube/injection.dart';
 
 import '../replay/replay_page.dart';
 
 class CameraPage extends StatelessWidget {
-  const CameraPage({super.key});
+  final User? reviewTarget;
+  const CameraPage({super.key, this.reviewTarget});
 
-  static Widget provider() => BlocProvider(
+  static Widget provider({
+    User? reviewTarget,
+  }) =>
+      BlocProvider(
         create: (_) => CameraCubit()..initCamera(),
-        child: const CameraPage(),
+        child: CameraPage(reviewTarget: reviewTarget),
       );
 
   @override
@@ -52,6 +57,7 @@ class CameraPage extends StatelessWidget {
                 builder: (_) => ReplayPage(
                   filePath: state.filePath,
                   recordedWithFrontCamera: cubit.onFrontCam,
+                  reviewTarget: reviewTarget,
                 ),
               ),
             ).then((_) {

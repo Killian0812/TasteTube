@@ -12,6 +12,8 @@ import 'package:taste_tube/common/fallback.dart';
 import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/common/text.dart';
+import 'package:taste_tube/feature/product/view/shop_page.dart';
+import 'package:taste_tube/feature/profile/data/user.dart';
 import 'package:taste_tube/feature/record/camera/camera_page.dart';
 import 'package:taste_tube/feature/home/view/home_page.dart';
 import 'package:taste_tube/feature/inbox/view/inbox_page.dart';
@@ -100,54 +102,67 @@ class Layout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
+    return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is Unauthenticated) {
           context.go('/login');
         }
       },
-      child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          body: shell,
-          bottomNavigationBar: BottomNavigationBar(
-            currentIndex: currentIndex,
-            onTap: (index) {
-              shell.goBranch(index);
-            },
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home),
-                label: 'Home',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.restaurant_menu),
-                label: 'Product',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.inbox),
-                label: 'Inbox',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.person),
-                label: 'Profile',
-              ),
-            ],
-          ),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerDocked,
-          floatingActionButton: Container(
-              margin: const EdgeInsets.only(top: 20),
-              child: FloatingActionButton(
-                onPressed: () {
-                  context.push('/camera');
-                },
-                backgroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  side: const BorderSide(color: CommonColor.activeBgColor),
-                  borderRadius: BorderRadius.circular(30.0),
+      builder: (context, state) {
+        final isCustomer = state.data?.role == "CUSTOMER";
+        return Scaffold(
+            resizeToAvoidBottomInset: false,
+            body: shell,
+            bottomNavigationBar: BottomNavigationBar(
+              currentIndex: currentIndex,
+              onTap: (index) {
+                if (index == 1 && isCustomer) {
+                  context.go('/shop');
+                } else {
+                  shell.goBranch(index);
+                }
+              },
+              items: [
+                const BottomNavigationBarItem(
+                  icon: Icon(Icons.home),
+                  label: 'Home',
                 ),
-                child: const Icon(Icons.add, color: CommonColor.activeBgColor),
-              ))),
+                isCustomer
+                    ? const BottomNavigationBarItem(
+                        icon: Icon(Icons.shopping_cart),
+                        label: 'Shop',
+                      )
+                    : const BottomNavigationBarItem(
+                        icon: Icon(Icons.restaurant_menu),
+                        label: 'Product',
+                      ),
+                const BottomNavigationBarItem(
+                  icon: Icon(Icons.inbox),
+                  label: 'Inbox',
+                ),
+                const BottomNavigationBarItem(
+                  icon: Icon(Icons.person),
+                  label: 'Profile',
+                ),
+              ],
+            ),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerDocked,
+            floatingActionButton: Container(
+                margin: const EdgeInsets.only(top: 20),
+                child: FloatingActionButton(
+                  onPressed: () {
+                    context.push('/camera');
+                  },
+                  backgroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    side: const BorderSide(color: CommonColor.activeBgColor),
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
+                  child:
+                      const Icon(Icons.add, color: CommonColor.activeBgColor),
+                )));
+      },
     );
   }
 }

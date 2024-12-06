@@ -8,29 +8,34 @@ import 'package:taste_tube/common/button.dart';
 import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/common/toast.dart';
+import 'package:taste_tube/feature/profile/data/user.dart';
 import 'package:taste_tube/feature/upload/view/upload_cubit.dart';
 import 'package:taste_tube/injection.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
 
 class UploadPage extends StatelessWidget {
-  const UploadPage({super.key});
+  final User? reviewTarget;
+  const UploadPage({super.key, this.reviewTarget});
 
   static Widget provider(
     Uint8List thumbnail,
     String filePath,
     bool recordedWithFrontCamera,
+    User? reviewTarget,
   ) =>
       BlocProvider(
         create: (context) => UploadCubit(
           thumbnail: thumbnail,
           filePath: filePath,
           recordedWithFrontCamera: recordedWithFrontCamera,
-        )..fetchProducts(UserDataUtil.getUserId(context)),
-        child: const UploadPage(),
+          reviewTarget: reviewTarget,
+        )..fetchProducts(reviewTarget?.id ?? UserDataUtil.getUserId(context)),
+        child: UploadPage(reviewTarget: reviewTarget),
       );
 
   @override
   Widget build(BuildContext context) {
+    final isReview = reviewTarget != null;
     final cubit = context.read<UploadCubit>();
     return BlocListener<UploadCubit, UploadState>(
         listener: (context, state) {
@@ -52,7 +57,35 @@ class UploadPage extends StatelessWidget {
           }
         },
         child: Scaffold(
-          appBar: AppBar(),
+          appBar: AppBar(
+            centerTitle: true,
+            title: !isReview
+                ? null
+                : Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    const Text(
+                      "Reviewing:    ",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    CircleAvatar(
+                      radius: 20,
+                      foregroundImage: NetworkImage(reviewTarget!.image!),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      reviewTarget!.username,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ]),
+          ),
           body: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -171,7 +204,7 @@ class UploadPage extends StatelessWidget {
                     return CommonButton(
                       isLoading: (state is UploadLoading),
                       onPressed: () {
-                        cubit.uploadVideo();
+                        cubit.uploadVideo(reviewTarget: reviewTarget);
                       },
                       text: "Upload",
                     );

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/feature/product/data/product.dart';
 import 'package:taste_tube/feature/product/domain/product_repo.dart';
+import 'package:taste_tube/feature/profile/data/user.dart';
 import 'package:taste_tube/feature/upload/domain/upload_repo.dart';
 import 'package:taste_tube/injection.dart';
 
@@ -15,6 +16,7 @@ class UploadCubit extends Cubit<UploadState> {
   final Uint8List thumbnail;
   final String filePath;
   final bool recordedWithFrontCamera;
+  final User? reviewTarget;
   String title = '';
   String description = '';
   String selectedVisibility = 'PUBLIC';
@@ -26,6 +28,7 @@ class UploadCubit extends Cubit<UploadState> {
     required this.thumbnail,
     required this.filePath,
     required this.recordedWithFrontCamera,
+    this.reviewTarget,
   })  : uploadRepository = getIt(),
         productRepository = getIt(),
         super(UploadInitialized());
@@ -74,9 +77,13 @@ class UploadCubit extends Cubit<UploadState> {
     emit(UploadInitialized());
   }
 
-  Future<void> uploadVideo() async {
+  Future<void> uploadVideo({User? reviewTarget}) async {
     try {
       emit(UploadLoading());
+      if (reviewTarget != null) {
+        // TODO: Send review
+        return;
+      }
       await uploadRepository.upload(
           filePath,
           UploadVideoRequest(

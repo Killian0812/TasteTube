@@ -137,7 +137,7 @@ class _GuestProfileInteractions extends StatelessWidget {
                 const SizedBox(width: 5),
                 ElevatedButton.icon(
                   onPressed: () {
-                    // TODO: To send review camera page
+                    context.push('/camera', extra: state.user);
                   },
                   icon: const Icon(Icons.reviews),
                   label: const Text('Send review'),
@@ -145,7 +145,7 @@ class _GuestProfileInteractions extends StatelessWidget {
                 const SizedBox(width: 5),
                 ElevatedButton.icon(
                   onPressed: () {
-                    // TODO: To send review camera page
+                    // TODO: To restaurant products page
                   },
                   icon: const Icon(Icons.food_bank),
                   label: const Text('View product'),

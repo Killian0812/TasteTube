@@ -8,17 +8,21 @@ import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/fallback.dart';
 import 'package:taste_tube/common/loading.dart';
 import 'package:taste_tube/common/theme.dart';
+import 'package:taste_tube/feature/profile/data/user.dart';
 import 'package:taste_tube/feature/upload/view/upload_page.dart';
 import 'package:video_player/video_player.dart';
 
 class ReplayPage extends StatefulWidget {
   final String filePath;
   final bool recordedWithFrontCamera;
+  final User? reviewTarget;
 
-  const ReplayPage(
-      {super.key,
-      required this.filePath,
-      required this.recordedWithFrontCamera});
+  const ReplayPage({
+    super.key,
+    required this.filePath,
+    required this.recordedWithFrontCamera,
+    this.reviewTarget,
+  });
 
   @override
   State<ReplayPage> createState() => _ReplayPageState();
@@ -80,6 +84,7 @@ class _ReplayPageState extends State<ReplayPage> {
                         thumbnail,
                         widget.filePath,
                         widget.recordedWithFrontCamera,
+                        widget.reviewTarget,
                       ),
                     ),
                   ).then((_) async => await _videoPlayerController.play());
@@ -98,6 +103,40 @@ class _ReplayPageState extends State<ReplayPage> {
               ),
             ),
           ),
+          if (widget.reviewTarget != null)
+            Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 30.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Reviewing:    ",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    CircleAvatar(
+                      radius: 20,
+                      foregroundImage: NetworkImage(widget.reviewTarget!.image!),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      widget.reviewTarget!.username,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
         ],
       ),
     );
