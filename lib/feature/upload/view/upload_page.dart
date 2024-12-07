@@ -67,7 +67,6 @@ class UploadPage extends StatelessWidget {
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 22,
-                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -81,7 +80,6 @@ class UploadPage extends StatelessWidget {
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 22,
-                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ]),

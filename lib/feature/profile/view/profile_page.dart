@@ -155,10 +155,7 @@ class ProfilePage extends StatelessWidget {
   static Widget provider(String userId) => MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (context) => ProfileCubit(userId)
-              ..init(context)
-              ..getLikedVideos(context),
-          ),
+              create: (context) => ProfileCubit(userId)..init(context)),
           BlocProvider(
             create: (context) => PasswordCubit(userId),
           ),
@@ -238,7 +235,6 @@ class ProfilePage extends StatelessWidget {
           body: RefreshIndicator(
             onRefresh: () async {
               cubit.init(context);
-              cubit.getLikedVideos(context);
             },
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
@@ -303,13 +299,13 @@ class ProfilePage extends StatelessWidget {
                             TabBar(
                               tabs: isRestaurant
                                   ? [
-                                      const Tab(icon: Icon(Icons.grid_on)),
+                                      const Tab(icon: Icon(Icons.grid_view)),
                                       const Tab(icon: Icon(Icons.reviews)),
                                       if (isOwner)
                                         const Tab(icon: Icon(Icons.favorite)),
                                     ]
                                   : [
-                                      const Tab(icon: Icon(Icons.reviews)),
+                                      const Tab(icon: Icon(Icons.grid_view)),
                                       if (isOwner)
                                         const Tab(icon: Icon(Icons.favorite)),
                                     ],
@@ -322,13 +318,14 @@ class ProfilePage extends StatelessWidget {
                                           state.user!.videos.reversed.toList(),
                                           isOwner,
                                         ),
-                                        _buildReviewsTab(
-                                            []), // TODO: Fetch reviews
+                                        _buildReviewsTab(),
                                         if (isOwner) _buildLikedVideosTab(),
                                       ]
                                     : [
-                                        _buildTargetReviewsTab(
-                                            []), // TODO: Fetch reviews
+                                        _buildVideosTab(
+                                          state.user!.videos.reversed.toList(),
+                                          isOwner,
+                                        ),
                                         if (isOwner) _buildLikedVideosTab(),
                                       ],
                               ),
@@ -360,7 +357,7 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // TODO: May separate
+  // TODO: May separate fetch request from User
   Widget _buildVideosTab(List<Video> videos, bool isOwner) {
     return GridView.builder(
       padding: const EdgeInsets.all(8.0),
@@ -423,70 +420,68 @@ class ProfilePage extends StatelessWidget {
   }
 
   Widget _buildLikedVideosTab() {
-    return BlocBuilder<ProfileCubit, ProfileState>(builder: (context, state) {
-      return GridView.builder(
-        padding: const EdgeInsets.all(8.0),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          crossAxisSpacing: 5,
-          mainAxisSpacing: 5,
-        ),
-        itemCount: state.likedVideos.length,
-        itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: () {
-              context.push('/watch', extra: {
-                'videos': state.likedVideos,
-                'initialIndex': index,
-              });
-            },
-            child: Stack(
-              children: [
-                Image.memory(
-                  base64Decode(state.likedVideos[index].thumbnail ?? ''),
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  height: double.infinity,
-                ),
-              ],
-            ),
-          );
-        },
-      );
-    });
+    return BlocBuilder<ProfileCubit, ProfileState>(
+        builder: (context, state) => GridView.builder(
+              padding: const EdgeInsets.all(8.0),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 5,
+                mainAxisSpacing: 5,
+              ),
+              itemCount: state.likedVideos.length,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () {
+                    context.push('/watch', extra: {
+                      'videos': state.likedVideos,
+                      'initialIndex': index,
+                    });
+                  },
+                  child: Stack(
+                    children: [
+                      Image.memory(
+                        base64Decode(state.likedVideos[index].thumbnail ?? ''),
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ));
   }
 
-  Widget _buildReviewsTab(List<Video> reviews) {
-    // TODO: May change model
-    return GridView.builder(
-      padding: const EdgeInsets.all(8.0),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        crossAxisSpacing: 5,
-        mainAxisSpacing: 5,
-      ),
-      itemCount: reviews.length,
-      itemBuilder: (context, index) {
-        return Image.memory(base64Decode(reviews[index].thumbnail ?? ''),
-            fit: BoxFit.cover);
-      },
-    );
-  }
-
-  Widget _buildTargetReviewsTab(List<Video> reviews) {
-    // TODO: May change model
-    return GridView.builder(
-      padding: const EdgeInsets.all(8.0),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        crossAxisSpacing: 5,
-        mainAxisSpacing: 5,
-      ),
-      itemCount: reviews.length,
-      itemBuilder: (context, index) {
-        return Image.memory(base64Decode(reviews[index].thumbnail ?? ''),
-            fit: BoxFit.cover);
-      },
-    );
+  Widget _buildReviewsTab() {
+    return BlocBuilder<ProfileCubit, ProfileState>(
+        builder: (context, state) => GridView.builder(
+              padding: const EdgeInsets.all(8.0),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 5,
+                mainAxisSpacing: 5,
+              ),
+              itemCount: state.reviews.length,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () {
+                    context.push('/watch', extra: {
+                      'videos': state.reviews,
+                      'initialIndex': index,
+                    });
+                  },
+                  child: Stack(
+                    children: [
+                      Image.memory(
+                        base64Decode(state.reviews[index].thumbnail ?? ''),
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ));
   }
 }

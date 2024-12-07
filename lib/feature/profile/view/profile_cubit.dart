@@ -24,22 +24,31 @@ class ProfileCubit extends Cubit<ProfileState> {
       (apiError) {
         emit(ProfileFailure(state.user, apiError.message!));
       },
-      (user) {
-        emit(ProfileSuccess(user));
+      (user) async {
+        final likedVideos = await getLikedVideos();
+        final reviews = await getReviews();
+        emit(ProfileSuccess(
+          user,
+          likedVideos: likedVideos ?? [],
+          reviews: reviews ?? [],
+        ));
       },
     );
   }
 
-  Future<void> getLikedVideos(BuildContext context) async {
-    if (state.user == null) init(context);
+  Future<List<Video>?> getLikedVideos() async {
     final either = await repository.getLikedVideos();
-    either.match(
-      (apiError) {
-        emit(ProfileFailure(state.user, apiError.message!));
-      },
-      (videos) {
-        emit(ProfileLikedVideoSuccess(state.user, userLikedVideos: videos));
-      },
+    return either.match(
+      (apiError) => null,
+      (videos) => videos,
+    );
+  }
+
+  Future<List<Video>?> getReviews() async {
+    final either = await repository.getReviews(userId);
+    return either.match(
+      (apiError) => null,
+      (videos) => videos,
     );
   }
 
@@ -88,31 +97,26 @@ class ProfileCubit extends Cubit<ProfileState> {
 abstract class ProfileState {
   final User? user;
   final List<Video> likedVideos;
-  ProfileState(this.user, {this.likedVideos = const []});
+  final List<Video> reviews;
+  ProfileState(
+    this.user, {
+    this.likedVideos = const [],
+    this.reviews = const [],
+  });
 }
 
 class ProfileLoading extends ProfileState {
-  ProfileLoading(super.user);
+  ProfileLoading(super.user, {super.likedVideos, super.reviews});
 }
 
 class ProfileSuccess extends ProfileState {
-  ProfileSuccess(super.user);
-}
-
-class ProfileLikedVideoSuccess extends ProfileState {
-  final List<Video> userLikedVideos;
-
-  ProfileLikedVideoSuccess(super.user, {this.userLikedVideos = const []})
-      : super(likedVideos: userLikedVideos);
-
-  @override
-  List<Video> get likedVideos => userLikedVideos;
+  ProfileSuccess(super.user, {super.likedVideos, super.reviews});
 }
 
 class ProfileFailure extends ProfileState {
   final String message;
 
-  ProfileFailure(super.user, this.message);
+  ProfileFailure(super.user, this.message, {super.likedVideos, super.reviews});
 }
 
 class PasswordCubit extends Cubit<PasswordState> {

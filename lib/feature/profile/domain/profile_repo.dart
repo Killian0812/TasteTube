@@ -41,6 +41,22 @@ class UserRepository {
     }
   }
 
+  Future<Either<ApiError, List<Video>>> getReviews(String targetUserId) async {
+    try {
+      final response = await http.get(Api.reviewVideoApi,
+          queryParameters: {'targetUserId': targetUserId});
+      final json = response.data as Map<String, dynamic>;
+      final videos = (json['videos'] as List<dynamic>)
+          .map((videoJson) => Video.fromJson(videoJson as Map<String, dynamic>))
+          .toList();
+      return Right(videos);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
+
   Future<Either<ApiError, String>> changePassword(String userId,
       String oldPassword, String newPassword, String matchPassword) async {
     try {

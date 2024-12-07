@@ -89,6 +89,7 @@ class _SingleVideoState extends State<SingleVideo>
                     ),
                   ),
                   _videoInfo(),
+                  _reviewTarget(),
                   // Center play/pause icon
                   _videoPauseButton(),
                   // Video Scrub
@@ -107,6 +108,54 @@ class _SingleVideoState extends State<SingleVideo>
       ),
     );
   }
+
+  Widget _reviewTarget() => Align(
+        alignment: Alignment.bottomRight,
+        child: Container(
+          margin: const EdgeInsets.only(right: 25, bottom: 50),
+          child: widget.video.targetUserId == null
+              ? const SizedBox.shrink()
+              : GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              ProfilePage.provider(widget.video.targetUserId!)),
+                    );
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 15),
+                    padding: const EdgeInsets.all(10),
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(5)),
+                      color: Colors.black54,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Reviewing:     ',
+                          style: CommonTextStyleContrast.bold
+                              .copyWith(fontStyle: FontStyle.italic),
+                        ),
+                        CircleAvatar(
+                          radius: 12,
+                          foregroundImage:
+                              NetworkImage(widget.video.targetUserImage!),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          widget.video.targetUsername!,
+                          style: CommonTextStyleContrast.bold,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+        ),
+      );
 
   Widget _videoInfo() => Align(
         alignment: Alignment.bottomLeft,
@@ -149,6 +198,7 @@ class _SingleVideoState extends State<SingleVideo>
                     ),
                   ),
                 ),
+
               // Owner info
               GestureDetector(
                   behavior: HitTestBehavior.opaque,
@@ -158,7 +208,7 @@ class _SingleVideoState extends State<SingleVideo>
                       Navigator.of(context).pop();
                       return;
                     }
-                    // Must use Navigator.push instead of go_router 
+                    // Must use Navigator.push instead of go_router
                     // because push a same shellroute onto itself throw exception
                     Navigator.push(
                       context,
@@ -185,6 +235,7 @@ class _SingleVideoState extends State<SingleVideo>
                     ],
                   )),
               const SizedBox(height: 10),
+
               // Title
               if (widget.video.title != null)
                 Padding(
@@ -198,6 +249,7 @@ class _SingleVideoState extends State<SingleVideo>
                     ),
                   ),
                 ),
+
               // Description
               if (widget.video.description != null)
                 Padding(

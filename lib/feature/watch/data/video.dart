@@ -17,6 +17,9 @@ class Video {
   int likes;
   int comments;
   String visibility;
+  String? targetUserId;
+  String? targetUsername;
+  String? targetUserImage;
   DateTime createdAt;
   DateTime updatedAt;
 
@@ -37,6 +40,9 @@ class Video {
     required this.likes,
     required this.comments,
     required this.visibility,
+    this.targetUserId,
+    this.targetUsername,
+    this.targetUserImage,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -62,6 +68,9 @@ class Video {
       likes: (json['likes'] as List<dynamic>).length,
       comments: (json['comments'] as List<dynamic>).length,
       visibility: json['visibility'] ?? 'PUBLIC',
+      targetUserId: json['targetUserId']?['_id'] as String?,
+      targetUsername: json['targetUserId']?['username'] as String?,
+      targetUserImage: json['targetUserId']?['image'] as String?,
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
     );
