@@ -80,10 +80,6 @@ class UploadCubit extends Cubit<UploadState> {
   Future<void> uploadVideo({User? reviewTarget}) async {
     try {
       emit(UploadLoading());
-      if (reviewTarget != null) {
-        // TODO: Send review
-        return;
-      }
       await uploadRepository.upload(
           filePath,
           UploadVideoRequest(
@@ -94,6 +90,7 @@ class UploadCubit extends Cubit<UploadState> {
             base64Encode(thumbnail),
             selectedProductIds.toList(),
             selectedVisibility,
+            reviewTarget?.id
           ));
       emit(UploadSuccess());
     } catch (e) {

@@ -153,7 +153,19 @@ class _SingleVideoState extends State<SingleVideo>
               GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: () {
-                    Navigator.of(context).pop();
+                    if (widget.video.ownerId ==
+                        UserDataUtil.getUserId(context)) {
+                      Navigator.of(context).pop();
+                      return;
+                    }
+                    // Must use Navigator.push instead of go_router 
+                    // because push a same shellroute onto itself throw exception
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              ProfilePage.provider(widget.video.ownerId)),
+                    );
                   },
                   child: Row(
                     children: [

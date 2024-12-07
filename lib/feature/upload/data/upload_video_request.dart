@@ -8,6 +8,7 @@ class UploadVideoRequest {
   final String thumbnail;
   final List<String> productIds;
   final String visibility;
+  final String? targetUserId;
 
   const UploadVideoRequest(
     this.title,
@@ -17,6 +18,7 @@ class UploadVideoRequest {
     this.thumbnail,
     this.productIds,
     this.visibility,
+    this.targetUserId,
   );
 
   Map<String, dynamic> toJson() {
@@ -28,6 +30,7 @@ class UploadVideoRequest {
       'thumbnail': thumbnail,
       'productIds': jsonEncode(productIds),
       'visibility': visibility,
+      if (targetUserId != null) 'targetUserId': targetUserId,
     };
   }
 }

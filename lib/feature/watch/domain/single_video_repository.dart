@@ -99,7 +99,7 @@ class SingleVideoRepository {
 
   Future<Either<ApiError, bool>> unlikeVideo(String videoId) async {
     try {
-      await http.post(Api.videoLikeApi.replaceFirst(':videoId', videoId));
+      await http.delete(Api.videoUnlikeApi.replaceFirst(':videoId', videoId));
       return const Right(true);
     } on DioException catch (e) {
       return Left(ApiError.fromDioException(e));

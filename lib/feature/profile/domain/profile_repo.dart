@@ -6,6 +6,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/common/error.dart';
 import 'package:taste_tube/feature/profile/data/user.dart';
+import 'package:taste_tube/feature/watch/data/video.dart';
 
 class UserRepository {
   final Dio http;
@@ -18,6 +19,21 @@ class UserRepository {
           await http.get(Api.userApi.replaceFirst(':userId', userId));
       final userResponse = User.fromJson(response.data);
       return Right(userResponse);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
+
+  Future<Either<ApiError, List<Video>>> getLikedVideos() async {
+    try {
+      final response = await http.get(Api.likedVideoApi);
+      final json = response.data as Map<String, dynamic>;
+      final videos = (json['videos'] as List<dynamic>)
+          .map((videoJson) => Video.fromJson(videoJson as Map<String, dynamic>))
+          .toList();
+      return Right(videos);
     } on DioException catch (e) {
       return Left(ApiError.fromDioException(e));
     } catch (e) {

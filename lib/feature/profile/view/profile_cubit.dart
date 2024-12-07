@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/feature/profile/data/user.dart';
 import 'package:taste_tube/feature/profile/domain/profile_repo.dart';
+import 'package:taste_tube/feature/watch/data/video.dart';
 import 'package:taste_tube/global_bloc/auth/bloc.dart';
 import 'package:taste_tube/injection.dart';
 
@@ -14,17 +15,30 @@ class ProfileCubit extends Cubit<ProfileState> {
 
   ProfileCubit(this.userId)
       : repository = getIt<UserRepository>(),
-        super(ProfileLoading());
+        super(ProfileLoading(null));
 
   Future<void> init(BuildContext context) async {
     isOwner = (context.read<AuthBloc>().state.data?.userId == userId);
     final either = await repository.getInfo(userId);
     either.match(
       (apiError) {
-        emit(ProfileFailure(apiError.message!));
+        emit(ProfileFailure(state.user, apiError.message!));
       },
       (user) {
-        emit(ProfileSuccess(user: user));
+        emit(ProfileSuccess(user));
+      },
+    );
+  }
+
+  Future<void> getLikedVideos(BuildContext context) async {
+    if (state.user == null) init(context);
+    final either = await repository.getLikedVideos();
+    either.match(
+      (apiError) {
+        emit(ProfileFailure(state.user, apiError.message!));
+      },
+      (videos) {
+        emit(ProfileLikedVideoSuccess(state.user, userLikedVideos: videos));
       },
     );
   }
@@ -46,10 +60,10 @@ class ProfileCubit extends Cubit<ProfileState> {
     );
     either.match(
       (apiError) {
-        emit(ProfileFailure(apiError.message!));
+        emit(ProfileFailure(state.user, apiError.message!));
       },
       (user) {
-        emit(ProfileSuccess(user: user));
+        emit(ProfileSuccess(user));
       },
     );
   }
@@ -58,7 +72,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     final success = await repository.followUser(userId);
     if (success) {
       user.followers.add(currentUserId);
-      emit(ProfileSuccess(user: user));
+      emit(ProfileSuccess(user));
     }
   }
 
@@ -66,25 +80,39 @@ class ProfileCubit extends Cubit<ProfileState> {
     final success = await repository.unfollowUser(userId);
     if (success) {
       user.followers.removeWhere((e) => e == currentUserId);
-      emit(ProfileSuccess(user: user));
+      emit(ProfileSuccess(user));
     }
   }
 }
 
-abstract class ProfileState {}
+abstract class ProfileState {
+  final User? user;
+  final List<Video> likedVideos;
+  ProfileState(this.user, {this.likedVideos = const []});
+}
 
-class ProfileLoading extends ProfileState {}
+class ProfileLoading extends ProfileState {
+  ProfileLoading(super.user);
+}
 
 class ProfileSuccess extends ProfileState {
-  final User user;
+  ProfileSuccess(super.user);
+}
 
-  ProfileSuccess({required this.user});
+class ProfileLikedVideoSuccess extends ProfileState {
+  final List<Video> userLikedVideos;
+
+  ProfileLikedVideoSuccess(super.user, {this.userLikedVideos = const []})
+      : super(likedVideos: userLikedVideos);
+
+  @override
+  List<Video> get likedVideos => userLikedVideos;
 }
 
 class ProfileFailure extends ProfileState {
   final String message;
 
-  ProfileFailure(this.message);
+  ProfileFailure(super.user, this.message);
 }
 
 class PasswordCubit extends Cubit<PasswordState> {

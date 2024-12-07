@@ -13,6 +13,7 @@ import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/product/data/product.dart';
+import 'package:taste_tube/feature/profile/view/profile_page.dart';
 import 'package:taste_tube/feature/watch/data/comment.dart';
 import 'package:taste_tube/feature/watch/data/video.dart';
 import 'package:taste_tube/feature/watch/view/single_video_cubit.dart';

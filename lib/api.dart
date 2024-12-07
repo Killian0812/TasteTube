@@ -11,10 +11,12 @@ class Api {
   static const refreshApi = '/refresh';
 
   // Features
-  // Video upload
+  // Video
   static const uploadVideoApi = '/videos';
+  static const likedVideoApi = '/videos/liked';
   static const videoApi = '/videos/:videoId';
   static const videoLikeApi = '/videos/:videoId/like';
+  static const videoUnlikeApi = '/videos/:videoId/unlike';
   static const videoCommentApi = '/videos/:videoId/comment';
 
   // Product
