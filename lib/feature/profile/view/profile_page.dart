@@ -138,7 +138,13 @@ class _GuestProfileInteractions extends StatelessWidget {
               const SizedBox(width: 5),
               ElevatedButton.icon(
                 onPressed: () {
-                  // TODO: To restaurant products page
+                  context.pushNamed('single-shop', pathParameters: {
+                    'shopId': state.user!.id,
+                  }, extra: {
+                    'shopImage': state.user!.image,
+                    'shopName': state.user!.username,
+                    'shopPhone': state.user!.phone,
+                  });
                 },
                 icon: const Icon(Icons.food_bank),
                 label: const Text('Products'),

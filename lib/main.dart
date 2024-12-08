@@ -20,6 +20,7 @@ import 'package:taste_tube/feature/inbox/view/inbox_page.dart';
 import 'package:taste_tube/feature/profile/view/profile_page.dart';
 import 'package:taste_tube/feature/product/view/product_page.dart';
 import 'package:taste_tube/feature/search/view/search_page.dart';
+import 'package:taste_tube/feature/shop/view/single_shop_page.dart';
 import 'package:taste_tube/feature/watch/data/video.dart';
 import 'package:taste_tube/feature/watch/view/watch_page.dart';
 import 'package:taste_tube/firebase_options.dart';
@@ -130,7 +131,7 @@ class Layout extends StatelessWidget {
                 isCustomer
                     ? const BottomNavigationBarItem(
                         icon: Icon(Icons.shopping_basket_rounded),
-                        label: 'Shop',
+                        label: 'Shopping',
                       )
                     : const BottomNavigationBarItem(
                         icon: Icon(Icons.restaurant_menu),

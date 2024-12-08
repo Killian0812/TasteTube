@@ -36,4 +36,37 @@ class ShopRepository {
       return Left(ApiError(500, e.toString()));
     }
   }
+
+  Future<Either<ApiError, List<Product>>> getSingleShopProducts(
+      String shopId) async {
+    try {
+      final response =
+          await http.get(Api.singleShopApi.replaceFirst(':shopId', shopId));
+      final List<dynamic> data = response.data;
+      final products = data.map((json) => Product.fromJson(json)).toList();
+      return Right(products);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
+
+  Future<Either<ApiError, List<Product>>> searchSingleShopProducts(
+      String shopId, String keyword) async {
+    try {
+      final response = await http.get(
+          Api.singleShopSearchApi.replaceFirst(':shopId', shopId),
+          queryParameters: {
+            'keyword': keyword,
+          });
+      final List<dynamic> data = response.data;
+      final products = data.map((json) => Product.fromJson(json)).toList();
+      return Right(products);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
 }

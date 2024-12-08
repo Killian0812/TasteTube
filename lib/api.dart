@@ -27,6 +27,8 @@ class Api {
   // Shop
   static const shopRecommendedApi = '/shop/recommended';
   static const shopSearchApi = '/shop/search';
+  static const singleShopApi = '/shop/:shopId';
+  static const singleShopSearchApi = '/shop/:shopId/search';
 
   // Content
   static const searchApi = '/content/search';

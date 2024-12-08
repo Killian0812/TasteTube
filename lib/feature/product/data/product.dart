@@ -6,6 +6,7 @@ class Product {
   final String name;
   final double cost;
   final String currency;
+  final bool ship;
   final String? description;
   final int quantity;
   final String? categoryName;
@@ -22,6 +23,7 @@ class Product {
     required this.name,
     required this.cost,
     required this.currency,
+    required this.ship,
     this.description,
     required this.quantity,
     this.categoryName,
@@ -40,6 +42,7 @@ class Product {
       name: json['name'] as String,
       cost: (json['cost'] as num).toDouble(),
       currency: json['currency'] as String,
+      ship: json['ship'] as bool,
       description: json['description'] as String?,
       quantity: json['quantity'] as int,
       categoryName: json['category']['name'] as String?,

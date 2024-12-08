@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/feature/product/data/product.dart';
 import 'package:taste_tube/feature/profile/view/profile_page.dart';
@@ -17,7 +18,7 @@ class SingleShopProductPage extends StatelessWidget {
       body: ListView(
         children: [
           _ProductImages(images: product.images),
-          _buildProductDetails(),
+          _buildProductDetails(context),
           _buildOwnerInfo(context),
           _buildActionButtons(context),
         ],
@@ -25,7 +26,7 @@ class SingleShopProductPage extends StatelessWidget {
     );
   }
 
-  Widget _buildProductDetails() {
+  Widget _buildProductDetails(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -41,7 +42,12 @@ class SingleShopProductPage extends StatelessWidget {
           if (product.categoryId != null)
             GestureDetector(
               onTap: () {
-                // TODO: Show products in same category
+                context.pushNamed('single-shop', pathParameters: {
+                  'shopId': product.userId,
+                }, extra: {
+                  'shopImage': product.userImage,
+                  'shopName': product.username,
+                });
               },
               child: Container(
                 margin: const EdgeInsets.symmetric(vertical: 10),
@@ -75,14 +81,17 @@ class SingleShopProductPage extends StatelessWidget {
               ),
             ),
           const SizedBox(height: 8),
-          Text(
-            product.description ?? 'No description available.',
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.grey,
+          if (product.description != null &&
+              product.description!.isNotEmpty) ...[
+            Text(
+              product.description!,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
+            const SizedBox(height: 16),
+          ],
           Text(
             'Price: ${product.currency} ${product.cost.toStringAsFixed(2)}',
             style: const TextStyle(
@@ -202,14 +211,14 @@ class _ProductImagesState extends State<_ProductImages> {
       alignment: Alignment.bottomRight,
       children: [
         SizedBox(
-          height: 250,
+          height: 350,
           child: PageView.builder(
             controller: _pageController,
             itemCount: widget.images.length,
             itemBuilder: (context, index) {
               return Image.network(
                 widget.images[index].url,
-                fit: BoxFit.cover,
+                fit: BoxFit.fill,
                 width: double.infinity,
               );
             },

@@ -60,6 +60,18 @@ final GoRouter _router = GoRouter(
       ],
     ),
     GoRoute(
+        path: '/shop/:shopId',
+        name: 'single-shop',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return SingleShopPage.provider(
+            state.pathParameters['shopId'] ?? '',
+            extra?['shopImage'] ?? '',
+            extra?['shopName'] ?? '',
+            extra?['shopPhone'],
+          );
+        }),
+    GoRoute(
       path: '/camera',
       builder: (context, state) =>
           CameraPage.provider(reviewTarget: state.extra as User?),

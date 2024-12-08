@@ -4,6 +4,7 @@ import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/product/data/product.dart';
+import 'package:taste_tube/feature/shop/view/cart_page.dart';
 import 'package:taste_tube/feature/shop/view/shop_cubit.dart';
 import 'package:taste_tube/feature/shop/view/single_shop_product_page.dart';
 
@@ -29,13 +30,19 @@ class _ShopPageState extends State<ShopPage> {
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          centerTitle: true,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               CommonTextWidget.tasteTubeMini,
               const SizedBox(width: 10),
@@ -48,22 +55,20 @@ class _ShopPageState extends State<ShopPage> {
               ),
             ],
           ),
+          centerTitle: true,
+          actions: const [CartButton()],
         ),
-        body: MultiBlocListener(
-          listeners: [
-            BlocListener<ShopCubit, ShopState>(
-              listenWhen: (previous, current) => current is ShopError,
-              listener: (context, state) {
-                if (state is ShopError) {
-                  ToastService.showToast(
-                      context, state.message!, ToastType.warning);
-                }
-              },
-            ),
-          ],
+        body: BlocListener<ShopCubit, ShopState>(
+          listenWhen: (previous, current) => current is ShopError,
+          listener: (context, state) {
+            if (state is ShopError) {
+              ToastService.showToast(
+                  context, state.message!, ToastType.warning);
+            }
+          },
           child: Column(
             children: [
-              _buildSearchBarAndCart(),
+              _buildSearchBar(),
               _buildTabBar(),
               Expanded(
                 child: BlocBuilder<ShopCubit, ShopState>(
@@ -83,59 +88,22 @@ class _ShopPageState extends State<ShopPage> {
     );
   }
 
-  Widget _buildSearchBarAndCart() {
+  Widget _buildSearchBar() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: _searchController,
-              onSubmitted: (keyword) {
-                if (keyword.isNotEmpty) {
-                  context.read<ShopCubit>().searchProducts(keyword);
-                } else {
-                  context.read<ShopCubit>().getRecommendedProducts();
-                }
-              },
-              decoration: const InputDecoration(
-                hintText: 'Search products...',
-                prefixIcon: Icon(Icons.search),
-              ),
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            child: Stack(
-              alignment: Alignment.topRight,
-              clipBehavior: Clip.none,
-              children: [
-                const Icon(Icons.shopping_cart, size: 35),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 2),
-                  ),
-                  constraints: const BoxConstraints(
-                    minWidth: 20,
-                    minHeight: 20,
-                  ),
-                  child: const Center(
-                    child: Text(
-                      '3', // TODO: Replace with the actual number of items
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          )
-        ],
+      child: TextField(
+        controller: _searchController,
+        onSubmitted: (keyword) {
+          if (keyword.isNotEmpty) {
+            context.read<ShopCubit>().searchProducts(keyword);
+          } else {
+            context.read<ShopCubit>().getRecommendedProducts();
+          }
+        },
+        decoration: const InputDecoration(
+          hintText: 'Search products...',
+          prefixIcon: Icon(Icons.search),
+        ),
       ),
     );
   }
@@ -152,7 +120,7 @@ class _ShopPageState extends State<ShopPage> {
               Tab(icon: Icon(Icons.shopping_basket_rounded), text: 'Shop'),
               Tab(icon: Icon(Icons.receipt_long), text: 'Order'),
               Tab(icon: Icon(Icons.card_giftcard), text: 'Voucher'),
-              Tab(icon: Icon(Icons.location_on), text: 'Location'),
+              Tab(icon: Icon(Icons.location_on), text: 'Address'),
               Tab(icon: Icon(Icons.payment), text: 'Payment'),
             ],
           ),

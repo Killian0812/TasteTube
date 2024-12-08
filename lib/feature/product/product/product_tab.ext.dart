@@ -25,6 +25,7 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
   late String selectedCurrency;
   late String? selectedCategory;
   List<File> selectedImages = [];
+  late bool ship;
 
   @override
   void initState() {
@@ -35,6 +36,7 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
         TextEditingController(text: product?.quantity.toString() ?? '0');
     selectedCurrency = product?.currency ?? "VND";
     selectedCategory = product?.categoryId;
+    ship = product?.ship ?? true;
     super.initState();
   }
 
@@ -161,6 +163,27 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
                 },
               ),
               const SizedBox(height: 20),
+              Row(
+                children: [
+                  const Text("Ship:  "),
+                  AnimatedToggleSwitch<bool>.dual(
+                    current: ship,
+                    first: false,
+                    second: true,
+                    borderWidth: 5.0,
+                    height: 30,
+                    onChanged: (bool value) => setState(() => ship = value),
+                    iconBuilder: (value) => value
+                        ? const Icon(Icons.local_shipping,
+                            color: CommonColor.activeBgColor)
+                        : const Icon(Icons.not_interested, color: Colors.grey),
+                    textBuilder: (value) => value
+                        ? const Center(child: Text('Yes'))
+                        : const Center(child: Text('No')),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
               BlocBuilder<ProductCubit, ProductState>(
                 bloc: widget.productCubit,
                 builder: (context, state) {
@@ -184,6 +207,7 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
                           name,
                           cost,
                           selectedCurrency,
+                          ship,
                           description,
                           quantity,
                           selectedCategory!,

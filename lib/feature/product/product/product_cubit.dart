@@ -86,6 +86,7 @@ class ProductCubit extends Cubit<ProductState> {
     String name,
     double cost,
     String currency,
+    bool ship,
     String description,
     int quantity,
     String categoryId,
@@ -96,10 +97,10 @@ class ProductCubit extends Cubit<ProductState> {
       emit(ProductLoading(state.categorizedProducts));
       bool isNew = product == null;
       final Either<ApiError, Product> result = isNew
-          ? await productRepository.addProduct(
-              name, cost, currency, description, quantity, categoryId, images)
+          ? await productRepository.addProduct(name, cost, currency, ship,
+              description, quantity, categoryId, images)
           : await productRepository.updateProduct(product, name, cost, currency,
-              description, quantity, categoryId, images);
+              ship, description, quantity, categoryId, images);
       bool success = false;
       result.fold(
         (error) => emit(CreateProductError(state.categorizedProducts,
