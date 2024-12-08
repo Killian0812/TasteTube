@@ -25,7 +25,7 @@ class ProfileCubit extends Cubit<ProfileState> {
         emit(ProfileFailure(state.user, apiError.message!));
       },
       (user) async {
-        final likedVideos = await getLikedVideos();
+        final likedVideos = isOwner ? await getLikedVideos() : null;
         final reviews = await getReviews();
         emit(ProfileSuccess(
           user,

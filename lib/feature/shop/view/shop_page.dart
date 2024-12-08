@@ -5,6 +5,7 @@ import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/product/data/product.dart';
 import 'package:taste_tube/feature/shop/view/shop_cubit.dart';
+import 'package:taste_tube/feature/shop/view/single_shop_product_page.dart';
 
 class ShopPage extends StatefulWidget {
   const ShopPage({super.key});
@@ -62,7 +63,7 @@ class _ShopPageState extends State<ShopPage> {
           ],
           child: Column(
             children: [
-              _buildSearchBar(),
+              _buildSearchBarAndCart(),
               _buildTabBar(),
               Expanded(
                 child: BlocBuilder<ShopCubit, ShopState>(
@@ -82,26 +83,59 @@ class _ShopPageState extends State<ShopPage> {
     );
   }
 
-  Widget _buildSearchBar() {
+  Widget _buildSearchBarAndCart() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: TextField(
-        controller: _searchController,
-        onSubmitted: (keyword) {
-          if (keyword.isNotEmpty) {
-            context.read<ShopCubit>().searchProducts(keyword);
-          } else {
-            context.read<ShopCubit>().getRecommendedProducts();
-          }
-        },
-        decoration: InputDecoration(
-          hintText: 'Search products...',
-          prefixIcon: const Icon(Icons.search),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _searchController,
+              onSubmitted: (keyword) {
+                if (keyword.isNotEmpty) {
+                  context.read<ShopCubit>().searchProducts(keyword);
+                } else {
+                  context.read<ShopCubit>().getRecommendedProducts();
+                }
+              },
+              decoration: const InputDecoration(
+                hintText: 'Search products...',
+                prefixIcon: Icon(Icons.search),
+              ),
+            ),
           ),
-        ),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20),
+            child: Stack(
+              alignment: Alignment.topRight,
+              clipBehavior: Clip.none,
+              children: [
+                const Icon(Icons.shopping_cart, size: 35),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 2),
+                  ),
+                  constraints: const BoxConstraints(
+                    minWidth: 20,
+                    minHeight: 20,
+                  ),
+                  child: const Center(
+                    child: Text(
+                      '3', // TODO: Replace with the actual number of items
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
@@ -129,47 +163,65 @@ class _ShopPageState extends State<ShopPage> {
   }
 
   Widget _buildProductGrid(List<Product> products) {
-    return GridView.builder(
-      padding: const EdgeInsets.all(8.0),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 2 / 3,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
-      ),
-      itemCount: products.length,
-      itemBuilder: (context, index) {
-        final product = products[index];
-        return GestureDetector(
-          onTap: () {
-            // TODO: Navigate to product details page
-          },
-          child: Card(
-            elevation: 4,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Image.network(
-                    product.images[0].url,
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    product.name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
+    return RefreshIndicator(
+      onRefresh: () async {
+        _searchController.clear();
+        context.read<ShopCubit>().getRecommendedProducts();
+      },
+      child: GridView.builder(
+        padding: const EdgeInsets.all(8.0),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 2 / 3,
+          crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
+        ),
+        itemCount: products.length,
+        itemBuilder: (context, index) {
+          final product = products[index];
+          return GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) =>
+                      SingleShopProductPage(product: product)));
+            },
+            child: Card(
+              elevation: 4,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Image.network(
+                      product.images[0].url,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
                     ),
                   ),
-                ),
-              ],
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          product.name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '${product.currency} ${product.cost.toStringAsFixed(2)}',
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

@@ -84,7 +84,7 @@ class _GuestProfileInteractions extends StatelessWidget {
                             .followUser(state.user!, currentUserId);
                       },
                       icon: const Icon(
-                        Icons.add_business,
+                        Icons.person_add,
                         color: Colors.white,
                       ),
                       label: const Text(
@@ -141,7 +141,7 @@ class _GuestProfileInteractions extends StatelessWidget {
                   // TODO: To restaurant products page
                 },
                 icon: const Icon(Icons.food_bank),
-                label: const Text('View product'),
+                label: const Text('Products'),
               ),
             ],
           );
