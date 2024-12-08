@@ -12,7 +12,7 @@ import 'package:taste_tube/common/fallback.dart';
 import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/common/text.dart';
-import 'package:taste_tube/feature/product/view/shop_page.dart';
+import 'package:taste_tube/feature/shop/view/shop_page.dart';
 import 'package:taste_tube/feature/profile/data/user.dart';
 import 'package:taste_tube/feature/record/camera/camera_page.dart';
 import 'package:taste_tube/feature/home/view/home_page.dart';
@@ -129,7 +129,7 @@ class Layout extends StatelessWidget {
                 ),
                 isCustomer
                     ? const BottomNavigationBarItem(
-                        icon: Icon(Icons.shopping_cart),
+                        icon: Icon(Icons.shopping_basket_rounded),
                         label: 'Shop',
                       )
                     : const BottomNavigationBarItem(

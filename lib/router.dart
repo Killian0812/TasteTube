@@ -30,7 +30,7 @@ final GoRouter _router = GoRouter(
             ),
             GoRoute(
               path: '/shop',
-              builder: (context, state) => const ShopPage(),
+              builder: (context, state) => ShopPage.provider(),
             ),
           ],
         ),

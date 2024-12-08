@@ -1,6 +1,7 @@
 class Product {
   final String id;
   final String userId;
+  final String userImage;
   final String name;
   final double cost;
   final String currency;
@@ -15,6 +16,7 @@ class Product {
   Product({
     required this.id,
     required this.userId,
+    required this.userImage,
     required this.name,
     required this.cost,
     required this.currency,
@@ -30,7 +32,8 @@ class Product {
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
       id: json['_id'] as String,
-      userId: json['userId'] as String,
+      userId: json['userId']['_id'] as String,
+      userImage: json['userId']['image'] as String,
       name: json['name'] as String,
       cost: (json['cost'] as num).toDouble(),
       currency: json['currency'] as String,

@@ -107,6 +107,27 @@ class CommonTextWidget {
     ],
   );
 
+  static Widget tasteTubeMini = const Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Text(
+        "Taste",
+        style: TextStyle(
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      Text(
+        "Tube",
+        style: TextStyle(
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
+          color: CommonColor.activeBgColor,
+        ),
+      ),
+    ],
+  );
+
   static Text loginPageMessage = const Text(
     "Continue to our video-sharing platform and discover amazing F&B products! Follow your favorites, explore unique offerings, and dive into delicious video content.",
     style: CommonTextStyle.thinItalic,

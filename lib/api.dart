@@ -24,6 +24,10 @@ class Api {
   static const categoryApi = '/product/categories';
   static const productApi = '/product';
 
+  // Shop
+  static const shopRecommendedApi = '/shop/recommended';
+  static const shopSearchApi = '/shop/search';
+
   // Content
   static const searchApi = '/content/search';
 
