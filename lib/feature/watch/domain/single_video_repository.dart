@@ -4,8 +4,8 @@ import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/common/error.dart';
-import 'package:taste_tube/feature/watch/data/video.dart';
-import 'package:taste_tube/feature/watch/data/comment.dart';
+import 'package:taste_tube/global_data/watch/video.dart';
+import 'package:taste_tube/global_data/watch/comment.dart';
 
 class SingleVideoRepository {
   final Dio http;

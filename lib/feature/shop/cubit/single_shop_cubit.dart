@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:taste_tube/common/error.dart';
-import 'package:taste_tube/feature/product/data/category.dart';
-import 'package:taste_tube/feature/product/data/product.dart';
+import 'package:taste_tube/global_data/product/category.dart';
+import 'package:taste_tube/global_data/product/product.dart';
 import 'package:taste_tube/feature/shop/domain/shop_repo.dart';
 import 'package:taste_tube/injection.dart';
 import 'package:url_launcher/url_launcher.dart';

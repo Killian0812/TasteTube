@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:taste_tube/feature/profile/data/user.dart';
+import 'package:taste_tube/global_data/user/user.dart';
 import 'package:taste_tube/feature/profile/domain/profile_repo.dart';
-import 'package:taste_tube/feature/watch/data/video.dart';
+import 'package:taste_tube/global_data/watch/video.dart';
 import 'package:taste_tube/global_bloc/auth/bloc.dart';
 import 'package:taste_tube/injection.dart';
 

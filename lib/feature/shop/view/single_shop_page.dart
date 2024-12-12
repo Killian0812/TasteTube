@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/common/toast.dart';
-import 'package:taste_tube/feature/product/data/product.dart';
-import 'package:taste_tube/feature/product/data/category.dart';
+import 'package:taste_tube/global_data/product/product.dart';
+import 'package:taste_tube/global_data/product/category.dart';
 import 'package:taste_tube/feature/shop/view/cart_page.dart';
-import 'package:taste_tube/feature/shop/view/single_shop_cubit.dart';
+import 'package:taste_tube/feature/shop/cubit/single_shop_cubit.dart';
 import 'package:taste_tube/feature/shop/view/single_shop_product_page.dart';
 
 class SingleShopPage extends StatefulWidget {

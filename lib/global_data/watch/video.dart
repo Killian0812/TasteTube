@@ -1,4 +1,4 @@
-import 'package:taste_tube/feature/product/data/product.dart';
+import 'package:taste_tube/global_data/product/product.dart';
 
 class Video {
   String id;

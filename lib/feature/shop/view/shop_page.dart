@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/common/toast.dart';
-import 'package:taste_tube/feature/product/data/product.dart';
+import 'package:taste_tube/global_data/product/product.dart';
 import 'package:taste_tube/feature/shop/view/cart_page.dart';
-import 'package:taste_tube/feature/shop/view/shop_cubit.dart';
+import 'package:taste_tube/feature/shop/cubit/shop_cubit.dart';
 import 'package:taste_tube/feature/shop/view/single_shop_product_page.dart';
 
 class ShopPage extends StatefulWidget {

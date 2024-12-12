@@ -8,7 +8,7 @@ import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/fallback.dart';
 import 'package:taste_tube/common/loading.dart';
 import 'package:taste_tube/common/theme.dart';
-import 'package:taste_tube/feature/profile/data/user.dart';
+import 'package:taste_tube/global_data/user/user.dart';
 import 'package:taste_tube/feature/upload/view/upload_page.dart';
 import 'package:video_player/video_player.dart';
 

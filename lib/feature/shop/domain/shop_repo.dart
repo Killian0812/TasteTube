@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/common/error.dart';
-import 'package:taste_tube/feature/product/data/product.dart';
+import 'package:taste_tube/global_data/product/product.dart';
 
 class ShopRepository {
   final Dio http;

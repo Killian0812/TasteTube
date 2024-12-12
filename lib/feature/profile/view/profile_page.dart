@@ -11,9 +11,9 @@ import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/common/loading.dart';
 import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/toast.dart';
-import 'package:taste_tube/feature/profile/data/user.dart';
+import 'package:taste_tube/global_data/user/user.dart';
 import 'package:taste_tube/feature/profile/view/profile_cubit.dart';
-import 'package:taste_tube/feature/watch/data/video.dart';
+import 'package:taste_tube/global_data/watch/video.dart';
 import 'package:taste_tube/global_bloc/auth/bloc.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
 

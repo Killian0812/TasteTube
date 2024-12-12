@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/common/error.dart';
-import 'package:taste_tube/feature/profile/data/user.dart';
+import 'package:taste_tube/global_data/user/user.dart';
 
 class SearchRepository {
   final Dio http;

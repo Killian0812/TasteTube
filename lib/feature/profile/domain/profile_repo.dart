@@ -5,8 +5,8 @@ import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/common/error.dart';
-import 'package:taste_tube/feature/profile/data/user.dart';
-import 'package:taste_tube/feature/watch/data/video.dart';
+import 'package:taste_tube/global_data/user/user.dart';
+import 'package:taste_tube/global_data/watch/video.dart';
 
 class UserRepository {
   final Dio http;

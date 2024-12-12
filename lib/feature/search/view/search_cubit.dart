@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:taste_tube/feature/profile/data/user.dart';
+import 'package:taste_tube/global_data/user/user.dart';
 import 'package:taste_tube/feature/search/domain/search_repository.dart';
 import 'package:taste_tube/injection.dart';
 

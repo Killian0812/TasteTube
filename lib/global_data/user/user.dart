@@ -1,4 +1,4 @@
-import 'package:taste_tube/feature/watch/data/video.dart';
+import 'package:taste_tube/global_data/watch/video.dart';
 
 class User {
   final String id;

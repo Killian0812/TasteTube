@@ -6,7 +6,7 @@ import 'package:logger/logger.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/loading.dart';
 import 'package:taste_tube/common/theme.dart';
-import 'package:taste_tube/feature/profile/data/user.dart';
+import 'package:taste_tube/global_data/user/user.dart';
 import 'package:taste_tube/feature/record/camera/camera_cubit.dart';
 import 'package:taste_tube/injection.dart';
 

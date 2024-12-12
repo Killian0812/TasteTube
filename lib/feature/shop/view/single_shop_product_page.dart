@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taste_tube/common/color.dart';
-import 'package:taste_tube/feature/product/data/product.dart';
+import 'package:taste_tube/global_data/product/product.dart';
 import 'package:taste_tube/feature/profile/view/profile_page.dart';
 
 class SingleShopProductPage extends StatelessWidget {

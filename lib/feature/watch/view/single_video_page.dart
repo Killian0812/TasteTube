@@ -760,6 +760,7 @@ class _SingleVideoState extends State<SingleVideo>
                   ),
                 const SizedBox(width: 30),
                 GestureDetector(
+                  behavior: HitTestBehavior.opaque,
                   onTap: () {
                     setState(() {
                       _replyingComment = comment;
@@ -772,7 +773,7 @@ class _SingleVideoState extends State<SingleVideo>
                     style: TextStyle(
                       color: Colors.grey[400],
                       fontWeight: FontWeight.bold,
-                      fontSize: 12,
+                      fontSize: 15,
                     ),
                   ),
                 ),
