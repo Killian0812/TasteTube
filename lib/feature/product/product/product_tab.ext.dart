@@ -165,20 +165,29 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
               const SizedBox(height: 20),
               Row(
                 children: [
-                  const Text("Ship:  "),
+                  const Text("Ship:    "),
                   AnimatedToggleSwitch<bool>.dual(
                     current: ship,
                     first: false,
                     second: true,
-                    borderWidth: 5.0,
-                    height: 30,
+                    borderWidth: 3.0,
                     onChanged: (bool value) => setState(() => ship = value),
                     iconBuilder: (value) => value
                         ? const Icon(Icons.local_shipping,
                             color: CommonColor.activeBgColor)
                         : const Icon(Icons.not_interested, color: Colors.grey),
+                    styleBuilder: (value) => value
+                        ? const ToggleStyle(
+                            backgroundColor: CommonColor.activeBgColor,
+                            indicatorColor: Colors.white)
+                        : const ToggleStyle(
+                            backgroundColor: CommonColor.greyOutBgColor),
                     textBuilder: (value) => value
-                        ? const Center(child: Text('Yes'))
+                        ? const Center(
+                            child: Text(
+                            'Yes',
+                            style: TextStyle(color: Colors.white),
+                          ))
                         : const Center(child: Text('No')),
                   ),
                 ],

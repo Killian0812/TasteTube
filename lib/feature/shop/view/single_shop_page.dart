@@ -6,6 +6,7 @@ import 'package:taste_tube/global_data/product/category.dart';
 import 'package:taste_tube/feature/shop/view/cart_page.dart';
 import 'package:taste_tube/feature/shop/cubit/single_shop_cubit.dart';
 import 'package:taste_tube/feature/shop/view/single_shop_product_page.dart';
+import 'package:taste_tube/utils/phone_call.util.dart';
 
 class SingleShopPage extends StatefulWidget {
   final String shopId;
@@ -78,9 +79,7 @@ class _SingleShopPageState extends State<SingleShopPage> {
                 const SizedBox(width: 30),
                 GestureDetector(
                   onTap: () async {
-                    await context
-                        .read<SingleShopCubit>()
-                        .makePhoneCall(widget.shopPhone!);
+                    await makePhoneCall(widget.shopPhone!);
                   },
                   child: Text(
                     'Hotline: ${widget.shopPhone}',
@@ -201,39 +200,75 @@ class _SingleShopPageState extends State<SingleShopPage> {
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => SingleShopProductPage(product: product)));
       },
-      child: Card(
-        elevation: 4,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Image.network(
-                product.images[0].url,
-                fit: BoxFit.cover,
-                width: double.infinity,
-              ),
+      child: Stack(
+        children: [
+          Card(
+            elevation: 4,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    product.name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(8),
+                      topRight: Radius.circular(8),
+                    ),
+                    child: Image.network(
+                      product.images[0].url,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${product.currency} ${product.cost.toStringAsFixed(2)}',
-                    style: const TextStyle(fontSize: 14),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        product.name,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${product.currency} ${product.cost.toStringAsFixed(2)}',
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                    ],
                   ),
-                ],
+                ),
+              ],
+            ),
+          ),
+          if (product.ship)
+            Positioned(
+              top: 15,
+              right: 15,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8.0,
+                  vertical: 4.0,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: const Text(
+                  'Ship',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                ),
               ),
             ),
-          ],
-        ),
+        ],
       ),
     );
   }

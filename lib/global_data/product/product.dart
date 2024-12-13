@@ -3,6 +3,7 @@ class Product {
   final String userId;
   final String userImage;
   final String username;
+  final String? userPhone;
   final String name;
   final double cost;
   final String currency;
@@ -20,6 +21,7 @@ class Product {
     required this.userId,
     required this.userImage,
     required this.username,
+    this.userPhone,
     required this.name,
     required this.cost,
     required this.currency,
@@ -39,6 +41,7 @@ class Product {
       userId: json['userId']['_id'] as String,
       userImage: json['userId']['image'] as String,
       username: json['userId']['username'] as String,
+      userPhone: json['userId']['phone'] as String?,
       name: json['name'] as String,
       cost: (json['cost'] as num).toDouble(),
       currency: json['currency'] as String,

@@ -5,7 +5,6 @@ import 'package:taste_tube/global_data/product/category.dart';
 import 'package:taste_tube/global_data/product/product.dart';
 import 'package:taste_tube/feature/shop/domain/shop_repo.dart';
 import 'package:taste_tube/injection.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 Map<Category, List<Product>> _categorizeProducts(List<Product> products) {
   final Map<Category, List<Product>> categorizedProducts = {};
@@ -85,15 +84,6 @@ class SingleShopCubit extends Cubit<SingleShopState> {
       );
     } catch (e) {
       emit(SingleShopError(state.products, e.toString()));
-    }
-  }
-
-  Future<void> makePhoneCall(String phone) async {
-    Uri url = Uri(scheme: "tel", path: phone);
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url);
-    } else {
-      return;
     }
   }
 }

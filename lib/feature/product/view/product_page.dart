@@ -36,6 +36,7 @@ class _ProductPageState extends State<ProductPage>
         appBar: TabBar(
           controller: _tabController,
           tabs: const [
+            // TODO: Orders, Voucher, ...
             Tab(text: 'Products'),
             Tab(text: 'Categories'),
           ],

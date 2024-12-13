@@ -30,6 +30,11 @@ class Api {
   static const singleShopApi = '/shop/:shopId';
   static const singleShopSearchApi = '/shop/:shopId/search';
 
+  // Cart & Order
+  static const cartApi = '/cart';
+  static const addCartApi = '/cart/add';
+  static const updateCartApi = '/cart/update';
+
   // Content
   static const searchApi = '/content/search';
 

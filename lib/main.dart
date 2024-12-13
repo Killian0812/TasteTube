@@ -12,7 +12,9 @@ import 'package:taste_tube/common/fallback.dart';
 import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/common/text.dart';
+import 'package:taste_tube/feature/shop/view/cart_page.dart';
 import 'package:taste_tube/feature/shop/view/shop_page.dart';
+import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/user/user.dart';
 import 'package:taste_tube/feature/record/camera/camera_page.dart';
 import 'package:taste_tube/feature/home/view/home_page.dart';
@@ -57,7 +59,10 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => OAuthCubit(),
-        )
+        ),
+        BlocProvider(
+          create: (context) => OrderCubit(),
+        ),
       ],
       child: MaterialApp.router(
         title: 'TasteTube',
@@ -135,7 +140,7 @@ class Layout extends StatelessWidget {
                       )
                     : const BottomNavigationBarItem(
                         icon: Icon(Icons.restaurant_menu),
-                        label: 'Product',
+                        label: 'Shop',
                       ),
                 const BottomNavigationBarItem(
                   icon: Icon(Icons.inbox),

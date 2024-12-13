@@ -97,6 +97,10 @@ final GoRouter _router = GoRouter(
         );
       },
     ),
+    GoRoute(
+      path: '/cart',
+      builder: (context, state) => const CartPage(),
+    ),
     // GoRoute(
     //   path: '/watch/:videoId',
     //   builder: (context, state) {

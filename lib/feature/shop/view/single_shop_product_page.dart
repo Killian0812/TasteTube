@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/global_data/product/product.dart';
 import 'package:taste_tube/feature/profile/view/profile_page.dart';
+import 'package:taste_tube/utils/phone_call.util.dart';
 
 class SingleShopProductPage extends StatelessWidget {
   final Product product;
@@ -32,12 +33,36 @@ class SingleShopProductPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            product.name,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
+          Row(
+            children: [
+              Text(
+                product.name,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              if (product.ship)
+                Container(
+                  margin: const EdgeInsets.only(left: 20),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: const Text(
+                    'Ship',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+            ],
           ),
           if (product.categoryId != null)
             GestureDetector(
@@ -47,6 +72,7 @@ class SingleShopProductPage extends StatelessWidget {
                 }, extra: {
                   'shopImage': product.userImage,
                   'shopName': product.username,
+                  'shopPhone': product.userPhone,
                 });
               },
               child: Container(
@@ -116,22 +142,35 @@ class SingleShopProductPage extends StatelessWidget {
                 builder: (context) => ProfilePage.provider(product.userId)),
           );
         },
-        child: Row(
-          children: [
-            CircleAvatar(
-              backgroundImage: NetworkImage(product.userImage),
-              radius: 26,
+        child: Row(children: [
+          CircleAvatar(
+            backgroundImage: NetworkImage(product.userImage),
+            radius: 26,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            product.username,
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(width: 8),
-            Text(
-              product.username,
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
+          ),
+          if (product.userPhone != null && product.userPhone!.isNotEmpty) ...[
+            const SizedBox(width: 30),
+            GestureDetector(
+              onTap: () async {
+                await makePhoneCall(product.userPhone!);
+              },
+              child: Text(
+                'Hotline: ${product.userPhone}',
+                style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey),
               ),
             ),
           ],
-        ),
+        ]),
       ),
     );
   }

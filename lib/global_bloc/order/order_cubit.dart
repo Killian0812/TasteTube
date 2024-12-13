@@ -1,33 +1,38 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fpdart/fpdart.dart';
-import 'package:taste_tube/common/error.dart';
-import 'package:taste_tube/global_data/product/product.dart';
+import 'package:taste_tube/global_data/order/cart.dart';
 import 'package:taste_tube/global_repo/order_repo.dart';
 import 'package:taste_tube/injection.dart';
 
 abstract class OrderState {
-  final List<Product> products;
+  final Cart cart;
   final String? message;
 
-  const OrderState(this.products, {this.message});
+  const OrderState(this.cart, {this.message});
 }
 
 class OrderInitial extends OrderState {
-  const OrderInitial() : super(const []);
+  OrderInitial()
+      : super(Cart(
+          id: "",
+          userId: "",
+          items: [],
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        ));
 }
 
 class OrderLoading extends OrderState {
-  const OrderLoading(super.products);
+  const OrderLoading(super.cart);
 }
 
 class OrderLoaded extends OrderState {
-  const OrderLoaded(super.products);
+  const OrderLoaded(super.cart);
 }
 
 class OrderError extends OrderState {
   final String error;
 
-  const OrderError(super.products, this.error) : super(message: error);
+  const OrderError(super.cart, this.error) : super(message: error);
 }
 
 class OrderCubit extends Cubit<OrderState> {
@@ -35,13 +40,29 @@ class OrderCubit extends Cubit<OrderState> {
 
   OrderCubit()
       : orderRepository = getIt<OrderRepository>(),
-        super(const OrderInitial());
+        super(OrderInitial());
 
-  // Future<void> searchProducts(String keyword) async {
-  //   emit(OrderLoading(state.products));
+  Future<void> getCart() async {
+    emit(OrderLoading(state.cart));
+    try {
+      final result = await orderRepository.getCart();
+      result.fold(
+        (error) => emit(OrderError(
+          state.cart,
+          error.message ?? 'Error searching products',
+        )),
+        (cart) => emit(OrderLoaded(cart)),
+      );
+    } catch (e) {
+      emit(OrderError(state.cart, e.toString()));
+    }
+  }
+
+  // Future<void> addToCart(Product product) async {
+  //   emit(OrderLoading(state.cart));
   //   try {
   //     final Either<ApiError, List<Product>> result =
-  //         await orderRepository.searchProducts(keyword);
+  //         await orderRepository.(keyword);
   //     result.fold(
   //       (error) => emit(OrderError(
   //         state.products,
