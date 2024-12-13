@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/global_data/order/cart.dart';
+import 'package:taste_tube/global_data/product/product.dart';
 import 'package:taste_tube/global_repo/order_repo.dart';
 import 'package:taste_tube/injection.dart';
 
@@ -58,20 +59,23 @@ class OrderCubit extends Cubit<OrderState> {
     }
   }
 
-  // Future<void> addToCart(Product product) async {
-  //   emit(OrderLoading(state.cart));
-  //   try {
-  //     final Either<ApiError, List<Product>> result =
-  //         await orderRepository.(keyword);
-  //     result.fold(
-  //       (error) => emit(OrderError(
-  //         state.products,
-  //         error.message ?? 'Error searching products',
-  //       )),
-  //       (products) => emit(OrderLoaded(products)),
-  //     );
-  //   } catch (e) {
-  //     emit(OrderError(state.products, e.toString()));
-  //   }
-  // }
+  Future<void> addToCart(Product product, int quantity) async {
+    emit(OrderLoading(state.cart));
+    try {
+      final result = await orderRepository.addToCard(product, quantity);
+      result.fold(
+        (error) => emit(OrderError(
+          state.cart,
+          error.message ?? 'Error searching products',
+        )),
+        (item) {
+          final updatedCart = state.cart;
+          updatedCart.items.add(item);
+          emit(OrderLoaded(updatedCart));
+        },
+      );
+    } catch (e) {
+      emit(OrderError(state.cart, e.toString()));
+    }
+  }
 }

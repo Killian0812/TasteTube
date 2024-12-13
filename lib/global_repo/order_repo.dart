@@ -3,6 +3,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/common/error.dart';
 import 'package:taste_tube/global_data/order/cart.dart';
+import 'package:taste_tube/global_data/product/product.dart';
 
 class OrderRepository {
   final Dio http;
@@ -14,6 +15,22 @@ class OrderRepository {
       final response = await http.get(Api.cartApi);
       final cart = Cart.fromJson(response.data['cart']);
       return Right(cart);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
+
+  Future<Either<ApiError, CartItem>> addToCard(
+      Product product, int quantity) async {
+    try {
+      final response = await http.post(Api.addCartApi, data: {
+        'productId': product.id,
+        'quantity': quantity,
+      });
+      final cartItem = CartItem.fromJson(response.data['cartItem']);
+      return Right(cartItem);
     } on DioException catch (e) {
       return Left(ApiError.fromDioException(e));
     } catch (e) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taste_tube/common/color.dart';
+import 'package:taste_tube/feature/shop/view/cart_page.dart';
 import 'package:taste_tube/global_data/product/product.dart';
 import 'package:taste_tube/feature/profile/view/profile_page.dart';
 import 'package:taste_tube/utils/phone_call.util.dart';
@@ -15,6 +16,7 @@ class SingleShopProductPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(product.name),
         centerTitle: true,
+        actions: const [CartButton()],
       ),
       body: ListView(
         children: [
