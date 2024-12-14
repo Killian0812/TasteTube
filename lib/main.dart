@@ -61,7 +61,7 @@ class MyApp extends StatelessWidget {
           create: (context) => OAuthCubit(),
         ),
         BlocProvider(
-          create: (context) => OrderCubit(),
+          create: (context) => OrderCubit()..getCart(),
         ),
       ],
       child: MaterialApp.router(

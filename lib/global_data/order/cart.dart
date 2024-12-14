@@ -27,6 +27,16 @@ class Cart {
       updatedAt: DateTime.parse(json['updatedAt']),
     );
   }
+
+  Cart clone() {
+    return Cart(
+      id: id,
+      userId: userId,
+      items: List.from(items),
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+    );
+  }
 }
 
 class CartItem {
@@ -49,7 +59,7 @@ class CartItem {
       id: json['_id'],
       product: Product.fromJson(json['product'] as Map<String, dynamic>),
       quantity: json['quantity'] as int,
-      cost: json['cost'] as double,
+      cost: (json['cost'] as num).toDouble(),
       currency: json['currency'],
     );
   }

@@ -22,7 +22,7 @@ class OrderRepository {
     }
   }
 
-  Future<Either<ApiError, CartItem>> addToCard(
+  Future<Either<ApiError, CartItem>> addToCart(
       Product product, int quantity) async {
     try {
       final response = await http.post(Api.addCartApi, data: {
@@ -31,6 +31,17 @@ class OrderRepository {
       });
       final cartItem = CartItem.fromJson(response.data['cartItem']);
       return Right(cartItem);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
+
+  Future<Either<ApiError, bool>> removeFromCart(CartItem item) async {
+    try {
+      await http.delete(Api.cartApi, data: {'cartItemId': item.id});
+      return const Right(true);
     } on DioException catch (e) {
       return Left(ApiError.fromDioException(e));
     } catch (e) {

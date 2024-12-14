@@ -62,15 +62,41 @@ class OrderCubit extends Cubit<OrderState> {
   Future<void> addToCart(Product product, int quantity) async {
     emit(OrderLoading(state.cart));
     try {
-      final result = await orderRepository.addToCard(product, quantity);
+      final result = await orderRepository.addToCart(product, quantity);
       result.fold(
         (error) => emit(OrderError(
           state.cart,
           error.message ?? 'Error searching products',
         )),
         (item) {
-          final updatedCart = state.cart;
-          updatedCart.items.add(item);
+          final updatedCart = state.cart.clone();
+          int index =
+              updatedCart.items.indexWhere((e) => e.product.id == product.id);
+          if (index == -1) {
+            updatedCart.items.add(item);
+          } else {
+            updatedCart.items[index] = item;
+          }
+          emit(OrderLoaded(updatedCart));
+        },
+      );
+    } catch (e) {
+      emit(OrderError(state.cart, e.toString()));
+    }
+  }
+
+  Future<void> removeFromCart(CartItem item) async {
+    emit(OrderLoading(state.cart));
+    try {
+      final result = await orderRepository.removeFromCart(item);
+      result.fold(
+        (error) => emit(OrderError(
+          state.cart,
+          error.message ?? 'Error searching products',
+        )),
+        (success) {
+          final updatedCart = state.cart.clone();
+          updatedCart.items.removeWhere((e) => e.id == item.id);
           emit(OrderLoaded(updatedCart));
         },
       );

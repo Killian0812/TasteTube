@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/feature/shop/view/cart_page.dart';
+import 'package:taste_tube/feature/shop/view/quantity_dialog.dart';
+import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/product/product.dart';
 import 'package:taste_tube/feature/profile/view/profile_page.dart';
 import 'package:taste_tube/utils/phone_call.util.dart';
@@ -184,8 +187,15 @@ class SingleShopProductPage extends StatelessWidget {
         children: [
           Expanded(
             child: ElevatedButton(
-              onPressed: () {
-                // Add to cart functionality
+              onPressed: () async {
+                int? quantity = await showDialog<int>(
+                  context: context,
+                  builder: (context) => const QuantityInputDialog(),
+                );
+
+                if (quantity != null && context.mounted) {
+                  context.read<OrderCubit>().addToCart(product, quantity);
+                }
               },
               style: OutlinedButton.styleFrom(
                   backgroundColor: Colors.white,
@@ -199,8 +209,8 @@ class SingleShopProductPage extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: ElevatedButton(
-              onPressed: () {
-                // Buy now functionality
+              onPressed: () async {
+                print("HERE");
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: CommonColor.activeBgColor,

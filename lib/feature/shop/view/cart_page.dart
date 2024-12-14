@@ -1,7 +1,13 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:taste_tube/common/size.dart';
+import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
+import 'package:taste_tube/global_data/order/cart.dart';
+
+part 'cart_page.ext.dart';
 
 class CartButton extends StatelessWidget {
   const CartButton({super.key});
@@ -20,7 +26,13 @@ class CartButton extends StatelessWidget {
             const Align(
                 alignment: Alignment.center,
                 child: Icon(Icons.shopping_cart, size: 35)),
-            BlocBuilder<OrderCubit, OrderState>(
+            BlocConsumer<OrderCubit, OrderState>(
+              listener: (context, state) {
+                if (state is OrderError) {
+                  ToastService.showToast(
+                      context, state.error, ToastType.warning);
+                }
+              },
               builder: (context, state) {
                 if (state.cart.items.isEmpty) return const SizedBox.shrink();
                 return Container(
@@ -35,14 +47,23 @@ class CartButton extends StatelessWidget {
                     minHeight: 20,
                   ),
                   child: Center(
-                      child: Text(
-                    state.cart.items.length.toString(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )),
+                      child: state is OrderLoading
+                          ? const SizedBox(
+                              width: 12,
+                              height: 12,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : Text(
+                              state.cart.items.length.toString(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )),
                 );
               },
             ),
@@ -60,18 +81,88 @@ class CartPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<OrderCubit, OrderState>(
       builder: (context, state) {
+        final cartItems = state.cart.items;
+
+        // Grouping items by product owner
+        final groupedItems =
+            groupBy(cartItems, (CartItem item) => item.product.userId);
+
         return Scaffold(
-            appBar: AppBar(
-              centerTitle: true,
-              title: Text(
-                  "Cart (${state.cart.items.isEmpty ? 'Empty' : state.cart.items.length.toString()})"),
-            ),
-            body: TextButton(
-              onPressed: () async {
-                await context.read<OrderCubit>().getCart();
-              },
-              child: const Text("CLICK"),
-            ));
+          appBar: AppBar(
+            centerTitle: true,
+            title: Text(
+                "Cart (${cartItems.isEmpty ? 'Empty' : cartItems.length.toString()})"),
+          ),
+          body: RefreshIndicator(
+            onRefresh: () async {
+              await context.read<OrderCubit>().getCart();
+            },
+            child: cartItems.isEmpty
+                ? SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: SizedBox(
+                      height:
+                          MediaQuery.of(context).size.height - kToolbarHeight,
+                      child: const Center(
+                        child: Text('Your cart is empty'),
+                      ),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: groupedItems.length,
+                    itemBuilder: (context, index) {
+                      final sellerId = groupedItems.keys.elementAt(index);
+                      final sellerItems = groupedItems[sellerId]!;
+                      final sellerName = sellerItems[0].product.username;
+                      final sellerImage = sellerItems[0].product.userImage;
+
+                      return Card(
+                        elevation: 3,
+                        margin: const EdgeInsets.all(8.0),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  CircleAvatar(
+                                      radius: 20,
+                                      backgroundImage:
+                                          NetworkImage(sellerImage)),
+                                  const SizedBox(width: 12),
+                                  Text(
+                                    sellerName,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const Divider(),
+                              ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  maxHeight: CommonSize.screenSize.height * 0.6,
+                                ),
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: sellerItems.length,
+                                  itemBuilder: (context, index) {
+                                    return CartItemTile(
+                                        item: sellerItems[index]);
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        );
       },
     );
   }
