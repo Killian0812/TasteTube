@@ -30,6 +30,12 @@ class OrderLoaded extends OrderState {
   const OrderLoaded(super.cart);
 }
 
+class OrderSuccess extends OrderState {
+  final String success;
+
+  const OrderSuccess(super.cart, this.success) : super(message: success);
+}
+
 class OrderError extends OrderState {
   final String error;
 
@@ -50,7 +56,7 @@ class OrderCubit extends Cubit<OrderState> {
       result.fold(
         (error) => emit(OrderError(
           state.cart,
-          error.message ?? 'Error searching products',
+          error.message ?? 'Error fetching cart',
         )),
         (cart) => emit(OrderLoaded(cart)),
       );
@@ -66,7 +72,7 @@ class OrderCubit extends Cubit<OrderState> {
       result.fold(
         (error) => emit(OrderError(
           state.cart,
-          error.message ?? 'Error searching products',
+          error.message ?? 'Error add item to cart',
         )),
         (item) {
           final updatedCart = state.cart.clone();
@@ -77,7 +83,7 @@ class OrderCubit extends Cubit<OrderState> {
           } else {
             updatedCart.items[index] = item;
           }
-          emit(OrderLoaded(updatedCart));
+          emit(OrderSuccess(updatedCart, "Added to cart"));
         },
       );
     } catch (e) {
@@ -92,11 +98,32 @@ class OrderCubit extends Cubit<OrderState> {
       result.fold(
         (error) => emit(OrderError(
           state.cart,
-          error.message ?? 'Error searching products',
+          error.message ?? 'Error removing cart item',
         )),
         (success) {
           final updatedCart = state.cart.clone();
           updatedCart.items.removeWhere((e) => e.id == item.id);
+          emit(OrderLoaded(updatedCart));
+        },
+      );
+    } catch (e) {
+      emit(OrderError(state.cart, e.toString()));
+    }
+  }
+
+  Future<void> updateItemQuantity(CartItem item, int quantity) async {
+    emit(OrderLoading(state.cart));
+    try {
+      final result = await orderRepository.updateItemQuantity(item, quantity);
+      result.fold(
+        (error) => emit(OrderError(
+          state.cart,
+          error.message ?? 'Error updating cart',
+        )),
+        (updatedItem) {
+          final updatedCart = state.cart.clone();
+          final index = updatedCart.items.indexWhere((e) => e.id == item.id);
+          updatedCart.items[index] = updatedItem;
           emit(OrderLoaded(updatedCart));
         },
       );

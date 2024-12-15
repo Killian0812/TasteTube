@@ -48,4 +48,20 @@ class OrderRepository {
       return Left(ApiError(500, e.toString()));
     }
   }
+
+  Future<Either<ApiError, CartItem>> updateItemQuantity(
+      CartItem item, int quantity) async {
+    try {
+      final response = await http.post(Api.updateCartApi, data: {
+        'cartItemId': item.id,
+        'quantity': quantity,
+      });
+      final cartItem = CartItem.fromJson(response.data['cartItem']);
+      return Right(cartItem);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
 }

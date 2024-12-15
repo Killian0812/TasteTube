@@ -1,7 +1,9 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
+import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
@@ -31,6 +33,10 @@ class CartButton extends StatelessWidget {
                 if (state is OrderError) {
                   ToastService.showToast(
                       context, state.error, ToastType.warning);
+                }
+                if (state is OrderSuccess) {
+                  ToastService.showToast(
+                      context, state.success, ToastType.success);
                 }
               },
               builder: (context, state) {
@@ -79,7 +85,15 @@ class CartPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<OrderCubit, OrderState>(
+    return BlocConsumer<OrderCubit, OrderState>(
+      listener: (context, state) {
+        if (state is OrderError) {
+          ToastService.showToast(context, state.error, ToastType.warning);
+        }
+        if (state is OrderSuccess) {
+          ToastService.showToast(context, state.success, ToastType.success);
+        }
+      },
       builder: (context, state) {
         final cartItems = state.cart.items;
 

@@ -302,150 +302,205 @@ class _SingleVideoState extends State<SingleVideo>
       ),
       builder: (context) {
         int currentIndex = 0;
-        return FractionallySizedBox(
-          heightFactor: 0.6,
-          child: StatefulBuilder(
-            builder: (context, snapshot) {
-              return Padding(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (products.length > 1)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          IconButton(
-                            icon: Icon(
-                              Icons.arrow_back_ios,
-                              color: currentIndex > 0
-                                  ? Colors.white
-                                  : Colors.transparent,
+        return BlocListener<OrderCubit, OrderState>(
+          listener: (context, state) {
+            if (state is OrderError) {
+              ToastService.showToast(context, state.error, ToastType.warning);
+            }
+            if (state is OrderSuccess) {
+              ToastService.showToast(context, state.success, ToastType.success);
+            }
+          },
+          child: FractionallySizedBox(
+            heightFactor: 0.6,
+            child: StatefulBuilder(
+              builder: (context, snapshot) {
+                return Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (products.length > 1)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            IconButton(
+                              icon: Icon(
+                                Icons.arrow_back_ios,
+                                color: currentIndex > 0
+                                    ? Colors.white
+                                    : Colors.transparent,
+                              ),
+                              onPressed: () {
+                                if (currentIndex > 0) {
+                                  snapshot(() {
+                                    currentIndex--;
+                                  });
+                                }
+                              },
                             ),
-                            onPressed: () {
-                              if (currentIndex > 0) {
-                                snapshot(() {
-                                  currentIndex--;
-                                });
-                              }
-                            },
-                          ),
-                          Text(
-                            'Product ${currentIndex + 1} of ${products.length}',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                            Text(
+                              'Product ${currentIndex + 1} of ${products.length}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                             ),
-                          ),
-                          IconButton(
-                            icon: Icon(
-                              Icons.arrow_forward_ios,
-                              color: currentIndex < products.length - 1
-                                  ? Colors.white
-                                  : Colors.transparent,
+                            IconButton(
+                              icon: Icon(
+                                Icons.arrow_forward_ios,
+                                color: currentIndex < products.length - 1
+                                    ? Colors.white
+                                    : Colors.transparent,
+                              ),
+                              onPressed: () {
+                                if (currentIndex < products.length - 1) {
+                                  snapshot(() {
+                                    currentIndex++;
+                                  });
+                                }
+                              },
                             ),
-                            onPressed: () {
-                              if (currentIndex < products.length - 1) {
-                                snapshot(() {
-                                  currentIndex++;
-                                });
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    Expanded(
-                      child: PageView.builder(
-                        itemCount: products.length,
-                        onPageChanged: (index) {
-                          setState(() {
-                            currentIndex = index;
-                          });
-                        },
-                        itemBuilder: (context, index) {
-                          final product = products[currentIndex];
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Swappable product images
-                              Expanded(
-                                child: PageView(
-                                  children: product.images.map((image) {
-                                    return Image.network(image.url,
-                                        fit: BoxFit.cover);
-                                  }).toList(),
+                          ],
+                        ),
+                      Expanded(
+                        child: PageView.builder(
+                          itemCount: products.length,
+                          onPageChanged: (index) {
+                            setState(() {
+                              currentIndex = index;
+                            });
+                          },
+                          itemBuilder: (context, index) {
+                            final product = products[currentIndex];
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Swappable product images
+                                Expanded(
+                                  child: PageView(
+                                    children: product.images.map((image) {
+                                      return Image.network(image.url,
+                                          fit: BoxFit.cover);
+                                    }).toList(),
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 10),
-                              // Product Info
-                              Text(
-                                product.name,
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              if (product.description != null)
+                                const SizedBox(height: 10),
+                                // Product Info
                                 Text(
-                                  product.description!,
+                                  product.name,
                                   style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                if (product.description != null &&
+                                    product.description!.isNotEmpty)
+                                  Text(
+                                    product.description!,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                Text(
+                                  '${product.cost.toString()} ${product.currency}',
+                                  style: const TextStyle(
+                                      fontSize: 18, color: Colors.green),
+                                ),
+                                const SizedBox(height: 10),
+                                GestureDetector(
+                                  onTap: () {
+                                    context.pushNamed('single-shop',
+                                        pathParameters: {
+                                          'shopId': product.userId,
+                                        },
+                                        extra: {
+                                          'shopImage': product.userImage,
+                                          'shopName': product.username,
+                                          'shopPhone': product.userPhone,
+                                        });
+                                  },
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundImage:
+                                            NetworkImage(product.userImage),
+                                        radius: 16,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        product.username,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              Text(
-                                '${product.cost.toString()} ${product.currency}',
-                                style: const TextStyle(
-                                    fontSize: 16, color: Colors.green),
-                              ),
-                              const SizedBox(height: 10),
-                              // Action Buttons
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        // Add to cart functionality
-                                      },
-                                      style: OutlinedButton.styleFrom(
-                                          backgroundColor: Colors.transparent,
-                                          side: const BorderSide(
-                                              color:
-                                                  CommonColor.activeBgColor)),
-                                      child: const Text(
-                                        'Add to Cart',
-                                        style: TextStyle(
-                                            color: CommonColor.activeBgColor),
+                                const SizedBox(height: 10),
+                                // Action Buttons
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: ElevatedButton(
+                                        onPressed: () async {
+                                          int? quantity = await showDialog<int>(
+                                            context: context,
+                                            builder: (context) =>
+                                                const QuantityInputDialog(),
+                                          );
+
+                                          if (quantity != null &&
+                                              context.mounted) {
+                                            context
+                                                .read<OrderCubit>()
+                                                .addToCart(product, quantity);
+                                          }
+                                        },
+                                        style: OutlinedButton.styleFrom(
+                                            backgroundColor: Colors.transparent,
+                                            side: const BorderSide(
+                                                color:
+                                                    CommonColor.activeBgColor)),
+                                        child: const Text(
+                                          'Add to Cart',
+                                          style: TextStyle(
+                                              color: CommonColor.activeBgColor),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        // Buy now functionality
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor:
-                                            CommonColor.activeBgColor,
-                                      ),
-                                      child: const Text(
-                                        'Buy Now',
-                                        style: TextStyle(color: Colors.white),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          // Buy now functionality
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              CommonColor.activeBgColor,
+                                        ),
+                                        child: const Text(
+                                          'Buy Now',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          );
-                        },
+                                  ],
+                                ),
+                              ],
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              );
-            },
+                    ],
+                  ),
+                );
+              },
+            ),
           ),
         );
       },
