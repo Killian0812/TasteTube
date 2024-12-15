@@ -16,7 +16,8 @@ class CartItemTile extends StatelessWidget {
               bool? confirmed = await showConfirmDialog(
                 context,
                 title: "Confirm remove cart item",
-                body: 'Are you sure you want to remove this item from the cart?',
+                body:
+                    'Are you sure you want to remove this item from the cart?',
               );
               if (confirmed == true && context.mounted) {
                 await context.read<OrderCubit>().removeFromCart(item);
@@ -39,6 +40,20 @@ class CartItemTile extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            BlocBuilder<OrderCubit, OrderState>(
+              builder: (context, state) {
+                return Padding(
+                  padding: const EdgeInsets.only(right: 5, top: 15),
+                  child: Checkbox(
+                      value: state.selectedItems.contains(item.id),
+                      onChanged: (_) {
+                        context
+                            .read<OrderCubit>()
+                            .selectOrUnselectCartItem(item);
+                      }),
+                );
+              },
+            ),
             Container(
               width: 80,
               height: 80,
@@ -72,43 +87,6 @@ class CartItemTile extends StatelessWidget {
                       color: Colors.grey,
                     ),
                   ),
-                  const SizedBox(height: 8),
-
-                  // Quantity
-                  Row(
-                    children: [
-                      BlocBuilder<OrderCubit, OrderState>(
-                        builder: (context, state) {
-                          return IconButton(
-                            icon: const Icon(Icons.remove),
-                            onPressed: () {
-                              if (state is OrderLoading) return;
-                              context
-                                  .read<OrderCubit>()
-                                  .updateItemQuantity(item, item.quantity - 1);
-                            },
-                          );
-                        },
-                      ),
-                      Text(
-                        item.quantity.toString(),
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                      BlocBuilder<OrderCubit, OrderState>(
-                        builder: (context, state) {
-                          return IconButton(
-                            icon: const Icon(Icons.add),
-                            onPressed: () {
-                              if (state is OrderLoading) return;
-                              context
-                                  .read<OrderCubit>()
-                                  .updateItemQuantity(item, item.quantity + 1);
-                            },
-                          );
-                        },
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),
@@ -132,6 +110,42 @@ class CartItemTile extends StatelessWidget {
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
                   ),
+                ),
+
+                // Quantity
+                Row(
+                  children: [
+                    BlocBuilder<OrderCubit, OrderState>(
+                      builder: (context, state) {
+                        return IconButton(
+                          icon: const Icon(Icons.remove),
+                          onPressed: () {
+                            if (state is OrderLoading) return;
+                            context
+                                .read<OrderCubit>()
+                                .updateItemQuantity(item, item.quantity - 1);
+                          },
+                        );
+                      },
+                    ),
+                    Text(
+                      item.quantity.toString(),
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                    BlocBuilder<OrderCubit, OrderState>(
+                      builder: (context, state) {
+                        return IconButton(
+                          icon: const Icon(Icons.add),
+                          onPressed: () {
+                            if (state is OrderLoading) return;
+                            context
+                                .read<OrderCubit>()
+                                .updateItemQuantity(item, item.quantity + 1);
+                          },
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ],
             ),

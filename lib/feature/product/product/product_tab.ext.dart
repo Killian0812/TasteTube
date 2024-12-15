@@ -29,7 +29,7 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
 
   @override
   void initState() {
-    nameController = TextEditingController(text: product?.categoryName);
+    nameController = TextEditingController(text: product?.name);
     costController = TextEditingController(text: product?.cost.toString());
     descriptionController = TextEditingController(text: product?.description);
     quantityController =

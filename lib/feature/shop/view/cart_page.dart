@@ -140,6 +140,23 @@ class CartPage extends StatelessWidget {
                             children: [
                               Row(
                                 children: [
+                                  BlocBuilder<OrderCubit, OrderState>(
+                                    builder: (context, state) {
+                                      final containsAll = state.selectedItems
+                                          .toSet()
+                                          .containsAll(sellerItems
+                                              .map((e) => e.id)
+                                              .toSet());
+                                      return Checkbox(
+                                          value: containsAll,
+                                          onChanged: (_) {
+                                            context
+                                                .read<OrderCubit>()
+                                                .selectAllItemInSingleShop(
+                                                    sellerItems);
+                                          });
+                                    },
+                                  ),
                                   CircleAvatar(
                                       radius: 20,
                                       backgroundImage:
