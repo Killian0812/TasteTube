@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:taste_tube/auth/view/register_page.ext.dart';
 import 'package:taste_tube/common/button.dart';
+import 'package:taste_tube/common/toast.dart';
+import 'package:taste_tube/global_bloc/auth/bloc.dart';
 
 import 'login_email_cubit.dart';
 
@@ -72,19 +76,55 @@ class LoginEmailTab extends StatelessWidget {
   }
 
   Widget _loginButton(BuildContext context) {
-    return BlocBuilder<LoginEmailCubit, LoginEmailState>(
-        builder: (context, state) {
-      final cubit = context.read<LoginEmailCubit>();
+    return BlocConsumer<LoginEmailCubit, LoginEmailState>(
+      listener: (context, state) {
+        if (state is LoginEmailError) {
+          ToastService.showToast(context, state.message!, ToastType.warning,
+              duration: const Duration(seconds: 3));
+        }
+        if (state is LoginEmailSuccess) {
+          ToastService.showToast(context, state.message!, ToastType.success,
+              duration: const Duration(seconds: 3));
 
-      return CommonButton(
-        text: "Login",
-        isDisabled: state.email.isEmpty || state.password.isEmpty,
-        isLoading: state.isLoading,
-        onPressed: () async {
-          FocusScope.of(context).unfocus();
-          await cubit.send(context);
-        },
-      );
-    });
+          final response = state.response!;
+          context.read<AuthBloc>().add(LoginEvent(AuthData(
+                accessToken: response.accessToken,
+                email: response.email,
+                username: response.username,
+                image: response.image,
+                userId: response.userId,
+                role: response.role,
+              )));
+          if (response.role.isNotEmpty) {
+            if (response.role == 'RESTAURANT') {
+              context.goNamed('profile',
+                  pathParameters: {'userId': response.userId});
+            } else {
+              context.go('/home');
+            }
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      AccountTypeSelectionPage.provider(response.userId)),
+            );
+          }
+        }
+      },
+      builder: (context, state) {
+        final cubit = context.read<LoginEmailCubit>();
+
+        return CommonButton(
+          text: "Login",
+          isDisabled: state.email.isEmpty || state.password.isEmpty,
+          isLoading: state is LoginEmailLoading,
+          onPressed: () async {
+            FocusScope.of(context).unfocus();
+            await cubit.send();
+          },
+        );
+      },
+    );
   }
 }

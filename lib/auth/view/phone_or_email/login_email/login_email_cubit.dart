@@ -1,112 +1,130 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
+import 'package:taste_tube/auth/data/login_response.dart';
 import 'package:taste_tube/auth/domain/auth_repo.dart';
-import 'package:taste_tube/auth/view/register_page.ext.dart';
-import 'package:taste_tube/common/toast.dart';
-import 'package:taste_tube/global_bloc/auth/bloc.dart';
 import 'package:taste_tube/injection.dart';
+import 'package:taste_tube/storage.dart';
 
 import '../../../data/login_request.dart';
 
 class LoginEmailCubit extends Cubit<LoginEmailState> {
   final AuthRepository repository;
   final Logger logger;
+  final SecureStorage secureStorage;
 
   LoginEmailCubit()
       : repository = getIt<AuthRepository>(),
+        secureStorage = getIt<SecureStorage>(),
         logger = getIt<Logger>(),
-        super(LoginEmailState(
-          email: "",
-          password: "",
-          isPasswordVisible: false,
-        ));
+        super(LoginEmailInitial());
 
   void editEmail(String email) {
-    emit(state.copyWith(email: email));
+    emit(LoginEmailLoaded(email, state.password, state.isPasswordVisible));
   }
 
   void editPassword(String password) {
-    emit(state.copyWith(password: password));
+    emit(LoginEmailLoaded(state.email, password, state.isPasswordVisible));
   }
 
   void togglePasswordVisibility() {
-    emit(state.copyWith(isPasswordVisible: !state.isPasswordVisible));
+    emit(LoginEmailLoaded(
+        state.email, state.password, !state.isPasswordVisible));
   }
 
-  Future<void> send(BuildContext context) async {
-    if (state.isLoading) return;
-    emit(state.copyWith(isLoading: true));
+  Future<void> send() async {
+    if (state is LoginEmailLoading) return;
+    emit(LoginEmailLoading(
+        state.email, state.password, state.isPasswordVisible));
     final request = LoginRequest(state.email, state.password);
     final result = await repository.login(request);
     result.match(
       (apiError) {
-        ToastService.showToast(context, apiError.message!,
-            apiError.statusCode < 500 ? ToastType.warning : ToastType.error,
-            duration: const Duration(seconds: 4));
         logger.e('Login failed: ${apiError.message}');
-        emit(state.copyWith(isLoading: false));
+        emit(LoginEmailError(state.email, state.password,
+            state.isPasswordVisible, apiError.message!));
       },
-      (response) {
-        ToastService.showToast(
-            context,
-            "Login successfully! Redirecting to home page...",
-            ToastType.success,
-            duration: const Duration(seconds: 4));
-        context.read<AuthBloc>().add(LoginEvent(AuthData(
-              accessToken: response.accessToken,
-              email: response.email,
-              username: response.username,
-              image: response.image,
-              userId: response.userId,
-              role: response.role,
-            )));
-        if (response.role.isNotEmpty) {
-          if (response.role == 'RESTAURANT') {
-            context.goNamed('profile',
-                pathParameters: {'userId': response.userId});
-          } else {
-            context.go('/home');
-          }
-        } else {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    AccountTypeSelectionPage.provider(response.userId)),
-          );
-        }
+      (response) async {
         logger.i('Login successfully: ${response.accessToken}');
+        await secureStorage.setRefreshToken(response.refreshToken);
+        emit(LoginEmailSuccess(
+          state.email,
+          state.password,
+          state.isPasswordVisible,
+          "Login successfully! Redirecting to home page...",
+          response,
+        ));
       },
     );
   }
 }
 
-class LoginEmailState {
+abstract class LoginEmailState {
   final String email;
   final String password;
   final bool isPasswordVisible;
-  final bool isLoading;
+  final String? message;
+  final LoginResponse? response;
 
-  LoginEmailState({
+  const LoginEmailState({
     required this.email,
     required this.password,
     required this.isPasswordVisible,
-    this.isLoading = false,
+    this.message,
+    this.response,
   });
+}
 
-  LoginEmailState copyWith({
-    String? email,
-    String? password,
-    bool? isPasswordVisible,
-    bool? isLoading,
-  }) {
-    return LoginEmailState(
-      email: email ?? this.email,
-      password: password ?? this.password,
-      isPasswordVisible: isPasswordVisible ?? this.isPasswordVisible,
-      isLoading: isLoading ?? this.isLoading,
-    );
-  }
+class LoginEmailInitial extends LoginEmailState {
+  LoginEmailInitial()
+      : super(
+          email: '',
+          password: '',
+          isPasswordVisible: false,
+        );
+}
+
+class LoginEmailLoading extends LoginEmailState {
+  const LoginEmailLoading(String email, String password, bool isPasswordVisible)
+      : super(
+          email: email,
+          password: password,
+          isPasswordVisible: isPasswordVisible,
+        );
+}
+
+class LoginEmailLoaded extends LoginEmailState {
+  const LoginEmailLoaded(String email, String password, bool isPasswordVisible)
+      : super(
+          email: email,
+          password: password,
+          isPasswordVisible: isPasswordVisible,
+        );
+}
+
+class LoginEmailSuccess extends LoginEmailState {
+  final String success;
+  final LoginResponse loginResponse;
+
+  const LoginEmailSuccess(String email, String password, bool isPasswordVisible,
+      this.success, this.loginResponse)
+      : super(
+          email: email,
+          password: password,
+          isPasswordVisible: isPasswordVisible,
+          message: success,
+          response: loginResponse,
+        );
+}
+
+class LoginEmailError extends LoginEmailState {
+  final String error;
+
+  const LoginEmailError(
+      String email, String password, bool isPasswordVisible, this.error)
+      : super(
+          email: email,
+          password: password,
+          isPasswordVisible: isPasswordVisible,
+          message: error,
+        );
 }

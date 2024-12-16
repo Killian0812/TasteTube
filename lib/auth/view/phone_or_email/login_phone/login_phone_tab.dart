@@ -5,6 +5,7 @@ import 'package:taste_tube/auth/view/phone_or_email/login_phone/login_phone_cubi
 import 'package:taste_tube/common/button.dart';  
 import 'package:taste_tube/common/text.dart';  
 
+// TODO: Refactor state + BE 
 class LoginPhoneTab extends StatelessWidget {  
   const LoginPhoneTab({super.key});  
 

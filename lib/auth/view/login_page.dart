@@ -3,10 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taste_tube/auth/view/oauth/oauth_cubit.dart';
+import 'package:taste_tube/auth/view/register_page.ext.dart';
 import 'package:taste_tube/auth/view/widget/auth_title.dart';
 import 'package:taste_tube/auth/view/widget/auth_button.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/text.dart';
+import 'package:taste_tube/common/toast.dart';
+import 'package:taste_tube/global_bloc/auth/bloc.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -20,46 +23,80 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: Container(
-        padding: const EdgeInsets.all(25),
-        child: Column(
-          children: [
-            SingleChildScrollView(
-              child: Column(
-                children: [
-                  const AuthTitle(title: "Login to "),
-                  AuthButton(
-                    icon: FontAwesomeIcons.user,
-                    title: "Continue with phone or email",
-                    onTap: () {
-                      context.push('/login/phone_or_email', extra: 1);
-                    },
-                  ),
-                  AuthButton(
-                    icon: FontAwesomeIcons.facebook,
-                    title: "Login with Facebook",
-                    onTap: () async {
-                      await context
-                          .read<OAuthCubit>()
-                          .continueWithFacebook(context);
-                    },
-                  ),
-                  AuthButton(
-                    icon: FontAwesomeIcons.google,
-                    title: "Login with Google",
-                    onTap: () async {
-                      await context
-                          .read<OAuthCubit>()
-                          .continueWithGoogle(context);
-                    },
-                  ),
-                ],
+      body: BlocListener<OAuthCubit, OAuthState>(
+        listener: (context, state) {
+          if (state is OAuthSuccess) {
+            final response = state.response;
+            context.read<AuthBloc>().add(LoginEvent(AuthData(
+                  accessToken: response.accessToken,
+                  email: response.email,
+                  username: response.username,
+                  image: response.image,
+                  userId: response.userId,
+                  role: response.role,
+                )));
+            if (response.role.isNotEmpty) {
+              if (response.role == 'RESTAURANT') {
+                context.goNamed('profile',
+                    pathParameters: {'userId': response.userId});
+              } else {
+                context.go('/home');
+              }
+            } else {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        AccountTypeSelectionPage.provider(response.userId)),
+              );
+            }
+          }
+          if (state is OAuthError) {
+            ToastService.showToast(context, state.message, ToastType.warning,
+                duration: const Duration(seconds: 4));
+          }
+        },
+        child: Container(
+          padding: const EdgeInsets.all(25),
+          child: Column(
+            children: [
+              SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const AuthTitle(title: "Login to "),
+                    AuthButton(
+                      icon: FontAwesomeIcons.user,
+                      title: "Continue with phone or email",
+                      onTap: () {
+                        context.push('/login/phone_or_email', extra: 1);
+                      },
+                    ),
+                    AuthButton(
+                      icon: FontAwesomeIcons.facebook,
+                      title: "Login with Facebook",
+                      onTap: () async {
+                        await context
+                            .read<OAuthCubit>()
+                            .continueWithFacebook(context);
+                      },
+                    ),
+                    AuthButton(
+                      icon: FontAwesomeIcons.google,
+                      title: "Login with Google",
+                      onTap: () async {
+                        await context
+                            .read<OAuthCubit>()
+                            .continueWithGoogle(context);
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const Spacer(),
-            CommonTextWidget.loginPageMessage,
-            const SizedBox(height: 60),
-          ],
+              const Spacer(),
+              CommonTextWidget.loginPageMessage,
+              const SizedBox(height: 60),
+            ],
+          ),
         ),
       ),
       bottomSheet: SizedBox(

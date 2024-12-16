@@ -1,5 +1,6 @@
 class LoginResponse {
   final String accessToken;
+  final String refreshToken;
   final String userId;
   final String email;
   final String username;
@@ -8,6 +9,7 @@ class LoginResponse {
 
   const LoginResponse(
     this.accessToken,
+    this.refreshToken,
     this.userId,
     this.email,
     this.username,
@@ -15,7 +17,7 @@ class LoginResponse {
     this.role,
   );
 
-  LoginResponse.fromJson(Map<String, dynamic> json)
+  LoginResponse.fromJson(Map<String, dynamic> json, this.refreshToken)
       : accessToken = json['accessToken'] as String,
         userId = json['userId'] as String,
         email = json['email'] as String,

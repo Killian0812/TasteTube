@@ -20,12 +20,17 @@ final getIt = GetIt.instance;
 void injectDependencies() {
   // App core instances
   getIt.registerSingleton<Logger>(Logger());
-  getIt.registerSingleton<Dio>(Dio(BaseOptions(
-    baseUrl: Api.baseUrl,
-    connectTimeout: const Duration(seconds: 10),
-    receiveTimeout: const Duration(seconds: 10),
-    headers: {'Content-Type': 'application/json'},
-  )));
+  getIt.registerSingleton<Dio>(Dio(
+    BaseOptions(
+      baseUrl: Api.baseUrl,
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+      headers: {
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': true, // Bypass ngrok warning
+      },
+    ),
+  ));
   getIt.registerSingleton<SecureStorage>(SecureStorage());
   getIt.registerSingleton<LocalStorage>(LocalStorage());
   getIt.registerSingleton<Uuid>(const Uuid());

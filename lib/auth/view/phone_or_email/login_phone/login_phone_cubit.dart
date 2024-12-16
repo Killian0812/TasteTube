@@ -23,7 +23,7 @@ class LoginPhoneCubit extends Cubit<LoginPhoneState> {
 
   @override
   Future<void> close() {
-    _timer?.cancel(); 
+    _timer?.cancel();
     return super.close();
   }
 }

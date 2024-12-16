@@ -1,125 +1,80 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
+import 'package:taste_tube/auth/data/login_response.dart';
 import 'package:taste_tube/auth/domain/auth_repo.dart';
-import 'package:taste_tube/auth/view/register_page.ext.dart';
-import 'package:taste_tube/common/toast.dart';
-import 'package:taste_tube/global_bloc/auth/bloc.dart';
 import 'package:taste_tube/injection.dart';
+import 'package:taste_tube/storage.dart';
 
 class OAuthCubit extends Cubit<OAuthState> {
   final AuthRepository repository;
   final Logger logger;
+  final SecureStorage secureStorage;
 
   OAuthCubit()
       : repository = getIt<AuthRepository>(),
+        secureStorage = getIt<SecureStorage>(),
         logger = getIt<Logger>(),
-        super(OAuthState());
+        super(const OAuthLoaded());
 
   Future<void> continueWithFacebook(BuildContext context) async {
-    if (state.isLoading) return;
+    if (state is OAuthLoading) return;
+    emit(const OAuthLoading());
     final result = await repository.continueWithFacebook();
     result.match(
       (apiError) {
-        ToastService.showToast(context, apiError.message!,
-            apiError.statusCode < 500 ? ToastType.warning : ToastType.error,
-            duration: const Duration(seconds: 4));
         logger.e('Login failed: ${apiError.message}');
-        emit(state.copyWith(isLoading: false));
+        emit(OAuthError(apiError.message!));
       },
-      (response) {
-        ToastService.showToast(
-            context,
-            "Successfully connected to Facebook account! Redirecting...",
-            ToastType.success,
-            duration: const Duration(seconds: 4));
-        context.read<AuthBloc>().add(LoginEvent(AuthData(
-              accessToken: response.accessToken,
-              email: response.email,
-              username: response.username,
-              image: response.image,
-              userId: response.userId,
-              role: response.role,
-            )));
-        if (response.role.isNotEmpty) {
-          if (response.role == 'RESTAURANT') {
-            context.goNamed('profile',
-                pathParameters: {'userId': response.userId});
-          } else {
-            context.go('/home');
-          }
-        } else {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    AccountTypeSelectionPage.provider(response.userId)),
-          );
-        }
+      (response) async {
         logger.i('Login successfully: ${response.accessToken}');
+        await secureStorage.setRefreshToken(response.refreshToken);
+        emit(OAuthSuccess(
+            "Successfully connected to Facebook account! Redirecting...",
+            response));
       },
     );
   }
 
   Future<void> continueWithGoogle(BuildContext context) async {
-    if (state.isLoading) return;
+    if (state is OAuthLoading) return;
+    emit(const OAuthLoading());
     final result = await repository.continueWithGoogle();
     result.match(
       (apiError) {
-        ToastService.showToast(context, apiError.message!,
-            apiError.statusCode < 500 ? ToastType.warning : ToastType.error,
-            duration: const Duration(seconds: 4));
         logger.e('Login failed: ${apiError.message}');
-        emit(state.copyWith(isLoading: false));
+        emit(OAuthError(apiError.message!));
       },
-      (response) {
-        ToastService.showToast(
-            context,
-            "Successfully connected to Google account! Redirecting...",
-            ToastType.success,
-            duration: const Duration(seconds: 4));
-        context.read<AuthBloc>().add(LoginEvent(AuthData(
-              accessToken: response.accessToken,
-              email: response.email,
-              username: response.username,
-              image: response.image,
-              userId: response.userId,
-              role: response.role,
-            )));
-        if (response.role.isNotEmpty) {
-          if (response.role == 'RESTAURANT') {
-            context.goNamed('profile',
-                pathParameters: {'userId': response.userId});
-          } else {
-            context.go('/home');
-          }
-        } else {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    AccountTypeSelectionPage.provider(response.userId)),
-          );
-        }
+      (response) async {
         logger.i('Login successfully: ${response.accessToken}');
+        await secureStorage.setRefreshToken(response.refreshToken);
+        emit(OAuthSuccess(
+            "Successfully connected to Google account! Redirecting...",
+            response));
       },
     );
   }
 }
 
-class OAuthState {
-  final bool isLoading;
+abstract class OAuthState {
+  const OAuthState();
+}
 
-  OAuthState({
-    this.isLoading = false,
-  });
+class OAuthLoaded extends OAuthState {
+  const OAuthLoaded() : super();
+}
 
-  OAuthState copyWith({
-    bool? isLoading,
-  }) {
-    return OAuthState(
-      isLoading: isLoading ?? this.isLoading,
-    );
-  }
+class OAuthLoading extends OAuthState {
+  const OAuthLoading() : super();
+}
+
+class OAuthSuccess extends OAuthState {
+  final String message;
+  final LoginResponse response;
+  const OAuthSuccess(this.message, this.response) : super();
+}
+
+class OAuthError extends OAuthState {
+  final String message;
+  const OAuthError(this.message) : super();
 }

@@ -57,8 +57,8 @@ class AuthRepository {
         Api.loginApi,
         data: request.toJson(),
       );
-      final loginResponse = LoginResponse.fromJson(response.data);
-      await secureStorage.setRefreshToken(jwtFromHeader(response.headers));
+      final loginResponse = LoginResponse.fromJson(
+          response.data, jwtFromHeader(response.headers) ?? '');
       return Right(loginResponse);
     } on DioException catch (e) {
       return Left(ApiError.fromDioException(e));
@@ -75,8 +75,8 @@ class AuthRepository {
         Api.facebookAuthApi,
         data: userData,
       );
-      final loginResponse = LoginResponse.fromJson(response.data);
-      await secureStorage.setRefreshToken(jwtFromHeader(response.headers));
+      final loginResponse = LoginResponse.fromJson(
+          response.data, jwtFromHeader(response.headers) ?? '');
       return Right(loginResponse);
     } on DioException catch (e) {
       return Left(ApiError.fromDioException(e));
@@ -100,8 +100,8 @@ class AuthRepository {
           'picture': googleUser.photoUrl,
         },
       );
-      final loginResponse = LoginResponse.fromJson(response.data);
-      await secureStorage.setRefreshToken(jwtFromHeader(response.headers));
+      final loginResponse = LoginResponse.fromJson(
+          response.data, jwtFromHeader(response.headers) ?? '');
       return Right(loginResponse);
     } on DioException catch (e) {
       return Left(ApiError.fromDioException(e));
@@ -112,6 +112,10 @@ class AuthRepository {
 
   String? jwtFromHeader(Headers headers) {
     final setCookieHeader = headers['set-cookie']?[0];
+    final xAuthTokenHeader = headers['x-auth-token']?[0];
+    if (xAuthTokenHeader != null && xAuthTokenHeader.isNotEmpty) {
+      return xAuthTokenHeader;
+    }
     if (setCookieHeader == null || setCookieHeader.length <= 4) {
       return null;
     } else {

@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taste_tube/auth/view/login_page.dart';
 import 'package:taste_tube/auth/view/oauth/oauth_cubit.dart';
@@ -42,6 +44,16 @@ void main() async {
   ).then((firebaseApp) {
     getIt.registerSingleton<FirebaseApp>(firebaseApp);
   });
+  if (kIsWeb) {
+    // Initialize the Facebook javascript SDK on web
+    // can test using http but only usable on https
+    await FacebookAuth.instance.webAndDesktopInitialize(
+      appId: "1491676648196782",
+      cookie: true,
+      xfbml: true,
+      version: "v21.0", // API version Acquired from Meta Developers
+    );
+  }
   runApp(const MyApp());
 }
 
@@ -55,7 +67,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => AuthBloc(),
+          create: (context) => AuthBloc()..add(CheckAuthEvent()),
         ),
         BlocProvider(
           create: (context) => OAuthCubit(),
@@ -115,7 +127,10 @@ class Layout extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        final isCustomer = state.data?.role == "CUSTOMER";
+        if (state is! Authenticated) {
+          return const SplashPage(shouldAutoRedirect: false);
+        }
+        final isCustomer = state.data.role == "CUSTOMER";
         return Scaffold(
             resizeToAvoidBottomInset: false,
             body: shell,

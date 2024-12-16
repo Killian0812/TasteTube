@@ -5,7 +5,8 @@ import 'package:taste_tube/auth/view/register_page.ext.dart';
 import 'package:taste_tube/global_bloc/auth/bloc.dart';
 
 class SplashPage extends StatefulWidget {
-  const SplashPage({super.key});
+  final bool shouldAutoRedirect;
+  const SplashPage({super.key, this.shouldAutoRedirect = true});
 
   @override
   State<SplashPage> createState() => _SplashPageState();
@@ -43,6 +44,7 @@ class _SplashPageState extends State<SplashPage>
     return Scaffold(
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
+          if (!widget.shouldAutoRedirect) return;
           if (state is Authenticated) {
             if (state.data.role == 'RESTAURANT') {
               context.goNamed('profile',
