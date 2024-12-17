@@ -1,7 +1,7 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart' as foundation;
 import 'package:fpdart/fpdart.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/common/error.dart';
 import 'package:taste_tube/global_data/product/category.dart';
@@ -101,9 +101,23 @@ class ProductRepository {
     String description,
     int quantity,
     String categoryId,
-    List<File> images,
+    List<XFile> images,
   ) async {
     try {
+      final List<MultipartFile> files = [];
+      for (var image in images) {
+        if (foundation.kIsWeb) {
+          files.add(MultipartFile.fromBytes(
+            await image.readAsBytes(),
+            filename: image.path.split('/').last,
+          ));
+        } else {
+          files.add(MultipartFile.fromFileSync(
+            image.path,
+            filename: image.path.split('/').last,
+          ));
+        }
+      }
       FormData formData = FormData.fromMap({
         'name': name,
         'cost': cost,
@@ -112,9 +126,7 @@ class ProductRepository {
         'description': description,
         'quantity': quantity,
         'category': categoryId,
-        'images': images
-            .map((image) => MultipartFile.fromFileSync(image.path))
-            .toList(),
+        'images': files,
       });
 
       final response = await http.post(Api.productApi, data: formData);
@@ -136,7 +148,7 @@ class ProductRepository {
     String? description,
     int? quantity,
     String? categoryId,
-    List<File>? newImages,
+    List<XFile>? newImages,
   ) async {
     try {
       FormData formData = FormData.fromMap({

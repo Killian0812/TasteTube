@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'dart:io';
-
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/common/error.dart';
 import 'package:taste_tube/global_data/user/user.dart';
@@ -80,7 +80,7 @@ class UserRepository {
     String? email,
     String? phone,
     String? bio,
-    File? imageFile,
+    XFile? imageFile,
   }) async {
     try {
       final formData = FormData();
@@ -99,11 +99,19 @@ class UserRepository {
         formData.fields.add(MapEntry('bio', bio));
       }
       if (imageFile != null) {
-        formData.files.add(MapEntry(
-          'image', // The key should match your API's expected key for the image
-          await MultipartFile.fromFile(imageFile.path,
-              filename: imageFile.path.split('/').last),
-        ));
+        if (kIsWeb) {
+          formData.files.add(MapEntry(
+            'image', // The key should match your API's expected key for the image
+            MultipartFile.fromBytes(await imageFile.readAsBytes(),
+                filename: imageFile.path.split('/').last),
+          ));
+        } else {
+          formData.files.add(MapEntry(
+            'image',
+            await MultipartFile.fromFile(imageFile.path,
+                filename: imageFile.path.split('/').last),
+          ));
+        }
       }
 
       final response = await http.post(

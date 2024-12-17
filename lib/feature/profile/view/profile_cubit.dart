@@ -1,7 +1,7 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:taste_tube/global_data/user/user.dart';
 import 'package:taste_tube/feature/profile/domain/profile_repo.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
@@ -57,7 +57,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     String? email,
     String? phone,
     String? bio,
-    File? imageFile,
+    XFile? imageFile,
   }) async {
     final either = await repository.updateInfo(
       userId,

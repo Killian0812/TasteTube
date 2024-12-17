@@ -1,7 +1,7 @@
-import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:taste_tube/common/error.dart';
 import 'package:taste_tube/global_data/product/category.dart';
 import 'package:taste_tube/global_data/product/product.dart';
@@ -90,7 +90,7 @@ class ProductCubit extends Cubit<ProductState> {
     String description,
     int quantity,
     String categoryId,
-    List<File> images,
+    List<XFile> images,
     Product? product,
   ) async {
     try {

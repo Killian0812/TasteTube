@@ -24,7 +24,7 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
   late TextEditingController quantityController;
   late String selectedCurrency;
   late String? selectedCategory;
-  List<File> selectedImages = [];
+  List<XFile> selectedImages = [];
   late bool ship;
 
   @override
@@ -333,7 +333,7 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
               if (newIndex > oldIndex) {
                 newIndex -= 1;
               }
-              final File item = selectedImages.removeAt(oldIndex);
+              final XFile item = selectedImages.removeAt(oldIndex);
               selectedImages.insert(newIndex, item);
             });
           },
@@ -345,14 +345,20 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
                 key: ValueKey(selectedImages[index]),
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Image.file(
-                      selectedImages[index],
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: kIsWeb
+                          ? Image.network(
+                              selectedImages[index].path,
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
+                            )
+                          : Image.file(
+                              File(selectedImages[index].path),
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
+                            )),
                   Positioned(
                     right: 0,
                     top: 0,
@@ -383,9 +389,9 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
     }
   }
 
-  Future<List<File>> _pickImages() async {
+  Future<List<XFile>> _pickImages() async {
     List<XFile> images = await _picker.pickMultiImage(limit: 8);
     images = images.sublist(0, min(8 - selectedImages.length, images.length));
-    return images.map((image) => File(image.path)).toList();
+    return images;
   }
 }

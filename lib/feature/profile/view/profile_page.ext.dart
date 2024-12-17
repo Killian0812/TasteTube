@@ -7,15 +7,10 @@ Future<void> _showEditProfileDialog(BuildContext context, User user) {
   final emailController = TextEditingController(text: user.email ?? '');
   final phoneController = TextEditingController(text: user.phone ?? '');
 
-  File? imageFile;
+  XFile? imageFile;
 
   Future<void> pickImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      imageFile = File(pickedFile.path);
-    }
+    imageFile = await ImagePicker().pickImage(source: ImageSource.gallery);
   }
 
   return showModalBottomSheet(
@@ -46,14 +41,27 @@ Future<void> _showEditProfileDialog(BuildContext context, User user) {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    CircleAvatar(
-                      radius: 50,
-                      backgroundImage: imageFile != null
-                          ? FileImage(imageFile!) as ImageProvider<Object>
-                          : (user.image != null
-                              ? NetworkImage(user.image!)
-                                  as ImageProvider<Object>
-                              : null),
+                    ClipOval(
+                      child: SizedBox(
+                        width: 100,
+                        height: 100,
+                        child: imageFile != null
+                            ? (kIsWeb
+                                ? Image.network(
+                                    imageFile!.path,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Image.file(
+                                    File(imageFile!.path),
+                                    fit: BoxFit.cover,
+                                  ))
+                            : (user.image != null
+                                ? Image.network(
+                                    user.image!,
+                                    fit: BoxFit.cover,
+                                  )
+                                : null),
+                      ),
                     ),
                     Container(
                       width: 100,
