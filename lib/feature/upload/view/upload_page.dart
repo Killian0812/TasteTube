@@ -114,6 +114,7 @@ class UploadPage extends StatelessWidget {
                                 onChanged: (value) =>
                                     cubit.setDescription(value),
                                 decoration: InputDecoration(
+                                  alignLabelWithHint: true,
                                   labelText: 'Description',
                                   helperMaxLines: 3,
                                   helperText:

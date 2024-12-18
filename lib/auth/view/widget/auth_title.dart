@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:taste_tube/common/constant.dart';
 import 'package:taste_tube/common/text.dart';
 
 class AuthTitle extends StatelessWidget {
@@ -23,7 +24,7 @@ class AuthTitle extends StatelessWidget {
             CommonTextWidget.tasteTube,
           ],
         ),
-        Image.asset('assets/images/tastetube_inverted.png', height: 110),
+        Image.asset(AssetPath.tastetubeInverted, height: 110),
       ]),
     );
   }

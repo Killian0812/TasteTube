@@ -47,3 +47,12 @@ extension VisibilityExtension on Visibility {
     }
   }
 }
+
+class AssetPath {
+  static const String tastetubeInverted =
+      'assets/images/tastetube_inverted.png';
+  static const String tastetube = 'assets/images/tastetube.png';
+  static const String cod = 'assets/images/cod.jpg';
+  static const String vnpay = 'assets/images/vnpay.jpg';
+  static const String zalopay = 'assets/images/zalopay.png';
+}

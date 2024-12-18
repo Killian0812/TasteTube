@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/toast.dart';
+import 'package:taste_tube/feature/shop/view/payment_page.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/cart.dart';
 
@@ -106,6 +107,22 @@ class CartPage extends StatelessWidget {
             centerTitle: true,
             title: Text(
                 "Cart (${cartItems.isEmpty ? 'Empty' : cartItems.length.toString()})"),
+          ),
+          floatingActionButton: BlocBuilder<OrderCubit, OrderState>(
+            builder: (context, state) {
+              if (state.selectedItems.isEmpty) return const SizedBox.shrink();
+              return FloatingActionButton.extended(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PaymentPage.provider()),
+                  );
+                },
+                label: const Text('Payment'),
+                icon: const Icon(Icons.paid_outlined),
+              );
+            },
           ),
           body: RefreshIndicator(
             onRefresh: () async {

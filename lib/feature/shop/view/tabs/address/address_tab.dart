@@ -30,8 +30,8 @@ class AddressTab extends StatelessWidget {
               itemBuilder: (context, index) {
                 final address = state.addresses[index];
                 return ListTile(
-                  title: Text(address.name),
-                  subtitle: Text(address.value),
+                  title: Text('${address.name} - ${address.phone}'),
+                  subtitle: Text('Address: ${address.value}'),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -63,7 +63,7 @@ class AddressTab extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         label: const Text('Add new address'),
-        icon: const Icon(Icons.place),
+        icon: const Icon(Icons.add_location_alt),
         onPressed: () => _showAddressForm(context),
       ),
     );
