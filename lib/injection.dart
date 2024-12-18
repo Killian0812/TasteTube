@@ -6,6 +6,7 @@ import 'package:taste_tube/api.dart';
 import 'package:taste_tube/feature/product/domain/product_repo.dart';
 import 'package:taste_tube/feature/profile/domain/profile_repo.dart';
 import 'package:taste_tube/feature/search/domain/search_repository.dart';
+import 'package:taste_tube/feature/shop/domain/address_repo.dart';
 import 'package:taste_tube/feature/shop/domain/shop_repo.dart';
 import 'package:taste_tube/feature/upload/domain/upload_repo.dart';
 import 'package:taste_tube/feature/watch/domain/single_video_repository.dart';
@@ -64,6 +65,9 @@ void injectDependencies() {
         http: getIt(),
       ));
   getIt.registerLazySingleton<OrderRepository>(() => OrderRepository(
+        http: getIt(),
+      ));
+  getIt.registerLazySingleton<AddressRepository>(() => AddressRepository(
         http: getIt(),
       ));
 }
