@@ -33,7 +33,7 @@ class AddressRepository {
         'phone': phone,
         'value': value,
       });
-      final address = Address.fromJson(response.data['newAddress']);
+      final address = Address.fromJson(response.data);
       return Right(address);
     } on DioException catch (e) {
       return Left(ApiError.fromDioException(e));
@@ -50,12 +50,12 @@ class AddressRepository {
   ) async {
     try {
       final response = await http
-          .post(Api.singleAddressApi.replaceFirst('addressId', id), data: {
+          .put(Api.singleAddressApi.replaceFirst(':addressId', id), data: {
         'name': name,
         'phone': phone,
         'value': value,
       });
-      final address = Address.fromJson(response.data['']);
+      final address = Address.fromJson(response.data);
       return Right(address);
     } on DioException catch (e) {
       return Left(ApiError.fromDioException(e));
@@ -66,7 +66,7 @@ class AddressRepository {
 
   Future<Either<ApiError, void>> deleteAddress(String id) async {
     try {
-      await http.delete(Api.singleAddressApi.replaceFirst('addressId', id));
+      await http.delete(Api.singleAddressApi.replaceFirst(':addressId', id));
       return const Right(null);
     } on DioException catch (e) {
       return Left(ApiError.fromDioException(e));

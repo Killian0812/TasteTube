@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taste_tube/common/dialog.dart';
+import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/shop/view/tabs/address/address_cubit.dart';
 import 'package:taste_tube/global_data/order/address.dart';
 
@@ -9,53 +11,60 @@ class AddressTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocBuilder<AddressCubit, AddressState>(
+      body: BlocConsumer<AddressCubit, AddressState>(
+        listener: (context, state) {
+          if (state is AddressError) {
+            ToastService.showToast(context, state.message, ToastType.warning);
+          }
+        },
         builder: (context, state) {
           if (state is AddressLoading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (state is AddressLoaded) {
-            return RefreshIndicator(
-              onRefresh: () async {
-                context.read<AddressCubit>().fetchAddresses();
-              },
-              child: ListView.builder(
-                itemCount: state.addresses.length,
-                itemBuilder: (context, index) {
-                  final address = state.addresses[index];
-                  return ListTile(
-                    title: Text(address.name),
-                    subtitle: Text(address.value),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () {
-                            _showAddressForm(context, address: address);
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            context.read<AddressCubit>().deleteAddress(address);
-                          },
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            );
-          } else if (state is AddressError) {
-            return Center(child: Text(state.message));
-          } else {
-            return const Center(child: Text("No addresses found"));
           }
+          return RefreshIndicator(
+            onRefresh: () async {
+              context.read<AddressCubit>().fetchAddresses();
+            },
+            child: ListView.builder(
+              itemCount: state.addresses.length,
+              itemBuilder: (context, index) {
+                final address = state.addresses[index];
+                return ListTile(
+                  title: Text(address.name),
+                  subtitle: Text(address.value),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.edit),
+                        onPressed: () {
+                          _showAddressForm(context, address: address);
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () async {
+                          final result = await showConfirmDialog(context,
+                              title:
+                                  "Are you sure to remove address: ${address.value}?");
+                          if (result != true) return;
+                          if (context.mounted) {
+                            context.read<AddressCubit>().deleteAddress(address);
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          );
         },
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
+        label: const Text('Add new address'),
+        icon: const Icon(Icons.place),
         onPressed: () => _showAddressForm(context),
-        child: const Icon(Icons.add),
       ),
     );
   }
@@ -79,13 +88,14 @@ class AddressTab extends StatelessWidget {
               children: [
                 TextFormField(
                   controller: nameController,
-                  decoration: const InputDecoration(labelText: 'Name'),
+                  decoration: const InputDecoration(labelText: 'Receiver name'),
                   validator: (value) =>
                       value!.isEmpty ? 'Please enter a name' : null,
                 ),
                 TextFormField(
                   controller: phoneController,
-                  decoration: const InputDecoration(labelText: 'Phone'),
+                  decoration:
+                      const InputDecoration(labelText: 'Receiver phone'),
                   validator: (value) =>
                       value!.isEmpty ? 'Please enter a phone number' : null,
                 ),

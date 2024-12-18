@@ -48,6 +48,8 @@ class LoginEmailTab extends StatelessWidget {
   Widget _passwordField(BuildContext context) {
     return BlocBuilder<LoginEmailCubit, LoginEmailState>(
       builder: (context, state) {
+        final cubit = context.read<LoginEmailCubit>();
+        
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -55,6 +57,10 @@ class LoginEmailTab extends StatelessWidget {
               obscureText: !state.isPasswordVisible,
               onChanged: (value) =>
                   context.read<LoginEmailCubit>().editPassword(value),
+              onSubmitted: (value) async {
+                FocusScope.of(context).unfocus();
+                await cubit.send();
+              },
               decoration: InputDecoration(
                 labelText: "Password",
                 suffixIcon: IconButton(
