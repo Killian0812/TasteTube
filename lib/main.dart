@@ -25,7 +25,7 @@ import 'package:taste_tube/feature/inbox/view/inbox_page.dart';
 import 'package:taste_tube/feature/profile/view/profile_page.dart';
 import 'package:taste_tube/feature/product/view/product_page.dart';
 import 'package:taste_tube/feature/search/view/search_page.dart';
-import 'package:taste_tube/feature/shop/view/single_shop_page.dart';
+import 'package:taste_tube/feature/shop/view/tabs/shopping/single_shop_page.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
 import 'package:taste_tube/feature/watch/view/watch_page.dart';
 import 'package:taste_tube/firebase_options.dart';
@@ -68,7 +68,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => AuthBloc()..add(CheckAuthEvent()),
+          create: (context) => getIt<AuthBloc>()..add(CheckAuthEvent()),
         ),
         BlocProvider(
           create: (context) => OAuthCubit(),

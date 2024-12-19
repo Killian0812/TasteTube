@@ -3,7 +3,6 @@ import 'package:fpdart/fpdart.dart' as fpdart;
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/common/error.dart';
 import 'package:taste_tube/global_data/order/order.dart';
-import 'package:taste_tube/global_data/product/product.dart';
 
 class OrderRepository {
   final Dio http;
@@ -30,14 +29,12 @@ class OrderRepository {
     required String notes,
   }) async {
     try {
-      final response = await http.get(Api.shopSearchApi, data: {
+      await http.post(Api.orderApi, data: {
         'selectedCartItems': selectedCartItems,
         'addressId': addressId,
         'paymentMethod': paymentMethod,
         'notes': notes,
       });
-      final List<dynamic> data = response.data;
-      final products = data.map((json) => Product.fromJson(json)).toList();
       return const fpdart.Right(null);
     } on DioException catch (e) {
       return fpdart.Left(ApiError.fromDioException(e));

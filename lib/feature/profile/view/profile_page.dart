@@ -16,6 +16,7 @@ import 'package:taste_tube/global_data/user/user.dart';
 import 'package:taste_tube/feature/profile/view/profile_cubit.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
 import 'package:taste_tube/global_bloc/auth/bloc.dart';
+import 'package:taste_tube/injection.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
 
 part 'profile_page.ext.dart';
@@ -60,7 +61,7 @@ class _GuestProfileInteractions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currentUserId = UserDataUtil.getUserId(context);
+    final currentUserId = UserDataUtil.getUserId();
     return BlocBuilder<ProfileCubit, ProfileState>(
         bloc: cubit,
         builder: (context, state) {
@@ -161,8 +162,7 @@ class ProfilePage extends StatelessWidget {
 
   static Widget provider(String userId) => MultiBlocProvider(
         providers: [
-          BlocProvider(
-              create: (context) => ProfileCubit(userId)..init(context)),
+          BlocProvider(create: (context) => ProfileCubit(userId)..init()),
           BlocProvider(
             create: (context) => PasswordCubit(userId),
           ),
@@ -192,7 +192,7 @@ class ProfilePage extends StatelessWidget {
                   heroTag: 'Profile reset',
                   label: const Text('Try again'),
                   onPressed: () {
-                    cubit.init(context);
+                    cubit.init();
                   },
                 ),
               ],
@@ -222,7 +222,7 @@ class ProfilePage extends StatelessWidget {
                             return;
                           }
                           if (context.mounted) {
-                            final authBloc = context.read<AuthBloc>();
+                            final authBloc = getIt<AuthBloc>();
                             authBloc.add(LogoutEvent());
                             context.go('/login');
                           }
@@ -241,7 +241,7 @@ class ProfilePage extends StatelessWidget {
           ),
           body: RefreshIndicator(
             onRefresh: () async {
-              cubit.init(context);
+              cubit.init();
             },
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),

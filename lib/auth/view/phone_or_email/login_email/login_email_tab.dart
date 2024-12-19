@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:taste_tube/auth/view/register_page.ext.dart';
 import 'package:taste_tube/common/button.dart';
 import 'package:taste_tube/common/toast.dart';
-import 'package:taste_tube/global_bloc/auth/bloc.dart';
 
 import 'login_email_cubit.dart';
 
@@ -49,7 +48,7 @@ class LoginEmailTab extends StatelessWidget {
     return BlocBuilder<LoginEmailCubit, LoginEmailState>(
       builder: (context, state) {
         final cubit = context.read<LoginEmailCubit>();
-        
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -93,14 +92,6 @@ class LoginEmailTab extends StatelessWidget {
               duration: const Duration(seconds: 3));
 
           final response = state.response!;
-          context.read<AuthBloc>().add(LoginEvent(AuthData(
-                accessToken: response.accessToken,
-                email: response.email,
-                username: response.username,
-                image: response.image,
-                userId: response.userId,
-                role: response.role,
-              )));
           if (response.role.isNotEmpty) {
             if (response.role == 'RESTAURANT') {
               context.goNamed('profile',

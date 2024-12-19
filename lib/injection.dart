@@ -10,6 +10,7 @@ import 'package:taste_tube/feature/shop/domain/address_repo.dart';
 import 'package:taste_tube/feature/shop/domain/shop_repo.dart';
 import 'package:taste_tube/feature/upload/domain/upload_repo.dart';
 import 'package:taste_tube/feature/watch/domain/single_video_repository.dart';
+import 'package:taste_tube/global_bloc/auth/bloc.dart';
 import 'package:taste_tube/global_repo/order_repo.dart';
 import 'package:taste_tube/storage.dart';
 import 'package:uuid/uuid.dart';
@@ -39,6 +40,7 @@ void injectDependencies() {
     'email',
     'https://www.googleapis.com/auth/contacts.readonly',
   ]));
+  getIt.registerSingleton<AuthBloc>(AuthBloc());
 
   // Repositories
   getIt.registerLazySingleton<AuthRepository>(() => AuthRepository(

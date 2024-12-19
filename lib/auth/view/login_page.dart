@@ -9,7 +9,6 @@ import 'package:taste_tube/auth/view/widget/auth_button.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/common/toast.dart';
-import 'package:taste_tube/global_bloc/auth/bloc.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -27,14 +26,6 @@ class _LoginPageState extends State<LoginPage> {
         listener: (context, state) {
           if (state is OAuthSuccess) {
             final response = state.response;
-            context.read<AuthBloc>().add(LoginEvent(AuthData(
-                  accessToken: response.accessToken,
-                  email: response.email,
-                  username: response.username,
-                  image: response.image,
-                  userId: response.userId,
-                  role: response.role,
-                )));
             if (response.role.isNotEmpty) {
               if (response.role == 'RESTAURANT') {
                 context.goNamed('profile',

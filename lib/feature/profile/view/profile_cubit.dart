@@ -1,5 +1,3 @@
-
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:taste_tube/global_data/user/user.dart';
@@ -17,8 +15,8 @@ class ProfileCubit extends Cubit<ProfileState> {
       : repository = getIt<UserRepository>(),
         super(ProfileLoading(null));
 
-  Future<void> init(BuildContext context) async {
-    isOwner = (context.read<AuthBloc>().state.data?.userId == userId);
+  Future<void> init() async {
+    isOwner = (getIt<AuthBloc>().state.data?.userId == userId);
     final either = await repository.getInfo(userId);
     either.match(
       (apiError) {

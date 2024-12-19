@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
 import 'package:taste_tube/auth/data/login_response.dart';
 import 'package:taste_tube/auth/domain/auth_repo.dart';
+import 'package:taste_tube/global_bloc/auth/bloc.dart';
 import 'package:taste_tube/injection.dart';
 import 'package:taste_tube/storage.dart';
 
@@ -46,6 +47,14 @@ class LoginEmailCubit extends Cubit<LoginEmailState> {
       (response) async {
         logger.i('Login successfully: ${response.accessToken}');
         await secureStorage.setRefreshToken(response.refreshToken);
+        getIt<AuthBloc>().add(LoginEvent(AuthData(
+          accessToken: response.accessToken,
+          email: response.email,
+          username: response.username,
+          image: response.image,
+          userId: response.userId,
+          role: response.role,
+        )));
         emit(LoginEmailSuccess(
           state.email,
           state.password,

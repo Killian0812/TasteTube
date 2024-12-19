@@ -1,9 +1,12 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/global_bloc/auth/bloc.dart';
+import 'package:taste_tube/injection.dart';
 
 class UserDataUtil {
-  static String getUserId(BuildContext context) {
-    return context.read<AuthBloc>().state.data!.userId;
+  static String getUserId() {
+    return getIt<AuthBloc>().state.data!.userId;
+  }
+
+  static String getUserRole() {
+    return getIt<AuthBloc>().state.data!.role;
   }
 }

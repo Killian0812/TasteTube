@@ -12,7 +12,7 @@ class ProfileSkeletonPage extends StatelessWidget {
       if (context.mounted) {
         context.goNamed(
           'profile',
-          pathParameters: {'userId': UserDataUtil.getUserId(context)},
+          pathParameters: {'userId': UserDataUtil.getUserId()},
         );
       }
     });

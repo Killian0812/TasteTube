@@ -67,7 +67,7 @@ class ProductTab extends StatelessWidget {
                   onRefresh: () async {
                     context
                         .read<ProductCubit>()
-                        .fetchProducts(UserDataUtil.getUserId(context));
+                        .fetchProducts(UserDataUtil.getUserId());
                   },
                   child: ListView(
                       children: categoryKeys.asMap().entries.map((entry) {

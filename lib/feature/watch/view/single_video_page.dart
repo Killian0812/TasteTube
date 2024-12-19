@@ -60,8 +60,7 @@ class _SingleVideoState extends State<SingleVideo>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final bool isVideoOwner =
-        widget.video.ownerId == UserDataUtil.getUserId(context);
+    final bool isVideoOwner = widget.video.ownerId == UserDataUtil.getUserId();
     return BlocListener<SingleVideoCubit, SingleVideoState>(
       listener: (context, state) {
         if (state is DeleteVideoSuccess) {
@@ -203,8 +202,7 @@ class _SingleVideoState extends State<SingleVideo>
               GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: () {
-                    if (widget.video.ownerId ==
-                        UserDataUtil.getUserId(context)) {
+                    if (widget.video.ownerId == UserDataUtil.getUserId()) {
                       Navigator.of(context).pop();
                       return;
                     }

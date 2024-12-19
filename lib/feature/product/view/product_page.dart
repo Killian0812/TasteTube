@@ -47,8 +47,8 @@ class _ProductPageState extends State<ProductPage>
               create: (context) => CategoryCubit()..fetchCategory(),
             ),
             BlocProvider(
-              create: (context) => ProductCubit()
-                ..fetchProducts(UserDataUtil.getUserId(context)),
+              create: (context) =>
+                  ProductCubit()..fetchProducts(UserDataUtil.getUserId()),
             ),
           ],
           child: TabBarView(

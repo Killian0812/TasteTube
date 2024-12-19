@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/feature/shop/view/tabs/shopping/shop_cubit.dart';
-import 'package:taste_tube/feature/shop/view/single_shop_product_page.dart';
+import 'package:taste_tube/feature/shop/view/tabs/shopping/single_shop_product_page.dart';
 import 'package:taste_tube/global_data/product/product.dart';
 
 class ShopTab extends StatefulWidget {

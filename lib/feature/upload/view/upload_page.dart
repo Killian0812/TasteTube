@@ -29,7 +29,7 @@ class UploadPage extends StatelessWidget {
           filePath: filePath,
           recordedWithFrontCamera: recordedWithFrontCamera,
           reviewTarget: reviewTarget,
-        )..fetchProducts(reviewTarget?.id ?? UserDataUtil.getUserId(context)),
+        )..fetchProducts(reviewTarget?.id ?? UserDataUtil.getUserId()),
         child: UploadPage(reviewTarget: reviewTarget),
       );
 
@@ -46,7 +46,7 @@ class UploadPage extends StatelessWidget {
               Future.microtask(() {
                 context.goNamed(
                   'profile',
-                  pathParameters: {'userId': UserDataUtil.getUserId(context)},
+                  pathParameters: {'userId': UserDataUtil.getUserId()},
                 );
               });
             } catch (e) {
