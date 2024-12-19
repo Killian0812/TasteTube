@@ -88,12 +88,14 @@ class AddressTab extends StatelessWidget {
               children: [
                 TextFormField(
                   controller: nameController,
+                  keyboardType: TextInputType.name,
                   decoration: const InputDecoration(labelText: 'Receiver name'),
                   validator: (value) =>
                       value!.isEmpty ? 'Please enter a name' : null,
                 ),
                 TextFormField(
                   controller: phoneController,
+                  keyboardType: TextInputType.phone,
                   decoration:
                       const InputDecoration(labelText: 'Receiver phone'),
                   validator: (value) =>
@@ -101,6 +103,7 @@ class AddressTab extends StatelessWidget {
                 ),
                 TextFormField(
                   controller: valueController,
+                  keyboardType: TextInputType.streetAddress,
                   decoration: const InputDecoration(labelText: 'Address'),
                   validator: (value) =>
                       value!.isEmpty ? 'Please enter an address' : null,

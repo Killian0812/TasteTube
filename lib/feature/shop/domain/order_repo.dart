@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart' as fpdart;
 import 'package:taste_tube/api.dart';
+import 'package:taste_tube/common/constant.dart';
 import 'package:taste_tube/common/error.dart';
 import 'package:taste_tube/global_data/order/order.dart';
+import 'package:taste_tube/utils/user_data.util.dart';
 
 class OrderRepository {
   final Dio http;
@@ -11,7 +13,11 @@ class OrderRepository {
 
   Future<fpdart.Either<ApiError, List<Order>>> getOrders() async {
     try {
-      final response = await http.get(Api.customerOrderApi);
+      final String endpoint =
+          UserDataUtil.getUserRole() == AccountType.restaurant.value()
+              ? Api.shopOrderApi
+              : Api.customerOrderApi;
+      final response = await http.get(endpoint);
       final List<dynamic> data = response.data;
       final orders = data.map((json) => Order.fromJson(json)).toList();
       return fpdart.Right(orders);
