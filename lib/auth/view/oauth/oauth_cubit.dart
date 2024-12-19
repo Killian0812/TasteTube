@@ -30,7 +30,6 @@ class OAuthCubit extends Cubit<OAuthState> {
       (response) async {
         logger.i('Login successfully: ${response.accessToken}');
         await UserDataUtil.initUser(response);
-        UserDataUtil.refreshData();
         emit(OAuthSuccess(
             "Successfully connected to Facebook account! Redirecting...",
             response));

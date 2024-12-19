@@ -13,7 +13,6 @@ import 'package:taste_tube/auth/view/phone_or_email/register_phone_or_email_page
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/fallback.dart';
 import 'package:taste_tube/common/size.dart';
-import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/feature/shop/view/cart_page.dart';
 import 'package:taste_tube/feature/shop/view/shop_page.dart';

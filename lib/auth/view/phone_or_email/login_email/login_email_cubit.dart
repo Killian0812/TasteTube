@@ -47,7 +47,6 @@ class LoginEmailCubit extends Cubit<LoginEmailState> {
       (response) async {
         logger.i('Login successfully: ${response.accessToken}');
         await UserDataUtil.initUser(response);
-        UserDataUtil.refreshData();
         emit(LoginEmailSuccess(
           state.email,
           state.password,

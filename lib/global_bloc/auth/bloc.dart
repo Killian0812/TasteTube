@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/injection.dart';
 import 'package:taste_tube/storage.dart';
+import 'package:taste_tube/utils/user_data.util.dart';
 
 part 'event.dart';
 part 'state.dart';
@@ -44,6 +45,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   FutureOr<void> _login(LoginEvent event, Emitter<AuthState> emit) async {
     await secureStorage.setRefreshToken(event.refreshToken);
     http.options.headers['Authorization'] = 'Bearer ${event.data.accessToken}';
+    UserDataUtil.refreshData();
     emit(Authenticated(event.data));
   }
 

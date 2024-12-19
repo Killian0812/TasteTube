@@ -22,6 +22,11 @@ class AddressLoaded extends AddressState {
   AddressLoaded(this.address) : super(address);
 }
 
+class AddressAdded extends AddressState {
+  final List<Address> address;
+  AddressAdded(this.address) : super(address);
+}
+
 class AddressError extends AddressState {
   final List<Address> address;
   final String message;
@@ -67,7 +72,7 @@ class AddressCubit extends Cubit<AddressState> {
         (newAddress) {
           final updatedAddresses = [...state.addresses];
           updatedAddresses.add(newAddress);
-          emit(AddressLoaded(updatedAddresses));
+          emit(AddressAdded(updatedAddresses));
         },
       );
     } catch (e) {

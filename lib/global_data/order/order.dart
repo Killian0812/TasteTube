@@ -8,7 +8,7 @@ class Order {
   final String orderId;
   final double total;
   final Address address;
-  final String note;
+  final String notes;
   final List<Product> products;
   final String paymentMethod;
   final bool paid;
@@ -23,7 +23,7 @@ class Order {
     required this.orderNum,
     required this.total,
     required this.address,
-    required this.note,
+    required this.notes,
     required this.products,
     required this.paymentMethod,
     required this.paid,
@@ -40,7 +40,7 @@ class Order {
       orderNum: json['orderNum'],
       total: json['total'],
       address: Address.fromJson(json['address']),
-      note: json['note'],
+      notes: json['notes'],
       products: (json['products'] as List<dynamic>)
           .map((item) => Product.fromJson(item))
           .toList(),

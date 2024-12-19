@@ -60,6 +60,7 @@ class OrderCubit extends Cubit<OrderState> {
     String paymentMethod,
     String notes,
   ) async {
+    emit(OrderLoading(state.orders));
     try {
       final result = await repository.createOrder(
         selectedCartItems: selectedCartItems,

@@ -210,7 +210,7 @@ class SingleShopProductPage extends StatelessWidget {
           Expanded(
             child: ElevatedButton(
               onPressed: () async {
-                print("HERE");
+                // TODO: create order immedately
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: CommonColor.activeBgColor,

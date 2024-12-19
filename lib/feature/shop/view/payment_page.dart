@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/common/button.dart';
 import 'package:taste_tube/common/constant.dart';
-import 'package:taste_tube/common/loading.dart';
 import 'package:taste_tube/common/text.dart';
+import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/shop/view/tabs/address/address_cubit.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/address.dart';
+
+part 'payment_page.ext.dart';
 
 double deliveryFee = 15000; // Example only
 double discount = 10000;
@@ -38,15 +40,19 @@ class _PaymentPageState extends State<PaymentPage> {
           centerTitle: true,
         ),
         resizeToAvoidBottomInset: false,
-        body: BlocBuilder<CartCubit, CartState>(builder: (context, orderState) {
-          if (orderState is CartLoading) {
-            return const Center(child: CommonLoadingIndicator.regular);
-          }
-          if (orderState is CartError) {
-            return const Center(child: Text('Something went wrong!'));
-          }
-
-          return Column(
+        body: BlocListener<OrderCubit, OrderState>(
+          listener: (context, state) {
+            if (state is OrderSuccess) {
+              ToastService.showToast(context, state.success, ToastType.success);
+              context.read<OrderCubit>().getOrders();
+              context.read<CartCubit>().getCart();
+              Navigator.pop(context);
+            }
+            if (state is OrderError) {
+              ToastService.showToast(context, state.error, ToastType.warning);
+            }
+          },
+          child: Column(
             children: [
               Expanded(
                 child: SingleChildScrollView(
@@ -62,13 +68,32 @@ class _PaymentPageState extends State<PaymentPage> {
               ),
               _buildBottomOrderSection(),
             ],
-          );
-        }));
+          ),
+        ));
   }
 
   Widget _buildAddressSection() {
-    return BlocBuilder<AddressCubit, AddressState>(
+    return BlocConsumer<AddressCubit, AddressState>(
+      listener: (context, state) {
+        if (state is AddressError) {
+          ToastService.showToast(context, state.message, ToastType.warning);
+        }
+        if (state is AddressLoaded) {
+          setState(() {
+            selectedAddress = state.addresses.first;
+          });
+        }
+        if (state is AddressAdded) {
+          setState(() {
+            selectedAddress = state.addresses.last;
+          });
+        }
+      },
       builder: (context, state) {
+        if (state is AddressLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
         final addresses = state.addresses;
 
         return Padding(
@@ -81,7 +106,7 @@ class _PaymentPageState extends State<PaymentPage> {
               const SizedBox(height: 10),
               DropdownButton<dynamic>(
                 isExpanded: true,
-                value: selectedAddress,
+                value: selectedAddress ?? addresses.first,
                 items: [
                   ...addresses.map((Address address) {
                     return DropdownMenuItem<Address>(
@@ -101,9 +126,13 @@ class _PaymentPageState extends State<PaymentPage> {
                       )),
                 ],
                 onChanged: (value) {
-                  setState(() {
-                    selectedAddress = value;
-                  });
+                  if (value == null) {
+                    showAddressForm(context);
+                  } else {
+                    setState(() {
+                      selectedAddress = value;
+                    });
+                  }
                 },
               ),
               const SizedBox(height: 10),
@@ -223,15 +252,21 @@ class _PaymentPageState extends State<PaymentPage> {
                 ],
               ),
               const SizedBox(height: 10),
-              CommonButton(
-                onPressed: () {
-                  context.read<OrderCubit>().createOrder(
-                      selectedItems.map((e) => e.id).toList(),
-                      selectedAddress!.id,
-                      _selectedPaymentMethod!,
-                      _notes);
+              BlocBuilder<OrderCubit, OrderState>(
+                builder: (context, state) {
+                  return CommonButton(
+                    isLoading: state is OrderLoading,
+                    onPressed: () {
+                      context.read<OrderCubit>().createOrder(
+                            selectedItems.map((e) => e.id).toList(),
+                            selectedAddress!.id,
+                            _selectedPaymentMethod!,
+                            _notes,
+                          );
+                    },
+                    text: 'Order',
+                  );
                 },
-                text: 'Order',
               )
             ],
           ),
