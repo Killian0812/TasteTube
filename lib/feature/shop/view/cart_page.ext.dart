@@ -20,7 +20,7 @@ class CartItemTile extends StatelessWidget {
                     'Are you sure you want to remove this item from the cart?',
               );
               if (confirmed == true && context.mounted) {
-                await context.read<OrderCubit>().removeFromCart(item);
+                await context.read<CartCubit>().removeFromCart(item);
               }
             },
             backgroundColor: Colors.red,
@@ -40,7 +40,7 @@ class CartItemTile extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            BlocBuilder<OrderCubit, OrderState>(
+            BlocBuilder<CartCubit, CartState>(
               builder: (context, state) {
                 return Padding(
                   padding: const EdgeInsets.only(right: 5, top: 15),
@@ -48,7 +48,7 @@ class CartItemTile extends StatelessWidget {
                       value: state.selectedItems.contains(item.id),
                       onChanged: (_) {
                         context
-                            .read<OrderCubit>()
+                            .read<CartCubit>()
                             .selectOrUnselectCartItem(item);
                       }),
                 );
@@ -115,14 +115,14 @@ class CartItemTile extends StatelessWidget {
                 // Quantity
                 Row(
                   children: [
-                    BlocBuilder<OrderCubit, OrderState>(
+                    BlocBuilder<CartCubit, CartState>(
                       builder: (context, state) {
                         return IconButton(
                           icon: const Icon(Icons.remove),
                           onPressed: () {
-                            if (state is OrderLoading) return;
+                            if (state is CartLoading) return;
                             context
-                                .read<OrderCubit>()
+                                .read<CartCubit>()
                                 .updateItemQuantity(item, item.quantity - 1);
                           },
                         );
@@ -132,14 +132,14 @@ class CartItemTile extends StatelessWidget {
                       item.quantity.toString(),
                       style: const TextStyle(fontSize: 16),
                     ),
-                    BlocBuilder<OrderCubit, OrderState>(
+                    BlocBuilder<CartCubit, CartState>(
                       builder: (context, state) {
                         return IconButton(
                           icon: const Icon(Icons.add),
                           onPressed: () {
-                            if (state is OrderLoading) return;
+                            if (state is CartLoading) return;
                             context
-                                .read<OrderCubit>()
+                                .read<CartCubit>()
                                 .updateItemQuantity(item, item.quantity + 1);
                           },
                         );

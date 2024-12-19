@@ -5,6 +5,7 @@ import 'package:taste_tube/common/constant.dart';
 import 'package:taste_tube/common/loading.dart';
 import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/feature/shop/view/tabs/address/address_cubit.dart';
+import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/address.dart';
 
@@ -37,12 +38,11 @@ class _PaymentPageState extends State<PaymentPage> {
           centerTitle: true,
         ),
         resizeToAvoidBottomInset: false,
-        body:
-            BlocBuilder<OrderCubit, OrderState>(builder: (context, orderState) {
-          if (orderState is OrderLoading) {
+        body: BlocBuilder<CartCubit, CartState>(builder: (context, orderState) {
+          if (orderState is CartLoading) {
             return const Center(child: CommonLoadingIndicator.regular);
           }
-          if (orderState is OrderError) {
+          if (orderState is CartError) {
             return const Center(child: Text('Something went wrong!'));
           }
 
@@ -196,7 +196,7 @@ class _PaymentPageState extends State<PaymentPage> {
   }
 
   Widget _buildBottomOrderSection() {
-    return BlocBuilder<OrderCubit, OrderState>(
+    return BlocBuilder<CartCubit, CartState>(
       builder: (context, state) {
         final selectedItems = state.cart.items
             .where((item) => state.selectedItems.contains(item.id))
@@ -225,8 +225,11 @@ class _PaymentPageState extends State<PaymentPage> {
               const SizedBox(height: 10),
               CommonButton(
                 onPressed: () {
-                  // Create order
-                  print(_notes);
+                  context.read<OrderCubit>().createOrder(
+                      selectedItems.map((e) => e.id).toList(),
+                      selectedAddress!.id,
+                      _selectedPaymentMethod!,
+                      _notes);
                 },
                 text: 'Order',
               )
@@ -243,7 +246,7 @@ class _OrderSummarySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<OrderCubit, OrderState>(
+    return BlocBuilder<CartCubit, CartState>(
       builder: (context, state) {
         final selectedItems = state.cart.items
             .where((item) => state.selectedItems.contains(item.id))

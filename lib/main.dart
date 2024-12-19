@@ -17,6 +17,7 @@ import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/feature/shop/view/cart_page.dart';
 import 'package:taste_tube/feature/shop/view/shop_page.dart';
+import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/user/user.dart';
 import 'package:taste_tube/feature/record/camera/camera_page.dart';
@@ -74,7 +75,10 @@ class MyApp extends StatelessWidget {
           create: (context) => OAuthCubit(),
         ),
         BlocProvider(
-          create: (context) => OrderCubit()..getCart(),
+          create: (context) => getIt<CartCubit>(),
+        ),
+        BlocProvider(
+          create: (context) => getIt<OrderCubit>(),
         ),
       ],
       child: MaterialApp.router(

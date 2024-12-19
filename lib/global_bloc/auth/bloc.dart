@@ -42,6 +42,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   FutureOr<void> _login(LoginEvent event, Emitter<AuthState> emit) async {
+    await secureStorage.setRefreshToken(event.refreshToken);
     http.options.headers['Authorization'] = 'Bearer ${event.data.accessToken}';
     emit(Authenticated(event.data));
   }

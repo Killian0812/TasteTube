@@ -25,6 +25,8 @@ class _LoginPageState extends State<LoginPage> {
       body: BlocListener<OAuthCubit, OAuthState>(
         listener: (context, state) {
           if (state is OAuthSuccess) {
+            ToastService.showToast(context, state.message, ToastType.success,
+                duration: const Duration(seconds: 3));
             final response = state.response;
             if (response.role.isNotEmpty) {
               if (response.role == 'RESTAURANT') {

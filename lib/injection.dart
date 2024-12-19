@@ -7,10 +7,13 @@ import 'package:taste_tube/feature/product/domain/product_repo.dart';
 import 'package:taste_tube/feature/profile/domain/profile_repo.dart';
 import 'package:taste_tube/feature/search/domain/search_repository.dart';
 import 'package:taste_tube/feature/shop/domain/address_repo.dart';
+import 'package:taste_tube/feature/shop/domain/order_repo.dart';
 import 'package:taste_tube/feature/shop/domain/shop_repo.dart';
 import 'package:taste_tube/feature/upload/domain/upload_repo.dart';
 import 'package:taste_tube/feature/watch/domain/single_video_repository.dart';
 import 'package:taste_tube/global_bloc/auth/bloc.dart';
+import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
+import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_repo/order_repo.dart';
 import 'package:taste_tube/storage.dart';
 import 'package:uuid/uuid.dart';
@@ -40,7 +43,6 @@ void injectDependencies() {
     'email',
     'https://www.googleapis.com/auth/contacts.readonly',
   ]));
-  getIt.registerSingleton<AuthBloc>(AuthBloc());
 
   // Repositories
   getIt.registerLazySingleton<AuthRepository>(() => AuthRepository(
@@ -63,13 +65,21 @@ void injectDependencies() {
   getIt.registerLazySingleton<SearchRepository>(() => SearchRepository(
         http: getIt(),
       ));
+  getIt.registerLazySingleton<AddressRepository>(() => AddressRepository(
+        http: getIt(),
+      ));
   getIt.registerLazySingleton<ShopRepository>(() => ShopRepository(
         http: getIt(),
       ));
   getIt.registerLazySingleton<OrderRepository>(() => OrderRepository(
         http: getIt(),
       ));
-  getIt.registerLazySingleton<AddressRepository>(() => AddressRepository(
+  getIt.registerLazySingleton<CartRepository>(() => CartRepository(
         http: getIt(),
       ));
+
+  // Global blocs / cubits
+  getIt.registerSingleton<AuthBloc>(AuthBloc());
+  getIt.registerSingleton<CartCubit>(CartCubit());
+  getIt.registerSingleton<OrderCubit>(OrderCubit());
 }

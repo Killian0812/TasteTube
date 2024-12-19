@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/feature/shop/view/cart_page.dart';
 import 'package:taste_tube/feature/shop/view/quantity_dialog.dart';
-import 'package:taste_tube/global_bloc/order/order_cubit.dart';
+import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_data/product/product.dart';
 import 'package:taste_tube/feature/profile/view/profile_page.dart';
 import 'package:taste_tube/utils/phone_call.util.dart';
@@ -194,7 +194,7 @@ class SingleShopProductPage extends StatelessWidget {
                 );
 
                 if (quantity != null && context.mounted) {
-                  context.read<OrderCubit>().addToCart(product, quantity);
+                  context.read<CartCubit>().addToCart(product, quantity);
                 }
               },
               style: OutlinedButton.styleFrom(

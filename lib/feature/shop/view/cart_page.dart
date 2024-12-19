@@ -7,7 +7,7 @@ import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/shop/view/payment_page.dart';
-import 'package:taste_tube/global_bloc/order/order_cubit.dart';
+import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_data/order/cart.dart';
 
 part 'cart_page.ext.dart';
@@ -29,13 +29,13 @@ class CartButton extends StatelessWidget {
             const Align(
                 alignment: Alignment.center,
                 child: Icon(Icons.shopping_cart, size: 35)),
-            BlocConsumer<OrderCubit, OrderState>(
+            BlocConsumer<CartCubit, CartState>(
               listener: (context, state) {
-                if (state is OrderError) {
+                if (state is CartError) {
                   ToastService.showToast(
                       context, state.error, ToastType.warning);
                 }
-                if (state is OrderSuccess) {
+                if (state is CartSuccess) {
                   ToastService.showToast(
                       context, state.success, ToastType.success);
                 }
@@ -54,7 +54,7 @@ class CartButton extends StatelessWidget {
                     minHeight: 20,
                   ),
                   child: Center(
-                      child: state is OrderLoading
+                      child: state is CartLoading
                           ? const SizedBox(
                               width: 12,
                               height: 12,
@@ -86,12 +86,12 @@ class CartPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<OrderCubit, OrderState>(
+    return BlocConsumer<CartCubit, CartState>(
       listener: (context, state) {
-        if (state is OrderError) {
+        if (state is CartError) {
           ToastService.showToast(context, state.error, ToastType.warning);
         }
-        if (state is OrderSuccess) {
+        if (state is CartSuccess) {
           ToastService.showToast(context, state.success, ToastType.success);
         }
       },
@@ -108,7 +108,7 @@ class CartPage extends StatelessWidget {
             title: Text(
                 "Cart (${cartItems.isEmpty ? 'Empty' : cartItems.length.toString()})"),
           ),
-          floatingActionButton: BlocBuilder<OrderCubit, OrderState>(
+          floatingActionButton: BlocBuilder<CartCubit, CartState>(
             builder: (context, state) {
               if (state.selectedItems.isEmpty) return const SizedBox.shrink();
               return FloatingActionButton.extended(
@@ -126,7 +126,7 @@ class CartPage extends StatelessWidget {
           ),
           body: RefreshIndicator(
             onRefresh: () async {
-              await context.read<OrderCubit>().getCart();
+              await context.read<CartCubit>().getCart();
             },
             child: cartItems.isEmpty
                 ? SingleChildScrollView(
@@ -157,7 +157,7 @@ class CartPage extends StatelessWidget {
                             children: [
                               Row(
                                 children: [
-                                  BlocBuilder<OrderCubit, OrderState>(
+                                  BlocBuilder<CartCubit, CartState>(
                                     builder: (context, state) {
                                       final containsAll = state.selectedItems
                                           .toSet()
@@ -168,7 +168,7 @@ class CartPage extends StatelessWidget {
                                           value: containsAll,
                                           onChanged: (_) {
                                             context
-                                                .read<OrderCubit>()
+                                                .read<CartCubit>()
                                                 .selectAllItemInSingleShop(
                                                     sellerItems);
                                           });

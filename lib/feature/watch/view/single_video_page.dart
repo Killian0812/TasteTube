@@ -300,12 +300,12 @@ class _SingleVideoState extends State<SingleVideo>
       ),
       builder: (context) {
         int currentIndex = 0;
-        return BlocListener<OrderCubit, OrderState>(
+        return BlocListener<CartCubit, CartState>(
           listener: (context, state) {
-            if (state is OrderError) {
+            if (state is CartError) {
               ToastService.showToast(context, state.error, ToastType.warning);
             }
-            if (state is OrderSuccess) {
+            if (state is CartSuccess) {
               ToastService.showToast(context, state.success, ToastType.success);
             }
           },
@@ -455,7 +455,7 @@ class _SingleVideoState extends State<SingleVideo>
                                           if (quantity != null &&
                                               context.mounted) {
                                             context
-                                                .read<OrderCubit>()
+                                                .read<CartCubit>()
                                                 .addToCart(product, quantity);
                                           }
                                         },

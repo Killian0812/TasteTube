@@ -5,10 +5,10 @@ import 'package:taste_tube/common/error.dart';
 import 'package:taste_tube/global_data/order/cart.dart';
 import 'package:taste_tube/global_data/product/product.dart';
 
-class OrderRepository {
+class CartRepository {
   final Dio http;
 
-  OrderRepository({required this.http});
+  CartRepository({required this.http});
 
   Future<Either<ApiError, Cart>> getCart() async {
     try {
