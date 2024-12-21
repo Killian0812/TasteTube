@@ -48,4 +48,21 @@ class OrderRepository {
       return fpdart.Left(ApiError(500, e.toString()));
     }
   }
+
+  Future<fpdart.Either<ApiError, Order>> updateOrderStatus({
+    required String id,
+    required String? newStatus,
+  }) async {
+    try {
+      final response =
+          await http.put(Api.singleOrderApi.replaceFirst(':id', id), data: {
+        'newStatus': newStatus,
+      });
+      return fpdart.Right(Order.fromJson(response.data));
+    } on DioException catch (e) {
+      return fpdart.Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return fpdart.Left(ApiError(500, e.toString()));
+    }
+  }
 }

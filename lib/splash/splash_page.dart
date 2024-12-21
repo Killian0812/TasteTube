@@ -48,8 +48,7 @@ class _SplashPageState extends State<SplashPage>
           if (!widget.shouldAutoRedirect) return;
           if (state is Authenticated) {
             if (state.data.role == 'RESTAURANT') {
-              context.goNamed('profile',
-                  pathParameters: {'userId': state.data.userId});
+              context.go('/store');
             } else if (state.data.role == 'CUSTOMER') {
               context.go('/home');
             } else {

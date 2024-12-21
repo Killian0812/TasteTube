@@ -30,8 +30,7 @@ class _LoginPageState extends State<LoginPage> {
             final response = state.response;
             if (response.role.isNotEmpty) {
               if (response.role == 'RESTAURANT') {
-                context.goNamed('profile',
-                    pathParameters: {'userId': response.userId});
+                context.go('/store');
               } else {
                 context.go('/home');
               }

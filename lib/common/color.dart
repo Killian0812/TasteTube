@@ -15,7 +15,7 @@ class OrderColor {
       case 'CONFIRMED':
         return Colors.lightBlue;
       case 'DELIVERY':
-        return Colors.lightGreen;
+        return Colors.deepPurple;
       case 'COMPLETED':
         return Colors.green;
       case 'CANCELED':

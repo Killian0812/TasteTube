@@ -41,7 +41,7 @@ class CustomerOrderTab extends StatelessWidget {
                   itemCount: state.orders.length,
                   itemBuilder: (context, index) {
                     final order = state.orders[index];
-                    return OrderCard(order: order);
+                    return _OrderCard(order: order);
                   },
                 ),
         );
@@ -50,10 +50,10 @@ class CustomerOrderTab extends StatelessWidget {
   }
 }
 
-class OrderCard extends StatelessWidget {
+class _OrderCard extends StatelessWidget {
   final Order order;
 
-  const OrderCard({super.key, required this.order});
+  const _OrderCard({required this.order});
 
   @override
   Widget build(BuildContext context) {

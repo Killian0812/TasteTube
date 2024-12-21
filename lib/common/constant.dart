@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 enum AccountType { restaurant, customer }
 
 extension AccountTypeExtension on AccountType {
@@ -47,6 +49,8 @@ extension VisibilityExtension on Visibility {
     }
   }
 }
+
+enum OrderStatus { PENDING, CONFIRMED, DELIVERY, COMPLETED, CANCELED }
 
 class AssetPath {
   static const String tastetubeInverted =

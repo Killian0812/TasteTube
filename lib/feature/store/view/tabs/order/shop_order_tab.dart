@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/common/color.dart';
+import 'package:taste_tube/common/constant.dart';
 import 'package:taste_tube/common/toast.dart';
+import 'package:taste_tube/feature/profile/view/profile_page.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/order.dart';
 
@@ -38,7 +40,7 @@ class ShopOrderTab extends StatelessWidget {
                   itemCount: state.orders.length,
                   itemBuilder: (context, index) {
                     final order = state.orders[index];
-                    return OrderCard(order: order);
+                    return _OrderCard(order: order);
                   },
                 ),
         );
@@ -47,10 +49,19 @@ class ShopOrderTab extends StatelessWidget {
   }
 }
 
-class OrderCard extends StatelessWidget {
+class _OrderCard extends StatefulWidget {
   final Order order;
 
-  const OrderCard({super.key, required this.order});
+  const _OrderCard({required this.order});
+
+  @override
+  _OrderCardState createState() => _OrderCardState();
+}
+
+class _OrderCardState extends State<_OrderCard> {
+  bool _isExpanded = false;
+
+  Order get order => widget.order;
 
   @override
   Widget build(BuildContext context) {
@@ -81,19 +92,28 @@ class OrderCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            RichText(
-              text: TextSpan(
-                text: 'Status: ',
-                style: DefaultTextStyle.of(context).style,
-                children: [
-                  TextSpan(
-                    text: order.status,
-                    style: TextStyle(
-                      color: OrderColor.getColor(order.status),
-                    ),
-                  ),
-                ],
-              ),
+            Row(
+              children: [
+                const Text('Status: '),
+                DropdownButton<String>(
+                  value: order.status,
+                  items: OrderStatus.values.map((status) {
+                    return DropdownMenuItem<String>(
+                      value: status.name,
+                      child: Text(
+                        status.name,
+                        style:
+                            TextStyle(color: OrderColor.getColor(status.name)),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (newStatus) {
+                    context
+                        .read<OrderCubit>()
+                        .updateOrderStatus(order.id, newStatus);
+                  },
+                ),
+              ],
             ),
             Text(
                 'Total: ${order.total.toStringAsFixed(2)} ${order.items.first.product.currency}'),
@@ -122,6 +142,70 @@ class OrderCard extends StatelessWidget {
               },
             ),
             const SizedBox(height: 8),
+            const Divider(),
+            const SizedBox(height: 8),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  _isExpanded = !_isExpanded;
+                });
+              },
+              child: Row(
+                children: [
+                  Text(
+                    _isExpanded ? 'Hide Customer' : 'Show Customer',
+                    style: TextStyle(
+                      color: Theme.of(context).primaryColor,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                  Icon(
+                    _isExpanded ? Icons.expand_less : Icons.expand_more,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ],
+              ),
+            ),
+            if (_isExpanded)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 8),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                ProfilePage.provider(order.user.id)),
+                      );
+                    },
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundImage: NetworkImage(order.user.image),
+                          radius: 20,
+                        ),
+                        const SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Name: ${order.user.username}'),
+                            Text('Email: ${order.user.email}'),
+                            if (order.user.phone != null)
+                              Text('Phone: ${order.user.phone}'),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (order.notes.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text('Notes: ${order.notes}'),
+                    ),
+                ],
+              ),
           ],
         ),
       ),

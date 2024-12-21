@@ -20,6 +20,7 @@ class OrderProduct {
 }
 
 class Order {
+  final String id;
   final UserBasic user;
   final String shopId;
   final int orderNum;
@@ -35,6 +36,7 @@ class Order {
   final DateTime updatedAt;
 
   const Order({
+    required this.id,
     required this.orderId,
     required this.user,
     required this.shopId,
@@ -52,6 +54,7 @@ class Order {
 
   factory Order.fromJson(Map<String, dynamic> json) {
     return Order(
+      id: json['_id'],
       orderId: json['orderId'],
       user: UserBasic.fromJson(json['userId']),
       shopId: json['shopId'],
