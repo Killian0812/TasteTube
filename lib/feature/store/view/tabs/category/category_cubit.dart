@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/global_data/product/category.dart';
-import 'package:taste_tube/feature/product/domain/product_repo.dart';
+import 'package:taste_tube/feature/store/domain/product_repo.dart';
 import 'package:taste_tube/injection.dart';
 
 class CategoryCubit extends Cubit<CategoryState> {

@@ -23,7 +23,7 @@ import 'package:taste_tube/feature/record/camera/camera_page.dart';
 import 'package:taste_tube/feature/home/view/home_page.dart';
 import 'package:taste_tube/feature/inbox/view/inbox_page.dart';
 import 'package:taste_tube/feature/profile/view/profile_page.dart';
-import 'package:taste_tube/feature/product/view/product_page.dart';
+import 'package:taste_tube/feature/store/view/store_page.dart';
 import 'package:taste_tube/feature/search/view/search_page.dart';
 import 'package:taste_tube/feature/shop/view/tabs/shopping/single_shop_page.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
@@ -166,8 +166,8 @@ class Layout extends StatelessWidget {
                         label: 'Shopping',
                       )
                     : const BottomNavigationBarItem(
-                        icon: Icon(Icons.restaurant_menu),
-                        label: 'Shop',
+                        icon: Icon(Icons.store),
+                        label: 'Store',
                       ),
                 const BottomNavigationBarItem(
                   icon: Icon(Icons.inbox),

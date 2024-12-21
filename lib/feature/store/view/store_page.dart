@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:taste_tube/feature/product/category/category_cubit.dart';
-import 'package:taste_tube/feature/product/category/category_tab.dart';
-import 'package:taste_tube/feature/product/product/product_cubit.dart';
-import 'package:taste_tube/feature/product/product/product_tab.dart';
+import 'package:taste_tube/feature/store/view/tabs/category/category_cubit.dart';
+import 'package:taste_tube/feature/store/view/tabs/category/category_tab.dart';
+import 'package:taste_tube/feature/store/view/tabs/order/shop_order_tab.dart';
+import 'package:taste_tube/feature/store/view/tabs/product/product_cubit.dart';
+import 'package:taste_tube/feature/store/view/tabs/product/product_tab.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
 
-class ProductPage extends StatefulWidget {
-  const ProductPage({super.key});
+class StorePage extends StatefulWidget {
+  const StorePage({super.key});
 
   @override
-  State<ProductPage> createState() => _ProductPageState();
+  State<StorePage> createState() => _StorePageState();
 }
 
-class _ProductPageState extends State<ProductPage>
+class _StorePageState extends State<StorePage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -36,7 +37,7 @@ class _ProductPageState extends State<ProductPage>
         appBar: TabBar(
           controller: _tabController,
           tabs: const [
-            // TODO: Orders, Voucher, ...
+            Tab(text: 'Orders'),
             Tab(text: 'Products'),
             Tab(text: 'Categories'),
           ],
@@ -54,6 +55,7 @@ class _ProductPageState extends State<ProductPage>
           child: TabBarView(
             controller: _tabController,
             children: const [
+              ShopOrderTab(),
               ProductTab(),
               CategoryTab(),
             ],

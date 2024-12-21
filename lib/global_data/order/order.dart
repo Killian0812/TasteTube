@@ -1,5 +1,6 @@
 import 'package:taste_tube/global_data/order/address.dart';
 import 'package:taste_tube/global_data/product/product.dart';
+import 'package:taste_tube/global_data/user/user_basic.dart';
 
 class OrderProduct {
   final Product product;
@@ -19,7 +20,7 @@ class OrderProduct {
 }
 
 class Order {
-  final String userId;
+  final UserBasic user;
   final String shopId;
   final int orderNum;
   final String orderId;
@@ -35,7 +36,7 @@ class Order {
 
   const Order({
     required this.orderId,
-    required this.userId,
+    required this.user,
     required this.shopId,
     required this.orderNum,
     required this.total,
@@ -52,7 +53,7 @@ class Order {
   factory Order.fromJson(Map<String, dynamic> json) {
     return Order(
       orderId: json['orderId'],
-      userId: json['userId'],
+      user: UserBasic.fromJson(json['userId']),
       shopId: json['shopId'],
       orderNum: json['orderNum'],
       total: json['total'],

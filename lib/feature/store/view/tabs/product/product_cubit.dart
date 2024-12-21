@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:taste_tube/common/error.dart';
 import 'package:taste_tube/global_data/product/category.dart';
 import 'package:taste_tube/global_data/product/product.dart';
-import 'package:taste_tube/feature/product/domain/product_repo.dart';
+import 'package:taste_tube/feature/store/domain/product_repo.dart';
 import 'package:taste_tube/injection.dart';
 
 abstract class ProductState {

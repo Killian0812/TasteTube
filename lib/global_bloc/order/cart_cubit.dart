@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/global_data/order/cart.dart';
 import 'package:taste_tube/global_data/product/product.dart';
-import 'package:taste_tube/global_repo/order_repo.dart';
+import 'package:taste_tube/global_repo/cart_repo.dart';
 import 'package:taste_tube/injection.dart';
 
 abstract class CartState {

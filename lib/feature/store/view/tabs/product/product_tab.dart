@@ -10,9 +10,9 @@ import 'package:taste_tube/common/button.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/common/toast.dart';
-import 'package:taste_tube/feature/product/category/category_cubit.dart';
+import 'package:taste_tube/feature/store/view/tabs/category/category_cubit.dart';
 import 'package:taste_tube/global_data/product/product.dart';
-import 'package:taste_tube/feature/product/product/product_cubit.dart';
+import 'package:taste_tube/feature/store/view/tabs/product/product_cubit.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
 
 part 'product_tab.ext.dart';
