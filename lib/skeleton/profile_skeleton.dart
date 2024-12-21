@@ -17,6 +17,6 @@ class ProfileSkeletonPage extends StatelessWidget {
       }
     });
 
-    return const SplashPage();
+    return const SplashPage(shouldAutoRedirect: false);
   }
 }

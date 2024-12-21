@@ -43,12 +43,17 @@ class OrderCubit extends Cubit<OrderState> {
     try {
       final result = await repository.getOrders();
       result.fold(
-          (error) => emit(OrderError(
-                state.orders,
-                error.message ?? 'Error fetching orders',
-              )), (orders) {
-        emit(OrderLoaded(orders));
-      });
+        (error) => emit(OrderError(
+          state.orders,
+          error.message ?? 'Error fetching orders',
+        )),
+        (orders) {
+          orders.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+          emit(
+            OrderLoaded(orders),
+          );
+        },
+      );
     } catch (e) {
       emit(OrderError(state.orders, e.toString()));
     }

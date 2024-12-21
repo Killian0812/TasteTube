@@ -1,6 +1,23 @@
 import 'package:taste_tube/global_data/order/address.dart';
 import 'package:taste_tube/global_data/product/product.dart';
 
+class OrderProduct {
+  final Product product;
+  final int quantity;
+
+  const OrderProduct({
+    required this.product,
+    required this.quantity,
+  });
+
+  factory OrderProduct.fromJson(Map<String, dynamic> json) {
+    return OrderProduct(
+      product: Product.fromJson(json['product']),
+      quantity: json['quantity'],
+    );
+  }
+}
+
 class Order {
   final String userId;
   final String shopId;
@@ -9,7 +26,7 @@ class Order {
   final double total;
   final Address address;
   final String notes;
-  final List<Product> products;
+  final List<OrderProduct> items;
   final String paymentMethod;
   final bool paid;
   final String status;
@@ -24,7 +41,7 @@ class Order {
     required this.total,
     required this.address,
     required this.notes,
-    required this.products,
+    required this.items,
     required this.paymentMethod,
     required this.paid,
     required this.status,
@@ -41,8 +58,8 @@ class Order {
       total: json['total'],
       address: Address.fromJson(json['address']),
       notes: json['notes'],
-      products: (json['products'] as List<dynamic>)
-          .map((item) => Product.fromJson(item))
+      items: (json['items'] as List<dynamic>)
+          .map((item) => OrderProduct.fromJson(item))
           .toList(),
       paymentMethod: json['paymentMethod'],
       paid: json['paid'],

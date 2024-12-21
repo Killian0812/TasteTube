@@ -15,7 +15,7 @@ class UserDataUtil {
     return getIt<AuthBloc>().state.data!.role;
   }
 
-  static FutureOr<void> initUser(LoginResponse response) async {
+  static void initUser(LoginResponse response) {
     getIt<AuthBloc>().add(LoginEvent(
       AuthData(
         accessToken: response.accessToken,

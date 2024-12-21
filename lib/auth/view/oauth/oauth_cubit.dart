@@ -29,7 +29,7 @@ class OAuthCubit extends Cubit<OAuthState> {
       },
       (response) async {
         logger.i('Login successfully: ${response.accessToken}');
-        await UserDataUtil.initUser(response);
+        UserDataUtil.initUser(response);
         emit(OAuthSuccess(
             "Successfully connected to Facebook account! Redirecting...",
             response));
@@ -48,7 +48,7 @@ class OAuthCubit extends Cubit<OAuthState> {
       },
       (response) async {
         logger.i('Login successfully: ${response.accessToken}');
-        await UserDataUtil.initUser(response);
+        UserDataUtil.initUser(response);
         UserDataUtil.refreshData();
         emit(OAuthSuccess(
             "Successfully connected to Google account! Redirecting...",

@@ -133,7 +133,7 @@ final GoRouter _router = GoRouter(
     ),
   ],
   redirect: (context, state) {
-    final authBloc = context.read<AuthBloc>();
+    final authBloc = getIt<AuthBloc>();
 
     final isAuthenticated = authBloc.state is Authenticated;
 

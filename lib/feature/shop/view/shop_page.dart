@@ -3,10 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/common/toast.dart';
+import 'package:taste_tube/feature/shop/view/cart_page.dart';
 import 'package:taste_tube/feature/shop/view/tabs/address/address_cubit.dart';
 import 'package:taste_tube/feature/shop/view/tabs/address/address_tab.dart';
+import 'package:taste_tube/feature/shop/view/tabs/order/customer_order_tab.dart';
 import 'package:taste_tube/feature/shop/view/tabs/shopping/shop_tab.dart';
-import 'package:taste_tube/feature/shop/view/cart_page.dart';
 import 'package:taste_tube/feature/shop/view/tabs/shopping/shop_cubit.dart';
 
 class ShopPage extends StatefulWidget {
@@ -90,7 +91,7 @@ class _ShopPageState extends State<ShopPage> {
             child: const TabBarView(
               children: [
                 ShopTab(),
-                Placeholder(),
+                CustomerOrderTab(),
                 Placeholder(),
                 AddressTab(),
                 Placeholder(),
