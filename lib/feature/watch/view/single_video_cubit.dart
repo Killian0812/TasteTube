@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/global_data/watch/comment.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
-import 'package:taste_tube/feature/watch/domain/single_video_repository.dart';
+import 'package:taste_tube/feature/watch/domain/single_video_repo.dart';
 import 'package:taste_tube/injection.dart';
 
 abstract class SingleVideoState {

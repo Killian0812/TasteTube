@@ -45,6 +45,7 @@ class Api {
 
   // Content
   static const searchApi = '/content/search';
+  static const feedApi = '/content/feeds';
 
   // User
   static const userApi = '/users/:userId';

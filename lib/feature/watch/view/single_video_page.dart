@@ -36,17 +36,21 @@ class _SingleVideoState extends State<SingleVideo>
   }
 
   Future<void> _initializeVideoPlayer(String videoUrl) async {
-    _videoController = VideoPlayerController.networkUrl(Uri.parse(videoUrl))
-      ..addListener(() {
-        if (!_isScrubbing) {
-          setState(() {}); // Update position if not scrubbing
-        }
-      })
-      ..initialize().then((_) {
-        setState(() {}); // Refresh after initialization
-        _videoController.play();
-        _videoController.setLooping(true);
-      });
+    try {
+      _videoController = VideoPlayerController.networkUrl(Uri.parse(videoUrl))
+        ..addListener(() {
+          if (!_isScrubbing) {
+            setState(() {}); // Update position if not scrubbing
+          }
+        })
+        ..initialize().then((_) {
+          setState(() {}); // Refresh after initialization
+          _videoController.play();
+          _videoController.setLooping(true);
+        });
+    } catch (e) {
+      getIt<Logger>().e('Error initializing video player: $e');
+    }
   }
 
   @override

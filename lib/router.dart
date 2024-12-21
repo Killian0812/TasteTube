@@ -104,7 +104,7 @@ final GoRouter _router = GoRouter(
     // GoRoute(
     //   path: '/watch/:videoId',
     //   builder: (context, state) {
-    //     final videoId = Uri.decodeComponent(state.pathParameters['videoId']!);
+    //     final videoId = state.pathParameters['videoId'] ?? '';
     //     return WatchPage(
     //       videos: [],
     //       initialIndex: 0,

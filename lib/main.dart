@@ -14,6 +14,7 @@ import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/fallback.dart';
 import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/text.dart';
+import 'package:taste_tube/feature/home/view/content_cubit.dart';
 import 'package:taste_tube/feature/shop/view/cart_page.dart';
 import 'package:taste_tube/feature/shop/view/shop_page.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
@@ -78,6 +79,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => getIt<OrderCubit>(),
+        ),
+        BlocProvider(
+          create: (context) => getIt<ContentCubit>()..getFeeds(),
         ),
       ],
       child: MaterialApp.router(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:taste_tube/feature/home/explore/explore_page.dart';
+import 'package:taste_tube/feature/home/content/content_page.dart';
 import 'package:taste_tube/feature/home/reviews/reviews_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage>
           TabBarView(
             controller: _tabController,
             children: const [
-              ExplorePage(),
+              ContentTab(),
               ReviewsPage(),
             ],
           ),
