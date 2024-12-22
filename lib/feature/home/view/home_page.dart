@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/feature/home/content/content_page.dart';
 import 'package:taste_tube/feature/home/reviews/reviews_page.dart';
 
@@ -30,28 +31,46 @@ class _HomePageState extends State<HomePage>
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: TabBar(
+        extendBodyBehindAppBar: true,
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight),
+          child: Material(
+            color: Colors.transparent,
+            type: MaterialType.transparency,
+            child: Stack(
+              alignment: Alignment.topRight,
+              children: [
+                TabBar(
+                  labelColor: Colors.white,
+                  unselectedLabelColor: CommonColor.greyOutTextColor,
+                  controller: _tabController,
+                  indicatorColor: Colors.white,
+                  dividerColor: Colors.transparent,
+                  tabs: const [
+                    Tab(text: 'Explore'),
+                    Tab(text: 'Reviews'),
+                  ],
+                ),
+                IconButton(
+                  onPressed: () {
+                    context.push('/search');
+                  },
+                  icon: const Icon(
+                    Icons.search,
+                    color: Colors.white,
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+        body: TabBarView(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'Explore'),
-            Tab(text: 'Reviews'),
+          children: const [
+            ContentTab(),
+            ReviewsPage(),
           ],
         ),
-        body: Stack(alignment: Alignment.topRight, children: [
-          TabBarView(
-            controller: _tabController,
-            children: const [
-              ContentTab(),
-              ReviewsPage(),
-            ],
-          ),
-          IconButton(
-            onPressed: () {
-              context.push('/search');
-            },
-            icon: const Icon(Icons.search),
-          )
-        ]),
       ),
     );
   }
