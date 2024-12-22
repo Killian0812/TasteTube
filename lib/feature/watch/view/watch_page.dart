@@ -62,7 +62,7 @@ class _WatchPageState extends State<WatchPage> {
     super.dispose();
   }
 
-  Future<void> _downloadVideo(String url) async {
+  Future<void> downloadVideo(String url) async {
     try {
       setState(() {
         _isDownloading = true;
@@ -119,20 +119,20 @@ class _WatchPageState extends State<WatchPage> {
                 },
               )
             : null,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 20),
-            child: IconButton(
-              icon: const Icon(
-                Icons.download,
-                color: Colors.white,
-              ),
-              onPressed: () async {
-                await _downloadVideo(widget.videos[currentIndex].url);
-              },
-            ),
-          ),
-        ],
+        // actions: [ // TODO: Reimplement this
+        //   Padding(
+        //     padding: const EdgeInsets.only(right: 20),
+        //     child: IconButton(
+        //       icon: const Icon(
+        //         Icons.download,
+        //         color: Colors.white,
+        //       ),
+        //       onPressed: () async {
+        //         await _downloadVideo(widget.videos[currentIndex].url);
+        //       },
+        //     ),
+        //   ),
+        // ],
       ),
       body: PageView.builder(
         controller: _pageController,

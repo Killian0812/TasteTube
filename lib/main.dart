@@ -85,6 +85,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
         title: 'TasteTube',
         routerConfig: _router,
         theme: ThemeData.light().copyWith(
