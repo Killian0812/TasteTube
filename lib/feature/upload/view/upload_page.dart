@@ -44,10 +44,12 @@ class UploadPage extends StatelessWidget {
                 context, 'Upload successful', ToastType.success);
             try {
               Future.microtask(() {
-                context.goNamed(
-                  'profile',
-                  pathParameters: {'userId': UserDataUtil.getUserId()},
-                );
+                if (context.mounted) {
+                  context.goNamed(
+                    'profile',
+                    pathParameters: {'userId': UserDataUtil.getUserId()},
+                  );
+                }
               });
             } catch (e) {
               getIt<Logger>().e(e);

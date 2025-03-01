@@ -61,7 +61,7 @@ class CameraPage extends StatelessWidget {
                 ),
               ),
             ).then((_) {
-              context.read<CameraCubit>().initCamera();
+              if (context.mounted) context.read<CameraCubit>().initCamera();
             });
           }
         },

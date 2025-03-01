@@ -67,7 +67,7 @@ Future<void> _showEditProfileDialog(BuildContext context, User user) {
                       width: 100,
                       height: 100,
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.5),
+                        color: Colors.black..withValues(alpha: 0.5),
                         shape: BoxShape.circle,
                       ),
                     ),

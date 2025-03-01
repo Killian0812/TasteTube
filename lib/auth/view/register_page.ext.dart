@@ -148,7 +148,7 @@ class _AccountTypeSelectionPageState extends State<AccountTypeSelectionPage> {
           boxShadow: [
             if (isSelected)
               BoxShadow(
-                color: Colors.deepPurple.withOpacity(0.3),
+                color: Colors.deepPurple.withValues(alpha: 0.3),
                 spreadRadius: 5,
                 blurRadius: 10,
               )

@@ -31,23 +31,23 @@ class ToastService {
     IconData icon;
     switch (type) {
       case ToastType.info:
-        backgroundColor = Colors.blueAccent.withOpacity(0.8);
+        backgroundColor = Colors.blueAccent..withValues(alpha: 0.8);
         icon = Icons.info_outline;
         break;
       case ToastType.success:
-        backgroundColor = Colors.green.withOpacity(0.8);
+        backgroundColor = Colors.green..withValues(alpha: 0.8);
         icon = Icons.check_circle_outline;
         break;
       case ToastType.warning:
-        backgroundColor = Colors.orange.withOpacity(0.8);
+        backgroundColor = Colors.orange..withValues(alpha: 0.8);
         icon = Icons.warning_amber_outlined;
         break;
       case ToastType.error:
-        backgroundColor = Colors.redAccent.withOpacity(0.8);
+        backgroundColor = Colors.redAccent..withValues(alpha: 0.8);
         icon = Icons.error_outline;
         break;
       default:
-        backgroundColor = Colors.blueGrey.withOpacity(0.8);
+        backgroundColor = Colors.blueGrey..withValues(alpha: 0.8);
         icon = Icons.notifications_active_outlined;
         break;
     }

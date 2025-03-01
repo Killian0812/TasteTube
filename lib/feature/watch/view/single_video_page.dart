@@ -456,8 +456,8 @@ class _SingleVideoState extends State<SingleVideo>
                                                 const QuantityInputDialog(),
                                           );
 
-                                          if (quantity != null &&
-                                              context.mounted) {
+                                          if (context.mounted &&
+                                              quantity != null) {
                                             context
                                                 .read<CartCubit>()
                                                 .addToCart(product, quantity);
