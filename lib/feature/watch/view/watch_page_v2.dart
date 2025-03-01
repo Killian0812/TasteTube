@@ -2,11 +2,10 @@ import 'dart:convert';
 
 import 'package:better_player_plus/better_player_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/feature/home/view/content_cubit_v2.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
-// Support Mobile only
 class WatchPageV2 extends StatelessWidget {
   const WatchPageV2({super.key});
 
@@ -14,75 +13,77 @@ class WatchPageV2 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Consumer<VideoPlayerProvider>(
-        builder: (context, provider, _) {
-          if (provider.loading) {
+      body: BlocBuilder<ContentCubitV2, ContentStateV2>(
+        builder: (context, state) {
+          if (state is ContentLoadingV2) {
             return const Center(
               child: CircularProgressIndicator(),
             );
           }
           return PageView.builder(
             physics: const CustomPageViewScrollPhysics(),
-            itemCount: provider.videos.length,
+            itemCount: state.videos.length,
             scrollDirection: Axis.vertical,
             onPageChanged: (index) {
-              provider.onPageChange(index);
+              context.read<ContentCubitV2>().onPageChange(index);
             },
             itemBuilder: (context, index) {
-              return index != provider.currentReelIndex
+              // Other videos
+              if (index != state.currentReelIndex) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    AspectRatio(
+                      aspectRatio: 9 / 16,
+                      child: Image.memory(
+                        base64Decode(state.videos[index].thumbnail ?? ''),
+                        fit: BoxFit.cover,
+                        height: double.infinity,
+                        width: double.infinity,
+                      ),
+                    ),
+                  ],
+                );
+              }
+              return state.reelsController?.videoPlayerController != null &&
+                      state.reelsController!.isVideoInitialized()!
                   ? Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         AspectRatio(
                           aspectRatio: 9 / 16,
-                          child: Image.memory(
-                            base64Decode(
-                                provider.videos[index].thumbnail ?? ''),
-                            fit: BoxFit.cover,
-                            height: 9 / 16,
+                          child: Stack(
+                            children: [
+                              VisibilityDetector(
+                                key: Key(index.toString()),
+                                onVisibilityChanged: (info) {
+                                  if (info.visibleFraction == 1.0) {
+                                    context.read<ContentCubitV2>().playVideo();
+                                  }
+                                },
+                                child: BetterPlayer(
+                                  controller: state.reelsController!,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     )
-                  : provider.reelsController?.videoPlayerController != null &&
-                          provider.reelsController!.isVideoInitialized()!
-                      ? Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            AspectRatio(
-                              aspectRatio: 9 / 16,
-                              child: Stack(
-                                children: [
-                                  VisibilityDetector(
-                                    key: Key(index.toString()),
-                                    onVisibilityChanged: (info) {
-                                      if (info.visibleFraction == 1.0) {
-                                        provider.playVideo();
-                                      }
-                                    },
-                                    child: BetterPlayer(
-                                      controller: provider.reelsController!,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        )
-                      : Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            AspectRatio(
-                              aspectRatio: 9 / 16,
-                              child: Image.memory(
-                                base64Decode(
-                                    provider.videos[index].thumbnail ?? ''),
-                                fit: BoxFit.cover,
-                                height: 600,
-                              ),
-                            ),
-                          ],
-                        );
+                  : Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        AspectRatio(
+                          aspectRatio: 9 / 16,
+                          child: Image.memory(
+                            base64Decode(state.videos[index].thumbnail ?? ''),
+                            fit: BoxFit.cover,
+                            height: double.infinity,
+                            width: double.infinity,
+                          ),
+                        ),
+                      ],
+                    );
             },
           );
         },

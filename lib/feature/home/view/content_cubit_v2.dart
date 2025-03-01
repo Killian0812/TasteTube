@@ -3,50 +3,84 @@ import 'dart:io';
 
 import 'package:better_player_plus/better_player_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/feature/home/domain/content_repo.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
 import 'package:taste_tube/injection.dart';
 
-class VideoPlayerProvider extends ChangeNotifier {
-  var currentReelIndex = 0;
-  var loading = true;
+abstract class ContentStateV2 {
+  final int currentReelIndex;
+  final List<Video> videos;
+  final BetterPlayerController? reelsController;
+
+  const ContentStateV2(this.currentReelIndex, this.videos,
+      {this.reelsController});
+}
+
+class ContentLoadingV2 extends ContentStateV2 {
+  const ContentLoadingV2(super.currentReelIndex, super.videos);
+}
+
+class ContentLoadedV2 extends ContentStateV2 {
+  ContentLoadedV2(
+    super.currentReelIndex,
+    super.videos, {
+    super.reelsController,
+  });
+}
+
+class ContentErrorV2 extends ContentStateV2 {
+  final String message;
+
+  const ContentErrorV2(super.currentReelIndex, super.videos,
+      {super.reelsController, required this.message});
+}
+
+class ContentCubitV2 extends Cubit<ContentStateV2> {
   final ContentRepository repository = getIt<ContentRepository>();
-  BetterPlayerController? reelsController =
-      BetterPlayerController(const BetterPlayerConfiguration());
   final cacheController =
       BetterPlayerController(const BetterPlayerConfiguration());
-  List<Video> videos = [];
 
-  void fetchReelsFromAPI() async {
+  ContentCubitV2() : super(ContentLoadingV2(0, []));
+
+  Future<void> getFeeds() async {
     try {
       final result = await repository.getFeeds();
       result.fold(
-        (error) => {},
-        (videos) {
-          videos.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
-          videos = videos;
-          if (videos.isNotEmpty) {
-            loading = false;
-            if (videos.length > 1) {
-              cacheController.preCache(initDataSource(videos[1].url));
+        (error) => emit(ContentErrorV2(
+          state.currentReelIndex,
+          state.videos,
+          message: error.message ?? 'Error fetching videos',
+        )),
+        (feedVideos) {
+          feedVideos.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+          if (feedVideos.isNotEmpty) {
+            if (feedVideos.length > 1) {
+              cacheController.preCache(initDataSource(feedVideos[1].url));
             }
-            createReelsController(videos.first.url);
+            final reelsController = createReelsController(feedVideos.first);
+            emit(ContentLoadedV2(
+              0,
+              feedVideos,
+              reelsController: reelsController,
+            ));
           }
         },
       );
     } catch (e) {
-      rethrow;
+      emit(ContentErrorV2(state.currentReelIndex, state.videos,
+          message: e.toString()));
     }
   }
 
-  void createReelsController(String url) {
+  BetterPlayerController createReelsController(Video video) {
     disposeController();
 
-    BetterPlayerDataSource betterPlayerDataSource = initDataSource(url);
-    reelsController = BetterPlayerController(
+    final betterPlayerDataSource = initDataSource(video.url);
+    final reelsController = BetterPlayerController(
       BetterPlayerConfiguration(
         placeholder: Image.memory(
-          base64Decode(videos[currentReelIndex].thumbnail ?? ''),
+          base64Decode(video.thumbnail ?? ''),
           fit: BoxFit.cover,
           width: double.infinity,
           height: double.infinity,
@@ -54,7 +88,7 @@ class VideoPlayerProvider extends ChangeNotifier {
         aspectRatio: 9 / 16,
         fit: BoxFit.cover,
         autoDispose: false,
-        autoPlay: false,
+        autoPlay: true,
         looping: true,
         controlsConfiguration: const BetterPlayerControlsConfiguration(
           controlBarColor: Colors.black26,
@@ -67,15 +101,15 @@ class VideoPlayerProvider extends ChangeNotifier {
       betterPlayerDataSource: betterPlayerDataSource,
     );
 
-    reelsController?.addEventsListener((event) {
-      if (reelsController!.isVideoInitialized()! &&
-          !reelsController!.isPlaying()!) {
-        notifyListeners();
+    reelsController.addEventsListener((event) {
+      if (reelsController.isVideoInitialized()! &&
+          !reelsController.isPlaying()!) {
+        emit(state);
       }
     });
-  }
 
-  playVideo() => reelsController?.play();
+    return reelsController;
+  }
 
   BetterPlayerDataSource initDataSource(String url) {
     return BetterPlayerDataSource(
@@ -89,39 +123,35 @@ class VideoPlayerProvider extends ChangeNotifier {
       ),
       cacheConfiguration: BetterPlayerCacheConfiguration(
         useCache: true,
-        preCacheSize: 3 * 1024 * 1024, //It will cache 3MB of the video
-        maxCacheSize: 500 *
-            1024 *
-            1024, //Max cache will be 500MB and when it reaches 500MB it will release the initial cached videos
-        maxCacheFileSize: 3 * 1024 * 1024, //Max size for cache
+        preCacheSize: 3 * 1024 * 1024,
+        maxCacheSize: 500 * 1024 * 1024,
+        maxCacheFileSize: 3 * 1024 * 1024,
         key: Platform.isIOS ? url : null,
       ),
     );
   }
 
-  onPageChange(int index) async {
+  void onPageChange(int index) async {
     try {
-      //The variable currentReelIndex is updated to reflect the index of the current video reel being viewed.
-      currentReelIndex = index;
+      final reelsController = createReelsController(state.videos[index]);
 
-      //A new video controller is created and initialized for the video URL corresponding to the current index.
-      createReelsController(videos[currentReelIndex].url);
-
-      //If the current reel is not the last one, the function pre-caches the next video's data and its thumbnail.
-      if (currentReelIndex < videos.length - 1) {
-        cacheController
-            .preCache(initDataSource(videos[currentReelIndex + 1].url));
+      if (index < state.videos.length - 1) {
+        cacheController.preCache(initDataSource(state.videos[index + 1].url));
       }
+
+      emit(ContentLoadedV2(index, state.videos,
+          reelsController: reelsController));
     } catch (e) {
-      rethrow;
+      emit(ContentErrorV2(index, state.videos, message: e.toString()));
     }
   }
 
-  disposeController() {
-    if (reelsController != null) {
-      reelsController?.removeEventsListener((event) {});
-      reelsController?.dispose(forceDispose: true);
-      reelsController = null;
+  void disposeController() {
+    if (state.reelsController != null) {
+      state.reelsController?.removeEventsListener((event) {});
+      state.reelsController?.dispose(forceDispose: true);
     }
   }
+
+  void playVideo() => state.reelsController?.play();
 }

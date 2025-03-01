@@ -5,6 +5,7 @@ import 'package:logger/logger.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/feature/home/domain/content_repo.dart';
 import 'package:taste_tube/feature/home/view/content_cubit.dart';
+import 'package:taste_tube/feature/home/view/content_cubit_v2.dart';
 import 'package:taste_tube/feature/store/domain/product_repo.dart';
 import 'package:taste_tube/feature/profile/domain/profile_repo.dart';
 import 'package:taste_tube/feature/search/domain/search_repo.dart';
@@ -88,4 +89,5 @@ void injectDependencies() {
   getIt.registerSingleton<CartCubit>(CartCubit());
   getIt.registerSingleton<OrderCubit>(OrderCubit());
   getIt.registerSingleton<ContentCubit>(ContentCubit());
+  getIt.registerSingleton<ContentCubitV2>(ContentCubitV2());
 }

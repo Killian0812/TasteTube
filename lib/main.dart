@@ -83,6 +83,9 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => getIt<ContentCubit>()..getFeeds(),
         ),
+        // BlocProvider(
+        //   create: (context) => getIt<ContentCubitV2>()..getFeeds(),
+        // ),
       ],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
