@@ -301,7 +301,7 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
                       },
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.red.withOpacity(0.7),
+                          color: Colors.red.withValues(alpha: 0.7),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -370,7 +370,7 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
                       },
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.red.withOpacity(0.7),
+                          color: Colors.red.withValues(alpha: 0.7),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(

@@ -59,7 +59,7 @@ class Order {
       user: UserBasic.fromJson(json['userId']),
       shopId: json['shopId'],
       orderNum: json['orderNum'],
-      total: json['total'],
+      total: json['total'] * 1.0,
       address: Address.fromJson(json['address']),
       notes: json['notes'],
       items: (json['items'] as List<dynamic>)

@@ -10,6 +10,16 @@ class ContentTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // if (!kIsWeb) {
+    //   return BlocListener<ContentCubitV2, ContentStateV2>(
+    //     listener: (context, state) {
+    //       if (state is ContentErrorV2) {
+    //         ToastService.showToast(context, state.message, ToastType.warning);
+    //       }
+    //     },
+    //     child: WatchPageV2(),
+    //   );
+    // }
     return BlocConsumer<ContentCubit, ContentState>(
       listener: (context, state) {
         if (state is ContentError) {

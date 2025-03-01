@@ -60,12 +60,14 @@ class RegisterEmailCubit extends Cubit<RegisterEmailState> {
           ToastType.success,
           duration: const Duration(seconds: 4));
       Future.delayed(const Duration(seconds: 2), () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  AccountTypeSelectionPage.provider(response.userId)),
-        );
+        if (context.mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    AccountTypeSelectionPage.provider(response.userId)),
+          );
+        }
       });
       logger.i('Registration successful');
     });
@@ -86,7 +88,7 @@ class RegisterEmailCubit extends Cubit<RegisterEmailState> {
           "Account type selected. Redirecting to login...", ToastType.success,
           duration: const Duration(seconds: 4));
       Future.delayed(const Duration(seconds: 2), () {
-        context.go('/login', extra: 1);
+        if (context.mounted) context.go('/login', extra: 1);
       });
       logger.i('Account type selected: $response');
     });

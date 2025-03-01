@@ -14,6 +14,7 @@ import 'package:taste_tube/feature/shop/domain/shop_repo.dart';
 import 'package:taste_tube/feature/upload/domain/upload_repo.dart';
 import 'package:taste_tube/feature/watch/domain/single_video_repo.dart';
 import 'package:taste_tube/global_bloc/auth/bloc.dart';
+import 'package:taste_tube/global_bloc/download/download_cubit.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_repo/cart_repo.dart';
@@ -88,4 +89,6 @@ void injectDependencies() {
   getIt.registerSingleton<CartCubit>(CartCubit());
   getIt.registerSingleton<OrderCubit>(OrderCubit());
   getIt.registerSingleton<ContentCubit>(ContentCubit());
+  // getIt.registerSingleton<ContentCubitV2>(ContentCubitV2());
+  getIt.registerSingleton<DownloadCubit>(DownloadCubit());
 }
