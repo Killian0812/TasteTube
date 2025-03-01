@@ -46,6 +46,7 @@ dependencies:
   provider: ^6.1.2
   better_player_plus: ^1.0.8
   gallery_saver_plus: ^3.2.4
+  flutter_launcher_icons: ^0.14.3
 
 dev_dependencies:
   flutter_test:
