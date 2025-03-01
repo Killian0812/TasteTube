@@ -17,6 +17,8 @@ import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/feature/home/view/content_cubit.dart';
 import 'package:taste_tube/feature/shop/view/cart_page.dart';
 import 'package:taste_tube/feature/shop/view/shop_page.dart';
+import 'package:taste_tube/global_bloc/download/download_cubit.dart';
+import 'package:taste_tube/global_bloc/download/download_dialog.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/user/user.dart';
@@ -86,6 +88,9 @@ class MyApp extends StatelessWidget {
         // BlocProvider(
         //   create: (context) => getIt<ContentCubitV2>()..getFeeds(),
         // ),
+        BlocProvider(
+          create: (context) => getIt<DownloadCubit>(),
+        ),
       ],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
@@ -151,58 +156,65 @@ class Layout extends StatelessWidget {
           return const SplashPage(shouldAutoRedirect: false);
         }
         final isCustomer = state.data.role == "CUSTOMER";
-        return Scaffold(
-            resizeToAvoidBottomInset: false,
-            body: shell,
-            bottomNavigationBar: BottomNavigationBar(
-              currentIndex: currentIndex,
-              onTap: (index) {
-                if (index == 1 && isCustomer) {
-                  context.go('/shop');
-                } else {
-                  shell.goBranch(index);
-                }
-              },
-              items: [
-                const BottomNavigationBarItem(
-                  icon: Icon(Icons.home),
-                  label: 'Home',
-                ),
-                isCustomer
-                    ? const BottomNavigationBarItem(
-                        icon: Icon(Icons.shopping_basket_rounded),
-                        label: 'Shopping',
-                      )
-                    : const BottomNavigationBarItem(
-                        icon: Icon(Icons.store),
-                        label: 'Store',
-                      ),
-                const BottomNavigationBarItem(
-                  icon: Icon(Icons.inbox),
-                  label: 'Inbox',
-                ),
-                const BottomNavigationBarItem(
-                  icon: Icon(Icons.person),
-                  label: 'Profile',
-                ),
-              ],
-            ),
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerDocked,
-            floatingActionButton: Container(
-                margin: const EdgeInsets.only(top: 20),
-                child: FloatingActionButton(
-                  onPressed: () {
-                    context.push('/camera');
+        return Stack(
+          alignment: Alignment.center,
+          children: [
+            Scaffold(
+                resizeToAvoidBottomInset: false,
+                body: shell,
+                bottomNavigationBar: BottomNavigationBar(
+                  currentIndex: currentIndex,
+                  onTap: (index) {
+                    if (index == 1 && isCustomer) {
+                      context.go('/shop');
+                    } else {
+                      shell.goBranch(index);
+                    }
                   },
-                  backgroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    side: const BorderSide(color: CommonColor.activeBgColor),
-                    borderRadius: BorderRadius.circular(30.0),
-                  ),
-                  child:
-                      const Icon(Icons.add, color: CommonColor.activeBgColor),
-                )));
+                  items: [
+                    const BottomNavigationBarItem(
+                      icon: Icon(Icons.home),
+                      label: 'Home',
+                    ),
+                    isCustomer
+                        ? const BottomNavigationBarItem(
+                            icon: Icon(Icons.shopping_basket_rounded),
+                            label: 'Shopping',
+                          )
+                        : const BottomNavigationBarItem(
+                            icon: Icon(Icons.store),
+                            label: 'Store',
+                          ),
+                    const BottomNavigationBarItem(
+                      icon: Icon(Icons.inbox),
+                      label: 'Inbox',
+                    ),
+                    const BottomNavigationBarItem(
+                      icon: Icon(Icons.person),
+                      label: 'Profile',
+                    ),
+                  ],
+                ),
+                floatingActionButtonLocation:
+                    FloatingActionButtonLocation.centerDocked,
+                floatingActionButton: Container(
+                    margin: const EdgeInsets.only(top: 20),
+                    child: FloatingActionButton(
+                      onPressed: () {
+                        context.push('/camera');
+                      },
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        side:
+                            const BorderSide(color: CommonColor.activeBgColor),
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      child: const Icon(Icons.add,
+                          color: CommonColor.activeBgColor),
+                    ))),
+            DownloadDialog(),
+          ],
+        );
       },
     );
   }

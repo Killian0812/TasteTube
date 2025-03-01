@@ -5,7 +5,6 @@ import 'package:logger/logger.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/feature/home/domain/content_repo.dart';
 import 'package:taste_tube/feature/home/view/content_cubit.dart';
-import 'package:taste_tube/feature/home/view/content_cubit_v2.dart';
 import 'package:taste_tube/feature/store/domain/product_repo.dart';
 import 'package:taste_tube/feature/profile/domain/profile_repo.dart';
 import 'package:taste_tube/feature/search/domain/search_repo.dart';
@@ -15,6 +14,7 @@ import 'package:taste_tube/feature/shop/domain/shop_repo.dart';
 import 'package:taste_tube/feature/upload/domain/upload_repo.dart';
 import 'package:taste_tube/feature/watch/domain/single_video_repo.dart';
 import 'package:taste_tube/global_bloc/auth/bloc.dart';
+import 'package:taste_tube/global_bloc/download/download_cubit.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_repo/cart_repo.dart';
@@ -89,5 +89,6 @@ void injectDependencies() {
   getIt.registerSingleton<CartCubit>(CartCubit());
   getIt.registerSingleton<OrderCubit>(OrderCubit());
   getIt.registerSingleton<ContentCubit>(ContentCubit());
-  getIt.registerSingleton<ContentCubitV2>(ContentCubitV2());
+  // getIt.registerSingleton<ContentCubitV2>(ContentCubitV2());
+  getIt.registerSingleton<DownloadCubit>(DownloadCubit());
 }

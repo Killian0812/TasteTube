@@ -64,7 +64,6 @@ class _SingleVideoState extends State<SingleVideo>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final bool isVideoOwner = widget.video.ownerId == UserDataUtil.getUserId();
     return BlocListener<SingleVideoCubit, SingleVideoState>(
       listener: (context, state) {
         if (state is DeleteVideoSuccess) {
@@ -104,7 +103,7 @@ class _SingleVideoState extends State<SingleVideo>
                   _videoLikes(),
                   _videoComments(),
                   _videoShare(),
-                  if (isVideoOwner) _videoSettings(),
+                  _videoSettings(),
                 ],
               )
             : const CircularProgressIndicator(color: Colors.white),
@@ -565,13 +564,16 @@ class _SingleVideoState extends State<SingleVideo>
         ),
       );
 
-  Widget _timeIndicator() => Padding(
-        padding: const EdgeInsets.only(bottom: 10),
-        child: Text(
-          "${_formatDuration(_videoController.value.position)} / ${_formatDuration(_videoController.value.duration)}",
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 16,
+  Widget _timeIndicator() => Align(
+        alignment: Alignment.bottomLeft,
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 10, left: 10),
+          child: Text(
+            "${_formatDuration(_videoController.value.position)} / ${_formatDuration(_videoController.value.duration)}",
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+            ),
           ),
         ),
       );
@@ -925,6 +927,7 @@ class _SingleVideoState extends State<SingleVideo>
       );
 
   void _showVideoOptions(BuildContext context, SingleVideoCubit cubit) {
+    final bool isVideoOwner = widget.video.ownerId == UserDataUtil.getUserId();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -938,38 +941,51 @@ class _SingleVideoState extends State<SingleVideo>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              if (isVideoOwner) ...[
+                ListTile(
+                  leading: const Icon(Icons.edit, color: Colors.white),
+                  title: const Text(
+                    'Edit Video',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                const Divider(color: Colors.white30),
+                ListTile(
+                  leading: const Icon(Icons.delete, color: Colors.redAccent),
+                  title: const Text(
+                    'Delete Video',
+                    style: TextStyle(color: Colors.redAccent),
+                  ),
+                  onTap: () async {
+                    bool? confirmed = await showConfirmDialog(
+                      context,
+                      title: "Confirm delete video",
+                      body: 'Are you sure you want to delete this video?',
+                      contrast: true,
+                    );
+                    if (confirmed != true) {
+                      return;
+                    }
+                    await cubit.deleteVideo(widget.video);
+                    if (context.mounted) Navigator.pop(context);
+                  },
+                ),
+                const Divider(color: Colors.white30),
+              ],
               ListTile(
-                leading: const Icon(Icons.edit, color: Colors.white),
+                leading: const Icon(Icons.download, color: Colors.white),
                 title: const Text(
-                  'Edit Video',
+                  'Download',
                   style: TextStyle(color: Colors.white),
                 ),
                 onTap: () {
+                  getIt<DownloadCubit>().downloadVideo(widget.video);
                   Navigator.pop(context);
                 },
               ),
-              const Divider(color: Colors.white30),
-              ListTile(
-                leading: const Icon(Icons.delete, color: Colors.redAccent),
-                title: const Text(
-                  'Delete Video',
-                  style: TextStyle(color: Colors.redAccent),
-                ),
-                onTap: () async {
-                  bool? confirmed = await showConfirmDialog(
-                    context,
-                    title: "Confirm delete video",
-                    body: 'Are you sure you want to delete this video?',
-                    contrast: true,
-                  );
-                  if (confirmed != true) {
-                    return;
-                  }
-                  await cubit.deleteVideo(widget.video);
-                  if (context.mounted) Navigator.pop(context);
-                },
-              ),
-              const Divider(color: Colors.white30),
               ListTile(
                 leading: const Icon(Icons.cancel, color: Colors.white),
                 title: const Text(
