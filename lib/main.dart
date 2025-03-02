@@ -70,26 +70,26 @@ class MyApp extends StatelessWidget {
 
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (context) => getIt<AuthBloc>()..add(CheckAuthEvent()),
+        BlocProvider.value(
+          value: getIt<AuthBloc>()..add(CheckAuthEvent()),
         ),
-        BlocProvider(
-          create: (context) => OAuthCubit(),
+        BlocProvider.value(
+          value: getIt<OAuthCubit>(),
         ),
-        BlocProvider(
-          create: (context) => getIt<CartCubit>(),
+        BlocProvider.value(
+          value: getIt<CartCubit>(),
         ),
-        BlocProvider(
-          create: (context) => getIt<OrderCubit>(),
+        BlocProvider.value(
+          value: getIt<OrderCubit>(),
         ),
-        BlocProvider(
-          create: (context) => getIt<ContentCubit>()..getFeeds(),
+        BlocProvider.value(
+          value: getIt<ContentCubit>()..getFeeds(),
         ),
-        // BlocProvider(
-        //   create: (context) => getIt<ContentCubitV2>()..getFeeds(),
+        // BlocProvider.value(
+        //   value: getIt<ContentCubitV2>()..getFeeds(),
         // ),
-        BlocProvider(
-          create: (context) => getIt<DownloadCubit>(),
+        BlocProvider.value(
+          value: getIt<DownloadCubit>(),
         ),
       ],
       child: MaterialApp.router(

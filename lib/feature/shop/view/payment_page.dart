@@ -257,6 +257,7 @@ class _PaymentPageState extends State<PaymentPage> {
                   return CommonButton(
                     isLoading: state is OrderLoading,
                     onPressed: () {
+                      // TODO: process payment here
                       context.read<OrderCubit>().createOrder(
                             selectedItems.map((e) => e.id).toList(),
                             selectedAddress!.id,

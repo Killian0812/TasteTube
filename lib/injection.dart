@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
 import 'package:taste_tube/api.dart';
+import 'package:taste_tube/auth/view/oauth/oauth_cubit.dart';
 import 'package:taste_tube/feature/home/domain/content_repo.dart';
 import 'package:taste_tube/feature/home/view/content_cubit.dart';
 import 'package:taste_tube/feature/store/domain/product_repo.dart';
@@ -17,6 +18,7 @@ import 'package:taste_tube/global_bloc/auth/bloc.dart';
 import 'package:taste_tube/global_bloc/download/download_cubit.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
+import 'package:taste_tube/global_bloc/socket/socket_cubit.dart';
 import 'package:taste_tube/global_repo/cart_repo.dart';
 import 'package:taste_tube/storage.dart';
 import 'package:uuid/uuid.dart';
@@ -86,6 +88,8 @@ void injectDependencies() {
 
   // Global blocs / cubits
   getIt.registerSingleton<AuthBloc>(AuthBloc());
+  getIt.registerSingleton<OAuthCubit>(OAuthCubit());
+  getIt.registerSingleton<SocketCubit>(SocketCubit());
   getIt.registerSingleton<CartCubit>(CartCubit());
   getIt.registerSingleton<OrderCubit>(OrderCubit());
   getIt.registerSingleton<ContentCubit>(ContentCubit());

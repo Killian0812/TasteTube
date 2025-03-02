@@ -47,6 +47,7 @@ dependencies:
   better_player_plus: ^1.0.8
   gallery_saver_plus: ^3.2.4
   flutter_launcher_icons: ^0.14.3
+  socket_io_client: ^3.0.2
 
 dev_dependencies:
   flutter_test:

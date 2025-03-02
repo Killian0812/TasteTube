@@ -49,7 +49,6 @@ class OAuthCubit extends Cubit<OAuthState> {
       (response) async {
         logger.i('Login successfully: ${response.accessToken}');
         UserDataUtil.initUser(response);
-        UserDataUtil.refreshData();
         emit(OAuthSuccess(
             "Successfully connected to Google account! Redirecting...",
             response));
