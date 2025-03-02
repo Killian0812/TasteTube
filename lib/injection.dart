@@ -6,6 +6,7 @@ import 'package:taste_tube/api.dart';
 import 'package:taste_tube/auth/view/oauth/oauth_cubit.dart';
 import 'package:taste_tube/feature/home/domain/content_repo.dart';
 import 'package:taste_tube/feature/home/view/content_cubit.dart';
+import 'package:taste_tube/feature/payment/domain/payment_repo.dart';
 import 'package:taste_tube/feature/store/domain/product_repo.dart';
 import 'package:taste_tube/feature/profile/domain/profile_repo.dart';
 import 'package:taste_tube/feature/search/domain/search_repo.dart';
@@ -18,7 +19,7 @@ import 'package:taste_tube/global_bloc/auth/bloc.dart';
 import 'package:taste_tube/global_bloc/download/download_cubit.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
-import 'package:taste_tube/global_bloc/socket/socket_cubit.dart';
+import 'package:taste_tube/global_bloc/socket/socket_provider.dart';
 import 'package:taste_tube/global_repo/cart_repo.dart';
 import 'package:taste_tube/storage.dart';
 import 'package:uuid/uuid.dart';
@@ -85,11 +86,14 @@ void injectDependencies() {
   getIt.registerLazySingleton<ContentRepository>(() => ContentRepository(
         http: getIt(),
       ));
+  getIt.registerLazySingleton<PaymentRepository>(() => PaymentRepository(
+        http: getIt(),
+      ));
 
   // Global blocs / cubits
   getIt.registerSingleton<AuthBloc>(AuthBloc());
   getIt.registerSingleton<OAuthCubit>(OAuthCubit());
-  getIt.registerSingleton<SocketCubit>(SocketCubit());
+  getIt.registerSingleton<SocketProvider>(SocketProvider());
   getIt.registerSingleton<CartCubit>(CartCubit());
   getIt.registerSingleton<OrderCubit>(OrderCubit());
   getIt.registerSingleton<ContentCubit>(ContentCubit());

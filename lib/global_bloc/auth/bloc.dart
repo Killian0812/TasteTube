@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/api.dart';
-import 'package:taste_tube/global_bloc/socket/socket_cubit.dart';
+import 'package:taste_tube/global_bloc/socket/socket_provider.dart';
 import 'package:taste_tube/injection.dart';
 import 'package:taste_tube/storage.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
@@ -36,7 +36,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final authData = AuthData.fromJson(response.data);
       http.options.headers['Authorization'] = 'Bearer ${authData.accessToken}';
       emit(Authenticated(authData));
-      getIt<SocketCubit>().initSocket(response.data.userId);
+      getIt<SocketProvider>().initSocket(response.data.userId);
       UserDataUtil.refreshData();
     } on DioException {
       emit(Unauthenticated());
@@ -49,12 +49,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(Authenticated(event.data));
     secureStorage.setRefreshToken(event.refreshToken);
     http.options.headers['Authorization'] = 'Bearer ${event.data.accessToken}';
-    getIt<SocketCubit>().initSocket(event.data.userId);
+    getIt<SocketProvider>().initSocket(event.data.userId);
     UserDataUtil.refreshData();
   }
 
   FutureOr<void> _logout(LogoutEvent event, Emitter<AuthState> emit) async {
-    getIt<SocketCubit>().disconnectSocket();
+    getIt<SocketProvider>().disconnectSocket();
     await secureStorage.clearRefreshToken();
     http.options.headers.remove('Authorization');
     emit(Unauthenticated());

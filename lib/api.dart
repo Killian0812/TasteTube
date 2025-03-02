@@ -47,6 +47,9 @@ class Api {
   static const searchApi = '/content/search';
   static const feedApi = '/content/feeds';
 
+  // Payment
+  static const getVnpayUrl = '/payment/vnpay/getUrl';
+
   // User
   static const userApi = '/users/:userId';
   static const changePasswordApi = '/users/:userId/change_password';

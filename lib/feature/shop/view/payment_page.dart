@@ -4,6 +4,7 @@ import 'package:taste_tube/common/button.dart';
 import 'package:taste_tube/common/constant.dart';
 import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/common/toast.dart';
+import 'package:taste_tube/feature/payment/view/payment_cubit.dart';
 import 'package:taste_tube/feature/shop/view/tabs/address/address_cubit.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
@@ -11,8 +12,8 @@ import 'package:taste_tube/global_data/order/address.dart';
 
 part 'payment_page.ext.dart';
 
-double deliveryFee = 15000; // Example only
-double discount = 10000;
+double deliveryFee = 0; // Example only
+double discount = 0;
 
 class PaymentPage extends StatefulWidget {
   const PaymentPage({super.key});
@@ -20,6 +21,9 @@ class PaymentPage extends StatefulWidget {
   static Widget provider() => MultiBlocProvider(providers: [
         BlocProvider(
           create: (context) => AddressCubit()..fetchAddresses(),
+        ),
+        BlocProvider(
+          create: (context) => PaymentCubit(),
         ),
       ], child: const PaymentPage());
 
@@ -233,6 +237,7 @@ class _PaymentPageState extends State<PaymentPage> {
         double total = selectedItems.fold(
             0, (sum, item) => sum + item.quantity * item.product.cost);
         double finalAmount = total + deliveryFee - discount;
+        String currency = selectedItems.first.currency;
 
         return Padding(
           padding: const EdgeInsets.all(16.0),
@@ -257,7 +262,7 @@ class _PaymentPageState extends State<PaymentPage> {
                   return CommonButton(
                     isLoading: state is OrderLoading,
                     onPressed: () {
-                      // TODO: process payment here
+                      context.read<PaymentCubit>().createPayment(finalAmount, currency);
                       context.read<OrderCubit>().createOrder(
                             selectedItems.map((e) => e.id).toList(),
                             selectedAddress!.id,
