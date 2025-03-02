@@ -38,6 +38,7 @@ class PaymentSuccess extends PaymentState {
 class PaymentCubit extends Cubit<PaymentState> {
   final PaymentRepository repository = getIt<PaymentRepository>();
   final SocketProvider socketProvider = getIt<SocketProvider>();
+  String pid = '';
 
   PaymentCubit() : super(PaymentInitial()) {
     socketProvider.addListener(_onSocketEvent);
@@ -50,8 +51,9 @@ class PaymentCubit extends Cubit<PaymentState> {
       result.fold(
         (error) =>
             emit(PaymentUrlError(error.message ?? 'Error creating new order')),
-        (url) {
-          emit(PaymentUrlReady(url));
+        (payment) {
+          pid = payment.pid;
+          emit(PaymentUrlReady(payment.url));
         },
       );
     } catch (e) {

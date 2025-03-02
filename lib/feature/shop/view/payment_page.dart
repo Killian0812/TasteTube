@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/common/button.dart';
@@ -5,10 +6,12 @@ import 'package:taste_tube/common/constant.dart';
 import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/payment/view/payment_cubit.dart';
+import 'package:taste_tube/feature/shop/view/online_payment_page.dart';
 import 'package:taste_tube/feature/shop/view/tabs/address/address_cubit.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/address.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 part 'payment_page.ext.dart';
 
@@ -44,34 +47,49 @@ class _PaymentPageState extends State<PaymentPage> {
           centerTitle: true,
         ),
         resizeToAvoidBottomInset: false,
-        body: BlocListener<OrderCubit, OrderState>(
-          listener: (context, state) {
-            if (state is OrderSuccess) {
-              ToastService.showToast(context, state.success, ToastType.success);
-              context.read<OrderCubit>().getOrders();
-              context.read<CartCubit>().getCart();
-              Navigator.pop(context);
-            }
-            if (state is OrderError) {
-              ToastService.showToast(context, state.error, ToastType.warning);
+        body: BlocListener<PaymentCubit, PaymentState>(
+          listener: (context, state) async {
+            if (state is PaymentUrlReady) {
+              final url = state.url;
+              if (kIsWeb) {
+                await launchUrlString(url,
+                    mode: LaunchMode.externalApplication);
+                return;
+              }
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => OnlinePaymentPage(url: url)));
             }
           },
-          child: Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      _buildAddressSection(),
-                      const _OrderSummarySection(),
-                      _buildPaymentMethodSection(),
-                      _buildNotesSection(),
-                    ],
+          child: BlocListener<OrderCubit, OrderState>(
+            listener: (context, state) {
+              if (state is OrderSuccess) {
+                ToastService.showToast(
+                    context, state.success, ToastType.success);
+                context.read<OrderCubit>().getOrders();
+                context.read<CartCubit>().getCart();
+                Navigator.pop(context);
+              }
+              if (state is OrderError) {
+                ToastService.showToast(context, state.error, ToastType.warning);
+              }
+            },
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        _buildAddressSection(),
+                        const _OrderSummarySection(),
+                        _buildPaymentMethodSection(),
+                        _buildNotesSection(),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              _buildBottomOrderSection(),
-            ],
+                _buildBottomOrderSection(),
+              ],
+            ),
           ),
         ));
   }
@@ -262,7 +280,12 @@ class _PaymentPageState extends State<PaymentPage> {
                   return CommonButton(
                     isLoading: state is OrderLoading,
                     onPressed: () {
-                      context.read<PaymentCubit>().createPayment(finalAmount, currency);
+                      if (_selectedPaymentMethod == "VNPAY") {
+                        context
+                            .read<PaymentCubit>()
+                            .createPayment(finalAmount, currency);
+                        return;
+                      }
                       context.read<OrderCubit>().createOrder(
                             selectedItems.map((e) => e.id).toList(),
                             selectedAddress!.id,
