@@ -117,6 +117,27 @@ class _OrderCardState extends State<_OrderCard> {
                 ),
               ],
             ),
+            const SizedBox(height: 8),
+            RichText(
+              text: TextSpan(
+                text: 'Payment Method: ',
+                style: DefaultTextStyle.of(context).style,
+                children: [
+                  TextSpan(text: order.paymentMethod),
+                  if (order.paid) ...[
+                    const TextSpan(text: ' - '),
+                    const TextSpan(
+                      text: 'Paid',
+                      style: TextStyle(
+                        color: Colors.green,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ]
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
             Text(
                 'Total: ${order.total.toStringAsFixed(2)} ${order.items.first.product.currency}'),
             const SizedBox(height: 8),

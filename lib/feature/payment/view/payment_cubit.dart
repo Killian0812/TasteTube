@@ -3,42 +3,45 @@ import 'package:taste_tube/feature/payment/domain/payment_repo.dart';
 import 'package:taste_tube/global_bloc/socket/socket_provider.dart';
 import 'package:taste_tube/injection.dart';
 
-abstract class PaymentState {}
+abstract class PaymentState {
+  final String pid;
+
+  const PaymentState(this.pid);
+}
 
 class PaymentInitial extends PaymentState {
-  PaymentInitial() : super();
+  PaymentInitial() : super('');
 }
 
 class PaymentLoading extends PaymentState {
-  PaymentLoading() : super();
+  PaymentLoading() : super('');
 }
 
 class PaymentUrlReady extends PaymentState {
   final String url;
 
-  PaymentUrlReady(this.url) : super();
+  PaymentUrlReady(super.pid, this.url);
 }
 
 class PaymentUrlError extends PaymentState {
   final String error;
 
-  PaymentUrlError(this.error) : super();
+  PaymentUrlError(this.error) : super('');
 }
 
 class PaymentFailed extends PaymentState {
   final String error;
 
-  PaymentFailed(this.error) : super();
+  PaymentFailed(super.pid, this.error);
 }
 
 class PaymentSuccess extends PaymentState {
-  PaymentSuccess() : super();
+  PaymentSuccess(super.pid);
 }
 
 class PaymentCubit extends Cubit<PaymentState> {
   final PaymentRepository repository = getIt<PaymentRepository>();
   final SocketProvider socketProvider = getIt<SocketProvider>();
-  String pid = '';
 
   PaymentCubit() : super(PaymentInitial()) {
     socketProvider.addListener(_onSocketEvent);
@@ -52,8 +55,7 @@ class PaymentCubit extends Cubit<PaymentState> {
         (error) =>
             emit(PaymentUrlError(error.message ?? 'Error creating new order')),
         (payment) {
-          pid = payment.pid;
-          emit(PaymentUrlReady(payment.url));
+          emit(PaymentUrlReady(payment.pid, payment.url));
         },
       );
     } catch (e) {
@@ -65,13 +67,13 @@ class PaymentCubit extends Cubit<PaymentState> {
     if (socketProvider.event is! PaymentSocketEvent) return;
 
     final payload = (socketProvider.event as PaymentSocketEvent);
-    if (payload.pid != pid) return;
+    if (payload.pid != state.pid) return;
 
     if (payload.status == 'failed') {
-      emit(PaymentFailed("Payment failed"));
+      emit(PaymentFailed(state.pid, "Payment failed"));
       return;
     }
-    emit(PaymentSuccess());
+    emit(PaymentSuccess(state.pid));
   }
 
   @override

@@ -2,9 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/common/button.dart';
-import 'package:taste_tube/common/constant.dart';
 import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/common/toast.dart';
+import 'package:taste_tube/feature/payment/data/payment_data.dart';
 import 'package:taste_tube/feature/payment/view/payment_cubit.dart';
 import 'package:taste_tube/feature/shop/view/online_payment_page.dart';
 import 'package:taste_tube/feature/shop/view/tabs/address/address_cubit.dart';
@@ -46,9 +46,22 @@ class _PaymentPageState extends State<PaymentPage> {
           title: const Text('Payment'),
           centerTitle: true,
         ),
-        resizeToAvoidBottomInset: false,
         body: BlocListener<PaymentCubit, PaymentState>(
           listener: (context, state) async {
+            if (state is PaymentSuccess) {
+              final orderState = context.read<CartCubit>().state;
+              final selectedItems = orderState.cart.items
+                  .where((item) => orderState.selectedItems.contains(item.id))
+                  .toList();
+
+              context.read<OrderCubit>().createOrder(
+                    selectedItems.map((e) => e.id).toList(),
+                    selectedAddress!.id,
+                    _selectedPaymentMethod!,
+                    _notes,
+                    state.pid,
+                  );
+            }
             if (state is PaymentUrlReady) {
               final url = state.url;
               if (kIsWeb) {
@@ -56,8 +69,10 @@ class _PaymentPageState extends State<PaymentPage> {
                     mode: LaunchMode.externalApplication);
                 return;
               }
+              final cubit = context.read<PaymentCubit>();
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => OnlinePaymentPage(url: url)));
+                  builder: (context) =>
+                      OnlinePaymentPage(cubit: cubit, url: url)));
             }
           },
           child: BlocListener<OrderCubit, OrderState>(
@@ -77,6 +92,7 @@ class _PaymentPageState extends State<PaymentPage> {
               children: [
                 Expanded(
                   child: SingleChildScrollView(
+                    physics: AlwaysScrollableScrollPhysics(),
                     child: Column(
                       children: [
                         _buildAddressSection(),
@@ -173,53 +189,23 @@ class _PaymentPageState extends State<PaymentPage> {
         children: [
           const Text('Payment Method',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          RadioListTile<String>(
-            title: Row(
-              children: [
-                Image.asset(AssetPath.cod, width: 24, height: 24),
-                const SizedBox(width: 10),
-                const Text('Cash on Delivery (COD)'),
-              ],
+          ...PaymentMethod.values.map(
+            (e) => RadioListTile<String>(
+              title: Row(
+                children: [
+                  Image.asset(e.assetPath, width: 24, height: 24),
+                  const SizedBox(width: 10),
+                  Text(e.displayName),
+                ],
+              ),
+              value: e.value,
+              groupValue: _selectedPaymentMethod,
+              onChanged: (String? value) {
+                setState(() {
+                  _selectedPaymentMethod = value;
+                });
+              },
             ),
-            value: 'COD',
-            groupValue: _selectedPaymentMethod,
-            onChanged: (String? value) {
-              setState(() {
-                _selectedPaymentMethod = value;
-              });
-            },
-          ),
-          RadioListTile<String>(
-            title: Row(
-              children: [
-                Image.asset(AssetPath.vnpay, width: 24, height: 24),
-                const SizedBox(width: 10),
-                const Text('VNPAY'),
-              ],
-            ),
-            value: 'VNPAY',
-            groupValue: _selectedPaymentMethod,
-            onChanged: (String? value) {
-              setState(() {
-                _selectedPaymentMethod = value;
-              });
-            },
-          ),
-          RadioListTile<String>(
-            title: Row(
-              children: [
-                Image.asset(AssetPath.zalopay, width: 24, height: 24),
-                const SizedBox(width: 10),
-                const Text('ZaloPay'),
-              ],
-            ),
-            value: 'ZaloPay',
-            groupValue: _selectedPaymentMethod,
-            onChanged: (String? value) {
-              setState(() {
-                _selectedPaymentMethod = value;
-              });
-            },
           ),
         ],
       ),
@@ -260,6 +246,7 @@ class _PaymentPageState extends State<PaymentPage> {
         return Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               const Divider(),
               Row(
@@ -286,12 +273,6 @@ class _PaymentPageState extends State<PaymentPage> {
                             .createPayment(finalAmount, currency);
                         return;
                       }
-                      context.read<OrderCubit>().createOrder(
-                            selectedItems.map((e) => e.id).toList(),
-                            selectedAddress!.id,
-                            _selectedPaymentMethod!,
-                            _notes,
-                          );
                     },
                     text: 'Order',
                   );

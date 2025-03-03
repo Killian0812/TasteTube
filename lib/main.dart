@@ -145,12 +145,6 @@ class MyApp extends StatelessWidget {
                 PointerDeviceKind.unknown
               },
             ),
-            builder: (context, child) {
-              return HeroControllerScope(
-                controller: MaterialApp.createMaterialHeroController(),
-                child: child!,
-              );
-            },
           );
         },
       ),

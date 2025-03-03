@@ -64,6 +64,7 @@ class OrderCubit extends Cubit<OrderState> {
     String addressId,
     String paymentMethod,
     String notes,
+    String pid,
   ) async {
     emit(OrderLoading(state.orders));
     try {
@@ -72,6 +73,7 @@ class OrderCubit extends Cubit<OrderState> {
         addressId: addressId,
         paymentMethod: paymentMethod,
         notes: notes,
+        pid: pid,
       );
       result.fold(
         (error) => emit(OrderError(
