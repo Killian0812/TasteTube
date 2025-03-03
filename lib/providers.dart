@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/auth/view/oauth/oauth_cubit.dart';
 import 'package:taste_tube/feature/home/view/content_cubit.dart';
@@ -40,5 +40,21 @@ class TasteTubeProvider extends StatelessWidget {
       ],
       child: child,
     );
+  }
+}
+
+class AppSettings extends ChangeNotifier {
+  ThemeMode theme = ThemeMode.light;
+
+  ThemeMode get getTheme => theme;
+
+  void setTheme(ThemeMode theme) {
+    this.theme = theme;
+    notifyListeners();
+  }
+
+  @override
+  void notifyListeners() {
+    super.notifyListeners();
   }
 }

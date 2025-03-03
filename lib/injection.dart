@@ -21,6 +21,7 @@ import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_bloc/socket/socket_provider.dart';
 import 'package:taste_tube/global_repo/cart_repo.dart';
+import 'package:taste_tube/providers.dart';
 import 'package:taste_tube/storage.dart';
 import 'package:uuid/uuid.dart';
 
@@ -30,6 +31,7 @@ final getIt = GetIt.instance;
 
 void injectDependencies() {
   // App core instances
+  getIt.registerSingleton<AppSettings>(AppSettings());
   getIt.registerSingleton<Logger>(Logger());
   getIt.registerSingleton<Dio>(Dio(
     BaseOptions(

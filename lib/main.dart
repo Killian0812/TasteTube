@@ -73,46 +73,84 @@ class MyApp extends StatelessWidget {
     CommonSize.initScreenSize(context);
 
     return TasteTubeProvider(
-      child: MaterialApp.router(
-        debugShowCheckedModeBanner: false,
-        title: 'TasteTube',
-        routerConfig: _router,
-        theme: ThemeData.light().copyWith(
-          textTheme: Theme.of(context).textTheme.apply(fontFamily: 'Ganh'),
-          scaffoldBackgroundColor: Colors.white,
-          textSelectionTheme:
-              const TextSelectionThemeData(cursorColor: Colors.black),
-          tabBarTheme: const TabBarTheme(
-            labelColor: Colors.black,
-            unselectedLabelColor: CommonColor.greyOutTextColor,
-            labelStyle: CommonTextStyle.bold,
-            unselectedLabelStyle: CommonTextStyle.boldItalic,
-          ),
-          bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-            unselectedItemColor: Colors.black,
-            selectedItemColor: CommonColor.activeBgColor,
-            selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
-            showUnselectedLabels: true,
-            type: BottomNavigationBarType.fixed,
-          ),
-          appBarTheme: const AppBarTheme(
-            backgroundColor: Colors.transparent,
-            shadowColor: Colors.transparent,
-            iconTheme: IconThemeData(color: Colors.black),
-          ),
-        ),
-        scrollBehavior: const MaterialScrollBehavior().copyWith(
-          dragDevices: {
-            PointerDeviceKind.mouse,
-            PointerDeviceKind.touch,
-            PointerDeviceKind.stylus,
-            PointerDeviceKind.unknown
-          },
-        ),
-        builder: (context, child) {
-          return HeroControllerScope(
-            controller: MaterialApp.createMaterialHeroController(),
-            child: child!,
+      child: AnimatedBuilder(
+        animation: getIt<AppSettings>(),
+        builder: (context, snapshot) {
+          return MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            title: 'TasteTube',
+            routerConfig: _router,
+            theme: ThemeData.light().copyWith(
+              textTheme: Theme.of(context).textTheme.apply(fontFamily: 'Ganh'),
+              scaffoldBackgroundColor: Colors.white,
+              textSelectionTheme:
+                  const TextSelectionThemeData(cursorColor: Colors.black),
+              tabBarTheme: const TabBarTheme(
+                labelColor: Colors.black,
+                unselectedLabelColor: CommonColor.greyOutTextColor,
+                labelStyle: CommonTextStyle.bold,
+                unselectedLabelStyle: CommonTextStyle.boldItalic,
+              ),
+              bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+                unselectedItemColor: Colors.black,
+                selectedItemColor: CommonColor.activeBgColor,
+                selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
+                showUnselectedLabels: true,
+                type: BottomNavigationBarType.fixed,
+              ),
+              appBarTheme: const AppBarTheme(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                iconTheme: IconThemeData(color: Colors.black),
+              ),
+              floatingActionButtonTheme: const FloatingActionButtonThemeData(
+                backgroundColor: Colors.white,
+              ),
+            ),
+            darkTheme: ThemeData.dark().copyWith(
+              textTheme: Theme.of(context)
+                  .textTheme
+                  .apply(fontFamily: 'Ganh', bodyColor: Colors.white),
+              scaffoldBackgroundColor: Colors.black,
+              textSelectionTheme:
+                  const TextSelectionThemeData(cursorColor: Colors.white),
+              tabBarTheme: const TabBarTheme(
+                labelColor: Colors.white,
+                unselectedLabelColor: CommonColor.greyOutTextColor,
+                labelStyle: CommonTextStyle.bold,
+                unselectedLabelStyle: CommonTextStyle.boldItalic,
+              ),
+              bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+                unselectedItemColor: Colors.white,
+                selectedItemColor: CommonColor.activeBgColor,
+                selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
+                showUnselectedLabels: true,
+                type: BottomNavigationBarType.fixed,
+              ),
+              appBarTheme: const AppBarTheme(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                iconTheme: IconThemeData(color: Colors.white),
+              ),
+              floatingActionButtonTheme: const FloatingActionButtonThemeData(
+                backgroundColor: Color.fromARGB(255, 20, 18, 24),
+              ),
+            ),
+            themeMode: getIt<AppSettings>().getTheme,
+            scrollBehavior: const MaterialScrollBehavior().copyWith(
+              dragDevices: {
+                PointerDeviceKind.mouse,
+                PointerDeviceKind.touch,
+                PointerDeviceKind.stylus,
+                PointerDeviceKind.unknown
+              },
+            ),
+            builder: (context, child) {
+              return HeroControllerScope(
+                controller: MaterialApp.createMaterialHeroController(),
+                child: child!,
+              );
+            },
           );
         },
       ),
@@ -153,11 +191,18 @@ class Layout extends StatelessWidget {
                 bottomNavigationBar: BottomNavigationBar(
                   currentIndex: currentIndex,
                   onTap: (index) {
+                    final appSettings = getIt<AppSettings>();
+                    if (index == 0 && appSettings.getTheme != ThemeMode.dark) {
+                      appSettings.setTheme(ThemeMode.dark);
+                    } else if (appSettings.getTheme != ThemeMode.light) {
+                      appSettings.setTheme(ThemeMode.light);
+                    }
+
                     if (index == 1 && isCustomer) {
                       context.go('/shop');
-                    } else {
-                      shell.goBranch(index);
+                      return;
                     }
+                    shell.goBranch(index);
                   },
                   items: [
                     const BottomNavigationBarItem(
@@ -191,7 +236,6 @@ class Layout extends StatelessWidget {
                       onPressed: () {
                         context.push('/camera');
                       },
-                      backgroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         side:
                             const BorderSide(color: CommonColor.activeBgColor),
