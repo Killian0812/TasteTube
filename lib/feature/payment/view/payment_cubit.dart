@@ -62,13 +62,16 @@ class PaymentCubit extends Cubit<PaymentState> {
   }
 
   void _onSocketEvent() {
-    final event = socketProvider.event;
-    if (event.name != 'payment') return;
-    if (event.payload['status'] == 'failed') {
-      emit(PaymentFailed(event.payload['message']));
+    if (socketProvider.event is! PaymentSocketEvent) return;
+
+    final payload = (socketProvider.event as PaymentSocketEvent);
+    if (payload.pid != pid) return;
+
+    if (payload.status == 'failed') {
+      emit(PaymentFailed("Payment failed"));
       return;
     }
-    emit(PaymentFailed(event.payload['message']));
+    emit(PaymentSuccess());
   }
 
   @override

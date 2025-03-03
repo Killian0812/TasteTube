@@ -1,8 +1,18 @@
 part of 'socket_provider.dart';
 
-class SocketEvent {
+abstract class SocketEvent {
   final String name;
-  final dynamic payload;
 
-  SocketEvent(this.name, {this.payload});
+  const SocketEvent(this.name);
+}
+
+class BasicSocketEvent extends SocketEvent {
+  const BasicSocketEvent(super.name);
+}
+
+class PaymentSocketEvent extends SocketEvent {
+  final String? status;
+  final String? pid;
+
+  const PaymentSocketEvent(super.name, {this.status, this.pid});
 }

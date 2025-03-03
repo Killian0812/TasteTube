@@ -13,8 +13,8 @@ class OnlinePaymentPage extends StatelessWidget {
       ),
       body: InAppWebView(
         initialUrlRequest: URLRequest(url: WebUri(url)),
-        onCloseWindow: (controller) => print("WEBVIEW CLOSED"),
         onWebViewCreated: (InAppWebViewController webViewController) {
+          // Not working
           webViewController.addJavaScriptHandler(
             handlerName: 'popPage',
             callback: (args) {
