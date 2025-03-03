@@ -1,4 +1,4 @@
-part of 'bloc.dart';
+part of 'auth_bloc.dart';
 
 class AuthData {
   final String accessToken;

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/constant.dart';
 import 'package:taste_tube/common/toast.dart';
+// ignore: unused_import
 import 'package:taste_tube/feature/profile/view/profile_page.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/order.dart';
@@ -173,12 +175,7 @@ class _OrderCardState extends State<_OrderCard> {
                   const SizedBox(height: 8),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                ProfilePage.provider(order.user.id)),
-                      );
+                      context.push('/user/${order.user.id}');
                     },
                     child: Row(
                       children: [

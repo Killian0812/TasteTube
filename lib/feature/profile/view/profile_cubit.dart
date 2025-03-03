@@ -3,7 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:taste_tube/global_data/user/user.dart';
 import 'package:taste_tube/feature/profile/domain/profile_repo.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
-import 'package:taste_tube/global_bloc/auth/bloc.dart';
+import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
 import 'package:taste_tube/injection.dart';
 
 class ProfileCubit extends Cubit<ProfileState> {

@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taste_tube/auth/view/login_page.dart';
-import 'package:taste_tube/auth/view/oauth/oauth_cubit.dart';
 import 'package:taste_tube/auth/view/register_page.dart';
 import 'package:taste_tube/auth/view/phone_or_email/login_phone_or_email_page.dart';
 import 'package:taste_tube/auth/view/phone_or_email/register_phone_or_email_page.dart';
@@ -14,13 +13,10 @@ import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/fallback.dart';
 import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/text.dart';
-import 'package:taste_tube/feature/home/view/content_cubit.dart';
+import 'package:taste_tube/feature/profile/view/owner_profile_page.dart';
 import 'package:taste_tube/feature/shop/view/cart_page.dart';
 import 'package:taste_tube/feature/shop/view/shop_page.dart';
-import 'package:taste_tube/global_bloc/download/download_cubit.dart';
 import 'package:taste_tube/global_bloc/download/download_dialog.dart';
-import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
-import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/user/user.dart';
 import 'package:taste_tube/feature/record/camera/camera_page.dart';
 import 'package:taste_tube/feature/home/view/home_page.dart';
@@ -32,9 +28,10 @@ import 'package:taste_tube/feature/shop/view/tabs/shopping/single_shop_page.dart
 import 'package:taste_tube/global_data/watch/video.dart';
 import 'package:taste_tube/feature/watch/view/watch_page.dart';
 import 'package:taste_tube/firebase_options.dart';
-import 'package:taste_tube/global_bloc/auth/bloc.dart';
+import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
 import 'package:taste_tube/injection.dart';
-import 'package:taste_tube/skeleton/profile_skeleton.dart';
+import 'package:taste_tube/providers.dart';
+import 'package:taste_tube/splash/initial_page.dart';
 import 'package:taste_tube/splash/splash_page.dart';
 
 part 'router.dart';
@@ -42,12 +39,15 @@ part 'router.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   injectDependencies();
+
   await Fallback.prepareFallback();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   ).then((firebaseApp) {
     getIt.registerSingleton<FirebaseApp>(firebaseApp);
   });
+
   if (kIsWeb) {
     // Initialize the Facebook javascript SDK on web
     // can test using http but only usable on https
@@ -58,6 +58,10 @@ void main() async {
       version: "v21.0", // API version Acquired from Meta Developers
     );
   }
+
+  // Must have for route push() to reflect defined url
+  GoRouter.optionURLReflectsImperativeAPIs = true;
+
   runApp(const MyApp());
 }
 
@@ -68,30 +72,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     CommonSize.initScreenSize(context);
 
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider.value(
-          value: getIt<AuthBloc>()..add(CheckAuthEvent()),
-        ),
-        BlocProvider.value(
-          value: getIt<OAuthCubit>(),
-        ),
-        BlocProvider.value(
-          value: getIt<CartCubit>(),
-        ),
-        BlocProvider.value(
-          value: getIt<OrderCubit>(),
-        ),
-        BlocProvider.value(
-          value: getIt<ContentCubit>()..getFeeds(),
-        ),
-        // BlocProvider.value(
-        //   value: getIt<ContentCubitV2>()..getFeeds(),
-        // ),
-        BlocProvider.value(
-          value: getIt<DownloadCubit>(),
-        ),
-      ],
+    return TasteTubeProvider(
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
         title: 'TasteTube',
@@ -128,6 +109,12 @@ class MyApp extends StatelessWidget {
             PointerDeviceKind.unknown
           },
         ),
+        builder: (context, child) {
+          return HeroControllerScope(
+            controller: MaterialApp.createMaterialHeroController(),
+            child: child!,
+          );
+        },
       ),
     );
   }
@@ -153,7 +140,8 @@ class Layout extends StatelessWidget {
       },
       builder: (context, state) {
         if (state is! Authenticated) {
-          return const SplashPage(shouldAutoRedirect: false);
+          final currentRoute = GoRouterState.of(context).matchedLocation;
+          return InitialPage(redirect: currentRoute);
         }
         final isCustomer = state.data.role == "CUSTOMER";
         return Stack(

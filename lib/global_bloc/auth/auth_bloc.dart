@@ -1,14 +1,15 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/global_bloc/socket/socket_provider.dart';
 import 'package:taste_tube/injection.dart';
 import 'package:taste_tube/storage.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
 
-part 'event.dart';
-part 'state.dart';
+part 'auth_event.dart';
+part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final secureStorage = getIt<SecureStorage>();
@@ -36,7 +37,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final authData = AuthData.fromJson(response.data);
       http.options.headers['Authorization'] = 'Bearer ${authData.accessToken}';
       emit(Authenticated(authData));
-      getIt<SocketProvider>().initSocket(response.data.userId);
+      getIt<SocketProvider>().initSocket(authData.userId);
       UserDataUtil.refreshData();
     } on DioException {
       emit(Unauthenticated());
@@ -45,9 +46,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  void _login(LoginEvent event, Emitter<AuthState> emit) {
+  void _login(LoginEvent event, Emitter<AuthState> emit) async {
     emit(Authenticated(event.data));
-    secureStorage.setRefreshToken(event.refreshToken);
+    await secureStorage.setRefreshToken(event.refreshToken);
     http.options.headers['Authorization'] = 'Bearer ${event.data.accessToken}';
     getIt<SocketProvider>().initSocket(event.data.userId);
     UserDataUtil.refreshData();
@@ -55,6 +56,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   FutureOr<void> _logout(LogoutEvent event, Emitter<AuthState> emit) async {
     getIt<SocketProvider>().disconnectSocket();
+    FacebookAuth.instance.logOut();
+    await FacebookAuth.instance.logOut();
     await secureStorage.clearRefreshToken();
     http.options.headers.remove('Authorization');
     emit(Unauthenticated());

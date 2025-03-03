@@ -120,12 +120,7 @@ class _SingleVideoState extends State<SingleVideo>
               : GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              ProfilePage.provider(widget.video.targetUserId!)),
-                    );
+                    context.push('/user/${widget.video.targetUserId!}');
                   },
                   child: Container(
                     margin: const EdgeInsets.only(bottom: 15),
@@ -209,14 +204,7 @@ class _SingleVideoState extends State<SingleVideo>
                       Navigator.of(context).pop();
                       return;
                     }
-                    // Must use Navigator.push instead of go_router
-                    // because push a same shellroute onto itself throw exception
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              ProfilePage.provider(widget.video.ownerId)),
-                    );
+                    context.push('/user/${widget.video.ownerId}');
                   },
                   child: Row(
                     children: [

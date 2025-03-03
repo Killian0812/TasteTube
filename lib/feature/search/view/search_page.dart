@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:taste_tube/feature/profile/view/profile_page.dart';
+import 'package:go_router/go_router.dart';
 import 'package:taste_tube/feature/search/view/search_cubit.dart';
 
 class SearchPage extends StatefulWidget {
@@ -77,16 +77,13 @@ class _SearchPageState extends State<SearchPage> {
               itemBuilder: (context, index) {
                 final user = users[index];
                 return ListTile(
+                  key: ValueKey(user.id),
                   leading: CircleAvatar(
                       radius: 50, backgroundImage: NetworkImage(user.image!)),
                   title: Text(user.username),
                   subtitle: Text(user.email!),
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ProfilePage.provider(user.id)),
-                    );
+                    context.pushReplacement('/user/${user.id}');
                   },
                 );
               },

@@ -6,7 +6,7 @@ final GoRouter _router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => const SplashPage(),
+      builder: (context, state) => const InitialPage(),
     ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, shell) => Layout(
@@ -46,14 +46,13 @@ final GoRouter _router = GoRouter(
           routes: [
             GoRoute(
               path: '/user',
-              builder: (context, state) => const ProfileSkeletonPage(),
+              builder: (context, state) => const OwnerProfilePage(),
             ),
             GoRoute(
               path: '/user/:userId',
               name: 'profile',
-              builder: (context, state) => ProfilePage.provider(
-                state.pathParameters['userId'] ?? '',
-              ),
+              builder: (context, state) =>
+                  ProfilePage.provider(state.pathParameters['userId'] ?? ''),
             ),
           ],
         ),

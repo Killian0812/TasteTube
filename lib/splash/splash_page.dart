@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:taste_tube/auth/view/register_page.ext.dart';
 import 'package:taste_tube/common/constant.dart';
-import 'package:taste_tube/global_bloc/auth/bloc.dart';
+import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
 
 class SplashPage extends StatefulWidget {
-  final bool shouldAutoRedirect;
-  const SplashPage({super.key, this.shouldAutoRedirect = true});
+  const SplashPage({super.key});
 
   @override
   State<SplashPage> createState() => _SplashPageState();
@@ -43,39 +40,16 @@ class _SplashPageState extends State<SplashPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocConsumer<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (!widget.shouldAutoRedirect) return;
-          if (state is Authenticated) {
-            if (state.data.role == 'RESTAURANT') {
-              context.go('/store');
-            } else if (state.data.role == 'CUSTOMER') {
-              context.go('/home');
-            } else {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        AccountTypeSelectionPage.provider(state.data.userId)),
-              );
-            }
-          } else if (state is Unauthenticated) {
-            context.go('/login');
-          }
-        },
-        builder: (context, state) {
-          return Center(
-            child: ScaleTransition(
-              scale: _animation,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(AssetPath.tastetubeInverted),
-                ],
-              ),
-            ),
-          );
-        },
+      body: Center(
+        child: ScaleTransition(
+          scale: _animation,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(AssetPath.tastetubeInverted),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -13,6 +13,7 @@ import 'package:taste_tube/feature/shop/view/quantity_dialog.dart';
 import 'package:taste_tube/global_bloc/download/download_cubit.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_data/product/product.dart';
+// ignore: unused_import
 import 'package:taste_tube/feature/profile/view/profile_page.dart';
 import 'package:taste_tube/global_data/watch/comment.dart';
 import 'package:taste_tube/global_data/watch/video.dart';

@@ -79,8 +79,10 @@ class AuthRepository {
           response.data, jwtFromHeader(response.headers) ?? '');
       return Right(loginResponse);
     } on DioException catch (e) {
+      await FacebookAuth.instance.logOut();
       return Left(ApiError.fromDioException(e));
     } catch (e) {
+      await FacebookAuth.instance.logOut();
       return Left(ApiError(500, e.toString()));
     }
   }
@@ -104,8 +106,10 @@ class AuthRepository {
           response.data, jwtFromHeader(response.headers) ?? '');
       return Right(loginResponse);
     } on DioException catch (e) {
+      await getIt<GoogleSignIn>().signOut();
       return Left(ApiError.fromDioException(e));
     } catch (e) {
+      await getIt<GoogleSignIn>().signOut();
       return Left(ApiError(500, e.toString()));
     }
   }

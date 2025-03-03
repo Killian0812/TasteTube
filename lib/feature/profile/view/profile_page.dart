@@ -15,7 +15,7 @@ import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/global_data/user/user.dart';
 import 'package:taste_tube/feature/profile/view/profile_cubit.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
-import 'package:taste_tube/global_bloc/auth/bloc.dart';
+import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
 import 'package:taste_tube/injection.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
 
@@ -161,6 +161,7 @@ class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   static Widget provider(String userId) => MultiBlocProvider(
+        key: ValueKey(userId),
         providers: [
           BlocProvider(create: (context) => ProfileCubit(userId)..init()),
           BlocProvider(

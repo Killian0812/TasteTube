@@ -6,6 +6,7 @@ import 'package:taste_tube/feature/shop/view/cart_page.dart';
 import 'package:taste_tube/feature/shop/view/quantity_dialog.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_data/product/product.dart';
+// ignore: unused_import
 import 'package:taste_tube/feature/profile/view/profile_page.dart';
 import 'package:taste_tube/utils/phone_call.util.dart';
 
@@ -141,11 +142,7 @@ class SingleShopProductPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
       child: GestureDetector(
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ProfilePage.provider(product.userId)),
-          );
+          context.push('/user/${product.userId}');
         },
         child: Row(children: [
           CircleAvatar(
