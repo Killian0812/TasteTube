@@ -15,6 +15,7 @@ final GoRouter _router = GoRouter(
       ),
       branches: [
         StatefulShellBranch(
+          preload: true,
           routes: [
             GoRoute(
               path: '/home',
@@ -23,6 +24,7 @@ final GoRouter _router = GoRouter(
           ],
         ),
         StatefulShellBranch(
+          preload: true,
           routes: [
             GoRoute(
               path: '/store',
@@ -35,6 +37,7 @@ final GoRouter _router = GoRouter(
           ],
         ),
         StatefulShellBranch(
+          preload: true,
           routes: [
             GoRoute(
               path: '/inbox',

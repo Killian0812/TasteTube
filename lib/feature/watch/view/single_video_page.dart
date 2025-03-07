@@ -90,15 +90,24 @@ class _SingleVideoState extends State<SingleVideo>
                       ),
                     ),
                   ),
-                  _videoInfo(),
-                  _reviewTarget(),
-                  // Center play/pause icon
-                  _videoPauseButton(),
-                  // Video Scrub
-                  _videoScrubber(),
-                  // Time indicator
-                  if (_isScrubbing || !_videoController.value.isPlaying)
-                    _timeIndicator(),
+
+                  // Video controls
+                  SafeArea(
+                      child: Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      _videoInfo(),
+                      _reviewTarget(),
+                      // Center play/pause icon
+                      _videoPauseButton(),
+                      // Video Scrub
+                      _videoScrubber(),
+                      // Time indicator
+                      if (_isScrubbing || !_videoController.value.isPlaying)
+                        _timeIndicator(),
+                    ],
+                  )),
+
                   // Video interactions
                   _videoLikes(),
                   _videoComments(),

@@ -29,48 +29,47 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(kToolbarHeight),
-          child: Material(
-            color: Colors.transparent,
-            type: MaterialType.transparency,
-            child: Stack(
-              alignment: Alignment.topRight,
-              children: [
-                TabBar(
-                  labelColor: Colors.white,
-                  unselectedLabelColor: CommonColor.greyOutTextColor,
-                  controller: _tabController,
-                  indicatorColor: Colors.white,
-                  dividerColor: Colors.transparent,
-                  tabs: const [
-                    Tab(text: 'Explore'),
-                    Tab(text: 'Reviews'),
-                  ],
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      extendBody: true,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: Material(
+          color: Colors.transparent,
+          type: MaterialType.transparency,
+          child: Stack(
+            alignment: Alignment.topRight,
+            children: [
+              TabBar(
+                labelColor: Colors.white,
+                unselectedLabelColor: CommonColor.greyOutTextColor,
+                controller: _tabController,
+                indicatorColor: Colors.white,
+                dividerColor: Colors.transparent,
+                tabs: const [
+                  Tab(text: 'Explore'),
+                  Tab(text: 'Reviews'),
+                ],
+              ),
+              IconButton(
+                onPressed: () {
+                  context.push('/search');
+                },
+                icon: const Icon(
+                  Icons.search,
+                  color: Colors.white,
                 ),
-                IconButton(
-                  onPressed: () {
-                    context.push('/search');
-                  },
-                  icon: const Icon(
-                    Icons.search,
-                    color: Colors.white,
-                  ),
-                )
-              ],
-            ),
+              )
+            ],
           ),
         ),
-        body: TabBarView(
-          controller: _tabController,
-          children: const [
-            ContentTab(),
-            ReviewsPage(),
-          ],
-        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: const [
+          ContentTab(),
+          ReviewsPage(),
+        ],
       ),
     );
   }
