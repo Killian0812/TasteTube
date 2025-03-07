@@ -24,6 +24,7 @@ class Order {
   final UserBasic user;
   final String shopId;
   final int orderNum;
+  final String trackingId;
   final String orderId;
   final double total;
   final Address address;
@@ -38,6 +39,7 @@ class Order {
   const Order({
     required this.id,
     required this.orderId,
+    required this.trackingId,
     required this.user,
     required this.shopId,
     required this.orderNum,
@@ -56,6 +58,7 @@ class Order {
     return Order(
       id: json['_id'],
       orderId: json['orderId'],
+      trackingId: json['trackingId'],
       user: UserBasic.fromJson(json['userId']),
       shopId: json['shopId'],
       orderNum: json['orderNum'],

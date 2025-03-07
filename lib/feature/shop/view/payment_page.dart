@@ -35,7 +35,7 @@ class PaymentPage extends StatefulWidget {
 }
 
 class _PaymentPageState extends State<PaymentPage> {
-  String? _selectedPaymentMethod = 'COD';
+  PaymentMethod _selectedPaymentMethod = PaymentMethod.COD;
   String _notes = '';
   Address? selectedAddress;
 
@@ -57,7 +57,7 @@ class _PaymentPageState extends State<PaymentPage> {
               context.read<OrderCubit>().createOrder(
                     selectedItems.map((e) => e.id).toList(),
                     selectedAddress!.id,
-                    _selectedPaymentMethod!,
+                    _selectedPaymentMethod.name,
                     _notes,
                     state.pid,
                   );
@@ -190,7 +190,7 @@ class _PaymentPageState extends State<PaymentPage> {
           const Text('Payment Method',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ...PaymentMethod.values.map(
-            (e) => RadioListTile<String>(
+            (e) => RadioListTile<PaymentMethod>(
               title: Row(
                 children: [
                   Image.asset(e.assetPath, width: 24, height: 24),
@@ -198,9 +198,10 @@ class _PaymentPageState extends State<PaymentPage> {
                   Text(e.displayName),
                 ],
               ),
-              value: e.value,
+              value: e,
               groupValue: _selectedPaymentMethod,
-              onChanged: (String? value) {
+              onChanged: (PaymentMethod? value) {
+                if (value == null) return;
                 setState(() {
                   _selectedPaymentMethod = value;
                 });
@@ -267,12 +268,9 @@ class _PaymentPageState extends State<PaymentPage> {
                   return CommonButton(
                     isLoading: state is OrderLoading,
                     onPressed: () {
-                      if (_selectedPaymentMethod == "VNPAY") {
-                        context
-                            .read<PaymentCubit>()
-                            .createPayment(finalAmount, currency);
-                        return;
-                      }
+                      context.read<PaymentCubit>().createPayment(
+                          _selectedPaymentMethod, finalAmount, currency);
+                      return;
                     },
                     text: 'Order',
                   );

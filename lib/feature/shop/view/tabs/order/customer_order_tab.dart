@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/common/color.dart';
-import 'package:taste_tube/common/constant.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/shop/view/tabs/shopping/single_shop_product_page.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/order.dart';
-import 'package:taste_tube/utils/user_data.util.dart';
 
 class CustomerOrderTab extends StatelessWidget {
   const CustomerOrderTab({super.key});
@@ -69,16 +67,14 @@ class _OrderCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  UserDataUtil.getUserRole() == AccountType.restaurant.value()
-                      ? 'Order #${order.orderNum} - ${order.orderId}'
-                      : 'Order #${order.orderId}',
+                  'Order #${order.trackingId}',
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(width: 10),
                 IconButton(
                   icon: const Icon(Icons.copy),
                   onPressed: () {
-                    Clipboard.setData(ClipboardData(text: order.orderId));
+                    Clipboard.setData(ClipboardData(text: order.trackingId));
                     ToastService.showToast(context,
                         'Order ID copied to clipboard', ToastType.info);
                   },

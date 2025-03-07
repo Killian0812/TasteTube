@@ -74,12 +74,16 @@ class _OrderCardState extends State<_OrderCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text(
+              'Order #${order.orderId}',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Order #${order.orderNum} - ${order.orderId}',
+                  'ID: ${order.trackingId}',
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(width: 10),

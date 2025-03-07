@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taste_tube/feature/payment/data/payment_data.dart';
 import 'package:taste_tube/feature/payment/domain/payment_repo.dart';
 import 'package:taste_tube/global_bloc/socket/socket_provider.dart';
 import 'package:taste_tube/injection.dart';
@@ -47,8 +48,16 @@ class PaymentCubit extends Cubit<PaymentState> {
     socketProvider.addListener(_onSocketEvent);
   }
 
-  Future<void> createPayment(double amount, String currency) async {
+  Future<void> createPayment(
+    PaymentMethod paymentMethod,
+    double amount,
+    String currency,
+  ) async {
     emit(PaymentLoading());
+    if (paymentMethod == PaymentMethod.COD) {
+      emit(PaymentSuccess(''));
+      return;
+    }
     try {
       final result = await repository.getPaymentUrl(amount, currency);
       result.fold(
