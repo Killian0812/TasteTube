@@ -11,6 +11,7 @@ import 'package:taste_tube/feature/shop/view/tabs/address/address_cubit.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/address.dart';
+import 'package:taste_tube/injection.dart';
 import 'package:taste_tube/utils/location.util.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -79,9 +80,10 @@ class _PaymentPageState extends State<PaymentPage> {
               if (state is OrderSuccess) {
                 ToastService.showToast(
                     context, state.success, ToastType.success);
-                context.read<OrderCubit>().getOrders();
-                context.read<CartCubit>().getCart();
+                getIt<OrderCubit>().getOrders();
+                getIt<CartCubit>().getCart();
                 Navigator.pop(context);
+                return;
               }
               if (state is OrderError) {
                 ToastService.showToast(context, state.error, ToastType.warning);
@@ -265,6 +267,8 @@ class _PaymentPageState extends State<PaymentPage> {
               BlocBuilder<OrderCubit, OrderState>(
                 builder: (context, state) {
                   return CommonButton(
+                    isDisabled: _selectedPaymentMethod ==
+                        PaymentMethod.ZALOPAY, // Temporary disable
                     isLoading: state is OrderLoading,
                     onPressed: () {
                       context.read<PaymentCubit>().createPayment(

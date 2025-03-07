@@ -200,7 +200,6 @@ class SingleShopProductPage extends StatelessWidget {
                 context.read<CartCubit>().addToCart(product, quantity);
               },
               style: OutlinedButton.styleFrom(
-                  backgroundColor: Colors.white,
                   side: const BorderSide(color: CommonColor.activeBgColor)),
               child: const Text(
                 'Add to Cart',

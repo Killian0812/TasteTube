@@ -96,10 +96,12 @@ class _SingleVideoState extends State<SingleVideo>
                       child: Stack(
                     alignment: Alignment.bottomCenter,
                     children: [
-                      _videoInfo(),
-                      _reviewTarget(),
                       // Center play/pause icon
                       _videoPauseButton(),
+
+                      _videoInfo(),
+                      _reviewTarget(),
+
                       // Video Scrub
                       _videoScrubber(),
                       // Time indicator
@@ -463,7 +465,6 @@ class _SingleVideoState extends State<SingleVideo>
                                           }
                                         },
                                         style: OutlinedButton.styleFrom(
-                                            backgroundColor: Colors.transparent,
                                             side: const BorderSide(
                                                 color:
                                                     CommonColor.activeBgColor)),
