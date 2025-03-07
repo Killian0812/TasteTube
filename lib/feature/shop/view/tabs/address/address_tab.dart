@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/shop/view/tabs/address/address_cubit.dart';
@@ -64,7 +65,8 @@ class AddressTab extends StatelessWidget {
       floatingActionButton: FloatingActionButton.extended(
         label: const Text('Add new address'),
         icon: const Icon(Icons.add_location_alt),
-        onPressed: () => _showAddressForm(context),
+        // onPressed: () => _showAddressForm(context),
+        onPressed: () => context.push("/location"),
       ),
     );
   }

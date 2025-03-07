@@ -72,5 +72,7 @@
 			<string>sms</string>
 			<string>tel</string>
 		</array>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>This app needs location access to show your current position</string>
 	</dict>
 </plist>
