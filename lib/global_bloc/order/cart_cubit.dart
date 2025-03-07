@@ -63,6 +63,16 @@ class CartSelectItemUpdated extends CartState {
         );
 }
 
+class AddedToCartAndReadyToPay extends CartState {
+  final List<String> updateItemList;
+
+  const AddedToCartAndReadyToPay(Cart cart, this.updateItemList)
+      : super(
+          cart: cart,
+          selectedItems: updateItemList,
+        );
+}
+
 class CartCubit extends Cubit<CartState> {
   final CartRepository repository = getIt<CartRepository>();
 
@@ -178,5 +188,33 @@ class CartCubit extends Cubit<CartState> {
       if (!updateItemList.contains(item.id)) updateItemList.add(item.id);
     }
     emit(CartSelectItemUpdated(state.cart, updateItemList));
+  }
+
+  Future<void> addToCartAndPayImmediate(Product product, int quantity) async {
+    emit(CartLoading(state.cart, state.selectedItems));
+    try {
+      final result = await repository.addToCart(product, quantity);
+      result.fold(
+        (error) => emit(CartError(
+          state.cart,
+          state.selectedItems,
+          error.message ?? 'Error add item to cart',
+        )),
+        (item) {
+          final updatedCart = state.cart.clone();
+          int index =
+              updatedCart.items.indexWhere((e) => e.product.id == product.id);
+          if (index == -1) {
+            updatedCart.items.add(item);
+          } else {
+            updatedCart.items[index] = item;
+          }
+          final updateItemList = [item.id];
+          emit(AddedToCartAndReadyToPay(updatedCart, updateItemList));
+        },
+      );
+    } catch (e) {
+      emit(CartError(state.cart, state.selectedItems, e.toString()));
+    }
   }
 }

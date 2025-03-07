@@ -299,6 +299,9 @@ class _SingleVideoState extends State<SingleVideo>
             if (state is CartSuccess) {
               ToastService.showToast(context, state.success, ToastType.success);
             }
+            if (state is AddedToCartAndReadyToPay) {
+              context.push("/payment");
+            }
           },
           child: FractionallySizedBox(
             heightFactor: 0.6,
@@ -465,8 +468,21 @@ class _SingleVideoState extends State<SingleVideo>
                                     const SizedBox(width: 10),
                                     Expanded(
                                       child: ElevatedButton(
-                                        onPressed: () {
-                                          // Buy now functionality
+                                        onPressed: () async {
+                                          int? quantity = await showDialog<int>(
+                                            context: context,
+                                            builder: (context) =>
+                                                const QuantityInputDialog(),
+                                          );
+                                          if (!context.mounted ||
+                                              quantity == null ||
+                                              quantity < 1) {
+                                            return;
+                                          }
+                                          context
+                                              .read<CartCubit>()
+                                              .addToCartAndPayImmediate(
+                                                  product, quantity);
                                         },
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor:

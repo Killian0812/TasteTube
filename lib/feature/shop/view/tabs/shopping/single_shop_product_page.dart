@@ -6,8 +6,6 @@ import 'package:taste_tube/feature/shop/view/cart_page.dart';
 import 'package:taste_tube/feature/shop/view/quantity_dialog.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_data/product/product.dart';
-// ignore: unused_import
-import 'package:taste_tube/feature/profile/view/profile_page.dart';
 import 'package:taste_tube/utils/phone_call.util.dart';
 
 class SingleShopProductPage extends StatelessWidget {
@@ -22,13 +20,20 @@ class SingleShopProductPage extends StatelessWidget {
         centerTitle: true,
         actions: const [CartButton()],
       ),
-      body: ListView(
-        children: [
-          _ProductImages(images: product.images),
-          _buildProductDetails(context),
-          _buildOwnerInfo(context),
-          _buildActionButtons(context),
-        ],
+      body: BlocListener<CartCubit, CartState>(
+        listener: (context, state) {
+          if (state is AddedToCartAndReadyToPay) {
+            context.push("/payment");
+          }
+        },
+        child: ListView(
+          children: [
+            _ProductImages(images: product.images),
+            _buildProductDetails(context),
+            _buildOwnerInfo(context),
+            _buildActionButtons(context),
+          ],
+        ),
       ),
     );
   }
@@ -189,10 +194,10 @@ class SingleShopProductPage extends StatelessWidget {
                   context: context,
                   builder: (context) => const QuantityInputDialog(),
                 );
-
-                if (context.mounted && quantity != null) {
-                  context.read<CartCubit>().addToCart(product, quantity);
+                if (!context.mounted || quantity == null || quantity < 1) {
+                  return;
                 }
+                context.read<CartCubit>().addToCart(product, quantity);
               },
               style: OutlinedButton.styleFrom(
                   backgroundColor: Colors.white,
@@ -207,7 +212,16 @@ class SingleShopProductPage extends StatelessWidget {
           Expanded(
             child: ElevatedButton(
               onPressed: () async {
-                // TODO: create order immedately
+                int? quantity = await showDialog<int>(
+                  context: context,
+                  builder: (context) => const QuantityInputDialog(),
+                );
+                if (!context.mounted || quantity == null || quantity < 1) {
+                  return;
+                }
+                context
+                    .read<CartCubit>()
+                    .addToCartAndPayImmediate(product, quantity);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: CommonColor.activeBgColor,

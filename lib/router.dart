@@ -59,6 +59,10 @@ final GoRouter _router = GoRouter(
       ],
     ),
     GoRoute(
+      path: '/payment',
+      builder: (context, state) => PaymentPage.provider(),
+    ),
+    GoRoute(
         path: '/shop/:shopId',
         name: 'single-shop',
         builder: (context, state) {
