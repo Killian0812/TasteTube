@@ -182,7 +182,7 @@ class _OrderCardState extends State<_OrderCard> {
                   Text(
                     _isExpanded ? 'Hide Customer' : 'Show Customer',
                     style: TextStyle(
-                      color: Theme.of(context).primaryColor,
+                      color: Theme.of(context).hintColor,
                       decoration: TextDecoration.underline,
                     ),
                   ),

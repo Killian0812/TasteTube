@@ -1,3 +1,4 @@
+import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -83,6 +84,8 @@ class MyApp extends StatelessWidget {
             title: 'TasteTube',
             routerConfig: _router,
             theme: ThemeData.light().copyWith(
+              primaryColor: Colors.black,
+              hintColor: Colors.amber[300],
               textTheme: Theme.of(context).textTheme.apply(fontFamily: 'Ganh'),
               scaffoldBackgroundColor: Colors.white,
               textSelectionTheme:
@@ -94,6 +97,7 @@ class MyApp extends StatelessWidget {
                 unselectedLabelStyle: CommonTextStyle.boldItalic,
               ),
               bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+                backgroundColor: CommonColor.lightGrey,
                 unselectedItemColor: Colors.black,
                 selectedItemColor: CommonColor.activeBgColor,
                 selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -106,10 +110,12 @@ class MyApp extends StatelessWidget {
                 iconTheme: IconThemeData(color: Colors.black),
               ),
               floatingActionButtonTheme: const FloatingActionButtonThemeData(
-                backgroundColor: Colors.white,
+                backgroundColor: CommonColor.activeBgColor,
+                foregroundColor: Colors.white,
               ),
             ),
             darkTheme: ThemeData.dark().copyWith(
+              primaryColor: Colors.white,
               textTheme: Theme.of(context)
                   .textTheme
                   .apply(fontFamily: 'Ganh', bodyColor: Colors.white),
@@ -123,6 +129,7 @@ class MyApp extends StatelessWidget {
                 unselectedLabelStyle: CommonTextStyle.boldItalic,
               ),
               bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+                backgroundColor: CommonColor.darkGrey,
                 unselectedItemColor: Colors.white,
                 selectedItemColor: CommonColor.activeBgColor,
                 selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -135,7 +142,8 @@ class MyApp extends StatelessWidget {
                 iconTheme: IconThemeData(color: Colors.white),
               ),
               floatingActionButtonTheme: const FloatingActionButtonThemeData(
-                backgroundColor: Color.fromARGB(255, 20, 18, 24),
+                backgroundColor: CommonColor.activeBgColor,
+                foregroundColor: Colors.white,
               ),
             ),
             themeMode: getIt<AppSettings>().getTheme,
@@ -182,64 +190,52 @@ class Layout extends StatelessWidget {
           alignment: Alignment.center,
           children: [
             Scaffold(
-                resizeToAvoidBottomInset: false,
-                body: shell,
-                bottomNavigationBar: BottomNavigationBar(
-                  currentIndex: currentIndex,
-                  onTap: (index) {
-                    final appSettings = getIt<AppSettings>();
-                    if (index == 0 && appSettings.getTheme != ThemeMode.dark) {
-                      appSettings.setTheme(ThemeMode.dark);
-                    } else if (appSettings.getTheme != ThemeMode.light) {
-                      appSettings.setTheme(ThemeMode.light);
-                    }
-
-                    if (index == 1 && isCustomer) {
-                      context.go('/shop');
-                      return;
-                    }
-                    shell.goBranch(index);
-                  },
-                  items: [
-                    const BottomNavigationBarItem(
-                      icon: Icon(Icons.home),
-                      label: 'Home',
-                    ),
-                    isCustomer
-                        ? const BottomNavigationBarItem(
-                            icon: Icon(Icons.shopping_basket_rounded),
-                            label: 'Shopping',
-                          )
-                        : const BottomNavigationBarItem(
-                            icon: Icon(Icons.store),
-                            label: 'Store',
-                          ),
-                    const BottomNavigationBarItem(
-                      icon: Icon(Icons.inbox),
-                      label: 'Inbox',
-                    ),
-                    const BottomNavigationBarItem(
-                      icon: Icon(Icons.person),
-                      label: 'Profile',
-                    ),
-                  ],
-                ),
-                floatingActionButtonLocation:
-                    FloatingActionButtonLocation.centerDocked,
-                floatingActionButton: Container(
-                    margin: const EdgeInsets.only(top: 20),
-                    child: FloatingActionButton(
-                      onPressed: () {
-                        context.push('/camera');
-                      },
-                      shape: RoundedRectangleBorder(
-                        side:
-                            const BorderSide(color: CommonColor.activeBgColor),
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                      child: const Icon(Icons.add,
-                          color: CommonColor.activeBgColor),
-                    ))),
+              resizeToAvoidBottomInset: false,
+              body: shell,
+              extendBody: true,
+              extendBodyBehindAppBar: true,
+              bottomNavigationBar: AnimatedBottomNavigationBar(
+                backgroundColor:
+                    Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+                activeColor: Theme.of(context)
+                    .bottomNavigationBarTheme
+                    .selectedItemColor,
+                inactiveColor: Theme.of(context)
+                    .bottomNavigationBarTheme
+                    .unselectedItemColor,
+                icons: isCustomer
+                    ? [
+                        Icons.home,
+                        Icons.shopping_basket_rounded,
+                        Icons.inbox,
+                        Icons.person,
+                      ]
+                    : [
+                        Icons.home,
+                        Icons.store,
+                        Icons.inbox,
+                        Icons.person,
+                      ],
+                activeIndex: currentIndex,
+                gapLocation: GapLocation.center,
+                notchSmoothness: NotchSmoothness.softEdge,
+                onTap: (index) {
+                  if (index == 1 && isCustomer) {
+                    context.go('/shop');
+                    return;
+                  }
+                  shell.goBranch(index);
+                },
+              ),
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.centerDocked,
+              floatingActionButton: FloatingActionButton(
+                onPressed: () => context.push('/camera'),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0)),
+                child: const Icon(Icons.add, color: Colors.white),
+              ),
+            ),
             DownloadDialog(),
           ],
         );

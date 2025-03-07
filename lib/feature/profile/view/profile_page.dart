@@ -17,6 +17,7 @@ import 'package:taste_tube/feature/profile/view/profile_cubit.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
 import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
 import 'package:taste_tube/injection.dart';
+import 'package:taste_tube/providers.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
 
 part 'profile_page.ext.dart';
@@ -201,6 +202,8 @@ class ProfilePage extends StatelessWidget {
           );
         }
         final isRestaurant = state.user!.role == AccountType.restaurant.value();
+        final appSettings = getIt<AppSettings>();
+
         return Scaffold(
           appBar: AppBar(
             centerTitle: true,
@@ -211,9 +214,28 @@ class ProfilePage extends StatelessWidget {
                   padding: const EdgeInsets.only(right: 20),
                   child: PopupMenuButton<String>(
                     icon: const Icon(Icons.menu),
-                    onSelected: (result) async {
-                      switch (result) {
-                        case 'Logout':
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(appSettings.getTheme == ThemeMode.dark
+                                ? Icons.light_mode
+                                : Icons.dark_mode),
+                            const SizedBox(width: 8), // Add some spacing
+                            Text(appSettings.getTheme == ThemeMode.dark
+                                ? 'Light'
+                                : 'Dark'),
+                          ],
+                        ),
+                        onTap: () {
+                          appSettings.flipThemeMode();
+                        },
+                      ),
+                      PopupMenuItem<String>(
+                        value: 'Logout',
+                        child: Text('Logout'),
+                        onTap: () async {
                           bool? confirmed = await showConfirmDialog(
                             context,
                             title: "Confirm logout",
@@ -227,13 +249,7 @@ class ProfilePage extends StatelessWidget {
                             authBloc.add(LogoutEvent());
                             context.go('/login');
                           }
-                          break;
-                      }
-                    },
-                    itemBuilder: (context) => [
-                      const PopupMenuItem<String>(
-                        value: 'Logout',
-                        child: Text('Logout'),
+                        },
                       ),
                     ],
                   ),

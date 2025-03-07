@@ -44,12 +44,21 @@ class TasteTubeProvider extends StatelessWidget {
 }
 
 class AppSettings extends ChangeNotifier {
-  ThemeMode theme = ThemeMode.light;
+  ThemeMode theme = ThemeMode.dark;
 
   ThemeMode get getTheme => theme;
 
   void setTheme(ThemeMode theme) {
     this.theme = theme;
+    notifyListeners();
+  }
+
+  void flipThemeMode() {
+    if (theme == ThemeMode.light) {
+      theme = ThemeMode.dark;
+    } else {
+      theme = ThemeMode.light;
+    }
     notifyListeners();
   }
 

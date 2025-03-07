@@ -69,7 +69,6 @@ class _ShopPageState extends State<ShopPage> {
             centerTitle: true,
             actions: const [CartButton()],
             bottom: const TabBar(
-              labelColor: Colors.black,
               indicatorColor: CommonColor.activeBgColor,
               tabs: [
                 Tab(icon: Icon(Icons.shopping_basket_rounded), text: 'Shop'),
