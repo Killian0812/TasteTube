@@ -11,9 +11,8 @@ import 'package:taste_tube/feature/shop/view/tabs/address/address_cubit.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/address.dart';
+import 'package:taste_tube/utils/location.util.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-
-part 'payment_page.ext.dart';
 
 double deliveryFee = 0; // Example only
 double discount = 0;
@@ -56,7 +55,7 @@ class _PaymentPageState extends State<PaymentPage> {
 
               context.read<OrderCubit>().createOrder(
                     selectedItems.map((e) => e.id).toList(),
-                    selectedAddress!.id,
+                    selectedAddress!.id!,
                     _selectedPaymentMethod.name,
                     _notes,
                     state.pid,
@@ -165,7 +164,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 ],
                 onChanged: (value) {
                   if (value == null) {
-                    showAddressForm(context);
+                    pickLocationThenShowAddressForm(context);
                   } else {
                     setState(() {
                       selectedAddress = value;

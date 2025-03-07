@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/shop/view/tabs/address/address_cubit.dart';
-import 'package:taste_tube/global_data/order/address.dart';
+import 'package:taste_tube/utils/location.util.dart';
 
 class AddressTab extends StatelessWidget {
   const AddressTab({super.key});
@@ -39,7 +38,7 @@ class AddressTab extends StatelessWidget {
                       IconButton(
                         icon: const Icon(Icons.edit),
                         onPressed: () {
-                          _showAddressForm(context, address: address);
+                          showAddressForm(context, address);
                         },
                       ),
                       IconButton(
@@ -65,84 +64,8 @@ class AddressTab extends StatelessWidget {
       floatingActionButton: FloatingActionButton.extended(
         label: const Text('Add new address'),
         icon: const Icon(Icons.add_location_alt),
-        // onPressed: () => _showAddressForm(context),
-        onPressed: () => context.push("/location"),
+        onPressed: () => pickLocationThenShowAddressForm(context),
       ),
-    );
-  }
-
-  void _showAddressForm(BuildContext context, {Address? address}) {
-    final formKey = GlobalKey<FormState>();
-    final cubit = context.read<AddressCubit>();
-    final nameController = TextEditingController(text: address?.name ?? '');
-    final phoneController = TextEditingController(text: address?.phone ?? '');
-    final valueController = TextEditingController(text: address?.value ?? '');
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(address == null ? "Add Address" : "Edit Address"),
-          content: Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: nameController,
-                  keyboardType: TextInputType.name,
-                  decoration: const InputDecoration(labelText: 'Receiver name'),
-                  validator: (value) =>
-                      value!.isEmpty ? 'Please enter a name' : null,
-                ),
-                TextFormField(
-                  controller: phoneController,
-                  keyboardType: TextInputType.phone,
-                  decoration:
-                      const InputDecoration(labelText: 'Receiver phone'),
-                  validator: (value) =>
-                      value!.isEmpty ? 'Please enter a phone number' : null,
-                ),
-                TextFormField(
-                  controller: valueController,
-                  keyboardType: TextInputType.streetAddress,
-                  decoration: const InputDecoration(labelText: 'Address'),
-                  validator: (value) =>
-                      value!.isEmpty ? 'Please enter an address' : null,
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                if (formKey.currentState!.validate()) {
-                  if (address == null) {
-                    cubit.addAddress(
-                      nameController.text,
-                      phoneController.text,
-                      valueController.text,
-                    );
-                  } else {
-                    cubit.updateAddress(
-                      address.id,
-                      nameController.text,
-                      phoneController.text,
-                      valueController.text,
-                    );
-                  }
-                  Navigator.of(context).pop();
-                }
-              },
-              child: const Text('Save'),
-            ),
-          ],
-        );
-      },
     );
   }
 }

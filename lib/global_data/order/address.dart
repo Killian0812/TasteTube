@@ -1,20 +1,20 @@
 class Address {
-  final String id;
+  final String? id;
   final String userId;
   final String name;
   final String phone;
   final String value;
-  final double? latitude;
-  final double? longitude;
+  final double latitude;
+  final double longitude;
 
   Address({
-    required this.id,
+    this.id,
     required this.userId,
     required this.name,
     required this.phone,
     required this.value,
-    this.latitude,
-    this.longitude,
+    required this.latitude,
+    required this.longitude,
   });
 
   factory Address.fromJson(Map<String, dynamic> json) {
@@ -24,12 +24,8 @@ class Address {
       name: json['name'],
       phone: json['phone'],
       value: json['value'],
-      latitude: json['latitude'] != null
-          ? (json['latitude'] as num).toDouble()
-          : null,
-      longitude: json['longitude'] != null
-          ? (json['longitude'] as num).toDouble()
-          : null,
+      latitude: (json['latitude'] as num).toDouble(),
+      longitude: (json['longitude'] as num).toDouble(),
     );
   }
 }

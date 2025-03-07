@@ -56,34 +56,10 @@ class AddressCubit extends Cubit<AddressState> {
     }
   }
 
-  Future<void> addAddress(
-    String name,
-    String phone,
-    String value,
-  ) async {
-    emit(AddressLoading(state.addresses));
-    try {
-      final result = await repository.addAddress(name, phone, value);
-      result.fold(
-        (error) => emit(AddressError(
-          state.addresses,
-          error.message ?? 'Failed to add address',
-        )),
-        (newAddress) {
-          final updatedAddresses = [...state.addresses];
-          updatedAddresses.add(newAddress);
-          emit(AddressAdded(updatedAddresses));
-        },
-      );
-    } catch (e) {
-      emit(AddressError(state.addresses, "Failed to add address"));
-    }
-  }
-
   Future<void> deleteAddress(Address address) async {
     emit(AddressLoading(state.addresses));
     try {
-      final result = await repository.deleteAddress(address.id);
+      final result = await repository.deleteAddress(address.id!);
       result.fold(
         (error) => emit(AddressError(
           state.addresses,
@@ -100,29 +76,41 @@ class AddressCubit extends Cubit<AddressState> {
     }
   }
 
-  Future<void> updateAddress(
-    String id,
-    String name,
-    String phone,
-    String value,
-  ) async {
+  Future<void> addOrUpdateAddress({
+    String? id,
+    required String name,
+    required String phone,
+    required String value,
+    required double latitude,
+    required double longitude,
+  }) async {
     emit(AddressLoading(state.addresses));
     try {
-      final result = await repository.updateAddress(id, name, phone, value);
+      final result = await repository.upsertAddress(
+          id, name, phone, value, latitude, longitude);
+
       result.fold(
         (error) => emit(AddressError(
           state.addresses,
-          error.message ?? 'Failed to update address',
+          error.message ?? 'Failed to ${id == null ? 'add' : 'update'} address',
         )),
         (newAddress) {
-          final updatedAddresses = [...state.addresses];
-          final index = updatedAddresses.indexWhere((e) => e.id == id);
-          updatedAddresses[index] = newAddress;
-          emit(AddressLoaded(updatedAddresses));
+          List<Address> updatedAddresses = [...state.addresses];
+          if (id == null) {
+            updatedAddresses.add(newAddress);
+            emit(AddressAdded(updatedAddresses));
+          } else {
+            final index = updatedAddresses.indexWhere((e) => e.id == id);
+            if (index != -1) {
+              updatedAddresses[index] = newAddress;
+            }
+            emit(AddressLoaded(updatedAddresses));
+          }
         },
       );
     } catch (e) {
-      emit(AddressError(state.addresses, e.toString()));
+      emit(AddressError(state.addresses,
+          "Failed to ${id == null ? 'add' : 'update'} address"));
     }
   }
 }

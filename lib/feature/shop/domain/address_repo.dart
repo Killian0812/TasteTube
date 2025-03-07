@@ -22,38 +22,23 @@ class AddressRepository {
     }
   }
 
-  Future<Either<ApiError, Address>> addAddress(
+  Future<Either<ApiError, Address>> upsertAddress(
+    String? id,
     String name,
     String phone,
     String value,
+    double latitude,
+    double longitude,
   ) async {
     try {
       final response = await http.post(Api.addressApi, data: {
         'name': name,
         'phone': phone,
         'value': value,
-      });
-      final address = Address.fromJson(response.data);
-      return Right(address);
-    } on DioException catch (e) {
-      return Left(ApiError.fromDioException(e));
-    } catch (e) {
-      return Left(ApiError(500, e.toString()));
-    }
-  }
-
-  Future<Either<ApiError, Address>> updateAddress(
-    String id,
-    String name,
-    String phone,
-    String value,
-  ) async {
-    try {
-      final response = await http
-          .put(Api.singleAddressApi.replaceFirst(':addressId', id), data: {
-        'name': name,
-        'phone': phone,
-        'value': value,
+        'latitude': latitude,
+        'longitude': longitude,
+      }, queryParameters: {
+        "addressId": id,
       });
       final address = Address.fromJson(response.data);
       return Right(address);

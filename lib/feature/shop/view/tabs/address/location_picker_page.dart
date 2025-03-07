@@ -4,7 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:place_picker_google/place_picker_google.dart';
 import 'package:taste_tube/common/loading.dart';
 import 'package:taste_tube/common/size.dart';
-import 'package:taste_tube/utils/geolocation.util.dart';
+import 'package:taste_tube/utils/location.util.dart';
 
 class LocationPickerPage extends StatefulWidget {
   const LocationPickerPage({super.key});
@@ -64,7 +64,6 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
               usePinPointingSearch: true,
               apiKey: "AIzaSyCaKLtA7loFFSm0aEzsg1gY_BOP5xeUn74",
               onPlacePicked: (LocationResult result) {
-                debugPrint("Place picked: ${result.formattedAddress}");
                 if (Navigator.canPop(context)) {
                   Navigator.of(context).pop(result);
                 }
