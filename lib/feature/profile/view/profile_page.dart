@@ -394,11 +394,7 @@ class ProfilePage extends StatelessWidget {
       itemBuilder: (context, index) {
         return GestureDetector(
           onTap: () {
-            // TODO: Refactor
-            // context.push('/watch', extra: {
-            //   'videos': videos,
-            //   'initialIndex': index,
-            // });
+            context.push('/watch/${videos[index].id}', extra: videos);
           },
           child: Stack(
             children: [
@@ -457,10 +453,10 @@ class ProfilePage extends StatelessWidget {
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () {
-                    context.push('/watch', extra: {
-                      'videos': state.likedVideos,
-                      'initialIndex': index,
-                    });
+                    context.push(
+                      '/watch/${state.likedVideos[index].id}',
+                      extra: state.likedVideos,
+                    );
                   },
                   child: Stack(
                     children: [
@@ -490,10 +486,10 @@ class ProfilePage extends StatelessWidget {
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () {
-                    context.push('/watch', extra: {
-                      'videos': state.reviews,
-                      'initialIndex': index,
-                    });
+                    context.push(
+                      '/watch/${state.reviews[index].id}',
+                      extra: state.reviews,
+                    );
                   },
                   child: Stack(
                     children: [

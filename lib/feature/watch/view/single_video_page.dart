@@ -4,6 +4,11 @@ class SingleVideo extends StatefulWidget {
   final Video video;
   const SingleVideo({super.key, required this.video});
 
+  static Widget provider(Video video) => BlocProvider(
+        create: (context) => SingleVideoCubit(video)..fetchDependency(),
+        child: SingleVideo(video: video),
+      );
+
   @override
   State<SingleVideo> createState() => _SingleVideoState();
 }
@@ -18,47 +23,57 @@ class _SingleVideoState extends State<SingleVideo>
       widget.video.description != null &&
       widget.video.description!.length > 100;
 
-  late FocusNode _focusNode;
+  late FocusNode? _focusNode;
   Comment? _replyingComment;
+
+  String get videoId => widget.video.id;
+
+  void _setReplyingComment() {
+    if (_focusNode != null && !_focusNode!.hasFocus) {
+      setState(() {
+        _replyingComment = null;
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     _focusNode = FocusNode();
-    _focusNode.addListener(() {
-      if (!_focusNode.hasFocus) {
-        setState(() {
-          _replyingComment = null;
-        });
-      }
-    });
-    _initializeVideoPlayer(widget.video.url);
-  }
+    _focusNode!.addListener(_setReplyingComment);
 
-  Future<void> _initializeVideoPlayer(String videoUrl) async {
-    try {
-      _videoController = VideoPlayerController.networkUrl(Uri.parse(videoUrl))
-        ..addListener(() {
-          if (!_isScrubbing) {
-            setState(() {}); // Update position if not scrubbing
-          }
-        })
-        ..initialize().then((_) {
-          setState(() {}); // Refresh after initialization
-          _videoController.play();
-          _videoController.setLooping(true);
-        });
-    } catch (e) {
-      getIt<Logger>().e('Error initializing video player: $e');
-    }
+    currentPlayingVideoId = videoId;
+
+    _videoController =
+        VideoPlayerController.networkUrl(Uri.parse(widget.video.url))
+          ..initialize().then((_) {
+            setState(() {});
+            if (currentPlayingVideoId == videoId) {
+              _videoController.play();
+              _videoController.setLooping(true);
+            }
+          });
+
+    WatchPage.controllers[videoId] = _videoController;
   }
 
   @override
   void dispose() {
-    _videoController.removeListener(() {});
+    WatchPage.controllers.remove(videoId);
     _videoController.dispose();
-    _focusNode.dispose();
+    _focusNode?.removeListener(_setReplyingComment);
+    _focusNode?.dispose();
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant SingleVideo oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.video.id == currentPlayingVideoId) {
+      _videoController.play();
+    } else {
+      _videoController.pause();
+    }
   }
 
   @override
@@ -80,14 +95,11 @@ class _SingleVideoState extends State<SingleVideo>
                 alignment: Alignment.bottomCenter,
                 children: [
                   // Video display
-                  SizedBox.expand(
-                    child: FittedBox(
-                      fit: BoxFit.cover,
-                      child: SizedBox(
-                        width: _videoController.value.size.width,
-                        height: _videoController.value.size.height,
-                        child: VideoPlayer(_videoController),
-                      ),
+                  Align(
+                    alignment: Alignment.center,
+                    child: AspectRatio(
+                      aspectRatio: _videoController.value.aspectRatio,
+                      child: VideoPlayer(_videoController),
                     ),
                   ),
 
@@ -838,7 +850,7 @@ class _SingleVideoState extends State<SingleVideo>
                       _replyingComment = comment;
                     });
                     expansionTileController.expand();
-                    _focusNode.requestFocus();
+                    _focusNode?.requestFocus();
                   },
                   child: Text(
                     'Reply',

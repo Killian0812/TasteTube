@@ -91,36 +91,26 @@ final GoRouter _router = GoRouter(
       builder: (context, state) => SearchPage.provider(),
     ),
     GoRoute(
-      path: '/watch',
-      builder: (context, state) {
-        final extra = state.extra as Map<String, dynamic>?;
-        final videos = extra?['videos'] as List<Video>?;
-        final initialIndex = extra?['initialIndex'] as int?;
-
-        if (videos == null || initialIndex == null) {
-          return const SplashPage();
-        }
-
-        return WatchPage(
-          // videos: videos,
-          // initialIndex: initialIndex,
-        );
-      },
-    ),
-    GoRoute(
       path: '/cart',
       builder: (context, state) => const CartPage(),
     ),
-    // GoRoute(
-    //   path: '/watch/:videoId',
-    //   builder: (context, state) {
-    //     final videoId = state.pathParameters['videoId'] ?? '';
-    //     return WatchPage(
-    //       videos: [],
-    //       initialIndex: 0,
-    //     );
-    //   },
-    // ),
+    GoRoute(
+      path: '/watch/:videoId',
+      builder: (context, state) {
+        final videoId = state.pathParameters['videoId']!;
+        final videos = state.extra as List<Video>?;
+        final initialIndex = videos?.indexWhere((e) => e.id == videoId);
+
+        if (videos == null || initialIndex == null) {
+          return const InitialPage();
+        }
+
+        return PublicVideosPage(
+          videos: videos,
+          initialIndex: initialIndex,
+        );
+      },
+    ),
 
     // Auth routes
     GoRoute(

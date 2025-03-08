@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:logger/logger.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/common/loading.dart';
@@ -25,9 +24,15 @@ import 'package:timeago/timeago.dart' as timeago;
 part 'single_video_page.dart';
 
 class WatchPage extends StatefulWidget {
-  const WatchPage({
-    super.key,
-  });
+  const WatchPage({super.key});
+
+  static final Map<String, VideoPlayerController> controllers = {};
+
+  static void pauseVideo(String videoId) {
+    if (controllers.containsKey(videoId)) {
+      controllers[videoId]!.pause();
+    }
+  }
 
   @override
   State<WatchPage> createState() => _WatchPageState();
@@ -102,13 +107,21 @@ class _WatchPageState extends State<WatchPage> {
             scrollDirection: Axis.vertical,
             itemCount: state.videos.length,
             onPageChanged: (int index) {
-              // TODO: Pause other
+              setState(() {});
+
+              if (currentPlayingVideoId != "none") {
+                WatchPage.pauseVideo(currentPlayingVideoId);
+              }
+              // Update the currently playing video index
+              currentPlayingVideoId = state.videos[index].id;
             },
             itemBuilder: (context, index) {
-              final video = state.videos[index];
-              return BlocProvider(
-                create: (context) => SingleVideoCubit(video)..fetchDependency(),
-                child: SingleVideo(video: video),
+              return ValueListenableBuilder<String>(
+                valueListenable: getIt<ContentCubit>().currentPlayingVideoId,
+                builder: (context, currentPlayingIndex, _) {
+                  final video = state.videos[index];
+                  return SingleVideo.provider(video);
+                },
               );
             },
           ),

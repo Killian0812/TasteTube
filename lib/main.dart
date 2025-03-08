@@ -15,11 +15,13 @@ import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/fallback.dart';
 import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/text.dart';
+import 'package:taste_tube/feature/home/view/content_cubit.dart';
 import 'package:taste_tube/feature/profile/view/owner_profile_page.dart';
 import 'package:taste_tube/feature/shop/view/cart_page.dart';
 import 'package:taste_tube/feature/shop/view/payment_page.dart';
 import 'package:taste_tube/feature/shop/view/shop_page.dart';
 import 'package:taste_tube/feature/shop/view/tabs/address/location_picker_page.dart';
+import 'package:taste_tube/feature/watch/view/public_videos_page.dart';
 import 'package:taste_tube/global_bloc/download/download_dialog.dart';
 import 'package:taste_tube/global_data/user/user.dart';
 import 'package:taste_tube/feature/record/camera/camera_page.dart';
@@ -29,14 +31,12 @@ import 'package:taste_tube/feature/profile/view/profile_page.dart';
 import 'package:taste_tube/feature/store/view/store_page.dart';
 import 'package:taste_tube/feature/search/view/search_page.dart';
 import 'package:taste_tube/feature/shop/view/tabs/shopping/single_shop_page.dart';
-import 'package:taste_tube/global_data/watch/video.dart';
-import 'package:taste_tube/feature/watch/view/watch_page.dart';
 import 'package:taste_tube/firebase_options.dart';
 import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
+import 'package:taste_tube/global_data/watch/video.dart';
 import 'package:taste_tube/injection.dart';
 import 'package:taste_tube/providers.dart';
 import 'package:taste_tube/splash/initial_page.dart';
-import 'package:taste_tube/splash/splash_page.dart';
 
 part 'router.dart';
 
@@ -204,6 +204,11 @@ class Layout extends StatelessWidget {
                 gapLocation: GapLocation.center,
                 notchSmoothness: NotchSmoothness.softEdge,
                 onTap: (index) {
+                  if (index != 0) {
+                    getIt<ContentCubit>().pauseContent();
+                  } else {
+                    getIt<ContentCubit>().resumeContent();
+                  }
                   if (index == 1 && isCustomer) {
                     context.go('/shop');
                     return;
