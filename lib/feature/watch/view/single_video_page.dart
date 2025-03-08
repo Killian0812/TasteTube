@@ -157,8 +157,8 @@ class _SingleVideoState extends State<SingleVideo>
                       children: [
                         Text(
                           'Reviewing:     ',
-                          style: CommonTextStyle.bold
-                              .copyWith(fontStyle: FontStyle.italic),
+                          style: CommonTextStyle.bold.copyWith(
+                              fontStyle: FontStyle.italic, color: Colors.white),
                         ),
                         CircleAvatar(
                           radius: 12,
@@ -168,7 +168,8 @@ class _SingleVideoState extends State<SingleVideo>
                         const SizedBox(width: 10),
                         Text(
                           widget.video.targetUsername!,
-                          style: CommonTextStyle.bold,
+                          style: CommonTextStyle.bold
+                              .copyWith(color: Colors.white),
                         ),
                       ],
                     ),
@@ -212,7 +213,8 @@ class _SingleVideoState extends State<SingleVideo>
                         const SizedBox(width: 10),
                         Text(
                           'Attached products: ${widget.video.products.length.toString()}',
-                          style: CommonTextStyle.bold,
+                          style: CommonTextStyle.bold
+                              .copyWith(color: Colors.white),
                         ),
                       ],
                     ),
@@ -307,6 +309,7 @@ class _SingleVideoState extends State<SingleVideo>
   void _showAttachedProduct(BuildContext context, List<Product> products) {
     showModalBottomSheet(
       context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
       backgroundColor: const Color.fromRGBO(31, 31, 31, 1),
       shape: const RoundedRectangleBorder(
@@ -677,11 +680,12 @@ class _SingleVideoState extends State<SingleVideo>
 
     showModalBottomSheet(
       context: context,
+      useRootNavigator: true,
+      isScrollControlled: true,
       backgroundColor: const Color.fromRGBO(31, 31, 31, 1),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      isScrollControlled: true,
       builder: (BuildContext context) {
         return FractionallySizedBox(
           heightFactor: 0.6,
@@ -923,8 +927,13 @@ class _SingleVideoState extends State<SingleVideo>
         alignment: const Alignment(0.9, 0.27),
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTap: () {
-            // TODO: Share
+          onTap: () async {
+            final box = context.findRenderObject() as RenderBox?;
+            await Share.shareUri(
+              // TODO: Update to current video url
+              Uri.parse(Api.baseUrl),
+              sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+            );
           },
           child: const Icon(
             FontAwesomeIcons.share,
@@ -954,6 +963,7 @@ class _SingleVideoState extends State<SingleVideo>
     final bool isVideoOwner = widget.video.ownerId == UserDataUtil.getUserId();
     showModalBottomSheet(
       context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
       backgroundColor: const Color.fromRGBO(31, 31, 31, 1),
       shape: const RoundedRectangleBorder(

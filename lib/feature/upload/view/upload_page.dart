@@ -220,6 +220,7 @@ class UploadPage extends StatelessWidget {
   void _showVisibilityOptions(BuildContext context, UploadCubit cubit) {
     showModalBottomSheet(
       context: context,
+      useRootNavigator: true,
       builder: (context) {
         return SizedBox(
           height: CommonSize.screenSize.height * 0.3,

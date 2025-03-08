@@ -15,6 +15,7 @@ Future<void> _showEditProfileDialog(BuildContext context, User user) {
 
   return showModalBottomSheet(
     context: context,
+    useRootNavigator: true,
     isScrollControlled: true,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
@@ -148,6 +149,7 @@ Future<void> _showChangePasswordDialog(BuildContext context) {
 
   return showModalBottomSheet(
     context: context,
+    useRootNavigator: true,
     isScrollControlled: true,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(25)),

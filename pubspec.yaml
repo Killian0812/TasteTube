@@ -59,6 +59,7 @@ dependencies:
       url: https://github.com/Killian0812/place_picker_google
       ref: main
   animated_bottom_navigation_bar: ^1.4.0
+  share_plus: ^10.1.4
 
 dev_dependencies:
   flutter_test:

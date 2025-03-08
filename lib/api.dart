@@ -1,6 +1,6 @@
 class Api {
   // Exposed local server to internet using ngrok
-  static const baseUrl = 'https://first-shepherd-legible.ngrok-free.app/api';
+  static const baseUrl = 'https://first-shepherd-legible.ngrok-free.app';
 
   // Auth
   static const loginApi = '/auth';
