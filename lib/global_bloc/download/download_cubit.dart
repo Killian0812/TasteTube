@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gallery_saver_plus/gallery_saver.dart';
@@ -47,6 +49,12 @@ class DownloadCubit extends Cubit<List<DownloadState>> {
 
   Future<void> downloadVideo(Video video) async {
     final url = video.url;
+
+    if (kIsWeb) {
+      await launchUrlString(url);
+      return;
+    }
+
     final id = getIt<Uuid>().v4();
     final title = _getVideoFilename(video);
 

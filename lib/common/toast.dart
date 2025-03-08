@@ -76,7 +76,7 @@ class ToastService {
             Expanded(
               child: Text(
                 message,
-                style: CommonTextStyleContrast.regular,
+                style: CommonTextStyle.regular.copyWith(color: Colors.white),
               ),
             ),
           ],

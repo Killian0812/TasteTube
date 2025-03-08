@@ -145,7 +145,7 @@ class _SingleVideoState extends State<SingleVideo>
                       children: [
                         Text(
                           'Reviewing:     ',
-                          style: CommonTextStyleContrast.bold
+                          style: CommonTextStyle.bold
                               .copyWith(fontStyle: FontStyle.italic),
                         ),
                         CircleAvatar(
@@ -156,7 +156,7 @@ class _SingleVideoState extends State<SingleVideo>
                         const SizedBox(width: 10),
                         Text(
                           widget.video.targetUsername!,
-                          style: CommonTextStyleContrast.bold,
+                          style: CommonTextStyle.bold,
                         ),
                       ],
                     ),
@@ -200,7 +200,7 @@ class _SingleVideoState extends State<SingleVideo>
                         const SizedBox(width: 10),
                         Text(
                           'Attached products: ${widget.video.products.length.toString()}',
-                          style: CommonTextStyleContrast.bold,
+                          style: CommonTextStyle.bold,
                         ),
                       ],
                     ),
@@ -786,7 +786,6 @@ class _SingleVideoState extends State<SingleVideo>
           context,
           title: "Confirm delete comment",
           body: 'Are you sure you want to delete this comment?',
-          contrast: true,
         );
         if (confirmed != true) {
           return;
@@ -874,7 +873,6 @@ class _SingleVideoState extends State<SingleVideo>
           context,
           title: "Confirm delete comment",
           body: 'Are you sure you want to delete this comment?',
-          contrast: true,
         );
         if (confirmed != true) {
           return;
@@ -978,7 +976,6 @@ class _SingleVideoState extends State<SingleVideo>
                       context,
                       title: "Confirm delete video",
                       body: 'Are you sure you want to delete this video?',
-                      contrast: true,
                     );
                     if (confirmed != true) {
                       return;

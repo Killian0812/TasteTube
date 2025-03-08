@@ -13,7 +13,7 @@ class DownloadDialog extends StatelessWidget {
       builder: (context, state) {
         if (state.isEmpty) return const SizedBox.shrink();
         return DefaultTextStyle(
-          style: CommonTextStyleContrast.regular,
+          style: CommonTextStyle.regular,
           child: Align(
             alignment: Alignment.topLeft,
             child: Container(
