@@ -102,8 +102,8 @@ final GoRouter _router = GoRouter(
         }
 
         return WatchPage(
-          videos: videos,
-          initialIndex: initialIndex,
+          // videos: videos,
+          // initialIndex: initialIndex,
         );
       },
     ),

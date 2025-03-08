@@ -6,46 +6,34 @@ import 'package:taste_tube/injection.dart';
 abstract class ContentState {
   final List<Video> videos;
 
-  const ContentState({required this.videos});
-}
-
-class ContentInitial extends ContentState {
-  ContentInitial() : super(videos: []);
+  const ContentState(this.videos);
 }
 
 class ContentLoading extends ContentState {
-  const ContentLoading(List<Video> videos) : super(videos: videos);
+  ContentLoading() : super([]);
 }
 
 class ContentLoaded extends ContentState {
-  const ContentLoaded(List<Video> videos) : super(videos: videos);
-}
-
-class ContentSuccess extends ContentState {
-  final String success;
-
-  const ContentSuccess(List<Video> videos, this.success)
-      : super(videos: videos);
+  const ContentLoaded(super.videos);
 }
 
 class ContentError extends ContentState {
-  final String error;
+  final String message;
 
-  const ContentError(List<Video> videos, this.error) : super(videos: videos);
+  const ContentError(super.videos, this.message);
 }
 
 class ContentCubit extends Cubit<ContentState> {
   final ContentRepository repository = getIt<ContentRepository>();
 
-  ContentCubit() : super(ContentInitial());
+  ContentCubit() : super(ContentLoading());
 
   Future<void> getFeeds() async {
-    emit(ContentLoading(state.videos));
     try {
       final result = await repository.getFeeds();
       result.fold(
         (error) => emit(ContentError(
-          state.videos,
+          [],
           error.message ?? 'Error fetching videos',
         )),
         (videos) {
@@ -56,7 +44,7 @@ class ContentCubit extends Cubit<ContentState> {
         },
       );
     } catch (e) {
-      emit(ContentError(state.videos, e.toString()));
+      emit(ContentError([], e.toString()));
     }
   }
 }

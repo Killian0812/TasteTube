@@ -394,10 +394,11 @@ class ProfilePage extends StatelessWidget {
       itemBuilder: (context, index) {
         return GestureDetector(
           onTap: () {
-            context.push('/watch', extra: {
-              'videos': videos,
-              'initialIndex': index,
-            });
+            // TODO: Refactor
+            // context.push('/watch', extra: {
+            //   'videos': videos,
+            //   'initialIndex': index,
+            // });
           },
           child: Stack(
             children: [

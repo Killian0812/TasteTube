@@ -14,7 +14,7 @@ class ContentRepository {
   Future<Either<ApiError, List<Video>>> getFeeds() async {
     try {
       final response = await http.get(Api.feedApi);
-      final videos = (response.data as List<dynamic>)
+      final videos = (response.data['feeds'] as List<dynamic>)
           .map((videoJson) => Video.fromJson(videoJson as Map<String, dynamic>))
           .toList();
       return Right(videos);

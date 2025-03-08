@@ -5,6 +5,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taste_tube/auth/view/login_page.dart';
 import 'package:taste_tube/auth/view/register_page.dart';
@@ -64,6 +65,8 @@ void main() async {
 
   // Must have for route push() to reflect defined url
   GoRouter.optionURLReflectsImperativeAPIs = true;
+  // Remove '#' from web url
+  setUrlStrategy(PathUrlStrategy());
 
   runApp(const MyApp());
 }
