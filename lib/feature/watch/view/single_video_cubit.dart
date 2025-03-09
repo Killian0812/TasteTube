@@ -95,7 +95,6 @@ class SingleVideoCubit extends Cubit<SingleVideoState> {
         (error) => emit(SingleVideoError(state.video, state.comments,
             error.message ?? 'Error commenting video')),
         (comment) {
-          state.video.comments++;
           if (replyingTo == null) {
             emit(SingleVideoLoaded(state.video, state.comments..add(comment)));
           }
@@ -122,7 +121,6 @@ class SingleVideoCubit extends Cubit<SingleVideoState> {
         (error) => emit(SingleVideoError(state.video, state.comments,
             error.message ?? 'Error deleting comment')),
         (success) {
-          state.video.comments--;
           if (comment.parentCommentId == null) {
             emit(SingleVideoLoaded(
               state.video,
@@ -170,10 +168,6 @@ class SingleVideoCubit extends Cubit<SingleVideoState> {
             error.message ?? 'Error liking video')),
         (success) {
           final updatedVideo = state.video;
-          if (!updatedVideo.userLiked) {
-            updatedVideo.userLiked = true;
-            updatedVideo.likes++;
-          }
           emit(SingleVideoLoaded(
             updatedVideo,
             state.comments,
@@ -193,10 +187,6 @@ class SingleVideoCubit extends Cubit<SingleVideoState> {
             error.message ?? 'Error unliking video')),
         (success) {
           final updatedVideo = state.video;
-          if (updatedVideo.userLiked) {
-            updatedVideo.userLiked = false;
-            updatedVideo.likes--;
-          }
           emit(SingleVideoLoaded(
             updatedVideo,
             state.comments,

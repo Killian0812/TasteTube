@@ -149,7 +149,7 @@ class _ReplayPageState extends State<ReplayPage> {
           imageFormat: ImageFormat.JPEG,
           maxWidth: 100,
           maxHeight: 200,
-          quality: 50);
+          quality: 80);
     } catch (e) {
       return Fallback.fallbackImageBytes;
     }

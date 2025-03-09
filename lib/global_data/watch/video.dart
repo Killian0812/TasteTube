@@ -13,9 +13,6 @@ class Video {
   String? thumbnail;
   List<String>? hashtags;
   List<Product> products;
-  bool userLiked;
-  int likes;
-  int comments;
   String visibility;
   String? targetUserId;
   String? targetUsername;
@@ -36,9 +33,6 @@ class Video {
     this.thumbnail,
     this.hashtags,
     required this.products,
-    required this.userLiked,
-    required this.likes,
-    required this.comments,
     required this.visibility,
     this.targetUserId,
     this.targetUsername,
@@ -64,9 +58,6 @@ class Video {
           .map((productJson) =>
               Product.fromJson(productJson as Map<String, dynamic>))
           .toList(),
-      userLiked: json['userLiked'] as bool,
-      likes: (json['likes'] as List<dynamic>).length,
-      comments: (json['comments'] as List<dynamic>).length,
       visibility: json['visibility'] ?? 'PUBLIC',
       targetUserId: json['targetUserId']?['_id'] as String?,
       targetUsername: json['targetUserId']?['username'] as String?,
