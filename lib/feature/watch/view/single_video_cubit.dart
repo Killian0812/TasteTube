@@ -1,48 +1,76 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/global_data/watch/comment.dart';
+import 'package:taste_tube/global_data/watch/interaction.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
 import 'package:taste_tube/feature/watch/domain/single_video_repo.dart';
 import 'package:taste_tube/injection.dart';
 
 abstract class SingleVideoState {
-  final Video video;
   final List<Comment> comments;
+  final Interaction interaction;
 
-  SingleVideoState(this.video, this.comments);
+  SingleVideoState(
+    this.comments,
+    this.interaction,
+  );
 }
 
 class SingleVideoInitial extends SingleVideoState {
-  SingleVideoInitial(super.video, super.comments);
+  SingleVideoInitial(
+    super.comments,
+    super.interaction,
+  );
 }
 
 class SingleVideoLoading extends SingleVideoState {
-  SingleVideoLoading(super.video, super.comments);
+  SingleVideoLoading(
+    super.comments,
+    super.interaction,
+  );
 }
 
 class SingleVideoSuccess extends SingleVideoState {
   final String message;
 
-  SingleVideoSuccess(super.video, super.comments, this.message);
+  SingleVideoSuccess(
+    super.comments,
+    super.interaction,
+    this.message,
+  );
 }
 
 class SingleVideoLoaded extends SingleVideoState {
-  SingleVideoLoaded(super.video, super.comments);
+  SingleVideoLoaded(
+    super.comments,
+    super.interaction,
+  );
 }
 
 class SingleVideoError extends SingleVideoState {
   final String message;
 
-  SingleVideoError(super.video, super.comments, this.message);
+  SingleVideoError(
+    super.comments,
+    super.interaction,
+    this.message,
+  );
 }
 
 class DeleteVideoSuccess extends SingleVideoState {
-  DeleteVideoSuccess(super.video, super.comments);
+  DeleteVideoSuccess(
+    super.comments,
+    super.interaction,
+  );
 }
 
 class DeleteVideoError extends SingleVideoState {
   final String message;
 
-  DeleteVideoError(super.video, super.comments, this.message);
+  DeleteVideoError(
+    super.comments,
+    super.interaction,
+    this.message,
+  );
 }
 
 class SingleVideoCubit extends Cubit<SingleVideoState> {
@@ -51,21 +79,29 @@ class SingleVideoCubit extends Cubit<SingleVideoState> {
 
   SingleVideoCubit(this.video)
       : singleVideoRepo = getIt<SingleVideoRepository>(),
-        super(SingleVideoInitial(video, []));
+        super(SingleVideoLoading(
+            [],
+            Interaction(
+              videoId: video.id,
+              totalLikes: 0,
+              totalViews: 0,
+              totalShares: 0,
+              totalBookmarked: 0,
+              userLiked: false,
+            )));
 
   Future<void> fetchDependency() async {
     try {
-      emit(SingleVideoLoading(state.video, state.comments));
       final result = await singleVideoRepo.getVideoInfo(video.id);
       result.fold(
-        (error) => emit(SingleVideoError(state.video, state.comments,
+        (error) => emit(SingleVideoError(state.comments, state.interaction,
             error.message ?? 'Error fetching video')),
-        (video) {
-          emit(SingleVideoLoaded(video, state.comments));
+        (interaction) {
+          emit(SingleVideoLoaded(state.comments, interaction));
         },
       );
     } catch (e) {
-      emit(SingleVideoError(state.video, state.comments, e.toString()));
+      emit(SingleVideoError(state.comments, state.interaction, e.toString()));
     }
   }
 
@@ -73,30 +109,31 @@ class SingleVideoCubit extends Cubit<SingleVideoState> {
     try {
       final result = await singleVideoRepo.getComments(video.id);
       result.fold(
-        (error) => emit(SingleVideoError(state.video, state.comments,
+        (error) => emit(SingleVideoError(state.comments, state.interaction,
             error.message ?? 'Error fetching video')),
         (comments) {
-          emit(SingleVideoLoaded(state.video, comments));
+          emit(SingleVideoLoaded(comments, state.interaction));
         },
       );
     } catch (e) {
-      emit(SingleVideoError(state.video, state.comments, e.toString()));
+      emit(SingleVideoError(state.comments, state.interaction, e.toString()));
     }
   }
 
   Future<void> postComment(String text, {Comment? replyingTo}) async {
     try {
       final result = await singleVideoRepo.postComment(
-        state.video.id,
+        video.id,
         text,
         replyingTo: replyingTo,
       );
       result.fold(
-        (error) => emit(SingleVideoError(state.video, state.comments,
+        (error) => emit(SingleVideoError(state.comments, state.interaction,
             error.message ?? 'Error commenting video')),
         (comment) {
           if (replyingTo == null) {
-            emit(SingleVideoLoaded(state.video, state.comments..add(comment)));
+            emit(SingleVideoLoaded(
+                state.comments..add(comment), state.interaction));
           }
           final parentCommentIndex = state.comments.indexWhere(
             (c) => c.id == replyingTo!.id,
@@ -104,30 +141,30 @@ class SingleVideoCubit extends Cubit<SingleVideoState> {
           if (parentCommentIndex != -1) {
             final parentComment = state.comments[parentCommentIndex];
             parentComment.replies.add(comment);
-            emit(SingleVideoLoaded(state.video, List.from(state.comments)));
+            emit(SingleVideoLoaded(
+                List.from(state.comments), state.interaction));
           }
         },
       );
     } catch (e) {
-      emit(SingleVideoError(state.video, state.comments, e.toString()));
+      emit(SingleVideoError(state.comments, state.interaction, e.toString()));
     }
   }
 
   Future<void> deleteComment(Comment comment) async {
     try {
-      final result =
-          await singleVideoRepo.deleteComment(state.video.id, comment.id);
+      final result = await singleVideoRepo.deleteComment(video.id, comment.id);
       result.fold(
-        (error) => emit(SingleVideoError(state.video, state.comments,
+        (error) => emit(SingleVideoError(state.comments, state.interaction,
             error.message ?? 'Error deleting comment')),
         (success) {
           if (comment.parentCommentId == null) {
             emit(SingleVideoLoaded(
-              state.video,
               state.comments
                 ..removeWhere(
                   (c) => c.id == comment.id,
                 ),
+              state.interaction,
             ));
           }
           final parentCommentIndex = state.comments.indexWhere(
@@ -138,63 +175,66 @@ class SingleVideoCubit extends Cubit<SingleVideoState> {
             parentComment.replies.removeWhere(
               (c) => c.id == comment.id,
             );
-            emit(SingleVideoLoaded(state.video, List.from(state.comments)));
+            emit(SingleVideoLoaded(
+                List.from(state.comments), state.interaction));
           }
         },
       );
     } catch (e) {
-      emit(SingleVideoError(state.video, state.comments, e.toString()));
+      emit(SingleVideoError(state.comments, state.interaction, e.toString()));
     }
   }
 
   Future<void> deleteVideo(Video video) async {
     try {
-      final result = await singleVideoRepo.deleteVideo(state.video.id);
+      final result = await singleVideoRepo.deleteVideo(video.id);
       result.fold(
-          (error) => emit(DeleteVideoError(state.video, state.comments,
+          (error) => emit(DeleteVideoError(state.comments, state.interaction,
               error.message ?? 'Error deleting video')), (success) {
-        emit(DeleteVideoSuccess(state.video, state.comments));
+        emit(DeleteVideoSuccess(state.comments, state.interaction));
       });
     } catch (e) {
-      emit(DeleteVideoError(state.video, state.comments, e.toString()));
+      emit(DeleteVideoError(state.comments, state.interaction, e.toString()));
     }
   }
 
   Future<void> likeVideo() async {
     try {
-      final result = await singleVideoRepo.likeVideo(state.video.id);
+      final result = await singleVideoRepo.likeVideo(video.id);
       result.fold(
-        (error) => emit(SingleVideoError(state.video, state.comments,
+        (error) => emit(SingleVideoError(state.comments, state.interaction,
             error.message ?? 'Error liking video')),
         (success) {
-          final updatedVideo = state.video;
+          if (state.interaction.userLiked) return;
           emit(SingleVideoLoaded(
-            updatedVideo,
-            state.comments,
-          ));
+              state.comments,
+              state.interaction.copyWith(
+                  userLiked: true,
+                  totalLikes: state.interaction.totalLikes + 1)));
         },
       );
     } catch (e) {
-      emit(SingleVideoError(state.video, state.comments, e.toString()));
+      emit(SingleVideoError(state.comments, state.interaction, e.toString()));
     }
   }
 
   Future<void> unlikeVideo() async {
     try {
-      final result = await singleVideoRepo.unlikeVideo(state.video.id);
+      final result = await singleVideoRepo.unlikeVideo(video.id);
       result.fold(
-        (error) => emit(SingleVideoError(state.video, state.comments,
+        (error) => emit(SingleVideoError(state.comments, state.interaction,
             error.message ?? 'Error unliking video')),
         (success) {
-          final updatedVideo = state.video;
+          if (!state.interaction.userLiked) return;
           emit(SingleVideoLoaded(
-            updatedVideo,
-            state.comments,
-          ));
+              state.comments,
+              state.interaction.copyWith(
+                  userLiked: false,
+                  totalLikes: state.interaction.totalLikes - 1)));
         },
       );
     } catch (e) {
-      emit(SingleVideoError(state.video, state.comments, e.toString()));
+      emit(SingleVideoError(state.comments, state.interaction, e.toString()));
     }
   }
 }

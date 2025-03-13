@@ -5,7 +5,9 @@ class SingleVideo extends StatefulWidget {
   const SingleVideo({super.key, required this.video});
 
   static Widget provider(Video video) => BlocProvider(
-        create: (context) => SingleVideoCubit(video)..fetchDependency(),
+        create: (context) => SingleVideoCubit(video)
+          ..fetchDependency()
+          ..fetchComments(),
         child: SingleVideo(video: video),
       );
 
@@ -615,7 +617,8 @@ class _SingleVideoState extends State<SingleVideo>
           return GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () async {
-              if (liked) {
+              if (loading) return;
+              if (state.interaction.userLiked) {
                 await context.read<SingleVideoCubit>().likeVideo();
               } else {
                 await context.read<SingleVideoCubit>().unlikeVideo();
@@ -626,16 +629,14 @@ class _SingleVideoState extends State<SingleVideo>
               children: [
                 Icon(
                   FontAwesomeIcons.solidHeart,
-                  color: (loading || !liked)
-                      ? Colors.white
-                      : Colors.red,
+                  color:
+                      state.interaction.userLiked ? Colors.red : Colors.white,
                   size: 40,
                 ),
-                if (!loading)
-                  Text(
-                    video.likes.toString(),
-                    style: const TextStyle(color: Colors.white),
-                  ),
+                Text(
+                  state.interaction.totalLikes.toString(),
+                  style: const TextStyle(color: Colors.white),
+                ),
               ],
             ),
           );
@@ -665,7 +666,7 @@ class _SingleVideoState extends State<SingleVideo>
                     return const SizedBox.shrink();
                   }
                   return Text(
-                    video.comments.toString(),
+                    state.comments.length.toString(),
                     style: const TextStyle(color: Colors.white),
                   );
                 },
