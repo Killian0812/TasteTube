@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:get_thumbnail_video/index.dart';
 import 'package:get_thumbnail_video/video_thumbnail.dart';
@@ -16,12 +17,14 @@ class ReplayPage extends StatefulWidget {
   final String filePath;
   final bool recordedWithFrontCamera;
   final User? reviewTarget;
+  final XFile? xfile;
 
   const ReplayPage({
     super.key,
     required this.filePath,
     required this.recordedWithFrontCamera,
     this.reviewTarget,
+    this.xfile,
   });
 
   @override
@@ -32,16 +35,22 @@ class _ReplayPageState extends State<ReplayPage> {
   late VideoPlayerController _videoPlayerController;
 
   @override
+  void initState() {
+    super.initState();
+    _videoPlayerController = kIsWeb
+        ? VideoPlayerController.networkUrl(Uri.parse(widget.filePath))
+        : VideoPlayerController.file(File(widget.filePath));
+    _videoPlayerController.initialize().then((_) {
+      setState(() {});
+      _videoPlayerController.setLooping(true);
+      _videoPlayerController.play();
+    });
+  }
+
+  @override
   void dispose() {
     _videoPlayerController.dispose();
     super.dispose();
-  }
-
-  Future<void> _initVideoPlayer() async {
-    _videoPlayerController = VideoPlayerController.file(File(widget.filePath));
-    await _videoPlayerController.initialize();
-    await _videoPlayerController.setLooping(true);
-    await _videoPlayerController.play();
   }
 
   @override
@@ -56,18 +65,12 @@ class _ReplayPageState extends State<ReplayPage> {
       body: Stack(
         alignment: Alignment.bottomCenter,
         children: [
-          FutureBuilder(
-            future: _initVideoPlayer(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CommonLoadingIndicator.regular);
-              } else {
-                return Transform.flip(
-                    flipX: widget.recordedWithFrontCamera,
-                    child: VideoPlayer(_videoPlayerController));
-              }
-            },
-          ),
+          _videoPlayerController.value.isInitialized
+              ? Transform.flip(
+                  flipX: widget.recordedWithFrontCamera,
+                  child: VideoPlayer(_videoPlayerController),
+                )
+              : const Center(child: CommonLoadingIndicator.regular),
           Padding(
             padding: const EdgeInsets.only(bottom: 50.0),
             child: FloatingActionButton(
@@ -85,6 +88,7 @@ class _ReplayPageState extends State<ReplayPage> {
                         widget.filePath,
                         widget.recordedWithFrontCamera,
                         widget.reviewTarget,
+                        widget.xfile,
                       ),
                     ),
                   ).then((_) async => await _videoPlayerController.play());
@@ -122,7 +126,8 @@ class _ReplayPageState extends State<ReplayPage> {
                     const SizedBox(width: 10),
                     CircleAvatar(
                       radius: 20,
-                      foregroundImage: NetworkImage(widget.reviewTarget!.image!),
+                      foregroundImage:
+                          NetworkImage(widget.reviewTarget!.image!),
                     ),
                     const SizedBox(width: 10),
                     Text(

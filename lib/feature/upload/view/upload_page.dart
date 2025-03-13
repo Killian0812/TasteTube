@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:taste_tube/common/button.dart';
 import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/text.dart';
@@ -22,11 +23,13 @@ class UploadPage extends StatelessWidget {
     String filePath,
     bool recordedWithFrontCamera,
     User? reviewTarget,
+    XFile? xfile,
   ) =>
       BlocProvider(
         create: (context) => UploadCubit(
           thumbnail: thumbnail,
           filePath: filePath,
+          xfile: xfile,
           recordedWithFrontCamera: recordedWithFrontCamera,
           reviewTarget: reviewTarget,
         )..fetchProducts(reviewTarget?.id ?? UserDataUtil.getUserId()),

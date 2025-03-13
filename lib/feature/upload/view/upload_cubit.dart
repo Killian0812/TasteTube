@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:taste_tube/global_data/product/product.dart';
 import 'package:taste_tube/feature/store/domain/product_repo.dart';
 import 'package:taste_tube/global_data/user/user.dart';
@@ -15,6 +16,7 @@ class UploadCubit extends Cubit<UploadState> {
   final ProductRepository productRepository;
   final Uint8List thumbnail;
   final String filePath;
+  final XFile? xfile;
   final bool recordedWithFrontCamera;
   final User? reviewTarget;
   String title = '';
@@ -28,6 +30,7 @@ class UploadCubit extends Cubit<UploadState> {
     required this.thumbnail,
     required this.filePath,
     required this.recordedWithFrontCamera,
+    this.xfile,
     this.reviewTarget,
   })  : uploadRepository = getIt(),
         productRepository = getIt(),
@@ -40,7 +43,7 @@ class UploadCubit extends Cubit<UploadState> {
   void setDescription(String value) {
     description = value;
     hashtags = description
-        .split(' ')
+        .split(RegExp(r'[\s\n]'))
         .where((word) => word.startsWith('#'))
         .map((word) => word.trim())
         .toList();
@@ -80,19 +83,25 @@ class UploadCubit extends Cubit<UploadState> {
   Future<void> uploadVideo({User? reviewTarget}) async {
     try {
       emit(UploadLoading());
-      await uploadRepository.upload(
+      final result = await uploadRepository.upload(
           filePath,
+          xfile,
           UploadVideoRequest(
-            title,
-            description,
-            hashtags,
-            recordedWithFrontCamera ? 'FRONT' : 'BACK',
-            base64Encode(thumbnail),
-            selectedProductIds.toList(),
-            selectedVisibility,
-            reviewTarget?.id
-          ));
-      emit(UploadSuccess());
+              title,
+              description,
+              hashtags,
+              recordedWithFrontCamera ? 'FRONT' : 'BACK',
+              base64Encode(thumbnail),
+              selectedProductIds.toList(),
+              selectedVisibility,
+              reviewTarget?.id));
+      result.fold(
+        (error) =>
+            emit(UploadFailure(error.message ?? 'Error uploading video')),
+        (products) {
+          emit(UploadSuccess());
+        },
+      );
     } catch (e) {
       emit(UploadFailure(e.toString()));
     }

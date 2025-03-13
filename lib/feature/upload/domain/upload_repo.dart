@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/common/error.dart';
 import 'package:taste_tube/feature/upload/data/upload_video_request.dart';
@@ -10,10 +12,18 @@ class UploadRepository {
   UploadRepository({required this.http});
 
   Future<Either<ApiError, String>> upload(
-      String filePath, UploadVideoRequest request) async {
+      String filePath, XFile? xfile, UploadVideoRequest request) async {
     try {
-      final multipartFile = await MultipartFile.fromFile(filePath,
-          contentType: DioMediaType.parse('video/mp4'));
+      MultipartFile multipartFile;
+      if (kIsWeb) {
+        final bytes = await xfile!.readAsBytes();
+        multipartFile = MultipartFile.fromBytes(bytes,
+        filename: xfile.name,
+            contentType: DioMediaType.parse('video/mp4'));
+      } else {
+        multipartFile = await MultipartFile.fromFile(filePath,
+            contentType: DioMediaType.parse('video/mp4'));
+      }
 
       final formData = FormData();
       formData.files.add(MapEntry('video', multipartFile));

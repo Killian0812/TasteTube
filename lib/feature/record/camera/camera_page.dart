@@ -171,7 +171,10 @@ class CameraPage extends StatelessWidget {
                       MaterialPageRoute(
                         fullscreenDialog: true,
                         builder: (_) => ReplayPage(
-                            filePath: filePath, recordedWithFrontCamera: false),
+                          filePath: filePath,
+                          recordedWithFrontCamera: false,
+                          xfile: result.xFiles.single,
+                        ),
                       ),
                     );
                   }
