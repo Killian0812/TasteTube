@@ -615,7 +615,7 @@ class _SingleVideoState extends State<SingleVideo>
           return GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () async {
-              if (!state.video.userLiked) {
+              if (liked) {
                 await context.read<SingleVideoCubit>().likeVideo();
               } else {
                 await context.read<SingleVideoCubit>().unlikeVideo();
@@ -626,14 +626,14 @@ class _SingleVideoState extends State<SingleVideo>
               children: [
                 Icon(
                   FontAwesomeIcons.solidHeart,
-                  color: (loading || !state.video.userLiked)
+                  color: (loading || !liked)
                       ? Colors.white
                       : Colors.red,
                   size: 40,
                 ),
                 if (!loading)
                   Text(
-                    state.video.likes.toString(),
+                    video.likes.toString(),
                     style: const TextStyle(color: Colors.white),
                   ),
               ],
@@ -665,7 +665,7 @@ class _SingleVideoState extends State<SingleVideo>
                     return const SizedBox.shrink();
                   }
                   return Text(
-                    state.video.comments.toString(),
+                    video.comments.toString(),
                     style: const TextStyle(color: Colors.white),
                   );
                 },
