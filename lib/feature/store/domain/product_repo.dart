@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart' as foundation;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:fpdart/fpdart.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:taste_tube/api.dart';
@@ -106,7 +106,7 @@ class ProductRepository {
     try {
       final List<MultipartFile> files = [];
       for (var image in images) {
-        if (foundation.kIsWeb) {
+        if (kIsWeb) {
           files.add(MultipartFile.fromBytes(
             await image.readAsBytes(),
             filename: image.path.split('/').last,

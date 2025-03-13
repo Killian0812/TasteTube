@@ -89,7 +89,14 @@ class CameraPage extends StatelessWidget {
               ],
             );
           } else if (state is CameraError) {
-            return Center(child: Text(state.errorMessage));
+            return Stack(
+              fit: StackFit.expand,
+              alignment: Alignment.bottomCenter,
+              children: [
+                Center(child: Text(state.errorMessage)),
+                _uploadButton(context),
+              ],
+            );
           }
           return Container();
         },

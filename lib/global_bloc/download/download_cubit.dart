@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gallery_saver_plus/gallery_saver.dart';
