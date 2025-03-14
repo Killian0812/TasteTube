@@ -233,3 +233,28 @@ Future<void> _showChangePasswordDialog(BuildContext context) {
     },
   );
 }
+
+void _showProfileOptions(BuildContext bcontext) {
+  showModalBottomSheet(
+    context: bcontext,
+    useRootNavigator: true,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (context) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+                leading: const Icon(Icons.password_outlined),
+                title: const Text('Change password'),
+                onTap: () => _showChangePasswordDialog(bcontext)),
+          ],
+        ),
+      );
+    },
+  );
+}

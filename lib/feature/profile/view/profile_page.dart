@@ -42,12 +42,9 @@ class _OwnerProfileInteractions extends StatelessWidget {
               label: const Text('Edit profile'),
             ),
             const SizedBox(width: 5),
-            ElevatedButton.icon(
-              onPressed: () {
-                _showChangePasswordDialog(context);
-              },
-              icon: const Icon(Icons.password_rounded),
-              label: const Text('Change password'),
+            ElevatedButton(
+              onPressed: () => _showProfileOptions(context),
+              child: const Icon(Icons.settings),
             ),
           ],
         );
