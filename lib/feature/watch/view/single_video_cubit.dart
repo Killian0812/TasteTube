@@ -237,4 +237,17 @@ class SingleVideoCubit extends Cubit<SingleVideoState> {
       emit(SingleVideoError(state.comments, state.interaction, e.toString()));
     }
   }
+
+  Future<void> shareVideo() async {
+    try {
+      final result = await singleVideoRepo.shareVideo(video.id);
+      result.fold(
+        (error) => emit(SingleVideoError(state.comments, state.interaction,
+            error.message ?? 'Error sharing video')),
+        (success) {},
+      );
+    } catch (e) {
+      emit(SingleVideoError(state.comments, state.interaction, e.toString()));
+    }
+  }
 }

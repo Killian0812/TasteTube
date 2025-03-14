@@ -19,6 +19,7 @@ class Api {
   static const videoLikeApi = '/videos/:videoId/like';
   static const videoUnlikeApi = '/videos/:videoId/unlike';
   static const videoCommentApi = '/videos/:videoId/comment';
+  static const videoShareApi = '/videos/:videoId/share';
 
   // Product
   static const categoryApi = '/product/categories';

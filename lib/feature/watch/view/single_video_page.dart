@@ -619,9 +619,9 @@ class _SingleVideoState extends State<SingleVideo>
             onTap: () async {
               if (loading) return;
               if (state.interaction.userLiked) {
-                await context.read<SingleVideoCubit>().likeVideo();
-              } else {
                 await context.read<SingleVideoCubit>().unlikeVideo();
+              } else {
+                await context.read<SingleVideoCubit>().likeVideo();
               }
             },
             child: Column(
@@ -930,6 +930,7 @@ class _SingleVideoState extends State<SingleVideo>
           behavior: HitTestBehavior.opaque,
           onTap: () async {
             final box = context.findRenderObject() as RenderBox?;
+            context.read<SingleVideoCubit>().shareVideo();
             await Share.shareUri(
               // TODO: Update to current video url
               Uri.parse(Api.baseUrl),

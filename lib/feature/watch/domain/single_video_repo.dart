@@ -107,4 +107,15 @@ class SingleVideoRepository {
       return Left(ApiError(500, e.toString()));
     }
   }
+
+  Future<Either<ApiError, bool>> shareVideo(String videoId) async {
+    try {
+      await http.post(Api.videoShareApi.replaceFirst(':videoId', videoId));
+      return const Right(true);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
 }
