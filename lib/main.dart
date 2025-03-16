@@ -192,6 +192,8 @@ class Layout extends StatelessWidget {
           return InitialPage(redirect: currentRoute);
         }
         final isCustomer = state.data.role == "CUSTOMER";
+        final fabHidden = currentIndex == 1 || currentIndex == 2;
+
         return Stack(
           alignment: Alignment.center,
           children: [
@@ -204,7 +206,7 @@ class Layout extends StatelessWidget {
                 backgroundColor:
                     Theme.of(context).bottomNavigationBarTheme.backgroundColor,
                 activeIndex: currentIndex,
-                gapLocation: GapLocation.center,
+                gapLocation: fabHidden ? GapLocation.none : GapLocation.center,
                 notchSmoothness: NotchSmoothness.softEdge,
                 onTap: (index) {
                   if (index != 0) {
@@ -269,12 +271,15 @@ class Layout extends StatelessWidget {
               ),
               floatingActionButtonLocation:
                   FloatingActionButtonLocation.centerDocked,
-              floatingActionButton: FloatingActionButton(
-                onPressed: () => context.push('/camera'),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0)),
-                child: const Icon(Icons.add, color: Colors.white),
-              ),
+              floatingActionButton: fabHidden
+                  ? null
+                  : FloatingActionButton(
+                      onPressed: () => context.push('/camera'),
+                      mini: true,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0)),
+                      child: const Icon(Icons.add, color: Colors.white),
+                    ),
             ),
             DownloadDialog(),
           ],
