@@ -183,6 +183,9 @@ class SingleShopProductPage extends StatelessWidget {
   }
 
   Widget _buildActionButtons(BuildContext context) {
+    if (!product.ship) {
+      return const SizedBox.shrink();
+    }
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(

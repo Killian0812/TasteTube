@@ -463,66 +463,71 @@ class _SingleVideoState extends State<SingleVideo>
                                 ),
                                 const SizedBox(height: 10),
                                 // Action Buttons
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: ElevatedButton(
-                                        onPressed: () async {
-                                          int? quantity = await showDialog<int>(
-                                            context: context,
-                                            builder: (context) =>
-                                                const QuantityInputDialog(),
-                                          );
+                                if (product.ship)
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: ElevatedButton(
+                                          onPressed: () async {
+                                            int? quantity =
+                                                await showDialog<int>(
+                                              context: context,
+                                              builder: (context) =>
+                                                  const QuantityInputDialog(),
+                                            );
 
-                                          if (context.mounted &&
-                                              quantity != null) {
+                                            if (context.mounted &&
+                                                quantity != null) {
+                                              context
+                                                  .read<CartCubit>()
+                                                  .addToCart(product, quantity);
+                                            }
+                                          },
+                                          style: OutlinedButton.styleFrom(
+                                              side: const BorderSide(
+                                                  color: CommonColor
+                                                      .activeBgColor)),
+                                          child: const Text(
+                                            'Add to Cart',
+                                            style: TextStyle(
+                                                color:
+                                                    CommonColor.activeBgColor),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: ElevatedButton(
+                                          onPressed: () async {
+                                            int? quantity =
+                                                await showDialog<int>(
+                                              context: context,
+                                              builder: (context) =>
+                                                  const QuantityInputDialog(),
+                                            );
+                                            if (!context.mounted ||
+                                                quantity == null ||
+                                                quantity < 1) {
+                                              return;
+                                            }
                                             context
                                                 .read<CartCubit>()
-                                                .addToCart(product, quantity);
-                                          }
-                                        },
-                                        style: OutlinedButton.styleFrom(
-                                            side: const BorderSide(
-                                                color:
-                                                    CommonColor.activeBgColor)),
-                                        child: const Text(
-                                          'Add to Cart',
-                                          style: TextStyle(
-                                              color: CommonColor.activeBgColor),
+                                                .addToCartAndPayImmediate(
+                                                    product, quantity);
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                CommonColor.activeBgColor,
+                                          ),
+                                          child: const Text(
+                                            'Buy Now',
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: ElevatedButton(
-                                        onPressed: () async {
-                                          int? quantity = await showDialog<int>(
-                                            context: context,
-                                            builder: (context) =>
-                                                const QuantityInputDialog(),
-                                          );
-                                          if (!context.mounted ||
-                                              quantity == null ||
-                                              quantity < 1) {
-                                            return;
-                                          }
-                                          context
-                                              .read<CartCubit>()
-                                              .addToCartAndPayImmediate(
-                                                  product, quantity);
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor:
-                                              CommonColor.activeBgColor,
-                                        ),
-                                        child: const Text(
-                                          'Buy Now',
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                    ],
+                                  ),
                               ],
                             );
                           },
