@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taste_tube/feature/store/view/tabs/delivery/delivery_tab.dart';
+import 'package:taste_tube/feature/store/view/tabs/payment/payment_setting_tab.dart';
 import 'package:taste_tube/feature/store/view/tabs/product/category_cubit.dart';
 import 'package:taste_tube/feature/store/view/tabs/order/shop_order_tab.dart';
 import 'package:taste_tube/feature/store/view/tabs/product/product_cubit.dart';
@@ -20,7 +22,7 @@ class _StorePageState extends State<StorePage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -38,6 +40,8 @@ class _StorePageState extends State<StorePage>
           tabs: const [
             Tab(text: 'Orders'),
             Tab(text: 'Products'),
+            Tab(text: 'Delivery'),
+            Tab(text: 'Payment'),
           ],
         ),
         body: MultiBlocProvider(
@@ -55,7 +59,8 @@ class _StorePageState extends State<StorePage>
             children: const [
               ShopOrderTab(),
               ProductTab(),
-              // DeliveryTab(),
+              DeliveryTab(),
+              PaymentSettingTab(),
             ],
           ),
         ),
