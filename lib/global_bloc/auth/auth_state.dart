@@ -30,6 +30,26 @@ class AuthData {
       currency: json['currency'],
     );
   }
+
+  AuthData copyWith({
+    String? accessToken,
+    String? userId,
+    String? email,
+    String? username,
+    String? image,
+    String? role,
+    String? currency,
+  }) {
+    return AuthData(
+      accessToken: accessToken ?? this.accessToken,
+      userId: userId ?? this.userId,
+      email: email ?? this.email,
+      username: username ?? this.username,
+      image: image ?? this.image,
+      role: role ?? this.role,
+      currency: currency ?? this.currency,
+    );
+  }
 }
 
 abstract class AuthState {

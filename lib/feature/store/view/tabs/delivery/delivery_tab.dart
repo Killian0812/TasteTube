@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/store/view/tabs/delivery/delivery_cubit.dart';
-import 'package:taste_tube/global_data/order/delivery_options.dart';
+import 'package:taste_tube/feature/store/data/delivery_options.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
 
 class DeliveryTab extends StatelessWidget {

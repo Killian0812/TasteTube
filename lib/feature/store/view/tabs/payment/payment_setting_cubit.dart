@@ -1,95 +1,114 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taste_tube/feature/store/data/payment_card.dart';
+import 'package:taste_tube/feature/store/domain/payment_setting_repo.dart';
+import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
+import 'package:taste_tube/injection.dart';
+import 'package:taste_tube/utils/user_data.util.dart';
 
-class PaymentOption {
-  final String id;
-  final String type;
-  final String lastFour;
-  final String holderName;
-  final String expiryDate;
-  final bool isDefault;
+abstract class PaymentSettingState {
+  final String selectedCurrency;
+  final List<PaymentCard> cards;
 
-  PaymentOption({
-    required this.id,
-    required this.type,
-    required this.lastFour,
-    required this.holderName,
-    required this.expiryDate,
-    this.isDefault = false,
-  });
+  const PaymentSettingState(
+    this.selectedCurrency,
+    this.cards,
+  );
 }
 
-class PaymentSettingState {
-  final String selectedCurrency;
-  final List<PaymentOption> cards;
-  final bool isLoading;
+class PaymentSettingLoading extends PaymentSettingState {
+  PaymentSettingLoading() : super('', []);
+}
 
-  PaymentSettingState({
-    required this.selectedCurrency,
-    required this.cards,
-    this.isLoading = false,
-  });
+class PaymentSettingLoaded extends PaymentSettingState {
+  const PaymentSettingLoaded(super.selectedCurrency, super.cards);
+}
 
-  PaymentSettingState copyWith({
-    String? selectedCurrency,
-    List<PaymentOption>? cards,
-    bool? isLoading,
-  }) {
-    return PaymentSettingState(
-      selectedCurrency: selectedCurrency ?? this.selectedCurrency,
-      cards: cards ?? this.cards,
-      isLoading: isLoading ?? this.isLoading,
-    );
-  }
+class PaymentSettingSuccess extends PaymentSettingState {
+  const PaymentSettingSuccess(super.selectedCurrency, super.cards);
+}
+
+class PaymentSettingError extends PaymentSettingState {
+  final String message;
+
+  const PaymentSettingError(super.selectedCurrency, super.cards, this.message);
 }
 
 class PaymentSettingCubit extends Cubit<PaymentSettingState> {
-  PaymentSettingCubit()
-      : super(PaymentSettingState(
-          selectedCurrency: 'USD',
-          cards: [],
-        ));
+  final PaymentSettingRepository repository = getIt<PaymentSettingRepository>();
 
-  void loadInitialData() {
-    emit(state.copyWith(isLoading: true));
-    // Simulate API call
-    final initialCards = [
-      PaymentOption(
-        id: '1',
-        type: 'Visa',
-        lastFour: '4242',
-        holderName: 'John Doe',
-        expiryDate: '12/27', // Added expiryDate
-        isDefault: true,
-      ),
-    ];
-    emit(state.copyWith(cards: initialCards, isLoading: false));
+  PaymentSettingCubit() : super(PaymentSettingLoading());
+
+  Future<void> fetchCards() async {
+    final result = await repository.getCards();
+    result.match(
+      (error) => emit(PaymentSettingError(
+        state.selectedCurrency,
+        state.cards,
+        error.message ?? "Error fetching cards",
+      )),
+      (cards) => emit(PaymentSettingLoaded(UserDataUtil.getCurrency(), cards)),
+    );
   }
 
-  void updateCurrency(String newCurrency) {
-    emit(state.copyWith(selectedCurrency: newCurrency));
+  Future<void> updateCurrency(String newCurrency) async {
+    final result = await repository.changeCurrency(newCurrency);
+    result.match(
+        (error) => emit(PaymentSettingError(
+              state.selectedCurrency,
+              state.cards,
+              error.message ?? "Error updating currency",
+            )), (currency) {
+      getIt<AuthBloc>().add(UpdateCurrencyEvent(currency));
+      emit(PaymentSettingLoaded(currency, state.cards));
+    });
   }
 
-  void addCard(PaymentOption card) {
-    emit(state.copyWith(cards: [...state.cards, card]));
+  Future<void> addCard({
+    required String type,
+    required String expiryDate,
+    required String cardNumber,
+    required String holderName,
+  }) async {
+    final result = await repository.addCard(
+      type: type,
+      expiryDate: expiryDate,
+      cardNumber: cardNumber,
+      holderName: holderName,
+    );
+    result.match(
+        (error) => emit(PaymentSettingError(
+              state.selectedCurrency,
+              state.cards,
+              error.message ?? "Error adding new card",
+            )),
+        (newCard) => emit(PaymentSettingSuccess(
+            state.selectedCurrency, [...state.cards, newCard])));
   }
 
-  void setDefaultCard(String cardId) {
-    final updatedCards = state.cards.map((card) {
-      return PaymentOption(
-        id: card.id,
-        type: card.type,
-        lastFour: card.lastFour,
-        holderName: card.holderName,
-        expiryDate: card.expiryDate,
-        isDefault: card.id == cardId,
-      );
-    }).toList();
-    emit(state.copyWith(cards: updatedCards));
+  Future<void> setDefaultCard(String cardId) async {
+    final result = await repository.setDefaultCard(cardId);
+    result.match(
+      (error) => emit(PaymentSettingError(
+        state.selectedCurrency,
+        state.cards,
+        error.message ?? "Error setting card as default",
+      )),
+      (updatedCard) => fetchCards(),
+    );
   }
 
-  void removeCard(String cardId) {
-    final updatedCards =
-        state.cards.where((card) => card.id != cardId).toList();
-    emit(state.copyWith(cards: updatedCards));
+  Future<void> removeCard(String cardId) async {
+    final result = await repository.removeCard(cardId);
+    result.match(
+      (error) => emit(PaymentSettingError(
+        state.selectedCurrency,
+        state.cards,
+        error.message ?? "Error removing card",
+      )),
+      (_) => emit(PaymentSettingLoaded(
+        state.selectedCurrency,
+        state.cards.where((c) => c.id != cardId).toList(),
+      )),
+    );
   }
 }

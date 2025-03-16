@@ -7,6 +7,7 @@ import 'package:taste_tube/auth/view/oauth/oauth_cubit.dart';
 import 'package:taste_tube/feature/home/domain/content_repo.dart';
 import 'package:taste_tube/feature/home/view/content_cubit.dart';
 import 'package:taste_tube/feature/payment/domain/payment_repo.dart';
+import 'package:taste_tube/feature/store/domain/payment_setting_repo.dart';
 import 'package:taste_tube/feature/store/domain/product_repo.dart';
 import 'package:taste_tube/feature/profile/domain/profile_repo.dart';
 import 'package:taste_tube/feature/search/domain/search_repo.dart';
@@ -57,40 +58,30 @@ void injectDependencies() {
         secureStorage: getIt(),
         http: getIt(),
       ));
-  getIt.registerLazySingleton<UploadRepository>(() => UploadRepository(
-        http: getIt(),
-      ));
-  getIt.registerLazySingleton<UserRepository>(() => UserRepository(
-        http: getIt(),
-      ));
-  getIt.registerLazySingleton<ProductRepository>(() => ProductRepository(
-        http: getIt(),
-      ));
-  getIt
-      .registerLazySingleton<SingleVideoRepository>(() => SingleVideoRepository(
-            http: getIt(),
-          ));
-  getIt.registerLazySingleton<SearchRepository>(() => SearchRepository(
-        http: getIt(),
-      ));
-  getIt.registerLazySingleton<AddressRepository>(() => AddressRepository(
-        http: getIt(),
-      ));
-  getIt.registerLazySingleton<ShopRepository>(() => ShopRepository(
-        http: getIt(),
-      ));
-  getIt.registerLazySingleton<OrderRepository>(() => OrderRepository(
-        http: getIt(),
-      ));
-  getIt.registerLazySingleton<CartRepository>(() => CartRepository(
-        http: getIt(),
-      ));
-  getIt.registerLazySingleton<ContentRepository>(() => ContentRepository(
-        http: getIt(),
-      ));
-  getIt.registerLazySingleton<PaymentRepository>(() => PaymentRepository(
-        http: getIt(),
-      ));
+  getIt.registerLazySingleton<UploadRepository>(
+      () => UploadRepository(http: getIt()));
+  getIt.registerLazySingleton<UserRepository>(
+      () => UserRepository(http: getIt()));
+  getIt.registerLazySingleton<ProductRepository>(
+      () => ProductRepository(http: getIt()));
+  getIt.registerLazySingleton<SingleVideoRepository>(
+      () => SingleVideoRepository(http: getIt()));
+  getIt.registerLazySingleton<SearchRepository>(
+      () => SearchRepository(http: getIt()));
+  getIt.registerLazySingleton<AddressRepository>(
+      () => AddressRepository(http: getIt()));
+  getIt.registerLazySingleton<ShopRepository>(
+      () => ShopRepository(http: getIt()));
+  getIt.registerLazySingleton<OrderRepository>(
+      () => OrderRepository(http: getIt()));
+  getIt.registerLazySingleton<CartRepository>(
+      () => CartRepository(http: getIt()));
+  getIt.registerLazySingleton<ContentRepository>(
+      () => ContentRepository(http: getIt()));
+  getIt.registerLazySingleton<PaymentRepository>(
+      () => PaymentRepository(http: getIt()));
+  getIt.registerLazySingleton<PaymentSettingRepository>(
+      () => PaymentSettingRepository(http: getIt()));
 
   // Global blocs / cubits
   getIt.registerSingleton<AuthBloc>(AuthBloc());

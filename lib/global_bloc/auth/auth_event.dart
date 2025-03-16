@@ -10,4 +10,9 @@ class LoginEvent extends AuthEvent {
   LoginEvent(this.data, this.refreshToken);
 }
 
+class UpdateCurrencyEvent extends AuthEvent {
+  final String currency;
+  UpdateCurrencyEvent(this.currency);
+}
+
 class LogoutEvent extends AuthEvent {}

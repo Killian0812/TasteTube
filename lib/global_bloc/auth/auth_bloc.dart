@@ -17,6 +17,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   AuthBloc() : super(Initial()) {
     on<CheckAuthEvent>(_checkAuth);
+    on<UpdateCurrencyEvent>(_updateCurrency);
     on<LoginEvent>(_login);
     on<LogoutEvent>(_logout);
   }
@@ -52,6 +53,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     http.options.headers['Authorization'] = 'Bearer ${event.data.accessToken}';
     getIt<SocketProvider>().initSocket(event.data.userId);
     UserDataUtil.refreshData();
+  }
+
+  void _updateCurrency(UpdateCurrencyEvent event, Emitter<AuthState> emit) {
+    final authData = state.data!.copyWith(currency: event.currency);
+    emit(Authenticated(authData));
   }
 
   FutureOr<void> _logout(LogoutEvent event, Emitter<AuthState> emit) async {

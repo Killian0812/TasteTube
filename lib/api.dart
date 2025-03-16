@@ -51,6 +51,13 @@ class Api {
   // Payment
   static const getVnpayUrl = '/payment/vnpay/getUrl';
 
+  // Payment options
+  static const changeCurrency = '/payment-option/change-currency';
+  static const getCards = '/payment-option/cards';
+  static const addCard = '/payment-option/add-card';
+  static const setDefaultCard = '/payment-option/set-default-card/:cardId';
+  static const removeCard = '/payment-option/remove-card/:cardId';
+
   // User
   static const userApi = '/users/:userId';
   static const changePasswordApi = '/users/:userId/change_password';

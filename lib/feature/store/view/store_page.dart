@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/feature/store/view/tabs/delivery/delivery_tab.dart';
+import 'package:taste_tube/feature/store/view/tabs/payment/payment_setting_cubit.dart';
 import 'package:taste_tube/feature/store/view/tabs/payment/payment_setting_tab.dart';
 import 'package:taste_tube/feature/store/view/tabs/product/category_cubit.dart';
 import 'package:taste_tube/feature/store/view/tabs/order/shop_order_tab.dart';
@@ -38,10 +39,10 @@ class _StorePageState extends State<StorePage>
         appBar: TabBar(
           controller: _tabController,
           tabs: const [
-            Tab(text: 'Orders'),
-            Tab(text: 'Products'),
-            Tab(text: 'Delivery'),
-            Tab(text: 'Payment'),
+            Tab(icon: Icon(Icons.receipt_long), text: 'Orders'),
+            Tab(icon: Icon(Icons.inventory), text: 'Products'),
+            Tab(icon: Icon(Icons.local_shipping), text: 'Delivery'),
+            Tab(icon: Icon(Icons.payment), text: 'Payment'),
           ],
         ),
         body: MultiBlocProvider(
@@ -52,6 +53,9 @@ class _StorePageState extends State<StorePage>
             BlocProvider(
               create: (context) =>
                   ProductCubit()..fetchProducts(UserDataUtil.getUserId()),
+            ),
+            BlocProvider(
+              create: (context) => PaymentSettingCubit()..fetchCards(),
             ),
           ],
           child: TabBarView(

@@ -183,6 +183,9 @@ class Layout extends StatelessWidget {
           context.go('/login');
         }
       },
+      buildWhen: (previous, current) =>
+          previous is Authenticated && current is! Authenticated ||
+          previous is! Authenticated && current is Authenticated,
       builder: (context, state) {
         if (state is! Authenticated) {
           final currentRoute = GoRouterState.of(context).matchedLocation;
