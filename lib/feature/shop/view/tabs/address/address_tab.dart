@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/shop/view/tabs/address/address_cubit.dart';
-import 'package:taste_tube/utils/location.util.dart';
+import 'package:taste_tube/utils/location/location.util.dart';
 
 class AddressTab extends StatelessWidget {
   const AddressTab({super.key});

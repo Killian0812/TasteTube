@@ -12,7 +12,7 @@ import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/address.dart';
 import 'package:taste_tube/injection.dart';
-import 'package:taste_tube/utils/location.util.dart';
+import 'package:taste_tube/utils/location/location.util.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 double deliveryFee = 0; // Example only

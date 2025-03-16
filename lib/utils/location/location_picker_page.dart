@@ -4,7 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:place_picker_google/place_picker_google.dart';
 import 'package:taste_tube/common/loading.dart';
 import 'package:taste_tube/common/size.dart';
-import 'package:taste_tube/utils/location.util.dart';
+import 'package:taste_tube/utils/location/location.util.dart';
 
 class LocationPickerPage extends StatefulWidget {
   const LocationPickerPage({super.key});
