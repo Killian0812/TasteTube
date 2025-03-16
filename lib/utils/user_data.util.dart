@@ -16,6 +16,10 @@ class UserDataUtil {
     return getIt<AuthBloc>().state.data!.role;
   }
 
+  static String getCurrency() {
+    return getIt<AuthBloc>().state.data!.currency;
+  }
+
   static void initUser(LoginResponse response) {
     getIt<AuthBloc>().add(LoginEvent(
       AuthData(
@@ -25,6 +29,7 @@ class UserDataUtil {
         image: response.image,
         userId: response.userId,
         role: response.role,
+        currency: response.currency,
       ),
       response.refreshToken,
     ));

@@ -106,33 +106,12 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
               if (isEditing) _uploadedImages(context, widget.productCubit),
               _selectedImages(),
               const SizedBox(height: 10),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: costController,
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
-                      decoration: const InputDecoration(labelText: 'Cost'),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  DropdownButton<String>(
-                    value: selectedCurrency,
-                    items: ['USD', 'VND'].map((value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedCurrency = newValue!;
-                      });
-                    },
-                  ),
-                ],
+              TextField(
+                controller: costController,
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                decoration: InputDecoration(
+                    labelText: 'Cost', suffixText: UserDataUtil.getCurrency()),
               ),
               const SizedBox(height: 10),
               TextField(

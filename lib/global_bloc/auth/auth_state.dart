@@ -7,6 +7,7 @@ class AuthData {
   final String username;
   final String image;
   final String role;
+  final String currency;
 
   const AuthData({
     required this.accessToken,
@@ -15,6 +16,7 @@ class AuthData {
     required this.username,
     required this.image,
     required this.role,
+    required this.currency,
   });
 
   factory AuthData.fromJson(Map<String, dynamic> json) {
@@ -25,17 +27,9 @@ class AuthData {
       username: json['username'],
       image: json['image'],
       role: json['role'],
+      currency: json['currency'],
     );
   }
-
-  Map<String, dynamic> toJson() => {
-        'accessToken': accessToken,
-        'userId': userId,
-        'email': email,
-        'username': username,
-        'image': image,
-        'role': role,
-      };
 }
 
 abstract class AuthState {

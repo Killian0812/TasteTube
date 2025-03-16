@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/store/view/tabs/delivery/delivery_cubit.dart';
 import 'package:taste_tube/global_data/order/delivery_options.dart';
+import 'package:taste_tube/utils/user_data.util.dart';
 
 class DeliveryTab extends StatelessWidget {
   const DeliveryTab({super.key});
@@ -77,78 +78,20 @@ class _DeliveryFormState extends State<DeliveryForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Delivery Settings',
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-          const SizedBox(height: 20),
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _feeController,
-                          keyboardType: const TextInputType.numberWithOptions(
-                              decimal: true),
-                          decoration: const InputDecoration(
-                            labelText: 'Delivery Fee per KM',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      DropdownButton<String>(
-                        value: _selectedCurrency,
-                        items: ['USD', 'VND'].map((value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _selectedCurrency = newValue!;
-                          });
-                        },
-                      ),
-                      const SizedBox(width: 10),
-                      const Text('/km'),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _minimumController,
-                          keyboardType: const TextInputType.numberWithOptions(
-                              decimal: true),
-                          decoration: const InputDecoration(
-                            labelText: 'Minimum Order Amount',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      DropdownButton<String>(
-                        value: _selectedCurrency,
-                        items: ['USD', 'VND'].map((value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _selectedCurrency = newValue!;
-                          });
-                        },
-                      ),
-                    ],
+                  TextField(
+                    controller: _feeController,
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
+                    decoration: InputDecoration(
+                      labelText: 'Delivery Fee per KM',
+                      suffixText: "${UserDataUtil.getCurrency()} / Km",
+                      border: OutlineInputBorder(),
+                    ),
                   ),
                   const SizedBox(height: 16),
                   TextField(
@@ -157,7 +100,7 @@ class _DeliveryFormState extends State<DeliveryForm> {
                         const TextInputType.numberWithOptions(decimal: true),
                     decoration: const InputDecoration(
                       labelText: 'Maximum Delivery Distance',
-                      suffixText: 'km',
+                      suffixText: 'Km',
                       border: OutlineInputBorder(),
                     ),
                   ),
