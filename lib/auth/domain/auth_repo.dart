@@ -71,6 +71,9 @@ class AuthRepository {
     try {
       await FacebookAuth.instance.login();
       final userData = await FacebookAuth.instance.getUserData();
+      if (userData["error"] != null) {
+        return Left(ApiError(500, userData["error"]["message"]));
+      }
       final response = await http.post(
         Api.facebookAuthApi,
         data: userData,
