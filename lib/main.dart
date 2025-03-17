@@ -7,10 +7,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:go_router/go_router.dart';
+import 'package:taste_tube/api.dart';
 import 'package:taste_tube/auth/view/login_page.dart';
 import 'package:taste_tube/auth/view/register_page.dart';
 import 'package:taste_tube/auth/view/phone_or_email/login_phone_or_email_page.dart';
 import 'package:taste_tube/auth/view/phone_or_email/register_phone_or_email_page.dart';
+import 'package:taste_tube/build_config.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/fallback.dart';
 import 'package:taste_tube/common/size.dart';
@@ -42,6 +44,7 @@ part 'router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  Api(BuildConfig.environment);
   injectDependencies();
 
   await Fallback.prepareFallback();

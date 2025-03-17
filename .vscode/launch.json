@@ -2,21 +2,22 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "taste_tube",
-            "request": "launch",
-            "type": "dart"
-        },
-        {
-            "name": "taste_tube (profile mode)",
+            "name": "taste_tube ngrok",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "profile"
+            "args": [
+                "--dart-define",
+                "ENVIRONMENT=ngrok",
+            ]
         },
         {
-            "name": "taste_tube (release mode)",
+            "name": "taste_tube vercel",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "release"
+            "args": [
+                "--dart-define",
+                "ENVIRONMENT=vercel",
+            ]
         }
     ]
 }

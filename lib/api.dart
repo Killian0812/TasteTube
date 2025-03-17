@@ -1,6 +1,5 @@
 class Api {
-  // Exposed local server to internet using ngrok
-  static const baseUrl = 'https://first-shepherd-legible.ngrok-free.app';
+  static late final String baseUrl;
 
   // Auth
   static const loginApi = '/auth';
@@ -63,4 +62,20 @@ class Api {
   static const changePasswordApi = '/users/:userId/change_password';
   static const followUserApi = '/users/:userId/follow';
   static const unfollowUserApi = '/users/:userId/unfollow';
+
+  factory Api(String environment) {
+    switch (environment) {
+      case 'ngrok':
+        baseUrl = 'https://first-shepherd-legible.ngrok-free.app';
+        break;
+      case 'vercel':
+        baseUrl = 'https://taste-tube-api.vercel.app';
+        break;
+      default:
+        throw ArgumentError('Unknown environment: $environment');
+    }
+    return Api._internal();
+  }
+
+  Api._internal();
 }
