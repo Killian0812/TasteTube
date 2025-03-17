@@ -9,10 +9,6 @@ Future<void> _showEditProfileDialog(BuildContext context, User user) {
 
   XFile? imageFile;
 
-  Future<void> pickImage() async {
-    imageFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-  }
-
   return showModalBottomSheet(
     context: context,
     useRootNavigator: true,
@@ -64,14 +60,6 @@ Future<void> _showEditProfileDialog(BuildContext context, User user) {
                                 : null),
                       ),
                     ),
-                    Container(
-                      width: 100,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        color: Colors.black..withValues(alpha: 0.5),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
                     IconButton(
                       icon: const Icon(
                         Icons.upload,
@@ -79,7 +67,8 @@ Future<void> _showEditProfileDialog(BuildContext context, User user) {
                         color: Colors.white,
                       ),
                       onPressed: () async {
-                        await pickImage();
+                        imageFile = await ImagePicker()
+                            .pickImage(source: ImageSource.gallery);
                         snapshot(() {});
                       },
                     ),
@@ -110,7 +99,8 @@ Future<void> _showEditProfileDialog(BuildContext context, User user) {
             const SizedBox(height: 20),
             Align(
               alignment: Alignment.centerRight,
-              child: ElevatedButton(
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.save),
                 style: ElevatedButton.styleFrom(
                     elevation: 3,
                     padding: const EdgeInsets.symmetric(
@@ -127,11 +117,9 @@ Future<void> _showEditProfileDialog(BuildContext context, User user) {
                   );
                   if (context.mounted) Navigator.pop(context);
                 },
-                child: const Text('Save',
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black)),
+                label: const Text('Save',
+                    style:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               ),
             )
           ],
