@@ -47,7 +47,7 @@ class _ShopPageState extends State<ShopPage> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 5,
+      length: 4,
       child: SafeArea(
         child: Scaffold(
           appBar: AppBar(
