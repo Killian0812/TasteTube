@@ -124,25 +124,30 @@ class ShopOrderTab extends StatelessWidget {
             }).toList(),
           ),
           Expanded(
-            child: RefreshIndicator(
-              onRefresh: () async {
-                await context.read<OrderCubit>().getOrders();
-              },
-              child: TabBarView(
-                children: OrderStatus.values.map((status) {
-                  final statusOrders = filteredOrders
-                      .where((order) => order.status == status.name)
-                      .toList();
-                  return statusOrders.isEmpty
-                      ? const Center(child: Text('No orders in this category'))
+            child: TabBarView(
+              children: OrderStatus.values.map((status) {
+                final statusOrders = filteredOrders
+                    .where((order) => order.status == status.name)
+                    .toList();
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    await context.read<OrderCubit>().getOrders();
+                  },
+                  child: statusOrders.isEmpty
+                      ? ListView(
+                          children: const [
+                            SizedBox(height: 50),
+                            Center(child: Text('No orders in this category')),
+                          ],
+                        )
                       : ListView.builder(
                           itemCount: statusOrders.length,
                           itemBuilder: (context, index) {
                             return _OrderCard(order: statusOrders[index]);
                           },
-                        );
-                }).toList(),
-              ),
+                        ),
+                );
+              }).toList(),
             ),
           ),
         ],
