@@ -62,10 +62,6 @@ final GoRouter _router = GoRouter(
       ],
     ),
     GoRoute(
-      path: '/location',
-      builder: (context, state) => LocationPickerPage(),
-    ),
-    GoRoute(
       path: '/payment',
       builder: (context, state) => PaymentPage.provider(),
     ),

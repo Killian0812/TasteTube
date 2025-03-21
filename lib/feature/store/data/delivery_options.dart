@@ -1,31 +1,38 @@
-class DeliveryOptions {
-  final double feePerKm;
-  final double minimumOrder;
-  final double maxDistance;
-  final bool isActive;
-  final String currency;
+import 'package:taste_tube/global_data/order/address.dart';
 
-  DeliveryOptions({
+class DeliveryOption {
+  final String shopId;
+  final double freeDistance;
+  final double feePerKm;
+  final double maxDistance;
+  final Address? address;
+
+  DeliveryOption({
+    required this.shopId,
+    required this.freeDistance,
     required this.feePerKm,
-    required this.minimumOrder,
     required this.maxDistance,
-    required this.isActive,
-    required this.currency,
+    this.address,
   });
 
-  DeliveryOptions copyWith({
-    double? feePerKm,
-    double? minimumOrder,
-    double? maxDistance,
-    bool? isActive,
-    String? currency,
-  }) {
-    return DeliveryOptions(
-      feePerKm: feePerKm ?? this.feePerKm,
-      minimumOrder: minimumOrder ?? this.minimumOrder,
-      maxDistance: maxDistance ?? this.maxDistance,
-      isActive: isActive ?? this.isActive,
-      currency: currency ?? this.currency,
+  factory DeliveryOption.fromJson(Map<String, dynamic> json) {
+    return DeliveryOption(
+      shopId: json['shopId'],
+      freeDistance: (json['freeDistance'] as num).toDouble(),
+      feePerKm: (json['feePerKm'] as num).toDouble(),
+      maxDistance: (json['maxDistance'] as num).toDouble(),
+      address:
+          json['address'] != null ? Address.fromJson(json['address']) : null,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'shopId': shopId,
+      'freeDistance': freeDistance,
+      'feePerKm': feePerKm,
+      'maxDistance': maxDistance,
+      'address': address?.id,
+    };
   }
 }

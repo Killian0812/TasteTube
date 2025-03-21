@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
+// import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:place_picker_google/place_picker_google.dart';
@@ -54,13 +54,30 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
           if (loading) {
             return const Center(child: CommonLoadingIndicator.regular);
           } else if (error != null) {
-            return Center(child: Text("Error: $error"));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Error: $error"),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (Navigator.canPop(context)) {
+                        Navigator.of(context).pop();
+                      }
+                    },
+                    child: const Text('Go Back'),
+                  ),
+                ],
+              ),
+            );
           } else {
             return PlacePicker(
               key: GlobalKey(debugLabel: "Maps"),
-              mapsBaseUrl: kIsWeb
-                  ? "https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/"
-                  : "https://maps.googleapis.com/maps/api/",
+              mapsBaseUrl: "https://maps.googleapis.com/maps/api/",
+              // mapsBaseUrl: kIsWeb
+              //     ? "https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/"
+              //     : "https://maps.googleapis.com/maps/api/",
               usePinPointingSearch: true,
               apiKey: "AIzaSyCaKLtA7loFFSm0aEzsg1gY_BOP5xeUn74",
               onPlacePicked: (LocationResult result) {

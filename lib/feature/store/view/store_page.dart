@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:taste_tube/feature/store/view/tabs/delivery/delivery_tab.dart';
+import 'package:taste_tube/feature/store/view/tabs/delivery/delivery_option_tab.dart';
 import 'package:taste_tube/feature/store/view/tabs/payment/payment_setting_cubit.dart';
 import 'package:taste_tube/feature/store/view/tabs/payment/payment_setting_tab.dart';
 import 'package:taste_tube/feature/store/view/tabs/product/category_cubit.dart';
@@ -63,7 +63,7 @@ class _StorePageState extends State<StorePage>
             children: const [
               ShopOrderTab(),
               ProductTab(),
-              DeliveryTab(),
+              DeliveryOptionTab(),
               PaymentSettingTab(),
             ],
           ),

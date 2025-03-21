@@ -7,6 +7,7 @@ import 'package:taste_tube/auth/view/oauth/oauth_cubit.dart';
 import 'package:taste_tube/feature/home/domain/content_repo.dart';
 import 'package:taste_tube/feature/home/view/content_cubit.dart';
 import 'package:taste_tube/feature/payment/domain/payment_repo.dart';
+import 'package:taste_tube/feature/store/domain/delivery_option_repo.dart';
 import 'package:taste_tube/feature/store/domain/payment_setting_repo.dart';
 import 'package:taste_tube/feature/store/domain/product_repo.dart';
 import 'package:taste_tube/feature/profile/domain/profile_repo.dart';
@@ -82,6 +83,8 @@ void injectDependencies() {
       () => PaymentRepository(http: getIt()));
   getIt.registerLazySingleton<PaymentSettingRepository>(
       () => PaymentSettingRepository(http: getIt()));
+  getIt.registerLazySingleton<DeliveryOptionRepository>(
+      () => DeliveryOptionRepository(http: getIt()));
 
   // Global blocs / cubits
   getIt.registerSingleton<AuthBloc>(AuthBloc());

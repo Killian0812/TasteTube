@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:go_router/go_router.dart';
 import 'package:place_picker_google/place_picker_google.dart';
 import 'package:taste_tube/feature/shop/view/tabs/address/address_cubit.dart';
 import 'package:taste_tube/global_data/order/address.dart';
+import 'package:taste_tube/utils/location/location_picker_page.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
 
 Future<Position> locateCurrentPosition() async {
@@ -32,7 +32,9 @@ Future<Position> locateCurrentPosition() async {
 }
 
 void pickLocationThenShowAddressForm(BuildContext context) {
-  context.push("/location").then((location) {
+  Navigator.of(context)
+      .push(MaterialPageRoute(builder: (context) => LocationPickerPage()))
+      .then((location) {
     if (context.mounted && location is LocationResult) {
       showAddressForm(
         context,
