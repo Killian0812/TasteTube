@@ -458,6 +458,12 @@ class _OrderCardState extends State<_OrderCard> {
                       ],
                     ),
                   ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Delivery: ${order.address.value}',
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  const SizedBox(height: 8),
                   if (order.notes.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),

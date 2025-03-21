@@ -40,7 +40,7 @@ class _StorePageState extends State<StorePage>
           controller: _tabController,
           tabs: const [
             Tab(icon: Icon(Icons.receipt_long), text: 'Orders'),
-            Tab(icon: Icon(Icons.inventory), text: 'Products'),
+            Tab(icon: Icon(Icons.food_bank_rounded), text: 'Products'),
             Tab(icon: Icon(Icons.local_shipping), text: 'Delivery'),
             Tab(icon: Icon(Icons.payment), text: 'Payment'),
           ],

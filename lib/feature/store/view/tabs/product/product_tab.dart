@@ -160,8 +160,8 @@ class ProductTab extends StatelessWidget {
                                         physics:
                                             const NeverScrollableScrollPhysics(),
                                         gridDelegate:
-                                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 2,
+                                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                                          maxCrossAxisExtent: 250,
                                           childAspectRatio: 0.75,
                                           crossAxisSpacing: 10,
                                           mainAxisSpacing: 10,
