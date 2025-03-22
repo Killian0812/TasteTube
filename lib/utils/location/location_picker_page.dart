@@ -50,28 +50,23 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.of(context).pop();
+            }
+          },
+        ),
+        title: const Text('Pick your address'),
+      ),
       body: Builder(
         builder: (context) {
           if (loading) {
             return const Center(child: CommonLoadingIndicator.regular);
           } else if (error != null) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text("Error: $error"),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (Navigator.canPop(context)) {
-                        Navigator.of(context).pop();
-                      }
-                    },
-                    child: const Text('Go Back'),
-                  ),
-                ],
-              ),
-            );
+            return Center(child: Text("Error: $error"));
           } else {
             return PlacePicker(
               key: GlobalKey(debugLabel: "Maps"),
