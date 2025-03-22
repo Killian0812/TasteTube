@@ -57,7 +57,7 @@ dependencies:
   place_picker_google:
     git:
       url: https://github.com/Killian0812/place_picker_google
-      ref: main
+      ref: 8e2ef7fe3eaa1f0efa1f6d9f112b4f8b927907d9
   animated_bottom_navigation_bar: ^1.4.0
   share_plus: ^10.1.4
   flutter_credit_card: ^4.1.0

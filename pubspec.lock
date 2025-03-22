@@ -1057,8 +1057,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: "2cf9c3224bb78305adf5af6ebeb7e9c0afa78bf4"
+      ref: "8e2ef7fe3eaa1f0efa1f6d9f112b4f8b927907d9"
+      resolved-ref: "8e2ef7fe3eaa1f0efa1f6d9f112b4f8b927907d9"
       url: "https://github.com/Killian0812/place_picker_google"
     source: git
     version: "0.0.14"

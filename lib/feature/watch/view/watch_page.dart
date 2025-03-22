@@ -11,6 +11,7 @@ import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/home/view/content_cubit.dart';
+import 'package:taste_tube/feature/shop/view/payment_page.dart';
 import 'package:taste_tube/feature/shop/view/quantity_dialog.dart';
 import 'package:taste_tube/global_bloc/download/download_cubit.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';

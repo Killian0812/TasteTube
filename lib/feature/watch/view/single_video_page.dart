@@ -328,7 +328,9 @@ class _SingleVideoState extends State<SingleVideo>
               ToastService.showToast(context, state.success, ToastType.success);
             }
             if (state is AddedToCartAndReadyToPay) {
-              context.push("/payment");
+              Navigator.of(context, rootNavigator: true).push(
+                MaterialPageRoute(builder: (context) => PaymentPage.provider()),
+              );
             }
           },
           child: FractionallySizedBox(

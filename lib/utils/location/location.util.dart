@@ -32,7 +32,7 @@ Future<Position> locateCurrentPosition() async {
 }
 
 void pickLocationThenShowAddressForm(BuildContext context) {
-  Navigator.of(context)
+  Navigator.of(context, rootNavigator: true)
       .push(MaterialPageRoute(builder: (context) => LocationPickerPage()))
       .then((location) {
     if (context.mounted && location is LocationResult) {

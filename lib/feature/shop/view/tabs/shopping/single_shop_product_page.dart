@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/feature/shop/view/cart_page.dart';
+import 'package:taste_tube/feature/shop/view/payment_page.dart';
 import 'package:taste_tube/feature/shop/view/quantity_dialog.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_data/product/product.dart';
@@ -23,7 +24,9 @@ class SingleShopProductPage extends StatelessWidget {
       body: BlocListener<CartCubit, CartState>(
         listener: (context, state) {
           if (state is AddedToCartAndReadyToPay) {
-            context.push("/payment");
+            Navigator.of(context, rootNavigator: true).push(
+              MaterialPageRoute(builder: (context) => PaymentPage.provider()),
+            );
           }
         },
         child: ListView(

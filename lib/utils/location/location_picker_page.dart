@@ -1,7 +1,8 @@
-// import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:place_picker_google/place_picker_google.dart';
+import 'package:taste_tube/api.dart';
 import 'package:taste_tube/common/loading.dart';
 import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/utils/location/location.util.dart';
@@ -74,10 +75,10 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
           } else {
             return PlacePicker(
               key: GlobalKey(debugLabel: "Maps"),
-              mapsBaseUrl: "https://maps.googleapis.com/maps/api/",
-              // mapsBaseUrl: kIsWeb
-              //     ? "https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/"
-              //     : "https://maps.googleapis.com/maps/api/",
+              mapsBaseUrl: kIsWeb
+                  ? "${Api.baseUrl}/api/maps/"
+                  : "https://maps.googleapis.com/maps/api/",
+              mapsApiHeaders: {'ngrok-skip-browser-warning': 'true'},
               usePinPointingSearch: true,
               apiKey: "AIzaSyCaKLtA7loFFSm0aEzsg1gY_BOP5xeUn74",
               onPlacePicked: (LocationResult result) {

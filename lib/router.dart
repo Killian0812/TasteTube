@@ -62,10 +62,6 @@ final GoRouter _router = GoRouter(
       ],
     ),
     GoRoute(
-      path: '/payment',
-      builder: (context, state) => PaymentPage.provider(),
-    ),
-    GoRoute(
         path: '/shop/:shopId',
         name: 'single-shop',
         builder: (context, state) {
@@ -77,15 +73,6 @@ final GoRouter _router = GoRouter(
             extra?['shopPhone'],
           );
         }),
-    GoRoute(
-      path: '/camera',
-      builder: (context, state) =>
-          CameraPage.provider(reviewTarget: state.extra as User?),
-    ),
-    GoRoute(
-      path: '/search',
-      builder: (context, state) => SearchPage.provider(),
-    ),
     GoRoute(
       path: '/cart',
       builder: (context, state) => const CartPage(),

@@ -12,6 +12,7 @@ import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/common/loading.dart';
 import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/toast.dart';
+import 'package:taste_tube/feature/record/camera/camera_page.dart';
 import 'package:taste_tube/global_data/user/user.dart';
 import 'package:taste_tube/feature/profile/view/profile_cubit.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
@@ -129,9 +130,13 @@ class _GuestProfileInteractions extends StatelessWidget {
                     ),
               const SizedBox(width: 5),
               ElevatedButton.icon(
-                onPressed: () {
-                  context.push('/camera', extra: state.user);
-                },
+                onPressed: () =>
+                    Navigator.of(context, rootNavigator: true).push(
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        CameraPage.provider(reviewTarget: state.user),
+                  ),
+                ),
                 icon: const Icon(Icons.reviews),
                 label: const Text('Send review'),
               ),
