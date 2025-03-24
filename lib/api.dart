@@ -38,6 +38,7 @@ class Api {
   static const cartApi = '/cart';
   static const addCartApi = '/cart/add';
   static const updateCartApi = '/cart/update';
+  static const orderSummary = '/cart/order-summary';
 
   // Address & Delivery
   static const addressApi = '/address';

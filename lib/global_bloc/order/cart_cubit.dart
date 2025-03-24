@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taste_tube/global_data/order/address.dart';
 import 'package:taste_tube/global_data/order/cart.dart';
+import 'package:taste_tube/global_data/order/order.dart';
 import 'package:taste_tube/global_data/product/product.dart';
 import 'package:taste_tube/global_repo/cart_repo.dart';
 import 'package:taste_tube/injection.dart';
@@ -8,10 +10,12 @@ abstract class CartState {
   final Cart cart;
   final String? message;
   final List<String> selectedItems;
+  final List<OrderSummary> orderSummary;
 
   const CartState({
     required this.cart,
     required this.selectedItems,
+    required this.orderSummary,
     this.message,
   });
 }
@@ -26,39 +30,64 @@ class CartInitial extends CartState {
               createdAt: DateTime.now(),
               updatedAt: DateTime.now()),
           selectedItems: [],
+          orderSummary: [],
         );
 }
 
 class CartLoading extends CartState {
-  const CartLoading(Cart cart, List<String> selectedItems)
-      : super(cart: cart, selectedItems: selectedItems);
+  const CartLoading(
+      Cart cart, List<String> selectedItems, List<OrderSummary> orderSummary)
+      : super(
+          cart: cart,
+          selectedItems: selectedItems,
+          orderSummary: orderSummary,
+        );
 }
 
 class CartLoaded extends CartState {
-  const CartLoaded(Cart cart, List<String> selectedItems)
-      : super(cart: cart, selectedItems: selectedItems);
+  const CartLoaded(
+      Cart cart, List<String> selectedItems, List<OrderSummary> orderSummary)
+      : super(
+          cart: cart,
+          selectedItems: selectedItems,
+          orderSummary: orderSummary,
+        );
 }
 
 class CartSuccess extends CartState {
   final String success;
 
-  const CartSuccess(Cart cart, List<String> selectedItems, this.success)
-      : super(cart: cart, selectedItems: selectedItems, message: success);
+  const CartSuccess(Cart cart, List<String> selectedItems,
+      List<OrderSummary> orderSummary, this.success)
+      : super(
+          cart: cart,
+          selectedItems: selectedItems,
+          orderSummary: orderSummary,
+          message: success,
+        );
 }
 
 class CartError extends CartState {
   final String error;
 
-  const CartError(Cart cart, List<String> selectedItems, this.error)
-      : super(cart: cart, selectedItems: selectedItems, message: error);
+  const CartError(Cart cart, List<String> selectedItems,
+      List<OrderSummary> orderSummary, this.error)
+      : super(
+          cart: cart,
+          selectedItems: selectedItems,
+          orderSummary: orderSummary,
+          message: error,
+        );
 }
 
 class CartSelectItemUpdated extends CartState {
   final List<String> updateItemList;
 
-  const CartSelectItemUpdated(Cart cart, this.updateItemList)
+  const CartSelectItemUpdated(
+      Cart cart, List<OrderSummary> orderSummary, this.updateItemList)
       : super(
           cart: cart,
+          orderSummary: orderSummary,
           selectedItems: updateItemList,
         );
 }
@@ -66,9 +95,11 @@ class CartSelectItemUpdated extends CartState {
 class AddedToCartAndReadyToPay extends CartState {
   final List<String> updateItemList;
 
-  const AddedToCartAndReadyToPay(Cart cart, this.updateItemList)
+  const AddedToCartAndReadyToPay(
+      Cart cart, List<OrderSummary> orderSummary, this.updateItemList)
       : super(
           cart: cart,
+          orderSummary: orderSummary,
           selectedItems: updateItemList,
         );
 }
@@ -79,33 +110,67 @@ class CartCubit extends Cubit<CartState> {
   CartCubit() : super(CartInitial());
 
   Future<void> getCart() async {
-    emit(CartLoading(state.cart, state.selectedItems));
+    emit(CartLoading(state.cart, state.selectedItems, state.orderSummary));
     try {
       final result = await repository.getCart();
       result.fold(
           (error) => emit(CartError(
                 state.cart,
                 state.selectedItems,
+                state.orderSummary,
                 error.message ?? 'Error fetching cart',
               )), (cart) {
         final updatedSelectedItems = state.selectedItems
             .where((t) => cart.items.any((e) => e.id == t))
             .toList();
-        emit(CartLoaded(cart, updatedSelectedItems));
+        emit(CartLoaded(cart, updatedSelectedItems, state.orderSummary));
       });
     } catch (e) {
-      emit(CartError(state.cart, state.selectedItems, e.toString()));
+      emit(CartError(
+          state.cart, state.selectedItems, state.orderSummary, e.toString()));
     }
   }
 
+  Future<void> updateOrderSummary(Address? address) async {
+    if (address == null) {
+      emit(CartLoaded(
+        state.cart,
+        state.selectedItems,
+        [],
+      ));
+      return;
+    }
+
+    final orderSummaries = await repository.getOrderSummary(
+      state.selectedItems,
+      address,
+    );
+    orderSummaries.fold(
+      (error) => emit(CartError(
+        state.cart,
+        state.selectedItems,
+        [],
+        error.message ?? 'Error fetching order summary',
+      )),
+      (orderSummaryList) {
+        emit(CartLoaded(
+          state.cart,
+          state.selectedItems,
+          orderSummaryList,
+        ));
+      },
+    );
+  }
+
   Future<void> addToCart(Product product, int quantity) async {
-    emit(CartLoading(state.cart, state.selectedItems));
+    emit(CartLoading(state.cart, state.selectedItems, state.orderSummary));
     try {
       final result = await repository.addToCart(product, quantity);
       result.fold(
         (error) => emit(CartError(
           state.cart,
           state.selectedItems,
+          state.orderSummary,
           error.message ?? 'Error add item to cart',
         )),
         (item) {
@@ -117,22 +182,25 @@ class CartCubit extends Cubit<CartState> {
           } else {
             updatedCart.items[index] = item;
           }
-          emit(CartSuccess(updatedCart, state.selectedItems, "Added to cart"));
+          emit(CartSuccess(updatedCart, state.selectedItems, state.orderSummary,
+              "Added to cart"));
         },
       );
     } catch (e) {
-      emit(CartError(state.cart, state.selectedItems, e.toString()));
+      emit(CartError(
+          state.cart, state.selectedItems, state.orderSummary, e.toString()));
     }
   }
 
   Future<void> removeFromCart(CartItem item) async {
-    emit(CartLoading(state.cart, state.selectedItems));
+    emit(CartLoading(state.cart, state.selectedItems, state.orderSummary));
     try {
       final result = await repository.removeFromCart(item);
       result.fold(
         (error) => emit(CartError(
           state.cart,
           state.selectedItems,
+          state.orderSummary,
           error.message ?? 'Error removing cart item',
         )),
         (success) {
@@ -142,33 +210,38 @@ class CartCubit extends Cubit<CartState> {
           if (updatedSelectedItems.contains(item.id)) {
             updatedSelectedItems.removeWhere((e) => e == item.id);
           }
-          emit(CartLoaded(updatedCart, updatedSelectedItems));
+          emit(CartLoaded(
+              updatedCart, updatedSelectedItems, state.orderSummary));
         },
       );
     } catch (e) {
-      emit(CartError(state.cart, state.selectedItems, e.toString()));
+      emit(CartError(
+          state.cart, state.selectedItems, state.orderSummary, e.toString()));
     }
   }
 
   Future<void> updateItemQuantity(CartItem item, int quantity) async {
-    emit(CartLoading(state.cart, state.selectedItems));
+    emit(CartLoading(state.cart, state.selectedItems, state.orderSummary));
     try {
       final result = await repository.updateItemQuantity(item, quantity);
       result.fold(
         (error) => emit(CartError(
           state.cart,
           state.selectedItems,
+          state.orderSummary,
           error.message ?? 'Error updating cart',
         )),
         (updatedItem) {
           final updatedCart = state.cart.clone();
           final index = updatedCart.items.indexWhere((e) => e.id == item.id);
           updatedCart.items[index] = updatedItem;
-          emit(CartLoaded(updatedCart, state.selectedItems));
+          emit(
+              CartLoaded(updatedCart, state.selectedItems, state.orderSummary));
         },
       );
     } catch (e) {
-      emit(CartError(state.cart, state.selectedItems, e.toString()));
+      emit(CartError(
+          state.cart, state.selectedItems, state.orderSummary, e.toString()));
     }
   }
 
@@ -179,7 +252,11 @@ class CartCubit extends Cubit<CartState> {
     } else {
       updateItemList.add(item.id);
     }
-    emit(CartSelectItemUpdated(state.cart, updateItemList));
+    emit(CartSelectItemUpdated(
+      state.cart,
+      [],
+      updateItemList,
+    ));
   }
 
   Future<void> selectAllItemInSingleShop(List<CartItem> items) async {
@@ -187,17 +264,22 @@ class CartCubit extends Cubit<CartState> {
     for (var item in items) {
       if (!updateItemList.contains(item.id)) updateItemList.add(item.id);
     }
-    emit(CartSelectItemUpdated(state.cart, updateItemList));
+    emit(CartSelectItemUpdated(state.cart, state.orderSummary, updateItemList));
   }
 
   Future<void> addToCartAndPayImmediate(Product product, int quantity) async {
-    emit(CartLoading(state.cart, state.selectedItems));
+    emit(CartLoading(
+      state.cart,
+      state.selectedItems,
+      state.orderSummary,
+    ));
     try {
       final result = await repository.addToCart(product, quantity);
       result.fold(
         (error) => emit(CartError(
           state.cart,
           state.selectedItems,
+          state.orderSummary,
           error.message ?? 'Error add item to cart',
         )),
         (item) {
@@ -210,11 +292,13 @@ class CartCubit extends Cubit<CartState> {
             updatedCart.items[index] = item;
           }
           final updateItemList = [item.id];
-          emit(AddedToCartAndReadyToPay(updatedCart, updateItemList));
+          emit(AddedToCartAndReadyToPay(
+              updatedCart, state.orderSummary, updateItemList));
         },
       );
     } catch (e) {
-      emit(CartError(state.cart, state.selectedItems, e.toString()));
+      emit(CartError(
+          state.cart, state.selectedItems, state.orderSummary, e.toString()));
     }
   }
 }

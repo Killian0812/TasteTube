@@ -28,4 +28,15 @@ class Address {
       longitude: (json['longitude'] as num).toDouble(),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'userId': userId,
+      'name': name,
+      'phone': phone,
+      'value': value,
+      'latitude': latitude,
+      'longitude': longitude,
+    };
+  }
 }

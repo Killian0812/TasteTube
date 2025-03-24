@@ -112,6 +112,7 @@ class _PaymentPageState extends State<PaymentPage> {
   }
 
   Widget _buildAddressSection() {
+    final cartCubit = context.read<CartCubit>();
     return BlocConsumer<AddressCubit, AddressState>(
       listener: (context, state) {
         if (state is AddressError) {
@@ -119,13 +120,15 @@ class _PaymentPageState extends State<PaymentPage> {
         }
         if (state is AddressLoaded) {
           setState(() {
-            selectedAddress = state.addresses.first;
+            selectedAddress = state.addresses.firstOrNull;
           });
+          cartCubit.updateOrderSummary(selectedAddress);
         }
         if (state is AddressAdded) {
           setState(() {
             selectedAddress = state.addresses.last;
           });
+          cartCubit.updateOrderSummary(selectedAddress);
         }
       },
       builder: (context, state) {

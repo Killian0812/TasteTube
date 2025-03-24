@@ -76,3 +76,26 @@ class Order {
     );
   }
 }
+
+class OrderSummary {
+  final String shopId;
+  final double deliveryFee;
+  final double discountAmount;
+  final double totalAmount;
+
+  const OrderSummary({
+    required this.shopId,
+    required this.deliveryFee,
+    required this.discountAmount,
+    required this.totalAmount,
+  });
+
+  factory OrderSummary.fromJson(Map<String, dynamic> json) {
+    return OrderSummary(
+      shopId: json['shopId'],
+      deliveryFee: json['deliveryFee'] * 1.0,
+      discountAmount: json['discountAmount'] * 1.0,
+      totalAmount: json['totalAmount'] * 1.0,
+    );
+  }
+}

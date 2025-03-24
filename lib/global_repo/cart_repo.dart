@@ -2,7 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/common/error.dart';
+import 'package:taste_tube/global_data/order/address.dart';
 import 'package:taste_tube/global_data/order/cart.dart';
+import 'package:taste_tube/global_data/order/order.dart';
 import 'package:taste_tube/global_data/product/product.dart';
 
 class CartRepository {
@@ -58,6 +60,25 @@ class CartRepository {
       });
       final cartItem = CartItem.fromJson(response.data['cartItem']);
       return Right(cartItem);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
+
+  Future<Either<ApiError, List<OrderSummary>>> getOrderSummary(
+      List<String> selectedItems, Address address) async {
+    try {
+      final response = await http.post(Api.orderSummary, data: {
+        'selectedItems': selectedItems,
+        'address': address.toJson(),
+      });
+
+      final orderSummaryList = (response.data['orderSummary'] as List<dynamic>)
+          .map((item) => OrderSummary.fromJson(item))
+          .toList();
+      return Right(orderSummaryList);
     } on DioException catch (e) {
       return Left(ApiError.fromDioException(e));
     } catch (e) {
