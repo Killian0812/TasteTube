@@ -14,6 +14,8 @@ class OrderFilter extends ChangeNotifier {
   String? totalCostRange;
   String? paymentMethod;
   String searchQuery = '';
+  DateTime? fromDate;
+  DateTime? toDate;
 
   void setTotalCostRange(String? newRange) {
     totalCostRange = newRange;
@@ -30,10 +32,18 @@ class OrderFilter extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setDateRange(DateTime? from, DateTime? to) {
+    fromDate = from;
+    toDate = to;
+    notifyListeners();
+  }
+
   void reset() {
     totalCostRange = null;
     paymentMethod = null;
     searchQuery = '';
+    fromDate = null;
+    toDate = null;
     notifyListeners();
   }
 }
@@ -184,6 +194,18 @@ class ShopOrderTab extends StatelessWidget {
           .toList();
     }
 
+    // Filter by date range
+    if (filter.fromDate != null) {
+      result = result
+          .where((order) => order.createdAt.isAfter(filter.fromDate!))
+          .toList();
+    }
+    if (filter.toDate != null) {
+      result = result
+          .where((order) => order.createdAt.isBefore(filter.toDate!))
+          .toList();
+    }
+
     // Filter by search query
     if (filter.searchQuery.isNotEmpty) {
       final query = filter.searchQuery.toLowerCase();
@@ -211,6 +233,64 @@ class ShopOrderTab extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Date Range Filter
+                    const Text(
+                      'Date Range',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () async {
+                              final date = await showDatePicker(
+                                context: context,
+                                initialDate: filter.fromDate ?? DateTime.now(),
+                                firstDate: DateTime(2000),
+                                lastDate: DateTime.now(),
+                              );
+                              if (date != null) {
+                                setState(() =>
+                                    filter.setDateRange(date, filter.toDate));
+                              }
+                            },
+                            child: Text(
+                              filter.fromDate != null
+                                  ? 'From: ${filter.fromDate!.toString().split(' ')[0]}'
+                                  : 'From: All',
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () async {
+                              final date = await showDatePicker(
+                                context: context,
+                                initialDate: filter.toDate ?? DateTime.now(),
+                                firstDate: DateTime(2000),
+                                lastDate: DateTime.now(),
+                              );
+                              if (date != null) {
+                                setState(() =>
+                                    filter.setDateRange(filter.fromDate, date));
+                              }
+                            },
+                            child: Text(
+                              filter.toDate != null
+                                  ? 'To: ${filter.toDate!.toString().split(' ')[0]}'
+                                  : 'To: All',
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+
                     // Payment Amount Filter
                     const Text(
                       'Payment Amount',
