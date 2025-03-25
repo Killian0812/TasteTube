@@ -132,14 +132,13 @@ class CartCubit extends Cubit<CartState> {
   }
 
   Future<void> updateOrderSummary(Address? address) async {
-    if (address == null) {
-      emit(CartLoaded(
-        state.cart,
-        state.selectedItems,
-        [],
-      ));
-      return;
-    }
+    emit(CartLoaded(
+      state.cart,
+      state.selectedItems,
+      [],
+    ));
+
+    if (address == null) return;
 
     final orderSummaries = await repository.getOrderSummary(
       state.selectedItems,

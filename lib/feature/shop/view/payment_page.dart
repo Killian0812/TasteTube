@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,12 +12,13 @@ import 'package:taste_tube/feature/shop/view/tabs/address/address_cubit.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/address.dart';
+import 'package:taste_tube/global_data/order/cart.dart';
 import 'package:taste_tube/injection.dart';
 import 'package:taste_tube/utils/location/location.util.dart';
+import 'package:taste_tube/utils/user_data.util.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-double deliveryFee = 0; // Example only
-double discount = 0;
+final currency = UserDataUtil.getCurrency();
 
 class PaymentPage extends StatefulWidget {
   const PaymentPage({super.key});
@@ -49,9 +51,9 @@ class _PaymentPageState extends State<PaymentPage> {
         body: BlocListener<PaymentCubit, PaymentState>(
           listener: (context, state) async {
             if (state is PaymentSuccess) {
-              final orderState = context.read<CartCubit>().state;
-              final selectedItems = orderState.cart.items
-                  .where((item) => orderState.selectedItems.contains(item.id))
+              final cartState = context.read<CartCubit>().state;
+              final selectedItems = cartState.cart.items
+                  .where((item) => cartState.selectedItems.contains(item.id))
                   .toList();
 
               context.read<OrderCubit>().createOrder(
@@ -60,6 +62,7 @@ class _PaymentPageState extends State<PaymentPage> {
                     _selectedPaymentMethod.name,
                     _notes,
                     state.pid,
+                    cartState.orderSummary,
                   );
             }
             if (state is PaymentUrlReady) {
@@ -239,15 +242,9 @@ class _PaymentPageState extends State<PaymentPage> {
 
   Widget _buildBottomOrderSection() {
     return BlocBuilder<CartCubit, CartState>(
-      builder: (context, state) {
-        final selectedItems = state.cart.items
-            .where((item) => state.selectedItems.contains(item.id))
-            .toList();
-        double total = selectedItems.fold(
-            0, (sum, item) => sum + item.quantity * item.product.cost);
-        double finalAmount = total + deliveryFee - discount;
-        String currency = selectedItems.first.currency;
-
+      builder: (context, cartState) {
+        final grandTotal = cartState.orderSummary
+            .fold(0.0, (sum, summary) => sum + (summary.totalAmount ?? 0.0));
         return Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -261,21 +258,25 @@ class _PaymentPageState extends State<PaymentPage> {
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   Text(
-                      '${finalAmount.toStringAsFixed(2)} ${selectedItems.first.currency}',
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold)),
+                    'Total: ${grandTotal.toStringAsFixed(2)} $currency',
+                    style: const TextStyle(
+                      fontSize: 19,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 10),
               BlocBuilder<OrderCubit, OrderState>(
                 builder: (context, state) {
                   return CommonButton(
-                    isDisabled: _selectedPaymentMethod ==
-                        PaymentMethod.ZALOPAY, // Temporary disable
+                    isDisabled:
+                        _selectedPaymentMethod == PaymentMethod.ZALOPAY ||
+                            cartState.orderSummary.isEmpty,
                     isLoading: state is OrderLoading,
                     onPressed: () {
                       context.read<PaymentCubit>().createPayment(
-                          _selectedPaymentMethod, finalAmount, currency);
+                          _selectedPaymentMethod, grandTotal, currency);
                       return;
                     },
                     text: 'Order',
@@ -300,43 +301,127 @@ class _OrderSummarySection extends StatelessWidget {
         final selectedItems = state.cart.items
             .where((item) => state.selectedItems.contains(item.id))
             .toList();
-        double total = selectedItems.fold(
-            0, (sum, item) => sum + item.quantity * item.product.cost);
-        String currency = selectedItems.first.currency;
+
+        if (selectedItems.isEmpty) {
+          return const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text('No items selected'),
+          );
+        }
+
+        // Group items by shop
+        final Map<String, List<CartItem>> itemsByShop = {};
+        for (var item in selectedItems) {
+          final shopId = item.product.userId;
+          if (!itemsByShop.containsKey(shopId)) {
+            itemsByShop[shopId] = [];
+          }
+          itemsByShop[shopId]!.add(item);
+        }
 
         return Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               const Text('Order Summary',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               const SizedBox(height: 10),
-              ...selectedItems.map((item) => Row(
-                    children: [
-                      Image.network(item.product.images[0].url,
-                          width: 50, height: 50),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                            '${item.product.name} x ${item.quantity}: ${item.quantity * item.product.cost} ${item.product.currency}'),
+              // Cart items
+              ...itemsByShop.entries.map((entry) {
+                final shopId = entry.key;
+                final shopItems = entry.value;
+                final orderSummary = state.orderSummary
+                    .firstWhereOrNull((summary) => summary.shopId == shopId);
+                final shopImage = shopItems.first.product.userImage;
+                final shopName = shopItems.first.product.username;
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Shop header
+                    ExpansionTile(
+                      initiallyExpanded: true,
+                      childrenPadding:
+                          const EdgeInsets.symmetric(horizontal: 30),
+                      title: Row(
+                        children: [
+                          CircleAvatar(
+                            backgroundImage: NetworkImage(shopImage),
+                            radius: 16,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              shopName,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  )),
-              const Divider(),
-              Text('Subtotal: ${total.toStringAsFixed(2)} $currency'),
-              Text(
-                'Delivery Fee: ${deliveryFee.toStringAsFixed(2)} $currency',
-                style: TextStyle(color: Colors.red[200]),
-              ),
-              Text(
-                'Discount: ${discount.toStringAsFixed(2)} $currency',
-                style: TextStyle(color: Colors.green[600]),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                  'Total: ${(total + deliveryFee - discount).toStringAsFixed(2)} $currency',
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
+                      // Items for this shop
+                      children: [
+                        ...shopItems.map((item) => Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: Row(
+                                children: [
+                                  Image.network(
+                                    item.product.images[0].url,
+                                    width: 50,
+                                    height: 50,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      '${item.product.name} x ${item.quantity}: ${(item.quantity * item.product.cost).toStringAsFixed(2)} ${item.product.currency}',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )),
+                      ],
+                    ),
+
+                    // Summary for this shop
+                    if (orderSummary != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0, left: 30),
+                        child: orderSummary.message == null
+                            ? Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'Delivery Fee: ${orderSummary.deliveryFee!.toStringAsFixed(2)} $currency',
+                                    style: TextStyle(color: Colors.blue[200]),
+                                  ),
+                                  Text(
+                                    'Discount: ${orderSummary.discountAmount!.toStringAsFixed(2)} $currency',
+                                    style: TextStyle(color: Colors.green[600]),
+                                  ),
+                                  Text(
+                                    'Subtotal: ${orderSummary.totalAmount!.toStringAsFixed(2)} $currency',
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              )
+                            : Text(
+                                orderSummary.message!,
+                                style: TextStyle(color: Colors.red[200]),
+                              ),
+                      ),
+                    const Divider(),
+                  ],
+                );
+              }),
             ],
           ),
         );

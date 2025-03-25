@@ -79,23 +79,36 @@ class Order {
 
 class OrderSummary {
   final String shopId;
-  final double deliveryFee;
-  final double discountAmount;
-  final double totalAmount;
+  final double? deliveryFee;
+  final double? discountAmount;
+  final double? totalAmount;
+  final String? message;
 
   const OrderSummary({
     required this.shopId,
     required this.deliveryFee,
     required this.discountAmount,
     required this.totalAmount,
+    required this.message,
   });
 
   factory OrderSummary.fromJson(Map<String, dynamic> json) {
     return OrderSummary(
       shopId: json['shopId'],
-      deliveryFee: json['deliveryFee'] * 1.0,
-      discountAmount: json['discountAmount'] * 1.0,
-      totalAmount: json['totalAmount'] * 1.0,
+      deliveryFee: (json['deliveryFee'] as num?)?.toDouble(),
+      discountAmount: (json['discountAmount'] as num?)?.toDouble(),
+      totalAmount: (json['totalAmount'] as num?)?.toDouble(),
+      message: json['message'] as String?,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['shopId'] = shopId;
+    if (deliveryFee != null) map['deliveryFee'] = deliveryFee;
+    if (discountAmount != null) map['discountAmount'] = discountAmount;
+    if (totalAmount != null) map['totalAmount'] = totalAmount;
+    if (message != null) map['message'] = message;
+    return map;
   }
 }
