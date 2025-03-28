@@ -138,8 +138,7 @@ class PaymentSettingTab extends StatelessWidget {
                             const SizedBox(height: 16),
                             TextButton.icon(
                               onPressed: () {
-                                Navigator.push(
-                                  context,
+                                Navigator.of(context, rootNavigator: true).push(
                                   MaterialPageRoute(
                                     builder: (context) =>
                                         AddCardPage.provider(cubit),
