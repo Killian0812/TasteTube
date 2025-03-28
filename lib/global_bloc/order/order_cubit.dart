@@ -48,7 +48,7 @@ class OrderCubit extends Cubit<OrderState> {
           error.message ?? 'Error fetching orders',
         )),
         (orders) {
-          orders.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+          orders.sort((a, b) => b.createdAt.compareTo(a.createdAt));
           emit(
             OrderLoaded(orders),
           );

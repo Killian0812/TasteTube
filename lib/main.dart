@@ -88,7 +88,24 @@ class MyApp extends StatelessWidget {
             theme: ThemeData.light().copyWith(
               primaryColor: Colors.black,
               hintColor: Colors.amber[300],
-              textTheme: Theme.of(context).textTheme.apply(fontFamily: 'Ganh'),
+              textTheme: ThemeData.light()
+                  .textTheme
+                  .apply(fontFamily: 'Ganh')
+                  .copyWith(
+                    bodyMedium: const TextStyle(
+                      color: Colors.black,
+                      decoration: TextDecoration.none,
+                    ),
+                    bodyLarge: const TextStyle(
+                      color: Colors.black,
+                      decoration: TextDecoration.none,
+                    ),
+                    titleLarge: const TextStyle(
+                      color: Colors.black,
+                      decoration: TextDecoration.none,
+                    ),
+                    // Add other styles if needed
+                  ),
               scaffoldBackgroundColor: Colors.white,
               textSelectionTheme:
                   const TextSelectionThemeData(cursorColor: Colors.black),
@@ -118,9 +135,22 @@ class MyApp extends StatelessWidget {
             ),
             darkTheme: ThemeData.dark().copyWith(
               primaryColor: Colors.white,
-              textTheme: Theme.of(context)
-                  .textTheme
-                  .apply(fontFamily: 'Ganh', bodyColor: Colors.white),
+              textTheme:
+                  ThemeData.dark().textTheme.apply(fontFamily: 'Ganh').copyWith(
+                        bodyMedium: const TextStyle(
+                          color: Colors.white,
+                          decoration: TextDecoration.none,
+                        ),
+                        bodyLarge: const TextStyle(
+                          color: Colors.white,
+                          decoration: TextDecoration.none,
+                        ),
+                        titleLarge: const TextStyle(
+                          color: Colors.white,
+                          decoration: TextDecoration.none,
+                        ),
+                        // Add other styles if needed
+                      ),
               scaffoldBackgroundColor: Colors.black,
               textSelectionTheme:
                   const TextSelectionThemeData(cursorColor: Colors.white),
@@ -154,7 +184,7 @@ class MyApp extends StatelessWidget {
                 PointerDeviceKind.mouse,
                 PointerDeviceKind.touch,
                 PointerDeviceKind.stylus,
-                PointerDeviceKind.unknown
+                PointerDeviceKind.unknown,
               },
             ),
           );

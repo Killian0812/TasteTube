@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/constant.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/payment/data/payment_data.dart';
+import 'package:taste_tube/feature/store/view/tabs/order/order_detail/order_detail_page.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/order.dart';
+import 'package:taste_tube/injection.dart';
+import 'package:taste_tube/providers.dart';
 
 class OrderFilter extends ChangeNotifier {
   String? totalCostRange;
@@ -395,8 +397,6 @@ class _OrderCard extends StatefulWidget {
 }
 
 class _OrderCardState extends State<_OrderCard> {
-  bool _isExpanded = false;
-
   Order get order => widget.order;
 
   @override
@@ -411,9 +411,25 @@ class _OrderCardState extends State<_OrderCard> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Order #${order.orderId}',
-                  style: Theme.of(context).textTheme.titleLarge,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context, rootNavigator: true).push(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            OrderDetailPage(orderId: order.id),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    'Order #${order.orderId}',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          decoration: TextDecoration.underline,
+                          decorationColor:
+                              getIt<AppSettings>().getTheme == ThemeMode.dark
+                                  ? Colors.white
+                                  : Colors.black,
+                        ),
+                  ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.copy),
@@ -474,88 +490,37 @@ class _OrderCardState extends State<_OrderCard> {
             Text(
                 'Total: ${order.total.toStringAsFixed(2)} ${order.items.first.product.currency}'),
             const SizedBox(height: 8),
-            Text('Items: ${order.items.length}'),
-            const Divider(),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: order.items.length,
-              itemBuilder: (context, index) {
-                final item = order.items[index];
-                final product = item.product;
-                return ListTile(
-                  leading: Image.network(
-                    product.images[0].url,
-                    width: 60,
-                    height: 60,
-                    fit: BoxFit.cover,
+            ExpansionTile(
+              title: Text('Items: ${order.items.length}'),
+              initiallyExpanded: true,
+              children: [
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 200),
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: order.items.length,
+                    itemBuilder: (context, index) {
+                      final item = order.items[index];
+                      final product = item.product;
+                      return ListTile(
+                        leading: Image.network(
+                          product.images[0].url,
+                          width: 60,
+                          height: 60,
+                          fit: BoxFit.cover,
+                        ),
+                        title: Text(product.name),
+                        trailing: Text(
+                            '${product.cost.toStringAsFixed(2)} ${product.currency}'),
+                        subtitle: Text('Quantity: ${item.quantity}'),
+                      );
+                    },
                   ),
-                  title: Text(product.name),
-                  trailing: Text(
-                      '${product.cost.toStringAsFixed(2)} ${product.currency}'),
-                  subtitle: Text('Quantity: ${item.quantity}'),
-                );
-              },
+                ),
+              ],
             ),
             const SizedBox(height: 8),
             const Divider(),
-            GestureDetector(
-              onTap: () => setState(() => _isExpanded = !_isExpanded),
-              child: Row(
-                children: [
-                  Text(
-                    _isExpanded ? 'Hide Customer' : 'Show Customer',
-                    style: TextStyle(
-                      color: Theme.of(context).hintColor,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                  Icon(
-                    _isExpanded ? Icons.expand_less : Icons.expand_more,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                ],
-              ),
-            ),
-            if (_isExpanded)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 8),
-                  GestureDetector(
-                    onTap: () => context.push('/user/${order.user.id}'),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          backgroundImage: NetworkImage(order.user.image),
-                          radius: 20,
-                        ),
-                        const SizedBox(width: 10),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Name: ${order.user.username}'),
-                            Text('Email: ${order.user.email}'),
-                            if (order.user.phone != null)
-                              Text('Phone: ${order.user.phone}'),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Delivery: ${order.address.value}',
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                  const SizedBox(height: 8),
-                  if (order.notes.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Text('Notes: ${order.notes}'),
-                    ),
-                ],
-              ),
           ],
         ),
       ),
