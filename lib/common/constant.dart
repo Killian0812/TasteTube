@@ -59,4 +59,5 @@ class AssetPath {
   static const String cod = 'assets/images/cod.png';
   static const String vnpay = 'assets/images/vnpay.jpg';
   static const String zalopay = 'assets/images/zalopay.png';
+  static const String grab = 'assets/images/grab.png';
 }

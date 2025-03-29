@@ -33,6 +33,7 @@ class Order {
   final String paymentMethod;
   final bool paid;
   final String status;
+  final String? deliveryType;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -50,6 +51,7 @@ class Order {
     required this.paymentMethod,
     required this.paid,
     required this.status,
+    required this.deliveryType,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -71,6 +73,7 @@ class Order {
       paymentMethod: json['paymentMethod'],
       paid: json['paid'],
       status: json['status'],
+      deliveryType: json['deliveryType'] as String?,
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
     );

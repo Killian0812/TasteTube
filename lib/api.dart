@@ -35,10 +35,13 @@ class Api {
   static const singleOrderApi = '/order/:id';
   static const customerOrderApi = '/order/customer';
   static const shopOrderApi = '/order/shop';
+
   static const cartApi = '/cart';
   static const addCartApi = '/cart/add';
   static const updateCartApi = '/cart/update';
   static const orderSummary = '/cart/order-summary';
+
+  static const orderDeliveryApi = '/order-delivery/:id';
 
   // Address & Delivery
   static const addressApi = '/address';

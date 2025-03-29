@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:taste_tube/common/constant.dart';
+import 'package:taste_tube/common/toast.dart';
+import 'package:taste_tube/feature/shop/data/delivery_quote.dart';
+import 'package:taste_tube/feature/store/view/tabs/order/order_detail/order_delivery_cubit.dart';
 import 'package:taste_tube/global_data/order/order.dart';
+import 'package:taste_tube/utils/user_data.util.dart';
 
 class OrderDeliveryTab extends StatelessWidget {
   final Order order;
@@ -7,59 +14,35 @@ class OrderDeliveryTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return BlocProvider(
+      create: (_) => OrderDeliveryCubit(order.id)..fetchDeliveryQuotes(),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Delivery Status',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 16),
-                    // Assuming you have delivery status information in your order model
-                    // If not, you'll need to add it to your Order model and Cubit
-                    Text('Current Status: ${order.status}'),
-                    const SizedBox(height: 16),
-                    Text('Tracking ID: ${order.trackingId}'),
-                    const SizedBox(height: 16),
-                    // Example delivery timeline - customize based on your needs
-                    _TimelineTile(
-                      status: 'Order Placed',
-                      date: order.createdAt,
-                      isCompleted: true,
-                    ),
-                    _TimelineTile(
-                      status: 'Processing',
-                      date: order.createdAt.add(Duration(hours: 1)),
-                      // isCompleted:
-                      //     order.status != OrderStatus.pending.name,
-                      isCompleted: false,
-                    ),
-                    _TimelineTile(
-                      status: 'Shipped',
-                      date: order.createdAt.add(Duration(days: 1)),
-                      // isCompleted: order.status ==
-                      //         OrderStatus.shipped.name ||
-                      //     order.status == OrderStatus.delivered.name,
-                      isCompleted: false,
-                    ),
-                    _TimelineTile(
-                      status: 'Delivered',
-                      date: order.createdAt.add(Duration(days: 2)),
-                      // isCompleted:
-                      //     order.status == OrderStatus.delivered.name,
-                      isCompleted: false,
-                    ),
-                  ],
-                ),
+            BlocListener<OrderDeliveryCubit, OrderDeliveryState>(
+              listener: (context, state) {
+                if (state is OrderDeliverySuccess) {
+                  ToastService.showToast(
+                      context, state.message, ToastType.success);
+                } else if (state is OrderDeliveryError) {
+                  ToastService.showToast(
+                      context, state.error, ToastType.warning);
+                }
+              },
+              child: BlocBuilder<OrderDeliveryCubit, OrderDeliveryState>(
+                builder: (context, state) {
+                  if (state is OrderDeliveryLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (state.quotes == null ||
+                      state.origin == null ||
+                      state.destination == null) {
+                    return const SizedBox.shrink();
+                  }
+                  return _buildDeliveryOptions(context, state);
+                },
               ),
             ),
           ],
@@ -67,63 +50,179 @@ class OrderDeliveryTab extends StatelessWidget {
       ),
     );
   }
-}
 
-class _TimelineTile extends StatelessWidget {
-  final String status;
-  final DateTime date;
-  final bool isCompleted;
+  Widget _buildDeliveryOptions(BuildContext context, OrderDeliveryState state) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Delivery Options',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            const SizedBox(height: 8),
+            _buildAddressRow(context, 'From:', state.origin!, Icons.store),
+            _buildAddressRow(context, 'To:', state.destination!, Icons.home),
+            const Divider(height: 24),
+            _buildDeliveryOption(
+              context,
+              'Self Delivery',
+              state.quotes!['selfDelivery']!,
+              'SELF',
+              state.selectedDeliveryType,
+              null,
+            ),
+            const SizedBox(height: 12),
+            _buildDeliveryOption(
+              context,
+              'Grab Delivery',
+              state.quotes!['grabDelivery']!,
+              'GRAB',
+              state.selectedDeliveryType,
+              AssetPath.grab,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: state.selectedDeliveryType == null
+                  ? null
+                  : () =>
+                      context.read<OrderDeliveryCubit>().updateDeliveryType(),
+              icon: const Icon(Icons.check_circle),
+              label: const Text('Confirm Delivery'),
+              style: ElevatedButton.styleFrom(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-  const _TimelineTile({
-    required this.status,
-    required this.date,
-    required this.isCompleted,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildAddressRow(
+      BuildContext context, String label, String address, IconData icon) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            children: [
-              Container(
-                width: 20,
-                height: 20,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isCompleted ? Colors.green : Colors.grey,
+          Icon(icon, size: 20, color: Colors.grey[600]),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall
+                      ?.copyWith(fontWeight: FontWeight.bold),
                 ),
-              ),
-              if (status != 'Delivered') // No line after last item
-                Container(
-                  width: 2,
-                  height: 40,
-                  color: isCompleted ? Colors.green : Colors.grey,
-                ),
-            ],
-          ),
-          const SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                status,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: isCompleted ? Colors.black : Colors.grey,
-                ),
-              ),
-              Text(
-                '${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute}',
-                style: const TextStyle(color: Colors.grey),
-              ),
-            ],
+                Text(address, style: Theme.of(context).textTheme.bodyMedium),
+              ],
+            ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildDeliveryOption(
+    BuildContext context,
+    String title,
+    DeliveryQuote quote,
+    String deliveryType,
+    String? selectedDeliveryType,
+    String? imagePath,
+  ) {
+    bool isSelected = selectedDeliveryType == deliveryType;
+
+    return InkWell(
+      onTap: () =>
+          context.read<OrderDeliveryCubit>().selectDeliveryType(deliveryType),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: isSelected ? Theme.of(context).primaryColor : Colors.grey,
+            width: isSelected ? 2 : 1,
+          ),
+          borderRadius: BorderRadius.circular(8),
+          color: isSelected
+              ? Theme.of(context).primaryColor.withValues(alpha: 0.1)
+              : null,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Radio<String>(
+                  value: deliveryType,
+                  groupValue: selectedDeliveryType,
+                  onChanged: (value) => context
+                      .read<OrderDeliveryCubit>()
+                      .selectDeliveryType(value!),
+                  activeColor: Theme.of(context).primaryColor,
+                ),
+                imagePath != null
+                    ? Image.asset(
+                        imagePath,
+                        height: 25,
+                        fit: BoxFit.contain,
+                      )
+                    : Text(
+                        title,
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  color: isSelected
+                                      ? Theme.of(context).primaryColor
+                                      : null,
+                                ),
+                      ),
+                const Spacer(),
+                Text(
+                  '${quote.amount.toString()} ${UserDataUtil.getCurrency()}',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color:
+                            isSelected ? Theme.of(context).primaryColor : null,
+                      ),
+                ),
+              ],
+            ),
+            if (quote.estimatedTimeline != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                'Pickup: ${_formatDate(quote.estimatedTimeline!['pickup']!)}',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              Text(
+                'Dropoff: ${_formatDate(quote.estimatedTimeline!['dropoff']!)}',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              Text(
+                'Complete: ${_formatDate(quote.estimatedTimeline!['completed']!)}',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    return DateFormat('HH:mm dd/MM/yyyy').format(date.toLocal());
   }
 }
