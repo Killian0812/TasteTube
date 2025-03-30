@@ -64,4 +64,21 @@ class OrderDeliveryRepository {
       return fpdart.Left(ApiError(500, e.toString()));
     }
   }
+
+  Future<fpdart.Either<ApiError, bool>> updateSelfOrderDelivery({
+    required String orderId,
+    required String newStatus,
+  }) async {
+    try {
+      await http.put(
+        Api.orderDeliveryApi.replaceFirst(':orderId', orderId),
+        queryParameters: {'newStatus': newStatus},
+      );
+      return fpdart.Right(true);
+    } on DioException catch (e) {
+      return fpdart.Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return fpdart.Left(ApiError(500, e.toString()));
+    }
+  }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:taste_tube/common/constant.dart';
+import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/shop/data/delivery_data.dart';
 import 'package:taste_tube/feature/store/view/tabs/order/order_detail/order_delivery_cubit.dart';
@@ -52,16 +53,13 @@ class OrderDeliveryTab extends StatelessWidget {
                     },
                     child: SingleChildScrollView(
                       physics: const AlwaysScrollableScrollPhysics(),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: state.orderDelivery != null
-                            ? _buildOrderDelivery(context, state)
-                            : (state.quotes == null ||
-                                    state.origin == null ||
-                                    state.destination == null)
-                                ? const SizedBox.shrink()
-                                : _buildDeliveryOptions(context, state),
-                      ),
+                      child: state.orderDelivery != null
+                          ? _buildOrderDelivery(context, state)
+                          : (state.quotes == null ||
+                                  state.origin == null ||
+                                  state.destination == null)
+                              ? const SizedBox.shrink()
+                              : _buildDeliveryOptions(context, state),
                     ),
                   );
                 },
@@ -94,14 +92,14 @@ class OrderDeliveryTab extends StatelessWidget {
 
             // Delivery status
             ...state.orderDelivery!.statusLogs.map((e) => _TimelineTile(
-                  status: e.deliveryStatus.displayName,
+                  status: e.deliveryStatus,
                   date: e.deliveryTimestamp,
                   isCompleted: true,
                   showLine: !e.deliveryStatus.isFinalStatus,
                 )),
             if (nextStatus != null)
               _TimelineTile(
-                status: nextStatus.displayName,
+                status: nextStatus,
                 date: null,
                 isCompleted: false,
                 showLine: !nextStatus.isFinalStatus,
@@ -289,7 +287,7 @@ class OrderDeliveryTab extends StatelessWidget {
 }
 
 class _TimelineTile extends StatelessWidget {
-  final String status;
+  final DeliveryStatus status;
   final DateTime? date;
   final bool isCompleted;
   final bool showLine;
@@ -303,47 +301,70 @@ class _TimelineTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Column(
-            children: [
-              Container(
-                width: 20,
-                height: 20,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isCompleted ? Colors.green : Colors.grey,
-                ),
-              ),
-              if (showLine)
+    final editable =
+        context.read<OrderDeliveryCubit>().state.orderDelivery!.deliveryType ==
+            DeliveryType.SELF;
+    return GestureDetector(
+      onTap: () async {
+        if (!editable) return;
+        final approved = await showConfirmDialog(
+          context,
+          body:
+              'Are you sure you want to update the delivery status to ${status.displayName}?',
+          title: 'Confirm Status Update',
+        );
+        if (approved == true && context.mounted) {
+          context
+              .read<OrderDeliveryCubit>()
+              .updateSelfOrderDelivery(status.name);
+        }
+      },
+      onDoubleTap: () {
+        if (!editable) return;
+        context.read<OrderDeliveryCubit>().updateSelfOrderDelivery(status.name);
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              children: [
                 Container(
-                  width: 2,
-                  height: 40,
-                  color: isCompleted ? Colors.green : Colors.grey,
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isCompleted ? Colors.green : Colors.grey,
+                  ),
                 ),
-            ],
-          ),
-          const SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                status,
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              if (date != null)
+                if (showLine)
+                  Container(
+                    width: 2,
+                    height: 40,
+                    color: isCompleted ? Colors.green : Colors.grey,
+                  ),
+              ],
+            ),
+            const SizedBox(width: 16),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Text(
-                  '${date!.day}/${date!.month}/${date!.year} ${date!.hour}:${date!.minute}',
-                  style: getIt<AppSettings>().getTheme == ThemeMode.dark
-                      ? const TextStyle(color: Colors.grey)
-                      : null,
+                  status.displayName,
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-            ],
-          ),
-        ],
+                if (date != null)
+                  Text(
+                    '${date!.day}/${date!.month}/${date!.year} ${date!.hour}:${date!.minute}',
+                    style: getIt<AppSettings>().getTheme == ThemeMode.dark
+                        ? const TextStyle(color: Colors.grey)
+                        : null,
+                  ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

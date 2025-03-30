@@ -210,4 +210,40 @@ class OrderDeliveryCubit extends Cubit<OrderDeliveryState> {
       ));
     }
   }
+
+  Future<void> updateSelfOrderDelivery(String newStatus) async {
+    emit(OrderDeliveryLoading(
+      orderId: state.orderId,
+      quotes: state.quotes,
+      selectedDeliveryType: state.selectedDeliveryType,
+      origin: state.origin,
+      destination: state.destination,
+    ));
+    try {
+      final result = await repository.updateSelfOrderDelivery(
+        orderId: state.orderId,
+        newStatus: newStatus,
+      );
+      result.fold(
+        (error) => emit(OrderDeliveryError(
+          orderId: state.orderId,
+          error: error.message ?? 'Error updating delivery status',
+          quotes: state.quotes,
+          selectedDeliveryType: state.selectedDeliveryType,
+          origin: state.origin,
+          destination: state.destination,
+        )),
+        (success) => getOrderDelivery(),
+      );
+    } catch (e) {
+      emit(OrderDeliveryError(
+        orderId: state.orderId,
+        error: e.toString(),
+        quotes: state.quotes,
+        selectedDeliveryType: state.selectedDeliveryType,
+        origin: state.origin,
+        destination: state.destination,
+      ));
+    }
+  }
 }
