@@ -66,7 +66,7 @@ class _OrderCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
+                SelectableText(
                   'Order #${order.trackingId}',
                   style: Theme.of(context).textTheme.titleLarge,
                 ),

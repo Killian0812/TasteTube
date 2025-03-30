@@ -101,6 +101,98 @@ class OrderDeliveryTab extends StatelessWidget {
             Text('Tracking ID: ${order.trackingId}'),
             const SizedBox(height: 16),
 
+            // Origin and Destination
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+              decoration: BoxDecoration(
+                color: Theme.of(context)
+                    .colorScheme
+                    .surfaceContainerHighest
+                    .withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Flexible(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.trip_origin,
+                                size: 20,
+                                color: Theme.of(context).colorScheme.primary),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Origin',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          state.origin!,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(color: Colors.grey[700]),
+                          maxLines: 5,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12.0, vertical: 8.0),
+                    child: Icon(
+                      Icons.arrow_forward,
+                      size: 28,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                  Flexible(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.location_on,
+                                size: 20,
+                                color: Theme.of(context).colorScheme.primary),
+                            SizedBox(width: 8),
+                            Text(
+                              'Destination',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          state.destination!,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(color: Colors.grey[700]),
+                          maxLines: 5,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+
             // Delivery status
             ...state.orderDelivery!.statusLogs.map((e) => _TimelineTile(
                   status: e.deliveryStatus,
@@ -131,7 +223,10 @@ class OrderDeliveryTab extends StatelessWidget {
                       context.read<OrderDeliveryCubit>().cancelOrderDelivery();
                     }
                   },
-                  icon: const Icon(Icons.cancel),
+                  icon: const Icon(
+                    Icons.cancel,
+                    color: Colors.white,
+                  ),
                   label: const Text('Cancel Delivery'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
@@ -140,6 +235,7 @@ class OrderDeliveryTab extends StatelessWidget {
                 ),
               ),
 
+            // Renew Delivery Button
             if (renewable)
               Align(
                 alignment: Alignment.bottomRight,

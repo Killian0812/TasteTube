@@ -441,7 +441,7 @@ class _OrderCardState extends State<_OrderCard> {
                 ),
               ],
             ),
-            Text('Tracking ID: ${order.trackingId}'),
+            SelectableText('Tracking ID: ${order.trackingId}'),
             const SizedBox(height: 8),
             Row(
               children: [
