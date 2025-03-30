@@ -42,6 +42,7 @@ class Api {
   static const orderSummary = '/cart/order-summary';
 
   static const orderDeliveryQuoteApi = '/order-delivery/:orderId/quote';
+  static const orderDeliveryRenewApi = '/order-delivery/:orderId/renew';
   static const orderDeliveryApi = '/order-delivery/:orderId';
 
   // Address & Delivery

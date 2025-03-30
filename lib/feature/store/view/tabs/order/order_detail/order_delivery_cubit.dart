@@ -182,7 +182,7 @@ class OrderDeliveryCubit extends Cubit<OrderDeliveryState> {
       result.fold(
         (error) => emit(OrderDeliveryError(
           orderId: state.orderId,
-          error: error.message ?? 'Error updating delivery type',
+          error: error.message ?? 'Error creating delivery',
           quotes: state.quotes,
           selectedDeliveryType: state.selectedDeliveryType,
           origin: state.origin,
@@ -212,13 +212,6 @@ class OrderDeliveryCubit extends Cubit<OrderDeliveryState> {
   }
 
   Future<void> updateSelfOrderDelivery(String newStatus) async {
-    emit(OrderDeliveryLoading(
-      orderId: state.orderId,
-      quotes: state.quotes,
-      selectedDeliveryType: state.selectedDeliveryType,
-      origin: state.origin,
-      destination: state.destination,
-    ));
     try {
       final result = await repository.updateSelfOrderDelivery(
         orderId: state.orderId,
@@ -228,6 +221,62 @@ class OrderDeliveryCubit extends Cubit<OrderDeliveryState> {
         (error) => emit(OrderDeliveryError(
           orderId: state.orderId,
           error: error.message ?? 'Error updating delivery status',
+          quotes: state.quotes,
+          selectedDeliveryType: state.selectedDeliveryType,
+          origin: state.origin,
+          destination: state.destination,
+        )),
+        (success) => getOrderDelivery(),
+      );
+    } catch (e) {
+      emit(OrderDeliveryError(
+        orderId: state.orderId,
+        error: e.toString(),
+        quotes: state.quotes,
+        selectedDeliveryType: state.selectedDeliveryType,
+        origin: state.origin,
+        destination: state.destination,
+      ));
+    }
+  }
+
+  Future<void> cancelOrderDelivery() async {
+    try {
+      final result = await repository.cancelOrderDelivery(
+        orderId: state.orderId,
+      );
+      result.fold(
+        (error) => emit(OrderDeliveryError(
+          orderId: state.orderId,
+          error: error.message ?? 'Error cancelling delivery',
+          quotes: state.quotes,
+          selectedDeliveryType: state.selectedDeliveryType,
+          origin: state.origin,
+          destination: state.destination,
+        )),
+        (success) => getOrderDelivery(),
+      );
+    } catch (e) {
+      emit(OrderDeliveryError(
+        orderId: state.orderId,
+        error: e.toString(),
+        quotes: state.quotes,
+        selectedDeliveryType: state.selectedDeliveryType,
+        origin: state.origin,
+        destination: state.destination,
+      ));
+    }
+  }
+
+  Future<void> renewOrderDelivery() async {
+    try {
+      final result = await repository.renewOrderDelivery(
+        orderId: state.orderId,
+      );
+      result.fold(
+        (error) => emit(OrderDeliveryError(
+          orderId: state.orderId,
+          error: error.message ?? 'Error renewing delivery',
           quotes: state.quotes,
           selectedDeliveryType: state.selectedDeliveryType,
           origin: state.origin,

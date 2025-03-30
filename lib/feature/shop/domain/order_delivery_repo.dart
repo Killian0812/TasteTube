@@ -81,4 +81,34 @@ class OrderDeliveryRepository {
       return fpdart.Left(ApiError(500, e.toString()));
     }
   }
+
+  Future<fpdart.Either<ApiError, bool>> cancelOrderDelivery({
+    required String orderId,
+  }) async {
+    try {
+      await http.delete(
+        Api.orderDeliveryApi.replaceFirst(':orderId', orderId),
+      );
+      return fpdart.Right(true);
+    } on DioException catch (e) {
+      return fpdart.Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return fpdart.Left(ApiError(500, e.toString()));
+    }
+  }
+
+  Future<fpdart.Either<ApiError, bool>> renewOrderDelivery({
+    required String orderId,
+  }) async {
+    try {
+      await http.post(
+        Api.orderDeliveryRenewApi.replaceFirst(':orderId', orderId),
+      );
+      return fpdart.Right(true);
+    } on DioException catch (e) {
+      return fpdart.Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return fpdart.Left(ApiError(500, e.toString()));
+    }
+  }
 }

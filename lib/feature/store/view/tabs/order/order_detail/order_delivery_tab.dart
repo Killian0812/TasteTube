@@ -74,6 +74,17 @@ class OrderDeliveryTab extends StatelessWidget {
   Widget _buildOrderDelivery(BuildContext context, OrderDeliveryState state) {
     final nextStatus =
         state.orderDelivery!.statusLogs.lastOrNull?.deliveryStatus.nextStatus;
+    final deliveryType = state.orderDelivery!.deliveryType;
+    final currentStatus =
+        state.orderDelivery!.statusLogs.lastOrNull?.deliveryStatus;
+    final cancellable = deliveryType == DeliveryType.SELF ||
+        (deliveryType == DeliveryType.GRAB &&
+            (currentStatus == DeliveryStatus.ALLOCATING ||
+                currentStatus == DeliveryStatus.PENDING_PICKUP ||
+                currentStatus == DeliveryStatus.PICKING_UP));
+    final renewable = currentStatus == DeliveryStatus.FAILED ||
+        currentStatus == DeliveryStatus.RETURNED;
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -85,7 +96,7 @@ class OrderDeliveryTab extends StatelessWidget {
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 16),
-            Text('Delivery Type: ${state.orderDelivery!.deliveryType.name}'),
+            Text('Delivery Type: ${deliveryType.name}'),
             const SizedBox(height: 16),
             Text('Tracking ID: ${order.trackingId}'),
             const SizedBox(height: 16),
@@ -103,6 +114,56 @@ class OrderDeliveryTab extends StatelessWidget {
                 date: null,
                 isCompleted: false,
                 showLine: !nextStatus.isFinalStatus,
+              ),
+
+            // Cancel Delivery Button
+            if (cancellable)
+              Align(
+                alignment: Alignment.bottomRight,
+                child: ElevatedButton.icon(
+                  onPressed: () async {
+                    final confirmed = await showConfirmDialog(
+                      context,
+                      title: 'Cancel Delivery',
+                      body: 'Are you sure you want to cancel this delivery?',
+                    );
+                    if (confirmed == true && context.mounted) {
+                      context.read<OrderDeliveryCubit>().cancelOrderDelivery();
+                    }
+                  },
+                  icon: const Icon(Icons.cancel),
+                  label: const Text('Cancel Delivery'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+              ),
+
+            if (renewable)
+              Align(
+                alignment: Alignment.bottomRight,
+                child: ElevatedButton.icon(
+                  onPressed: () async {
+                    final confirmed = await showConfirmDialog(
+                      context,
+                      title: 'New Delivery',
+                      body: 'Are you sure you want to create new delivery?',
+                    );
+                    if (confirmed == true && context.mounted) {
+                      context.read<OrderDeliveryCubit>().renewOrderDelivery();
+                    }
+                  },
+                  icon: const Icon(
+                    Icons.delivery_dining_outlined,
+                    color: Colors.white,
+                  ),
+                  label: const Text('New Delivery'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                  ),
+                ),
               ),
           ],
         ),
@@ -335,7 +396,9 @@ class _TimelineTile extends StatelessWidget {
                   height: 20,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isCompleted ? Colors.green : Colors.grey,
+                    color: isCompleted
+                        ? _getFinalStatusColor(status)
+                        : Colors.grey,
                   ),
                 ),
                 if (showLine)
@@ -367,5 +430,11 @@ class _TimelineTile extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Color _getFinalStatusColor(DeliveryStatus status) {
+    if (status == DeliveryStatus.FAILED) return Colors.red;
+    if (status == DeliveryStatus.RETURNED) return Colors.yellow;
+    return Colors.green;
   }
 }

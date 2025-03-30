@@ -71,6 +71,8 @@ extension DeliveryStatusExtension on DeliveryStatus {
         return DeliveryStatus.IN_DELIVERY;
       case DeliveryStatus.IN_DELIVERY:
         return DeliveryStatus.COMPLETED;
+      case DeliveryStatus.IN_RETURN:
+        return DeliveryStatus.RETURNED;
       default:
         return null;
     }
