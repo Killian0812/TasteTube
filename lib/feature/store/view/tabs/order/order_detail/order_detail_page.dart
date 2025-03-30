@@ -68,7 +68,7 @@ class _OrderDetailPageState extends State<OrderDetailPage>
               controller: _tabController,
               tabs: const [
                 Tab(text: 'Order Details'),
-                Tab(text: 'Delivery Status'),
+                Tab(text: 'Delivery'),
               ],
             ),
           ),

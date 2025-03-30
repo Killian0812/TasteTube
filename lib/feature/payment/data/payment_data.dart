@@ -1,5 +1,3 @@
-// ignore_for_file: constant_identifier_names
-
 import 'package:taste_tube/common/constant.dart';
 
 enum PaymentMethod {

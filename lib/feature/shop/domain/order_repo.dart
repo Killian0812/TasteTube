@@ -59,7 +59,7 @@ class OrderRepository {
   }) async {
     try {
       final response =
-          await http.put(Api.singleOrderApi.replaceFirst(':id', id), data: {
+          await http.put(Api.singleOrderApi.replaceFirst(':orderId', id), data: {
         'newStatus': newStatus,
       });
       return fpdart.Right(Order.fromJson(response.data));

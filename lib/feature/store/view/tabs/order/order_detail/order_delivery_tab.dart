@@ -3,9 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:taste_tube/common/constant.dart';
 import 'package:taste_tube/common/toast.dart';
-import 'package:taste_tube/feature/shop/data/delivery_quote.dart';
+import 'package:taste_tube/feature/shop/data/delivery_data.dart';
 import 'package:taste_tube/feature/store/view/tabs/order/order_detail/order_delivery_cubit.dart';
+import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/order.dart';
+import 'package:taste_tube/injection.dart';
+import 'package:taste_tube/providers.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
 
 class OrderDeliveryTab extends StatelessWidget {
@@ -15,7 +18,7 @@ class OrderDeliveryTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => OrderDeliveryCubit(order.id)..fetchDeliveryQuotes(),
+      create: (_) => OrderDeliveryCubit(order.id)..getOrderDelivery(),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -24,11 +27,18 @@ class OrderDeliveryTab extends StatelessWidget {
             BlocListener<OrderDeliveryCubit, OrderDeliveryState>(
               listener: (context, state) {
                 if (state is OrderDeliverySuccess) {
-                  ToastService.showToast(
-                      context, state.message, ToastType.success);
+                  ToastService.showToast(context,
+                      "Successfully placed delivery", ToastType.success);
+                  context.read<OrderCubit>().getOrders();
                 } else if (state is OrderDeliveryError) {
                   ToastService.showToast(
                       context, state.error, ToastType.warning);
+                } else if (state is OrderDeliveryLoaded) {
+                  if (state.orderDelivery?.statusLogs.lastOrNull
+                          ?.deliveryStatus ==
+                      DeliveryStatus.COMPLETED) {
+                    context.read<OrderCubit>().getOrders();
+                  }
                 }
               },
               child: BlocBuilder<OrderDeliveryCubit, OrderDeliveryState>(
@@ -36,15 +46,66 @@ class OrderDeliveryTab extends StatelessWidget {
                   if (state is OrderDeliveryLoading) {
                     return const Center(child: CircularProgressIndicator());
                   }
-                  if (state.quotes == null ||
-                      state.origin == null ||
-                      state.destination == null) {
-                    return const SizedBox.shrink();
-                  }
-                  return _buildDeliveryOptions(context, state);
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      context.read<OrderDeliveryCubit>().getOrderDelivery();
+                    },
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: state.orderDelivery != null
+                            ? _buildOrderDelivery(context, state)
+                            : (state.quotes == null ||
+                                    state.origin == null ||
+                                    state.destination == null)
+                                ? const SizedBox.shrink()
+                                : _buildDeliveryOptions(context, state),
+                      ),
+                    ),
+                  );
                 },
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOrderDelivery(BuildContext context, OrderDeliveryState state) {
+    final nextStatus =
+        state.orderDelivery!.statusLogs.lastOrNull?.deliveryStatus.nextStatus;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Order Delivery',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 16),
+            Text('Delivery Type: ${state.orderDelivery!.deliveryType.name}'),
+            const SizedBox(height: 16),
+            Text('Tracking ID: ${order.trackingId}'),
+            const SizedBox(height: 16),
+
+            // Delivery status
+            ...state.orderDelivery!.statusLogs.map((e) => _TimelineTile(
+                  status: e.deliveryStatus.displayName,
+                  date: e.deliveryTimestamp,
+                  isCompleted: true,
+                  showLine: !e.deliveryStatus.isFinalStatus,
+                )),
+            if (nextStatus != null)
+              _TimelineTile(
+                status: nextStatus.displayName,
+                date: null,
+                isCompleted: false,
+                showLine: !nextStatus.isFinalStatus,
+              ),
           ],
         ),
       ),
@@ -92,7 +153,7 @@ class OrderDeliveryTab extends StatelessWidget {
               onPressed: state.selectedDeliveryType == null
                   ? null
                   : () =>
-                      context.read<OrderDeliveryCubit>().updateDeliveryType(),
+                      context.read<OrderDeliveryCubit>().createOrderDelivery(),
               icon: const Icon(Icons.check_circle),
               label: const Text('Confirm Delivery'),
               style: ElevatedButton.styleFrom(
@@ -224,5 +285,66 @@ class OrderDeliveryTab extends StatelessWidget {
 
   String _formatDate(DateTime date) {
     return DateFormat('HH:mm dd/MM/yyyy').format(date.toLocal());
+  }
+}
+
+class _TimelineTile extends StatelessWidget {
+  final String status;
+  final DateTime? date;
+  final bool isCompleted;
+  final bool showLine;
+
+  const _TimelineTile({
+    required this.status,
+    required this.date,
+    required this.isCompleted,
+    this.showLine = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Column(
+            children: [
+              Container(
+                width: 20,
+                height: 20,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isCompleted ? Colors.green : Colors.grey,
+                ),
+              ),
+              if (showLine)
+                Container(
+                  width: 2,
+                  height: 40,
+                  color: isCompleted ? Colors.green : Colors.grey,
+                ),
+            ],
+          ),
+          const SizedBox(width: 16),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                status,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              if (date != null)
+                Text(
+                  '${date!.day}/${date!.month}/${date!.year} ${date!.hour}:${date!.minute}',
+                  style: getIt<AppSettings>().getTheme == ThemeMode.dark
+                      ? const TextStyle(color: Colors.grey)
+                      : null,
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }

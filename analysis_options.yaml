@@ -7,3 +7,4 @@ linter:
 analyzer:
   errors:
     todo: ignore
+    constant_identifier_names: ignore

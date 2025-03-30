@@ -2,18 +2,34 @@ import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart' as fpdart;
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/common/error.dart';
-import 'package:taste_tube/feature/shop/data/delivery_quote.dart';
+import 'package:taste_tube/feature/shop/data/delivery_data.dart';
 
 class OrderDeliveryRepository {
   final Dio http;
 
   OrderDeliveryRepository({required this.http});
 
+  Future<fpdart.Either<ApiError, OrderDelivery>> getOrderDelivery(
+      String orderId) async {
+    try {
+      final response = await http.get(
+        Api.orderDeliveryApi.replaceFirst(':orderId', orderId),
+      );
+      final orderDelivery =
+          OrderDelivery.fromJson(response.data as Map<String, dynamic>);
+      return fpdart.Right(orderDelivery);
+    } on DioException catch (e) {
+      return fpdart.Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return fpdart.Left(ApiError(500, e.toString()));
+    }
+  }
+
   Future<fpdart.Either<ApiError, Map<String, dynamic>>> getDeliveryQuotes(
       String orderId) async {
     try {
       final response = await http.get(
-        Api.orderDeliveryApi.replaceFirst(':id', orderId),
+        Api.orderDeliveryQuoteApi.replaceFirst(':orderId', orderId),
       );
       final data = response.data as Map<String, dynamic>;
       final quotes = {
@@ -32,16 +48,16 @@ class OrderDeliveryRepository {
     }
   }
 
-  Future<fpdart.Either<ApiError, String>> updateDeliveryType({
+  Future<fpdart.Either<ApiError, bool>> createOrderDelivery({
     required String orderId,
     required String deliveryType,
   }) async {
     try {
-      final response = await http.put(
-        '${Api.orderDeliveryApi.replaceFirst(':id', orderId)}/delivery',
-        data: {'deliveryType': deliveryType},
+      await http.post(
+        Api.orderDeliveryApi.replaceFirst(':orderId', orderId),
+        queryParameters: {'deliveryType': deliveryType},
       );
-      return fpdart.Right(response.data['message']);
+      return fpdart.Right(true);
     } on DioException catch (e) {
       return fpdart.Left(ApiError.fromDioException(e));
     } catch (e) {
