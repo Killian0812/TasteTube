@@ -43,7 +43,6 @@ app.*.map.json
 /android/app/release
 # /android/app/google-services.json
 # /ios/GoogleService-Info.plist
-lib/generated_plugin_registrant.dart
 .packages
 
 /android/app/.cxx/
