@@ -141,6 +141,28 @@ class _PaymentPageState extends State<PaymentPage> {
 
         final addresses = state.addresses;
 
+        if (addresses.isEmpty) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Delivery Address',
+                    style:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 10),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    pickLocationThenShowAddressForm(context);
+                  },
+                  icon: const Icon(Icons.add_location_alt_outlined),
+                  label: const Text('Add new address'),
+                ),
+              ],
+            ),
+          );
+        }
+
         return Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
