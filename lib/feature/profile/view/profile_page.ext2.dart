@@ -233,9 +233,9 @@ class __ChangePasswordBottomSheetState
                 },
                 child: const Text('Change Password',
                     style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black)),
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    )),
               ),
             ),
           ],

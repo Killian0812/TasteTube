@@ -43,42 +43,18 @@ class ProfilePage extends StatelessWidget {
       builder: (context, state) {
         final cubit = context.read<ProfileCubit>();
         final isOwner = cubit.isOwner;
-
-        if (state is ProfileLoading) {
-          return const Center(
-            child: CommonLoadingIndicator.regular,
-          );
-        }
-        if (state is ProfileFailure) {
-          return RefreshIndicator(
-            onRefresh: () async {
-              cubit.init();
-            },
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Center(
-                      child: Text(state.message),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        }
-        final isRestaurant = state.user!.role == AccountType.restaurant.value();
         final appSettings = getIt<AppSettings>();
 
         return Scaffold(
           appBar: AppBar(
             centerTitle: true,
-            title: Text(state.user!.username),
+            title: state is! ProfileLoading && state is! ProfileFailure
+                ? Text(state.user!.username)
+                : const Text('Profile'),
             actions: [
-              if (isOwner)
+              if (isOwner &&
+                  state is! ProfileLoading &&
+                  state is! ProfileFailure)
                 Padding(
                   padding: const EdgeInsets.only(right: 20),
                   child: PopupMenuButton<String>(
@@ -91,7 +67,7 @@ class ProfilePage extends StatelessWidget {
                             Icon(appSettings.getTheme == ThemeMode.dark
                                 ? Icons.light_mode
                                 : Icons.dark_mode),
-                            const SizedBox(width: 8), // Add some spacing
+                            const SizedBox(width: 8),
                             Text(appSettings.getTheme == ThemeMode.dark
                                 ? 'Light'
                                 : 'Dark'),
@@ -103,7 +79,7 @@ class ProfilePage extends StatelessWidget {
                       ),
                       PopupMenuItem<String>(
                         value: 'Logout',
-                        child: Text('Logout'),
+                        child: const Text('Logout'),
                         onTap: () async {
                           bool? confirmed = await showConfirmDialog(
                             context,
@@ -124,115 +100,144 @@ class ProfilePage extends StatelessWidget {
                 ),
             ],
           ),
-          body: RefreshIndicator(
-            onRefresh: () async {
-              cubit.init();
-            },
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: SizedBox(
-                height: CommonSize.screenSize.height -
-                    CommonSize.appBarHeight -
-                    CommonSize.bottomNavBarHeight -
-                    30,
-                child: Column(
-                  children: [
-                    const SizedBox(height: 20),
-                    CircleAvatar(
-                      radius: 50,
-                      backgroundImage: state.user!.image != null
-                          ? NetworkImage(state.user!.image!)
-                          : null,
-                      child: state.user!.image == null
-                          ? const Icon(Icons.person, size: 50)
-                          : null,
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      state.user!.email ??
-                          state.user!.phone ??
-                          'No contact info',
-                      style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _buildProfileStat(
-                            'Following', state.user!.followings.length),
-                        const SizedBox(width: 20),
-                        _buildProfileStat(
-                            'Followers', state.user!.followers.length),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    if (isOwner) _OwnerProfileInteractions(cubit: cubit),
-                    if (!isOwner) _GuestProfileInteractions(cubit: cubit),
-                    const SizedBox(height: 10),
-                    (state.user!.bio == null || state.user!.bio!.isEmpty)
-                        ? const Text('No bio')
-                        : Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 30.0),
-                            child: Text(
-                              state.user!.bio ?? '',
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                    const SizedBox(height: 20),
-                    Expanded(
-                      child: DefaultTabController(
-                        length: (isRestaurant ? 2 : 1) + (isOwner ? 1 : 0),
-                        child: Column(
-                          children: [
-                            TabBar(
-                              tabs: isRestaurant
-                                  ? [
-                                      const Tab(icon: Icon(Icons.grid_view)),
-                                      const Tab(icon: Icon(Icons.reviews)),
-                                      if (isOwner)
-                                        const Tab(icon: Icon(Icons.favorite)),
-                                    ]
-                                  : [
-                                      const Tab(icon: Icon(Icons.grid_view)),
-                                      if (isOwner)
-                                        const Tab(icon: Icon(Icons.favorite)),
-                                    ],
-                            ),
-                            Expanded(
-                              child: TabBarView(
-                                children: isRestaurant
-                                    ? [
-                                        _buildVideosTab(
-                                          state.user!.videos.reversed.toList(),
-                                          isOwner,
-                                        ),
-                                        _buildReviewsTab(),
-                                        if (isOwner) _buildLikedVideosTab(),
-                                      ]
-                                    : [
-                                        _buildVideosTab(
-                                          state.user!.videos.reversed.toList(),
-                                          isOwner,
-                                        ),
-                                        if (isOwner) _buildLikedVideosTab(),
-                                      ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+          body: _buildBody(context, state, cubit, isOwner),
         );
       },
+    );
+  }
+
+  Widget _buildBody(BuildContext context, ProfileState state,
+      ProfileCubit cubit, bool isOwner) {
+    if (state is ProfileLoading) {
+      return const Center(
+        child: CommonLoadingIndicator.regular,
+      );
+    }
+    if (state is ProfileFailure) {
+      return RefreshIndicator(
+        onRefresh: () async {
+          cubit.init();
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Center(
+                  child: Text(state.message),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    final isRestaurant = state.user!.role == AccountType.restaurant.value();
+
+    return RefreshIndicator(
+      onRefresh: () async {
+        cubit.init();
+      },
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: SizedBox(
+          height: CommonSize.screenSize.height -
+              CommonSize.appBarHeight -
+              CommonSize.bottomNavBarHeight -
+              30,
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              CircleAvatar(
+                radius: 50,
+                backgroundImage: state.user!.image != null
+                    ? NetworkImage(state.user!.image!)
+                    : null,
+                child: state.user!.image == null
+                    ? const Icon(Icons.person, size: 50)
+                    : null,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                state.user!.email ?? state.user!.phone ?? 'No contact info',
+                style: const TextStyle(
+                    color: Colors.grey,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildProfileStat('Following', state.user!.followings.length),
+                  const SizedBox(width: 20),
+                  _buildProfileStat('Followers', state.user!.followers.length),
+                ],
+              ),
+              const SizedBox(height: 20),
+              if (isOwner) _OwnerProfileInteractions(cubit: cubit),
+              if (!isOwner) _GuestProfileInteractions(cubit: cubit),
+              const SizedBox(height: 10),
+              (state.user!.bio == null || state.user!.bio!.isEmpty)
+                  ? const Text('No bio')
+                  : Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                      child: Text(
+                        state.user!.bio ?? '',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+              const SizedBox(height: 20),
+              Expanded(
+                child: DefaultTabController(
+                  length: (isRestaurant ? 2 : 1) + (isOwner ? 1 : 0),
+                  child: Column(
+                    children: [
+                      TabBar(
+                        tabs: isRestaurant
+                            ? [
+                                const Tab(icon: Icon(Icons.grid_view)),
+                                const Tab(icon: Icon(Icons.reviews)),
+                                if (isOwner)
+                                  const Tab(icon: Icon(Icons.favorite)),
+                              ]
+                            : [
+                                const Tab(icon: Icon(Icons.grid_view)),
+                                if (isOwner)
+                                  const Tab(icon: Icon(Icons.favorite)),
+                              ],
+                      ),
+                      Expanded(
+                        child: TabBarView(
+                          children: isRestaurant
+                              ? [
+                                  _buildVideosTab(
+                                    state.user!.videos.reversed.toList(),
+                                    isOwner,
+                                  ),
+                                  _buildReviewsTab(),
+                                  if (isOwner) _buildLikedVideosTab(),
+                                ]
+                              : [
+                                  _buildVideosTab(
+                                    state.user!.videos.reversed.toList(),
+                                    isOwner,
+                                  ),
+                                  if (isOwner) _buildLikedVideosTab(),
+                                ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -249,7 +254,6 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // TODO: May separate fetch request from User
   Widget _buildVideosTab(List<Video> videos, bool isOwner) {
     return GridView.builder(
       padding: const EdgeInsets.all(8.0),

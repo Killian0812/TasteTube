@@ -11,7 +11,7 @@ class User {
   final List<String> followers;
   final List<String> followings;
   final String? role;
-  final List<Video> videos;
+  final List<Video> videos; // TODO: Separate Videos from User
 
   User({
     required this.id,
