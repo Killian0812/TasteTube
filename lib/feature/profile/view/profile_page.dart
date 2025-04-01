@@ -56,11 +56,14 @@ class ProfilePage extends StatelessWidget {
             },
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
-              child: Center(
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(state.message),
+                    Center(
+                      child: Text(state.message),
+                    ),
                   ],
                 ),
               ),

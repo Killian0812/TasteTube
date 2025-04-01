@@ -132,6 +132,7 @@ final GoRouter _router = GoRouter(
 
     return null;
   },
+  errorBuilder: (context, state) => ErrorPage(exception: state.error),
 );
 
 class CommonNavigatorObserver extends NavigatorObserver {

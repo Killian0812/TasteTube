@@ -14,6 +14,7 @@ import 'package:taste_tube/auth/view/phone_or_email/login_phone_or_email_page.da
 import 'package:taste_tube/auth/view/phone_or_email/register_phone_or_email_page.dart';
 import 'package:taste_tube/build_config.dart';
 import 'package:taste_tube/common/color.dart';
+import 'package:taste_tube/common/error.dart';
 import 'package:taste_tube/common/fallback.dart';
 import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/text.dart';

@@ -83,7 +83,7 @@ class _SearchPageState extends State<SearchPage> {
                   title: Text(user.username),
                   subtitle: Text(user.email!),
                   onTap: () {
-                    context.pushReplacement('/user/${user.id}');
+                    context.push('/user/${user.id}');
                   },
                 );
               },
