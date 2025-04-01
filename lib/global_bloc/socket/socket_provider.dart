@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 import 'package:taste_tube/api.dart';
+import 'package:taste_tube/build_config.dart';
 import 'package:taste_tube/global_bloc/socket/socket_service.dart';
 import 'package:taste_tube/injection.dart';
 
@@ -32,6 +33,9 @@ class SocketProvider extends ChangeNotifier with PaymentSocketService {
 
   // Initialize the socket connection
   void initSocket(String userId) {
+    if (BuildConfig.environment == 'vercel') {
+      return; // TODO: Replace with Firebase realtime DB
+    }
     if (isConnected) {
       logger.w('Socket already connected, disconnecting before reconnecting');
       disconnectSocket();
