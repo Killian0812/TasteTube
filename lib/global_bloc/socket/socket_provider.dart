@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import 'package:socket_io_client/socket_io_client.dart';
+import 'package:taste_tube/api.dart';
 import 'package:taste_tube/global_bloc/socket/socket_service.dart';
 import 'package:taste_tube/injection.dart';
 
@@ -38,7 +39,7 @@ class SocketProvider extends ChangeNotifier with PaymentSocketService {
 
     try {
       final socket = io(
-        'https://first-shepherd-legible.ngrok-free.app',
+        Api.baseUrl,
         OptionBuilder()
             .setTransports(['websocket']).setQuery({'userId': userId}).build(),
       );
