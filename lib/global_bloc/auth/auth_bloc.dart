@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:logger/logger.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/global_bloc/socket/socket_provider.dart';
 import 'package:taste_tube/injection.dart';
@@ -61,11 +63,40 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   FutureOr<void> _logout(LogoutEvent event, Emitter<AuthState> emit) async {
-    getIt<SocketProvider>().disconnectSocket();
-    FacebookAuth.instance.logOut();
-    await FacebookAuth.instance.logOut();
-    await secureStorage.clearRefreshToken();
-    http.options.headers.remove('Authorization');
+    final logger = getIt<Logger>();
+
+    // Attempt to clear refresh token
+    try {
+      await secureStorage.clearRefreshToken();
+      http.options.headers.remove('Authorization');
+    } catch (e) {
+      logger.e('Failed to clear refresh token & authorization header: $e');
+    }
+
+    // Disconnect socket
+    try {
+      getIt<SocketProvider>().disconnectSocket();
+    } catch (e) {
+      logger.e('Failed to disconnect socket: $e');
+    }
+
+    // Facebook logout
+    try {
+      final userData = await FacebookAuth.instance.getUserData();
+      if (userData["name"] != null && (userData["name"] as String).isNotEmpty) {
+        await FacebookAuth.instance.logOut();
+      }
+    } catch (e) {
+      logger.e('Failed to logout from Facebook: $e');
+    }
+
+    // Google logout
+    try {
+      await getIt<GoogleSignIn>().signOut();
+    } catch (e) {
+      logger.e('Failed to logout from Google: $e');
+    }
+
     emit(Unauthenticated());
   }
 }

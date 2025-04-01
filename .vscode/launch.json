@@ -8,6 +8,8 @@
             "args": [
                 "--dart-define",
                 "ENVIRONMENT=ngrok",
+                "--web-port",
+                "5555"
             ]
         },
         {
@@ -17,6 +19,8 @@
             "args": [
                 "--dart-define",
                 "ENVIRONMENT=vercel",
+                "--web-port",
+                "5555"
             ]
         }
     ]

@@ -48,18 +48,17 @@ final GoRouter _router = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: '/user',
+              path: '/profile',
               builder: (context, state) => const OwnerProfilePage(),
-            ),
-            GoRoute(
-              path: '/user/:userId',
-              name: 'profile',
-              builder: (context, state) =>
-                  ProfilePage.provider(state.pathParameters['userId'] ?? ''),
             ),
           ],
         ),
       ],
+    ),
+    GoRoute(
+      path: '/user/:userId',
+      builder: (context, state) =>
+          ProfilePage.provider(state.pathParameters['userId'] ?? ''),
     ),
     GoRoute(
         path: '/shop/:shopId',
@@ -123,7 +122,8 @@ final GoRouter _router = GoRouter(
     final protectedRoutes = [
       '/home',
       '/profile',
-      '/restaurant',
+      '/store',
+      '/inbox',
     ];
 
     if (!isAuthenticated && protectedRoutes.contains(state.path)) {

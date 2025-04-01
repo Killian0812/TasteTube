@@ -22,143 +22,7 @@ import 'package:taste_tube/providers.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
 
 part 'profile_page.ext.dart';
-
-class _OwnerProfileInteractions extends StatelessWidget {
-  final ProfileCubit cubit;
-  const _OwnerProfileInteractions({required this.cubit});
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<ProfileCubit, ProfileState>(
-      bloc: cubit,
-      builder: (context, state) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton.icon(
-              onPressed: () {
-                _showEditProfileDialog(context, state.user!);
-              },
-              icon: const Icon(Icons.edit),
-              label: const Text('Edit profile'),
-            ),
-            const SizedBox(width: 5),
-            ElevatedButton(
-              onPressed: () => _showProfileOptions(context),
-              child: const Icon(Icons.settings),
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _GuestProfileInteractions extends StatelessWidget {
-  final ProfileCubit cubit;
-  const _GuestProfileInteractions({required this.cubit});
-
-  @override
-  Widget build(BuildContext context) {
-    final currentUserId = UserDataUtil.getUserId();
-    return BlocBuilder<ProfileCubit, ProfileState>(
-        bloc: cubit,
-        builder: (context, state) {
-          final followed = state.user!.followers.contains(currentUserId);
-
-          if (state.user!.role == AccountType.customer.value()) {
-            return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              followed == true
-                  ? ElevatedButton.icon(
-                      onPressed: () async {
-                        await context
-                            .read<ProfileCubit>()
-                            .unfollowUser(state.user!, currentUserId);
-                      },
-                      icon: const Icon(Icons.person_remove_rounded),
-                      label: const Text('Unfollow'),
-                    )
-                  : ElevatedButton.icon(
-                      onPressed: () async {
-                        await context
-                            .read<ProfileCubit>()
-                            .followUser(state.user!, currentUserId);
-                      },
-                      icon: const Icon(
-                        Icons.person_add,
-                        color: Colors.white,
-                      ),
-                      label: const Text(
-                        'Follow',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      style: TextButton.styleFrom(
-                          backgroundColor: CommonColor.activeBgColor),
-                    ),
-            ]);
-          }
-
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              followed == true
-                  ? ElevatedButton.icon(
-                      onPressed: () async {
-                        await context
-                            .read<ProfileCubit>()
-                            .unfollowUser(state.user!, currentUserId);
-                      },
-                      icon: const Icon(Icons.person_remove_rounded),
-                      label: const Text('Unfollow'),
-                    )
-                  : ElevatedButton.icon(
-                      onPressed: () async {
-                        await context
-                            .read<ProfileCubit>()
-                            .followUser(state.user!, currentUserId);
-                      },
-                      icon: const Icon(
-                        Icons.add_business,
-                        color: Colors.white,
-                      ),
-                      label: const Text(
-                        'Follow',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      style: TextButton.styleFrom(
-                          backgroundColor: CommonColor.activeBgColor),
-                    ),
-              const SizedBox(width: 5),
-              ElevatedButton.icon(
-                onPressed: () =>
-                    Navigator.of(context, rootNavigator: true).push(
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        CameraPage.provider(reviewTarget: state.user),
-                  ),
-                ),
-                icon: const Icon(Icons.reviews),
-                label: const Text('Send review'),
-              ),
-              const SizedBox(width: 5),
-              ElevatedButton.icon(
-                onPressed: () {
-                  context.pushNamed('single-shop', pathParameters: {
-                    'shopId': state.user!.id,
-                  }, extra: {
-                    'shopImage': state.user!.image,
-                    'shopName': state.user!.username,
-                    'shopPhone': state.user!.phone,
-                  });
-                },
-                icon: const Icon(Icons.food_bank),
-                label: const Text('Products'),
-              ),
-            ],
-          );
-        });
-  }
-}
+part 'profile_page.ext2.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -166,9 +30,8 @@ class ProfilePage extends StatelessWidget {
   static Widget provider(String userId) => MultiBlocProvider(
         key: ValueKey(userId),
         providers: [
-          BlocProvider(create: (context) => ProfileCubit(userId)..init()),
           BlocProvider(
-            create: (context) => PasswordCubit(userId),
+            create: (context) => ProfileCubit(userId)..init(),
           ),
         ],
         child: const ProfilePage(),
@@ -187,19 +50,20 @@ class ProfilePage extends StatelessWidget {
           );
         }
         if (state is ProfileFailure) {
-          return Center(
-            child: Column(
-              children: [
-                Text(state.message),
-                const SizedBox(height: 20),
-                FloatingActionButton.extended(
-                  heroTag: 'Profile reset',
-                  label: const Text('Try again'),
-                  onPressed: () {
-                    cubit.init();
-                  },
+          return RefreshIndicator(
+            onRefresh: () async {
+              cubit.init();
+            },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(state.message),
+                  ],
                 ),
-              ],
+              ),
             ),
           );
         }
@@ -249,7 +113,6 @@ class ProfilePage extends StatelessWidget {
                           if (context.mounted) {
                             final authBloc = getIt<AuthBloc>();
                             authBloc.add(LogoutEvent());
-                            context.go('/login');
                           }
                         },
                       ),

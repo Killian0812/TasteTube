@@ -77,119 +77,117 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     CommonSize.initScreenSize(context);
 
-    return TasteTubeProvider(
-      child: AnimatedBuilder(
-        animation: getIt<AppSettings>(),
-        builder: (context, snapshot) {
-          return MaterialApp.router(
-            debugShowCheckedModeBanner: false,
-            title: 'TasteTube',
-            routerConfig: _router,
-            theme: ThemeData.light().copyWith(
-              primaryColor: Colors.black,
-              hintColor: Colors.amber[300],
-              textTheme: ThemeData.light()
-                  .textTheme
-                  .apply(fontFamily: 'Ganh')
-                  .copyWith(
-                    bodyMedium: const TextStyle(
-                      color: Colors.black,
-                      decoration: TextDecoration.none,
-                    ),
-                    bodyLarge: const TextStyle(
-                      color: Colors.black,
-                      decoration: TextDecoration.none,
-                    ),
-                    titleLarge: const TextStyle(
-                      color: Colors.black,
-                      decoration: TextDecoration.none,
-                    ),
-                    // Add other styles if needed
-                  ),
-              scaffoldBackgroundColor: Colors.white,
-              textSelectionTheme:
-                  const TextSelectionThemeData(cursorColor: Colors.black),
-              tabBarTheme: const TabBarTheme(
-                labelColor: Colors.black,
-                unselectedLabelColor: CommonColor.greyOutTextColor,
-                labelStyle: CommonTextStyle.bold,
-                unselectedLabelStyle: CommonTextStyle.boldItalic,
-              ),
-              bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-                backgroundColor: CommonColor.lightGrey,
-                unselectedItemColor: Colors.black,
-                selectedItemColor: CommonColor.activeBgColor,
-                selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
-                showUnselectedLabels: true,
-                type: BottomNavigationBarType.fixed,
-              ),
-              appBarTheme: const AppBarTheme(
-                backgroundColor: Colors.transparent,
-                shadowColor: Colors.transparent,
-                iconTheme: IconThemeData(color: Colors.black),
-              ),
-              floatingActionButtonTheme: const FloatingActionButtonThemeData(
-                backgroundColor: CommonColor.activeBgColor,
-                foregroundColor: Colors.white,
-              ),
-            ),
-            darkTheme: ThemeData.dark().copyWith(
-              primaryColor: Colors.white,
-              textTheme:
-                  ThemeData.dark().textTheme.apply(fontFamily: 'Ganh').copyWith(
-                        bodyMedium: const TextStyle(
-                          color: Colors.white,
-                          decoration: TextDecoration.none,
-                        ),
-                        bodyLarge: const TextStyle(
-                          color: Colors.white,
-                          decoration: TextDecoration.none,
-                        ),
-                        titleLarge: const TextStyle(
-                          color: Colors.white,
-                          decoration: TextDecoration.none,
-                        ),
-                        // Add other styles if needed
+    return AnimatedBuilder(
+      animation: getIt<AppSettings>(),
+      builder: (context, snapshot) {
+        return MaterialApp.router(
+          debugShowCheckedModeBanner: false,
+          title: 'TasteTube',
+          builder: (context, child) =>
+              TasteTubeProvider(child: child ?? SizedBox.shrink()),
+          routerConfig: _router,
+          theme: ThemeData.light().copyWith(
+            primaryColor: Colors.black,
+            hintColor: Colors.amber[300],
+            textTheme:
+                ThemeData.light().textTheme.apply(fontFamily: 'Ganh').copyWith(
+                      bodyMedium: const TextStyle(
+                        color: Colors.black,
+                        decoration: TextDecoration.none,
                       ),
-              scaffoldBackgroundColor: Colors.black,
-              textSelectionTheme:
-                  const TextSelectionThemeData(cursorColor: Colors.white),
-              tabBarTheme: const TabBarTheme(
-                labelColor: Colors.white,
-                unselectedLabelColor: CommonColor.greyOutTextColor,
-                labelStyle: CommonTextStyle.bold,
-                unselectedLabelStyle: CommonTextStyle.boldItalic,
-              ),
-              bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-                backgroundColor: CommonColor.darkGrey,
-                unselectedItemColor: Colors.white,
-                selectedItemColor: CommonColor.activeBgColor,
-                selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
-                showUnselectedLabels: true,
-                type: BottomNavigationBarType.fixed,
-              ),
-              appBarTheme: const AppBarTheme(
-                backgroundColor: Colors.transparent,
-                shadowColor: Colors.transparent,
-                iconTheme: IconThemeData(color: Colors.white),
-              ),
-              floatingActionButtonTheme: const FloatingActionButtonThemeData(
-                backgroundColor: CommonColor.activeBgColor,
-                foregroundColor: Colors.white,
-              ),
+                      bodyLarge: const TextStyle(
+                        color: Colors.black,
+                        decoration: TextDecoration.none,
+                      ),
+                      titleLarge: const TextStyle(
+                        color: Colors.black,
+                        decoration: TextDecoration.none,
+                      ),
+                      // Add other styles if needed
+                    ),
+            scaffoldBackgroundColor: Colors.white,
+            textSelectionTheme:
+                const TextSelectionThemeData(cursorColor: Colors.black),
+            tabBarTheme: const TabBarTheme(
+              labelColor: Colors.black,
+              unselectedLabelColor: CommonColor.greyOutTextColor,
+              labelStyle: CommonTextStyle.bold,
+              unselectedLabelStyle: CommonTextStyle.boldItalic,
             ),
-            themeMode: getIt<AppSettings>().getTheme,
-            scrollBehavior: const MaterialScrollBehavior().copyWith(
-              dragDevices: {
-                PointerDeviceKind.mouse,
-                PointerDeviceKind.touch,
-                PointerDeviceKind.stylus,
-                PointerDeviceKind.unknown,
-              },
+            bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+              backgroundColor: CommonColor.lightGrey,
+              unselectedItemColor: Colors.black,
+              selectedItemColor: CommonColor.activeBgColor,
+              selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
+              showUnselectedLabels: true,
+              type: BottomNavigationBarType.fixed,
             ),
-          );
-        },
-      ),
+            appBarTheme: const AppBarTheme(
+              backgroundColor: Colors.transparent,
+              shadowColor: Colors.transparent,
+              iconTheme: IconThemeData(color: Colors.black),
+            ),
+            floatingActionButtonTheme: const FloatingActionButtonThemeData(
+              backgroundColor: CommonColor.activeBgColor,
+              foregroundColor: Colors.white,
+            ),
+          ),
+          darkTheme: ThemeData.dark().copyWith(
+            primaryColor: Colors.white,
+            textTheme:
+                ThemeData.dark().textTheme.apply(fontFamily: 'Ganh').copyWith(
+                      bodyMedium: const TextStyle(
+                        color: Colors.white,
+                        decoration: TextDecoration.none,
+                      ),
+                      bodyLarge: const TextStyle(
+                        color: Colors.white,
+                        decoration: TextDecoration.none,
+                      ),
+                      titleLarge: const TextStyle(
+                        color: Colors.white,
+                        decoration: TextDecoration.none,
+                      ),
+                      // Add other styles if needed
+                    ),
+            scaffoldBackgroundColor: Colors.black,
+            textSelectionTheme:
+                const TextSelectionThemeData(cursorColor: Colors.white),
+            tabBarTheme: const TabBarTheme(
+              labelColor: Colors.white,
+              unselectedLabelColor: CommonColor.greyOutTextColor,
+              labelStyle: CommonTextStyle.bold,
+              unselectedLabelStyle: CommonTextStyle.boldItalic,
+            ),
+            bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+              backgroundColor: CommonColor.darkGrey,
+              unselectedItemColor: Colors.white,
+              selectedItemColor: CommonColor.activeBgColor,
+              selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
+              showUnselectedLabels: true,
+              type: BottomNavigationBarType.fixed,
+            ),
+            appBarTheme: const AppBarTheme(
+              backgroundColor: Colors.transparent,
+              shadowColor: Colors.transparent,
+              iconTheme: IconThemeData(color: Colors.white),
+            ),
+            floatingActionButtonTheme: const FloatingActionButtonThemeData(
+              backgroundColor: CommonColor.activeBgColor,
+              foregroundColor: Colors.white,
+            ),
+          ),
+          themeMode: getIt<AppSettings>().getTheme,
+          scrollBehavior: const MaterialScrollBehavior().copyWith(
+            dragDevices: {
+              PointerDeviceKind.mouse,
+              PointerDeviceKind.touch,
+              PointerDeviceKind.stylus,
+              PointerDeviceKind.unknown,
+            },
+          ),
+        );
+      },
     );
   }
 }
@@ -206,12 +204,7 @@ class Layout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AuthBloc, AuthState>(
-      listener: (context, state) {
-        if (state is Unauthenticated) {
-          context.go('/login');
-        }
-      },
+    return BlocBuilder<AuthBloc, AuthState>(
       buildWhen: (previous, current) =>
           previous is Authenticated && current is! Authenticated ||
           previous is! Authenticated && current is Authenticated,

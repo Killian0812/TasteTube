@@ -44,10 +44,7 @@ class UploadPage extends StatelessWidget {
             ToastService.showToast(
                 context, 'Upload successful', ToastType.success);
             if (context.mounted) {
-              context.goNamed(
-                'profile',
-                pathParameters: {'userId': UserDataUtil.getUserId()},
-              );
+              context.go('/profile');
             }
           } else if (state is UploadFailure) {
             ToastService.showToast(context, state.message, ToastType.error);
