@@ -177,11 +177,11 @@ class _SingleShopPageState extends State<SingleShopPage> {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-              childAspectRatio: 0.7,
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 250,
+              childAspectRatio: 2 / 3,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
             ),
             itemCount: products.length,
             itemBuilder: (context, index) {

@@ -15,6 +15,9 @@ class SingleShopProductPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final horizontalPadding = screenWidth > 1000 ? 250.0 : 0.0;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(product.name),
@@ -29,13 +32,16 @@ class SingleShopProductPage extends StatelessWidget {
             );
           }
         },
-        child: ListView(
-          children: [
-            _ProductImages(images: product.images),
-            _buildProductDetails(context),
-            _buildOwnerInfo(context),
-            _buildActionButtons(context),
-          ],
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+          child: Column(
+            children: [
+              _ProductImages(images: product.images),
+              _buildProductDetails(context),
+              _buildOwnerInfo(context),
+              _buildActionButtons(context),
+            ],
+          ),
         ),
       ),
     );
