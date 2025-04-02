@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taste_tube/feature/store/view/tabs/analytic/shop_analytic_cubit.dart';
+import 'package:taste_tube/feature/store/view/tabs/analytic/shop_analytic_tab.dart';
 import 'package:taste_tube/feature/store/view/tabs/delivery/delivery_option_tab.dart';
 import 'package:taste_tube/feature/store/view/tabs/payment/payment_setting_cubit.dart';
 import 'package:taste_tube/feature/store/view/tabs/payment/payment_setting_tab.dart';
@@ -7,6 +9,8 @@ import 'package:taste_tube/feature/store/view/tabs/product/category_cubit.dart';
 import 'package:taste_tube/feature/store/view/tabs/order/shop_order_tab.dart';
 import 'package:taste_tube/feature/store/view/tabs/product/product_cubit.dart';
 import 'package:taste_tube/feature/store/view/tabs/product/product_tab.dart';
+import 'package:taste_tube/injection.dart';
+import 'package:taste_tube/providers.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
 
 class StorePage extends StatefulWidget {
@@ -23,11 +27,21 @@ class _StorePageState extends State<StorePage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
+    _tabController.addListener(() {
+      final notifier = getIt<BottomNavigationBarToggleNotifier>();
+        // Hide bottom nav bar on Analytics tab
+      if (_tabController.index == 4) {
+        notifier.hide();
+      } else {
+        notifier.show();
+      }
+    });
   }
 
   @override
   void dispose() {
+    getIt<BottomNavigationBarToggleNotifier>().show();
     _tabController.dispose();
     super.dispose();
   }
@@ -36,14 +50,30 @@ class _StorePageState extends State<StorePage>
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(icon: Icon(Icons.receipt_long), text: 'Orders'),
-            Tab(icon: Icon(Icons.food_bank_rounded), text: 'Products'),
-            Tab(icon: Icon(Icons.local_shipping), text: 'Delivery'),
-            Tab(icon: Icon(Icons.payment), text: 'Payment'),
-          ],
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight + 10),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              const double estimatedTabWidth = 120.0;
+              final totalTabsWidth = estimatedTabWidth * 5;
+              final isScrollable = totalTabsWidth > constraints.maxWidth;
+
+              return TabBar(
+                controller: _tabController,
+                isScrollable: isScrollable,
+                labelPadding: isScrollable
+                    ? const EdgeInsets.symmetric(horizontal: 16.0)
+                    : null,
+                tabs: const [
+                  Tab(icon: Icon(Icons.receipt_long), text: 'Orders'),
+                  Tab(icon: Icon(Icons.food_bank_rounded), text: 'Products'),
+                  Tab(icon: Icon(Icons.local_shipping), text: 'Delivery'),
+                  Tab(icon: Icon(Icons.payment), text: 'Payment'),
+                  Tab(icon: Icon(Icons.analytics), text: 'Analytics'),
+                ],
+              );
+            },
+          ),
         ),
         body: MultiBlocProvider(
           providers: [
@@ -57,6 +87,10 @@ class _StorePageState extends State<StorePage>
             BlocProvider(
               create: (context) => PaymentSettingCubit()..fetchCards(),
             ),
+            BlocProvider(
+              create: (context) =>
+                  ShopAnalyticCubit()..fetchAnalytics(UserDataUtil.getUserId()),
+            ),
           ],
           child: TabBarView(
             controller: _tabController,
@@ -65,6 +99,7 @@ class _StorePageState extends State<StorePage>
               ProductTab(),
               DeliveryOptionTab(),
               PaymentSettingTab(),
+              ShopAnalyticTab(),
             ],
           ),
         ),

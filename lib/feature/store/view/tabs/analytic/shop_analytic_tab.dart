@@ -1,0 +1,416 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:taste_tube/feature/store/view/tabs/analytic/shop_analytic_cubit.dart';
+
+class ShopAnalyticTab extends StatelessWidget {
+  const ShopAnalyticTab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    return BlocBuilder<ShopAnalyticCubit, ShopAnalyticState>(
+      builder: (context, state) {
+        if (state is ShopAnalyticLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is ShopAnalyticLoaded) {
+          return SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Enhanced Key Metrics Row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _buildMetricCard(
+                      title: 'Total Revenue',
+                      value: '\$${state.analytics.totalRevenue.toStringAsFixed(2)}',
+                      icon: Icons.attach_money,
+                      width: screenWidth * 0.29,
+                    ),
+                    _buildMetricCard(
+                      title: 'Orders',
+                      value: '${state.analytics.orderCount}',
+                      icon: Icons.shopping_cart,
+                      width: screenWidth * 0.29,
+                    ),
+                    _buildMetricCard(
+                      title: 'Conversion',
+                      value: '${state.analytics.conversionRate}%',
+                      icon: Icons.trending_up,
+                      width: screenWidth * 0.29,
+                    ),
+                  ],
+                ),
+                SizedBox(height: screenHeight * 0.02),
+
+                // Customer Metrics
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _buildMetricCard(
+                      title: 'New Customers',
+                      value: '${state.analytics.newCustomers}',
+                      icon: Icons.person_add,
+                      width: screenWidth * 0.45,
+                    ),
+                    _buildMetricCard(
+                      title: 'Returning',
+                      value: '${state.analytics.returningCustomers}',
+                      icon: Icons.repeat,
+                      width: screenWidth * 0.45,
+                    ),
+                  ],
+                ),
+                SizedBox(height: screenHeight * 0.03),
+
+                // Sales Trend Chart
+                _buildSectionTitle('Sales Trend (Last 7 Days)'),
+                _buildChartContainer(
+                  height: screenHeight * 0.25,
+                  child: LineChart(
+                    LineChartData(
+                      gridData: const FlGridData(show: true),
+                      titlesData: _buildLineChartTitles(),
+                      borderData: FlBorderData(show: true),
+                      lineBarsData: [
+                        LineChartBarData(
+                          spots: state.analytics.dailySales
+                              .asMap()
+                              .entries
+                              .map((e) => FlSpot(e.key.toDouble(), e.value))
+                              .toList(),
+                          isCurved: true,
+                          color: Colors.blue,
+                          dotData: const FlDotData(show: true),
+                          belowBarData: BarAreaData(
+                            show: true,
+                            color: Colors.blue.withValues(alpha: 0.1),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: screenHeight * 0.03),
+
+                // Category Sales Bar Chart with Growth
+                _buildSectionTitle('Top Categories by Revenue'),
+                _buildChartContainer(
+                  height: screenHeight * 0.3,
+                  child: BarChart(
+                    BarChartData(
+                      alignment: BarChartAlignment.spaceAround,
+                      barGroups: state.analytics.topCategories
+                          .asMap()
+                          .entries
+                          .map((e) => BarChartGroupData(
+                                x: e.key,
+                                barRods: [
+                                  BarChartRodData(
+                                    toY: e.value.revenue,
+                                    color: Colors.primaries[e.key % Colors.primaries.length],
+                                    width: 16,
+                                    borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+                                    rodStackItems: [
+                                      BarChartRodStackItem(
+                                        0,
+                                        e.value.revenue * (e.value.growth / 100),
+                                        Colors.green.withValues(alpha: 0.3),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ))
+                          .toList(),
+                      titlesData: _buildBarChartTitles(state.analytics.topCategories),
+                      borderData: FlBorderData(show: true),
+                    ),
+                  ),
+                ),
+                SizedBox(height: screenHeight * 0.03),
+
+                // Review Sentiment Pie Chart with Satisfaction Score
+                _buildSectionTitle('Review Sentiment & Satisfaction'),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildChartContainer(
+                        height: screenHeight * 0.25,
+                        child: PieChart(
+                          PieChartData(
+                            sections: [
+                              PieChartSectionData(
+                                value: state.analytics.positiveReviews.toDouble(),
+                                color: Colors.green,
+                                title: 'Positive\n${state.analytics.positiveReviews}',
+                                radius: 50,
+                                titleStyle: const TextStyle(fontSize: 12, color: Colors.white),
+                              ),
+                              PieChartSectionData(
+                                value: state.analytics.neutralReviews.toDouble(),
+                                color: Colors.yellow,
+                                title: 'Neutral\n${state.analytics.neutralReviews}',
+                                radius: 50,
+                                titleStyle: const TextStyle(fontSize: 12, color: Colors.black),
+                              ),
+                              PieChartSectionData(
+                                value: state.analytics.negativeReviews.toDouble(),
+                                color: Colors.red,
+                                title: 'Negative\n${state.analytics.negativeReviews}',
+                                radius: 50,
+                                titleStyle: const TextStyle(fontSize: 12, color: Colors.white),
+                              ),
+                            ],
+                            sectionsSpace: 2,
+                            centerSpaceRadius: 40,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: screenWidth * 0.03),
+                    _buildMetricCard(
+                      title: 'Satisfaction',
+                      value: '${state.analytics.customerSatisfaction}/5',
+                      icon: Icons.star,
+                      width: screenWidth * 0.35,
+                    ),
+                  ],
+                ),
+                SizedBox(height: screenHeight * 0.03),
+
+                // Top Products Table with Ratings
+                _buildSectionTitle('Top Selling Products'),
+                _buildTableContainer(
+                  child: DataTable(
+                    columns: const [
+                      DataColumn(label: Text('Product', style: TextStyle(fontWeight: FontWeight.bold))),
+                      DataColumn(label: Text('Sales', style: TextStyle(fontWeight: FontWeight.bold))),
+                      DataColumn(label: Text('Revenue', style: TextStyle(fontWeight: FontWeight.bold))),
+                      DataColumn(label: Text('Rating', style: TextStyle(fontWeight: FontWeight.bold))),
+                    ],
+                    rows: state.analytics.topProducts
+                        .map(
+                          (product) => DataRow(
+                            cells: [
+                              DataCell(Text(product.name)),
+                              DataCell(Text(product.sales.toString())),
+                              DataCell(Text('\$${product.revenue.toStringAsFixed(2)}')),
+                              DataCell(Text('${product.rating}/5')),
+                            ],
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
+                SizedBox(height: screenHeight * 0.03),
+
+                // Customer Demographics with Avg Spend
+                _buildSectionTitle('Customer Demographics'),
+                _buildTableContainer(
+                  child: DataTable(
+                    columns: const [
+                      DataColumn(label: Text('Group', style: TextStyle(fontWeight: FontWeight.bold))),
+                      DataColumn(label: Text('Count', style: TextStyle(fontWeight: FontWeight.bold))),
+                      DataColumn(label: Text('%', style: TextStyle(fontWeight: FontWeight.bold))),
+                      DataColumn(label: Text('Avg Spend', style: TextStyle(fontWeight: FontWeight.bold))),
+                    ],
+                    rows: state.analytics.customerDemographics
+                        .map(
+                          (demo) => DataRow(
+                            cells: [
+                              DataCell(Text(demo.group)),
+                              DataCell(Text(demo.count.toString())),
+                              DataCell(Text('${demo.percentage.toStringAsFixed(1)}%')),
+                              DataCell(Text('\$${demo.avgSpend.toStringAsFixed(2)}')),
+                            ],
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
+                SizedBox(height: screenHeight * 0.03),
+
+                // Peak Hours
+                _buildSectionTitle('Peak Hours by Day'),
+                _buildTableContainer(
+                  child: DataTable(
+                    columns: const [
+                      DataColumn(label: Text('Day', style: TextStyle(fontWeight: FontWeight.bold))),
+                      DataColumn(label: Text('Peak Hours', style: TextStyle(fontWeight: FontWeight.bold))),
+                    ],
+                    rows: state.analytics.peakHours.entries
+                        .map(
+                          (entry) => DataRow(
+                            cells: [
+                              DataCell(Text(entry.key)),
+                              DataCell(Text(entry.value)),
+                            ],
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
+                SizedBox(height: screenHeight * 0.03),
+
+                // Payment Methods Pie Chart
+                _buildSectionTitle('Payment Methods'),
+                _buildChartContainer(
+                  height: screenHeight * 0.25,
+                  child: PieChart(
+                    PieChartData(
+                      sections: state.analytics.paymentMethods
+                          .map(
+                            (method) => PieChartSectionData(
+                              value: method.count.toDouble(),
+                              color: Colors.primaries[state.analytics.paymentMethods.indexOf(method) % Colors.primaries.length],
+                              title: '${method.name}\n${method.percentage}%',
+                              radius: 50,
+                              titleStyle: const TextStyle(fontSize: 12, color: Colors.white),
+                            ),
+                          )
+                          .toList(),
+                      sectionsSpace: 2,
+                      centerSpaceRadius: 40,
+                    ),
+                  ),
+                ),
+                SizedBox(height: screenHeight * 0.03),
+
+                // Additional Metrics
+                _buildSectionTitle('Additional Metrics'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _buildMetricCard(
+                      title: 'Avg Delivery',
+                      value: '${state.analytics.averageDeliveryTime} min',
+                      icon: Icons.delivery_dining,
+                      width: screenWidth * 0.45,
+                    ),
+                    _buildMetricCard(
+                      title: 'Monthly Growth',
+                      value: '${state.analytics.monthlyGrowth}%',
+                      icon: Icons.show_chart,
+                      width: screenWidth * 0.45,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        } else if (state is ShopAnalyticError) {
+          return Center(child: Text('Error: ${state.message}'));
+        }
+        return const Center(child: Text('No data available'));
+      },
+    );
+  }
+
+  Widget _buildMetricCard({
+    required String title,
+    required String value,
+    required IconData icon,
+    required double width,
+  }) {
+    return SizedBox(
+      width: width,
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: ListTile(
+          title: Text(title, style: const TextStyle(fontSize: 14)),
+          subtitle: Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          leading: Icon(icon, size: 24, color: Colors.blue),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          dense: true,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Text(
+        title,
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  Widget _buildChartContainer({required double height, required Widget child}) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SizedBox(
+          height: height,
+          child: child,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTableContainer({required Widget child}) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: child,
+      ),
+    );
+  }
+
+  FlTitlesData _buildLineChartTitles() {
+    return FlTitlesData(
+      leftTitles: const AxisTitles(
+        axisNameWidget: Text('Sales'),
+        sideTitles: SideTitles(showTitles: true, reservedSize: 40),
+      ),
+      bottomTitles: AxisTitles(
+        sideTitles: SideTitles(
+          showTitles: true,
+          getTitlesWidget: (value, meta) => Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text('D${value.toInt() + 1}', style: const TextStyle(fontSize: 12)),
+          ),
+        ),
+      ),
+      topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+      rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+    );
+  }
+
+  FlTitlesData _buildBarChartTitles(List<CategorySales> categories) {
+    return FlTitlesData(
+      bottomTitles: AxisTitles(
+        sideTitles: SideTitles(
+          showTitles: true,
+          reservedSize: 40,
+          getTitlesWidget: (value, meta) => Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text(
+              categories[value.toInt()].name,
+              style: const TextStyle(fontSize: 12),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
+      ),
+      leftTitles: const AxisTitles(
+        axisNameWidget: Text('Revenue'),
+        sideTitles: SideTitles(showTitles: true, reservedSize: 40),
+      ),
+      topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+      rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+    );
+  }
+}
