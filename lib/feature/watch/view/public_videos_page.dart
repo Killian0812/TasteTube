@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:taste_tube/feature/home/view/content_cubit.dart';
 import 'package:taste_tube/feature/watch/view/watch_page.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
 
@@ -65,6 +66,7 @@ class _PublicVideosPageState extends State<PublicVideosPage> {
           setState(() {
             currentIndex = index;
           });
+          currentPlayingVideoId = widget.videos[index].id;
         },
         itemBuilder: (context, index) {
           final video = widget.videos[index];

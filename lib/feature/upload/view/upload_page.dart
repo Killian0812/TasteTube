@@ -44,7 +44,8 @@ class UploadPage extends StatelessWidget {
             ToastService.showToast(
                 context, 'Upload successful', ToastType.success);
             if (context.mounted) {
-              context.go('/profile');
+              context.pop();
+              context.pop();
             }
           } else if (state is UploadFailure) {
             ToastService.showToast(context, state.message, ToastType.error);
