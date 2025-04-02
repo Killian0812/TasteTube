@@ -225,70 +225,85 @@ class Layout extends StatelessWidget {
               body: shell,
               extendBody: true,
               extendBodyBehindAppBar: true,
-              bottomNavigationBar: AnimatedBottomNavigationBar.builder(
-                backgroundColor:
-                    Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-                activeIndex: currentIndex,
-                gapLocation: fabHidden ? GapLocation.none : GapLocation.center,
-                notchSmoothness: NotchSmoothness.softEdge,
-                onTap: (index) {
-                  if (index != 0) {
-                    getIt<ContentCubit>().pauseContent();
-                  } else {
-                    getIt<ContentCubit>().resumeContent();
-                  }
-                  if (index == 1 && isCustomer) {
-                    context.go('/shop');
-                    return;
-                  }
-                  shell.goBranch(index);
-                },
-                itemCount: 4,
-                tabBuilder: (int index, bool isActive) {
-                  final labels = isCustomer
-                      ? ['Home', 'Shop', 'Inbox', 'Profile']
-                      : ['Home', 'Store', 'Inbox', 'Profile'];
-                  final icons = isCustomer
-                      ? [
-                          Icons.home,
-                          Icons.shopping_basket_rounded,
-                          Icons.inbox,
-                          Icons.person
-                        ]
-                      : [Icons.home, Icons.store, Icons.inbox, Icons.person];
+              bottomNavigationBar: ValueListenableBuilder<bool>(
+                valueListenable:
+                    getIt<BottomNavigationBarToggleNotifier>().isVisible,
+                builder: (context, isVisible, child) {
+                  if (!isVisible) return const SizedBox.shrink();
+                  return AnimatedBottomNavigationBar.builder(
+                    backgroundColor: Theme.of(context)
+                        .bottomNavigationBarTheme
+                        .backgroundColor,
+                    activeIndex: currentIndex,
+                    gapLocation:
+                        fabHidden ? GapLocation.none : GapLocation.center,
+                    notchSmoothness: NotchSmoothness.softEdge,
+                    onTap: (index) {
+                      if (index != 0) {
+                        getIt<ContentCubit>().pauseContent();
+                      } else {
+                        getIt<ContentCubit>().resumeContent();
+                      }
+                      if (index == 1 && isCustomer) {
+                        context.go('/shop');
+                        return;
+                      }
+                      shell.goBranch(index);
+                    },
+                    itemCount: 4,
+                    tabBuilder: (int index, bool isActive) {
+                      final labels = isCustomer
+                          ? ['Home', 'Shop', 'Inbox', 'Profile']
+                          : ['Home', 'Store', 'Inbox', 'Profile'];
+                      final icons = isCustomer
+                          ? [
+                              Icons.home,
+                              Icons.shopping_basket_rounded,
+                              Icons.inbox,
+                              Icons.person
+                            ]
+                          : [
+                              Icons.home,
+                              Icons.store,
+                              Icons.inbox,
+                              Icons.person
+                            ];
 
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        icons[index],
-                        size: 24,
-                        color: isActive
-                            ? Theme.of(context)
-                                .bottomNavigationBarTheme
-                                .selectedItemColor
-                            : Theme.of(context)
-                                .bottomNavigationBarTheme
-                                .unselectedItemColor,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        labels[index],
-                        style: TextStyle(
-                          color: isActive
-                              ? Theme.of(context)
-                                  .bottomNavigationBarTheme
-                                  .selectedItemColor
-                              : Theme.of(context)
-                                  .bottomNavigationBarTheme
-                                  .unselectedItemColor,
-                          fontWeight:
-                              isActive ? FontWeight.bold : FontWeight.normal,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            icons[index],
+                            size: 24,
+                            color: isActive
+                                ? Theme.of(context)
+                                    .bottomNavigationBarTheme
+                                    .selectedItemColor
+                                : Theme.of(context)
+                                    .bottomNavigationBarTheme
+                                    .unselectedItemColor,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            labels[index],
+                            style: TextStyle(
+                              color: isActive
+                                  ? Theme.of(context)
+                                      .bottomNavigationBarTheme
+                                      .selectedItemColor
+                                  : Theme.of(context)
+                                      .bottomNavigationBarTheme
+                                      .unselectedItemColor,
+                              fontWeight: isActive
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   );
                 },
               ),

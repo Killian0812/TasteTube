@@ -34,26 +34,27 @@ final getIt = GetIt.instance;
 
 void injectDependencies() {
   // App core instances
-  getIt.registerSingleton<AppSettings>(AppSettings());
-  getIt.registerSingleton<Logger>(Logger());
-  getIt.registerSingleton<Dio>(Dio(
-    BaseOptions(
-      baseUrl: '${Api.baseUrl}/api',
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10),
-      headers: {
-        'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': true, // Bypass ngrok warning
-      },
-    ),
-  ));
-  getIt.registerSingleton<SecureStorage>(SecureStorage());
-  getIt.registerSingleton<LocalStorage>(LocalStorage());
-  getIt.registerSingleton<Uuid>(const Uuid());
-  getIt.registerSingleton<GoogleSignIn>(GoogleSignIn(scopes: [
-    'email',
-    'https://www.googleapis.com/auth/contacts.readonly',
-  ]));
+  getIt.registerLazySingleton<AppSettings>(() => AppSettings());
+  getIt.registerLazySingleton(() => BottomNavigationBarToggleNotifier());
+  getIt.registerLazySingleton<Logger>(() => Logger());
+  getIt.registerLazySingleton<Dio>(() => Dio(
+        BaseOptions(
+          baseUrl: '${Api.baseUrl}/api',
+          connectTimeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 10),
+          headers: {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': true, // Bypass ngrok warning
+          },
+        ),
+      ));
+  getIt.registerLazySingleton<SecureStorage>(() => SecureStorage());
+  getIt.registerLazySingleton<LocalStorage>(() => LocalStorage());
+  getIt.registerLazySingleton<Uuid>(() => const Uuid());
+  getIt.registerLazySingleton<GoogleSignIn>(() => GoogleSignIn(scopes: [
+        'email',
+        'https://www.googleapis.com/auth/contacts.readonly',
+      ]));
 
   // Repositories
   getIt.registerLazySingleton<AuthRepository>(() => AuthRepository(

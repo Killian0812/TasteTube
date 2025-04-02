@@ -67,3 +67,10 @@ class AppSettings extends ChangeNotifier {
     super.notifyListeners();
   }
 }
+
+class BottomNavigationBarToggleNotifier {
+  final ValueNotifier<bool> isVisible = ValueNotifier<bool>(true);
+
+  void show() => isVisible.value = true;
+  void hide() => isVisible.value = false;
+}
