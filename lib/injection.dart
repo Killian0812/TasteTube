@@ -22,7 +22,7 @@ import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
 import 'package:taste_tube/global_bloc/download/download_cubit.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
-import 'package:taste_tube/global_bloc/socket/socket_provider.dart';
+import 'package:taste_tube/global_bloc/realtime/realtime_provider.dart';
 import 'package:taste_tube/global_repo/cart_repo.dart';
 import 'package:taste_tube/providers.dart';
 import 'package:taste_tube/storage.dart';
@@ -93,7 +93,7 @@ void injectDependencies() {
   // Global blocs / cubits
   getIt.registerSingleton<AuthBloc>(AuthBloc());
   getIt.registerSingleton<OAuthCubit>(OAuthCubit());
-  getIt.registerSingleton<SocketProvider>(SocketProvider());
+  getIt.registerSingleton<RealtimeProvider>(RealtimeProvider());
   getIt.registerSingleton<CartCubit>(CartCubit());
   getIt.registerSingleton<OrderCubit>(OrderCubit());
   getIt.registerSingleton<ContentCubit>(ContentCubit());

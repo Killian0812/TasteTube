@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/feature/payment/data/payment_data.dart';
 import 'package:taste_tube/feature/payment/domain/payment_repo.dart';
-import 'package:taste_tube/global_bloc/socket/socket_provider.dart';
+import 'package:taste_tube/global_bloc/realtime/realtime_provider.dart';
 import 'package:taste_tube/injection.dart';
 
 abstract class PaymentState {
@@ -42,10 +42,10 @@ class PaymentSuccess extends PaymentState {
 
 class PaymentCubit extends Cubit<PaymentState> {
   final PaymentRepository repository = getIt<PaymentRepository>();
-  final SocketProvider socketProvider = getIt<SocketProvider>();
+  final RealtimeProvider realtimeProvider = getIt<RealtimeProvider>();
 
   PaymentCubit() : super(PaymentInitial()) {
-    socketProvider.addListener(_onSocketEvent);
+    realtimeProvider.addListener(_onSocketEvent);
   }
 
   Future<void> createPayment(
@@ -73,9 +73,9 @@ class PaymentCubit extends Cubit<PaymentState> {
   }
 
   void _onSocketEvent() {
-    if (socketProvider.event is! PaymentSocketEvent) return;
+    if (realtimeProvider.event is! PaymentRealtimeEvent) return;
 
-    final payload = (socketProvider.event as PaymentSocketEvent);
+    final payload = (realtimeProvider.event as PaymentRealtimeEvent);
     if (payload.pid != state.pid) return;
 
     if (payload.status == 'failed') {
@@ -87,7 +87,7 @@ class PaymentCubit extends Cubit<PaymentState> {
 
   @override
   Future<void> close() {
-    socketProvider.removeListener(_onSocketEvent);
+    realtimeProvider.removeListener(_onSocketEvent);
     return super.close();
   }
 }

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:taste_tube/global_bloc/socket/socket_provider.dart';
+import 'package:taste_tube/global_bloc/realtime/realtime_provider.dart';
 import 'package:taste_tube/injection.dart';
 
 // Map to track unique payment events using pid as the key
-final Map<String?, PaymentSocketEvent> _paymentEvents = {};
+final Map<String?, PaymentRealtimeEvent> _paymentEvents = {};
 final Logger logger = getIt<Logger>();
 
-mixin PaymentSocketService on ChangeNotifier {
-  void handlePaymentEvent(dynamic data, Function(SocketEvent) setEvent) {
+mixin PaymentRealtimeService on ChangeNotifier {
+  void handlePaymentEvent(dynamic data, Function(RealtimeEvent) setEvent) {
     logger.i('Payment socket event received: $data');
-    final newPaymentEvent = PaymentSocketEvent(
+    final newPaymentEvent = PaymentRealtimeEvent(
       'payment',
       status: data['status'],
       pid: data['pid'],

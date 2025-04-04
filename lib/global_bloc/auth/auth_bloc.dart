@@ -5,7 +5,7 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
 import 'package:taste_tube/api.dart';
-import 'package:taste_tube/global_bloc/socket/socket_provider.dart';
+import 'package:taste_tube/global_bloc/realtime/realtime_provider.dart';
 import 'package:taste_tube/injection.dart';
 import 'package:taste_tube/storage.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
@@ -40,7 +40,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final authData = AuthData.fromJson(response.data);
       http.options.headers['Authorization'] = 'Bearer ${authData.accessToken}';
       emit(Authenticated(authData));
-      getIt<SocketProvider>().initSocket(authData.userId);
+      getIt<RealtimeProvider>().initSocket(authData.userId);
       UserDataUtil.refreshData();
     } on DioException {
       emit(Unauthenticated());
@@ -53,7 +53,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(Authenticated(event.data));
     await secureStorage.setRefreshToken(event.refreshToken);
     http.options.headers['Authorization'] = 'Bearer ${event.data.accessToken}';
-    getIt<SocketProvider>().initSocket(event.data.userId);
+    getIt<RealtimeProvider>().initSocket(event.data.userId);
     UserDataUtil.refreshData();
   }
 
@@ -75,7 +75,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     // Disconnect socket
     try {
-      getIt<SocketProvider>().disconnectSocket();
+      getIt<RealtimeProvider>().disconnectSocket();
     } catch (e) {
       logger.e('Failed to disconnect socket: $e');
     }

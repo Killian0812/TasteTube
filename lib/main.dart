@@ -42,7 +42,6 @@ part 'router.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Api(BuildConfig.environment);
-  injectDependencies();
 
   await Fallback.prepareFallback();
 
@@ -51,6 +50,8 @@ void main() async {
   ).then((firebaseApp) {
     getIt.registerSingleton<FirebaseApp>(firebaseApp);
   });
+
+  injectDependencies();
 
   if (kIsWeb) {
     // Initialize the Facebook javascript SDK on web
