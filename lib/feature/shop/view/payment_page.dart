@@ -294,7 +294,9 @@ class _PaymentPageState extends State<PaymentPage> {
                   return CommonButton(
                     isDisabled:
                         _selectedPaymentMethod == PaymentMethod.ZALOPAY ||
-                            cartState.orderSummary.isEmpty,
+                            cartState.orderSummary.isEmpty ||
+                            cartState.orderSummary
+                                .any((summary) => summary.deliveryFee == null),
                     isLoading: state is OrderLoading,
                     onPressed: () {
                       context.read<PaymentCubit>().createPayment(
