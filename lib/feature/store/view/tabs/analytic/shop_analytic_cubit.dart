@@ -28,7 +28,15 @@ class ShopAnalyticCubit extends Cubit<ShopAnalyticState> {
         totalRevenue: 12500.50,
         orderCount: 150,
         averageOrderValue: 83.34,
-        dailySales: [1500.0, 1800.0, 1200.0, 2000.0, 2200.0, 1900.0, 2300.0],
+        dailySales: {
+          'Monday': 1500.0,
+          'Tuesday': 1800.0,
+          'Wednesday': 1200.0,
+          'Thursday': 2000.0,
+          'Friday': 2200.0,
+          'Saturday': 1900.0,
+          'Sunday': 2300.0,
+        },
         videoViews: 4500,
         positiveReviews: 80,
         neutralReviews: 50,
@@ -51,14 +59,6 @@ class ShopAnalyticCubit extends Cubit<ShopAnalyticState> {
           CategorySales(
               name: 'Desserts', sales: 30, revenue: 1500.0, growth: 15.0),
         ],
-        customerDemographics: [
-          CustomerDemo(
-              group: '18-24', count: 40, percentage: 26.7, avgSpend: 75.0),
-          CustomerDemo(
-              group: '25-34', count: 60, percentage: 40.0, avgSpend: 90.0),
-          CustomerDemo(
-              group: '35+', count: 50, percentage: 33.3, avgSpend: 85.0),
-        ],
         conversionRate: 3.5,
         returningCustomers: 65,
         newCustomers: 85,
@@ -72,13 +72,10 @@ class ShopAnalyticCubit extends Cubit<ShopAnalyticState> {
           'Sunday': '13:00-15:00',
         },
         paymentMethods: [
-          PaymentMethod(name: 'Credit Card', count: 90, percentage: 60.0),
-          PaymentMethod(name: 'Mobile Pay', count: 45, percentage: 30.0),
-          PaymentMethod(name: 'Cash', count: 15, percentage: 10.0),
+          PaymentMethod(name: 'COD', count: 90, percentage: 60.0),
+          PaymentMethod(name: 'VNPAY', count: 45, percentage: 30.0),
+          PaymentMethod(name: 'ZALOPAY', count: 15, percentage: 10.0),
         ],
-        customerSatisfaction: 4.3,
-        averageDeliveryTime: 28.5, // in minutes
-        monthlyGrowth: 7.8,
       );
 
       emit(ShopAnalyticLoaded(analytics));
@@ -92,22 +89,18 @@ class AnalyticsData {
   final double totalRevenue;
   final int orderCount;
   final double averageOrderValue;
-  final List<double> dailySales;
+  final Map<String, double> dailySales;
   final int videoViews;
   final int positiveReviews;
   final int neutralReviews;
   final int negativeReviews;
   final List<ProductSales> topProducts;
   final List<CategorySales> topCategories;
-  final List<CustomerDemo> customerDemographics;
   final double conversionRate;
   final int returningCustomers;
   final int newCustomers;
   final Map<String, String> peakHours;
   final List<PaymentMethod> paymentMethods;
-  final double customerSatisfaction;
-  final double averageDeliveryTime;
-  final double monthlyGrowth;
 
   AnalyticsData({
     required this.totalRevenue,
@@ -120,15 +113,11 @@ class AnalyticsData {
     required this.negativeReviews,
     required this.topProducts,
     required this.topCategories,
-    required this.customerDemographics,
     required this.conversionRate,
     required this.returningCustomers,
     required this.newCustomers,
     required this.peakHours,
     required this.paymentMethods,
-    required this.customerSatisfaction,
-    required this.averageDeliveryTime,
-    required this.monthlyGrowth,
   });
 }
 

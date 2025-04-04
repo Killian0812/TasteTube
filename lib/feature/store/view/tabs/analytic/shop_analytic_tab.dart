@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -17,17 +18,19 @@ class ShopAnalyticTab extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         } else if (state is ShopAnalyticLoaded) {
           return SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Enhanced Key Metrics Row
+                // Key Metrics Row
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _buildMetricCard(
                       title: 'Total Revenue',
-                      value: '\$${state.analytics.totalRevenue.toStringAsFixed(2)}',
+                      value:
+                          '\$${state.analytics.totalRevenue.toStringAsFixed(2)}',
                       icon: Icons.attach_money,
                       width: screenWidth * 0.29,
                     ),
@@ -67,21 +70,20 @@ class ShopAnalyticTab extends StatelessWidget {
                 ),
                 SizedBox(height: screenHeight * 0.03),
 
-                // Sales Trend Chart
-                _buildSectionTitle('Sales Trend (Last 7 Days)'),
+                // Daily Sales Chart
+                _buildSectionTitle('Daily Sales'),
                 _buildChartContainer(
                   height: screenHeight * 0.25,
                   child: LineChart(
                     LineChartData(
                       gridData: const FlGridData(show: true),
-                      titlesData: _buildLineChartTitles(),
+                      titlesData: _buildLineChartTitles(state.analytics),
                       borderData: FlBorderData(show: true),
                       lineBarsData: [
                         LineChartBarData(
-                          spots: state.analytics.dailySales
-                              .asMap()
-                              .entries
-                              .map((e) => FlSpot(e.key.toDouble(), e.value))
+                          spots: state.analytics.dailySales.entries
+                              .mapIndexed((index, e) =>
+                                  FlSpot(index.toDouble(), e.value))
                               .toList(),
                           isCurved: true,
                           color: Colors.blue,
@@ -112,13 +114,16 @@ class ShopAnalyticTab extends StatelessWidget {
                                 barRods: [
                                   BarChartRodData(
                                     toY: e.value.revenue,
-                                    color: Colors.primaries[e.key % Colors.primaries.length],
+                                    color: Colors.primaries[
+                                        e.key % Colors.primaries.length],
                                     width: 16,
-                                    borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+                                    borderRadius: const BorderRadius.vertical(
+                                        top: Radius.circular(4)),
                                     rodStackItems: [
                                       BarChartRodStackItem(
                                         0,
-                                        e.value.revenue * (e.value.growth / 100),
+                                        e.value.revenue *
+                                            (e.value.growth / 100),
                                         Colors.green.withValues(alpha: 0.3),
                                       ),
                                     ],
@@ -126,7 +131,8 @@ class ShopAnalyticTab extends StatelessWidget {
                                 ],
                               ))
                           .toList(),
-                      titlesData: _buildBarChartTitles(state.analytics.topCategories),
+                      titlesData:
+                          _buildBarChartTitles(state.analytics.topCategories),
                       borderData: FlBorderData(show: true),
                     ),
                   ),
@@ -144,25 +150,34 @@ class ShopAnalyticTab extends StatelessWidget {
                           PieChartData(
                             sections: [
                               PieChartSectionData(
-                                value: state.analytics.positiveReviews.toDouble(),
+                                value:
+                                    state.analytics.positiveReviews.toDouble(),
                                 color: Colors.green,
-                                title: 'Positive\n${state.analytics.positiveReviews}',
+                                title:
+                                    'Positive\n${state.analytics.positiveReviews}',
                                 radius: 50,
-                                titleStyle: const TextStyle(fontSize: 12, color: Colors.white),
+                                titleStyle: const TextStyle(
+                                    fontSize: 12, color: Colors.white),
                               ),
                               PieChartSectionData(
-                                value: state.analytics.neutralReviews.toDouble(),
+                                value:
+                                    state.analytics.neutralReviews.toDouble(),
                                 color: Colors.yellow,
-                                title: 'Neutral\n${state.analytics.neutralReviews}',
+                                title:
+                                    'Neutral\n${state.analytics.neutralReviews}',
                                 radius: 50,
-                                titleStyle: const TextStyle(fontSize: 12, color: Colors.black),
+                                titleStyle: const TextStyle(
+                                    fontSize: 12, color: Colors.black),
                               ),
                               PieChartSectionData(
-                                value: state.analytics.negativeReviews.toDouble(),
+                                value:
+                                    state.analytics.negativeReviews.toDouble(),
                                 color: Colors.red,
-                                title: 'Negative\n${state.analytics.negativeReviews}',
+                                title:
+                                    'Negative\n${state.analytics.negativeReviews}',
                                 radius: 50,
-                                titleStyle: const TextStyle(fontSize: 12, color: Colors.white),
+                                titleStyle: const TextStyle(
+                                    fontSize: 12, color: Colors.white),
                               ),
                             ],
                             sectionsSpace: 2,
@@ -170,13 +185,6 @@ class ShopAnalyticTab extends StatelessWidget {
                           ),
                         ),
                       ),
-                    ),
-                    SizedBox(width: screenWidth * 0.03),
-                    _buildMetricCard(
-                      title: 'Satisfaction',
-                      value: '${state.analytics.customerSatisfaction}/5',
-                      icon: Icons.star,
-                      width: screenWidth * 0.35,
                     ),
                   ],
                 ),
@@ -187,10 +195,18 @@ class ShopAnalyticTab extends StatelessWidget {
                 _buildTableContainer(
                   child: DataTable(
                     columns: const [
-                      DataColumn(label: Text('Product', style: TextStyle(fontWeight: FontWeight.bold))),
-                      DataColumn(label: Text('Sales', style: TextStyle(fontWeight: FontWeight.bold))),
-                      DataColumn(label: Text('Revenue', style: TextStyle(fontWeight: FontWeight.bold))),
-                      DataColumn(label: Text('Rating', style: TextStyle(fontWeight: FontWeight.bold))),
+                      DataColumn(
+                          label: Text('Product',
+                              style: TextStyle(fontWeight: FontWeight.bold))),
+                      DataColumn(
+                          label: Text('Sales',
+                              style: TextStyle(fontWeight: FontWeight.bold))),
+                      DataColumn(
+                          label: Text('Revenue',
+                              style: TextStyle(fontWeight: FontWeight.bold))),
+                      DataColumn(
+                          label: Text('Rating',
+                              style: TextStyle(fontWeight: FontWeight.bold))),
                     ],
                     rows: state.analytics.topProducts
                         .map(
@@ -198,7 +214,8 @@ class ShopAnalyticTab extends StatelessWidget {
                             cells: [
                               DataCell(Text(product.name)),
                               DataCell(Text(product.sales.toString())),
-                              DataCell(Text('\$${product.revenue.toStringAsFixed(2)}')),
+                              DataCell(Text(
+                                  '\$${product.revenue.toStringAsFixed(2)}')),
                               DataCell(Text('${product.rating}/5')),
                             ],
                           ),
@@ -210,28 +227,6 @@ class ShopAnalyticTab extends StatelessWidget {
 
                 // Customer Demographics with Avg Spend
                 _buildSectionTitle('Customer Demographics'),
-                _buildTableContainer(
-                  child: DataTable(
-                    columns: const [
-                      DataColumn(label: Text('Group', style: TextStyle(fontWeight: FontWeight.bold))),
-                      DataColumn(label: Text('Count', style: TextStyle(fontWeight: FontWeight.bold))),
-                      DataColumn(label: Text('%', style: TextStyle(fontWeight: FontWeight.bold))),
-                      DataColumn(label: Text('Avg Spend', style: TextStyle(fontWeight: FontWeight.bold))),
-                    ],
-                    rows: state.analytics.customerDemographics
-                        .map(
-                          (demo) => DataRow(
-                            cells: [
-                              DataCell(Text(demo.group)),
-                              DataCell(Text(demo.count.toString())),
-                              DataCell(Text('${demo.percentage.toStringAsFixed(1)}%')),
-                              DataCell(Text('\$${demo.avgSpend.toStringAsFixed(2)}')),
-                            ],
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ),
                 SizedBox(height: screenHeight * 0.03),
 
                 // Peak Hours
@@ -239,8 +234,12 @@ class ShopAnalyticTab extends StatelessWidget {
                 _buildTableContainer(
                   child: DataTable(
                     columns: const [
-                      DataColumn(label: Text('Day', style: TextStyle(fontWeight: FontWeight.bold))),
-                      DataColumn(label: Text('Peak Hours', style: TextStyle(fontWeight: FontWeight.bold))),
+                      DataColumn(
+                          label: Text('Day',
+                              style: TextStyle(fontWeight: FontWeight.bold))),
+                      DataColumn(
+                          label: Text('Peak Hours',
+                              style: TextStyle(fontWeight: FontWeight.bold))),
                     ],
                     rows: state.analytics.peakHours.entries
                         .map(
@@ -266,10 +265,14 @@ class ShopAnalyticTab extends StatelessWidget {
                           .map(
                             (method) => PieChartSectionData(
                               value: method.count.toDouble(),
-                              color: Colors.primaries[state.analytics.paymentMethods.indexOf(method) % Colors.primaries.length],
+                              color: Colors.primaries[state
+                                      .analytics.paymentMethods
+                                      .indexOf(method) %
+                                  Colors.primaries.length],
                               title: '${method.name}\n${method.percentage}%',
                               radius: 50,
-                              titleStyle: const TextStyle(fontSize: 12, color: Colors.white),
+                              titleStyle: const TextStyle(
+                                  fontSize: 12, color: Colors.white),
                             ),
                           )
                           .toList(),
@@ -279,26 +282,6 @@ class ShopAnalyticTab extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: screenHeight * 0.03),
-
-                // Additional Metrics
-                _buildSectionTitle('Additional Metrics'),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildMetricCard(
-                      title: 'Avg Delivery',
-                      value: '${state.analytics.averageDeliveryTime} min',
-                      icon: Icons.delivery_dining,
-                      width: screenWidth * 0.45,
-                    ),
-                    _buildMetricCard(
-                      title: 'Monthly Growth',
-                      value: '${state.analytics.monthlyGrowth}%',
-                      icon: Icons.show_chart,
-                      width: screenWidth * 0.45,
-                    ),
-                  ],
-                ),
               ],
             ),
           );
@@ -323,9 +306,12 @@ class ShopAnalyticTab extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: ListTile(
           title: Text(title, style: const TextStyle(fontSize: 14)),
-          subtitle: Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          subtitle: Text(value,
+              style:
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           leading: Icon(icon, size: 24, color: Colors.blue),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           dense: true,
         ),
       ),
@@ -367,7 +353,8 @@ class ShopAnalyticTab extends StatelessWidget {
     );
   }
 
-  FlTitlesData _buildLineChartTitles() {
+  FlTitlesData _buildLineChartTitles(AnalyticsData analytics) {
+    final daysOfWeek = analytics.dailySales.keys.toList();
     return FlTitlesData(
       leftTitles: const AxisTitles(
         axisNameWidget: Text('Sales'),
@@ -376,10 +363,17 @@ class ShopAnalyticTab extends StatelessWidget {
       bottomTitles: AxisTitles(
         sideTitles: SideTitles(
           showTitles: true,
-          getTitlesWidget: (value, meta) => Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Text('D${value.toInt() + 1}', style: const TextStyle(fontSize: 12)),
-          ),
+          getTitlesWidget: (value, meta) {
+            final dayIndex = value.toInt();
+            if (dayIndex >= 0 && dayIndex < daysOfWeek.length) {
+              return Text(
+                daysOfWeek[dayIndex],
+                style: const TextStyle(fontSize: 12),
+              );
+            }
+            return const SizedBox.shrink();
+          },
+          interval: 1,
         ),
       ),
       topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
