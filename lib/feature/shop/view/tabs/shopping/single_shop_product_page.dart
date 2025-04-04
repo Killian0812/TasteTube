@@ -36,9 +36,18 @@ class SingleShopProductPage extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
           child: Column(
             children: [
-              _ProductImages(images: product.images),
-              _buildProductDetails(context),
-              _buildOwnerInfo(context),
+              Expanded(
+                  child: ListView(
+                children: [
+                  _ProductImages(images: product.images),
+                  _buildProductDetails(context),
+                  _buildOwnerInfo(context),
+                ],
+              )),
+              const Divider(
+                height: 1,
+                color: Colors.grey,
+              ),
               _buildActionButtons(context),
             ],
           ),

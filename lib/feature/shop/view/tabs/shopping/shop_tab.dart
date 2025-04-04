@@ -81,9 +81,10 @@ class _ShopTabState extends State<ShopTab> {
               final product = products[index];
               return GestureDetector(
                 onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) =>
-                          SingleShopProductPage(product: product)));
+                  Navigator.of(context, rootNavigator: true).push(
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              SingleShopProductPage(product: product)));
                 },
                 child: Stack(
                   children: [
