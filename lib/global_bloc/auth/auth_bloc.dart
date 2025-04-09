@@ -5,6 +5,7 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
 import 'package:taste_tube/api.dart';
+import 'package:taste_tube/global_bloc/getstream/getstream_cubit.dart';
 import 'package:taste_tube/global_bloc/realtime/realtime_provider.dart';
 import 'package:taste_tube/injection.dart';
 import 'package:taste_tube/storage.dart';
@@ -41,6 +42,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       http.options.headers['Authorization'] = 'Bearer ${authData.accessToken}';
       emit(Authenticated(authData));
       getIt<RealtimeProvider>().initSocket(authData.userId);
+      getIt<GetstreamCubit>().initializeClient(authData, authData.streamToken);
       UserDataUtil.refreshData();
     } on DioException {
       emit(Unauthenticated());
@@ -54,6 +56,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     await secureStorage.setRefreshToken(event.data.refreshToken);
     http.options.headers['Authorization'] = 'Bearer ${event.data.accessToken}';
     getIt<RealtimeProvider>().initSocket(event.data.userId);
+    getIt<GetstreamCubit>()
+        .initializeClient(event.data, event.data.streamToken);
     UserDataUtil.refreshData();
   }
 

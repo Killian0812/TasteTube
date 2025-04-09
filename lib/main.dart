@@ -26,7 +26,7 @@ import 'package:taste_tube/feature/shop/view/shop_page.dart';
 import 'package:taste_tube/feature/watch/view/public_videos_page.dart';
 import 'package:taste_tube/global_bloc/download/download_dialog.dart';
 import 'package:taste_tube/feature/home/view/home_page.dart';
-import 'package:taste_tube/feature/inbox/view/inbox_page.dart';
+import 'package:taste_tube/feature/inbox/view/chat_page.dart';
 import 'package:taste_tube/feature/profile/view/profile_page.dart';
 import 'package:taste_tube/feature/store/view/store_page.dart';
 import 'package:taste_tube/feature/shop/view/tabs/shopping/single_shop_page.dart';
@@ -254,8 +254,8 @@ class Layout extends StatelessWidget {
                     itemCount: 4,
                     tabBuilder: (int index, bool isActive) {
                       final labels = isCustomer
-                          ? ['Home', 'Shop', 'Inbox', 'Profile']
-                          : ['Home', 'Store', 'Inbox', 'Profile'];
+                          ? ['Home', 'Shop', 'Chat', 'Profile']
+                          : ['Home', 'Store', 'Chat', 'Profile'];
                       final icons = isCustomer
                           ? [
                               Icons.home,

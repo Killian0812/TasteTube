@@ -41,7 +41,7 @@ final GoRouter _router = GoRouter(
           routes: [
             GoRoute(
               path: '/inbox',
-              builder: (context, state) => const InboxPage(),
+              builder: (context, state) => const ChatPage(),
             ),
           ],
         ),

@@ -4,6 +4,7 @@ import 'package:taste_tube/auth/view/oauth/oauth_cubit.dart';
 import 'package:taste_tube/feature/home/view/content_cubit.dart';
 import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
 import 'package:taste_tube/global_bloc/download/download_cubit.dart';
+import 'package:taste_tube/global_bloc/getstream/getstream_cubit.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/injection.dart';
@@ -33,6 +34,9 @@ class TasteTubeProvider extends StatelessWidget {
         ),
         BlocProvider.value(
           value: getIt<DownloadCubit>(),
+        ),
+        BlocProvider.value(
+          value: getIt<GetstreamCubit>(),
         ),
       ],
       child: child,
