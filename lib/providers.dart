@@ -17,7 +17,7 @@ class TasteTubeProvider extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(
-          value: getIt<AuthBloc>(),
+          value: getIt<AuthBloc>()..add(CheckAuthEvent()),
         ),
         BlocProvider.value(
           value: getIt<OAuthCubit>(),
@@ -31,9 +31,6 @@ class TasteTubeProvider extends StatelessWidget {
         BlocProvider.value(
           value: getIt<ContentCubit>(),
         ),
-        // BlocProvider.value(
-        //   value: getIt<ContentCubitV2>()..getFeeds(),
-        // ),
         BlocProvider.value(
           value: getIt<DownloadCubit>(),
         ),

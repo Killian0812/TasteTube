@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/common/constant.dart';
-import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -27,8 +25,6 @@ class _SplashPageState extends State<SplashPage>
     _animation = Tween<double>(begin: 0.5, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
-
-    context.read<AuthBloc>().add(CheckAuthEvent());
   }
 
   @override

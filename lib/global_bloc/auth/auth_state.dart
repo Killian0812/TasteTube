@@ -1,7 +1,9 @@
 part of 'auth_bloc.dart';
 
 class AuthData {
+  final String streamToken;
   final String accessToken;
+  final String refreshToken;
   final String userId;
   final String email;
   final String username;
@@ -10,7 +12,9 @@ class AuthData {
   final String currency;
 
   const AuthData({
+    required this.streamToken,
     required this.accessToken,
+    required this.refreshToken,
     required this.userId,
     required this.email,
     required this.username,
@@ -21,7 +25,9 @@ class AuthData {
 
   factory AuthData.fromJson(Map<String, dynamic> json) {
     return AuthData(
+      streamToken: json['streamToken'],
       accessToken: json['accessToken'],
+      refreshToken: json['refreshToken'],
       userId: json['userId'],
       email: json['email'],
       username: json['username'],
@@ -32,7 +38,9 @@ class AuthData {
   }
 
   AuthData copyWith({
+    String? streamToken,
     String? accessToken,
+    String? refreshToken,
     String? userId,
     String? email,
     String? username,
@@ -41,7 +49,9 @@ class AuthData {
     String? currency,
   }) {
     return AuthData(
+      streamToken: streamToken ?? this.streamToken,
       accessToken: accessToken ?? this.accessToken,
+      refreshToken: refreshToken ?? this.refreshToken,
       userId: userId ?? this.userId,
       email: email ?? this.email,
       username: username ?? this.username,

@@ -7,10 +7,10 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/auth/data/login_request.dart';
-import 'package:taste_tube/auth/data/login_response.dart';
 import 'package:taste_tube/auth/data/register_request.dart';
 import 'package:taste_tube/auth/data/register_response.dart';
 import 'package:taste_tube/common/error.dart';
+import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
 import 'package:taste_tube/injection.dart';
 import 'package:taste_tube/storage.dart';
 
@@ -51,15 +51,19 @@ class AuthRepository {
     }
   }
 
-  Future<Either<ApiError, LoginResponse>> login(LoginRequest request) async {
+  Future<Either<ApiError, AuthData>> login(LoginRequest request) async {
     try {
       final response = await http.post(
         Api.loginApi,
         data: request.toJson(),
       );
-      final loginResponse = LoginResponse.fromJson(
-          response.data, jwtFromHeader(response.headers) ?? '');
-      return Right(loginResponse);
+      final authData = AuthData.fromJson({
+        ...(response.data as Map<String, dynamic>),
+        "refreshToken": jwtFromHeader(response.headers) ??
+            response.data['refreshToken'] ??
+            ''
+      });
+      return Right(authData);
     } on DioException catch (e) {
       return Left(ApiError.fromDioException(e));
     } catch (e) {
@@ -67,7 +71,7 @@ class AuthRepository {
     }
   }
 
-  Future<Either<ApiError, LoginResponse>> continueWithFacebook() async {
+  Future<Either<ApiError, AuthData>> continueWithFacebook() async {
     try {
       await FacebookAuth.instance.login();
       final userData = await FacebookAuth.instance.getUserData();
@@ -78,9 +82,13 @@ class AuthRepository {
         Api.facebookAuthApi,
         data: userData,
       );
-      final loginResponse = LoginResponse.fromJson(
-          response.data, jwtFromHeader(response.headers) ?? '');
-      return Right(loginResponse);
+      final authData = AuthData.fromJson({
+        ...(response.data as Map<String, dynamic>),
+        "refreshToken": jwtFromHeader(response.headers) ??
+            response.data['refreshToken'] ??
+            ''
+      });
+      return Right(authData);
     } on DioException catch (e) {
       await FacebookAuth.instance.logOut();
       return Left(ApiError.fromDioException(e));
@@ -90,7 +98,7 @@ class AuthRepository {
     }
   }
 
-  Future<Either<ApiError, LoginResponse>> continueWithGoogle() async {
+  Future<Either<ApiError, AuthData>> continueWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser =
           await getIt<GoogleSignIn>().signIn();
@@ -105,9 +113,13 @@ class AuthRepository {
           'picture': googleUser.photoUrl,
         },
       );
-      final loginResponse = LoginResponse.fromJson(
-          response.data, jwtFromHeader(response.headers) ?? '');
-      return Right(loginResponse);
+      final authData = AuthData.fromJson({
+        ...(response.data as Map<String, dynamic>),
+        "refreshToken": jwtFromHeader(response.headers) ??
+            response.data['refreshToken'] ??
+            ''
+      });
+      return Right(authData);
     } on DioException catch (e) {
       await getIt<GoogleSignIn>().signOut();
       return Left(ApiError.fromDioException(e));

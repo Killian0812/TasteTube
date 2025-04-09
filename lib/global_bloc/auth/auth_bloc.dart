@@ -51,7 +51,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   void _login(LoginEvent event, Emitter<AuthState> emit) async {
     emit(Authenticated(event.data));
-    await secureStorage.setRefreshToken(event.refreshToken);
+    await secureStorage.setRefreshToken(event.data.refreshToken);
     http.options.headers['Authorization'] = 'Bearer ${event.data.accessToken}';
     getIt<RealtimeProvider>().initSocket(event.data.userId);
     UserDataUtil.refreshData();

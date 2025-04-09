@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:taste_tube/auth/data/login_response.dart';
 import 'package:taste_tube/feature/home/view/content_cubit.dart';
 import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
@@ -18,21 +17,6 @@ class UserDataUtil {
 
   static String getCurrency() {
     return getIt<AuthBloc>().state.data!.currency;
-  }
-
-  static void initUser(LoginResponse response) {
-    getIt<AuthBloc>().add(LoginEvent(
-      AuthData(
-        accessToken: response.accessToken,
-        email: response.email,
-        username: response.username,
-        image: response.image,
-        userId: response.userId,
-        role: response.role,
-        currency: response.currency,
-      ),
-      response.refreshToken,
-    ));
   }
 
   static FutureOr<void> refreshData() async {

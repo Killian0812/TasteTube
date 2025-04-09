@@ -1,10 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
-import 'package:taste_tube/auth/data/login_response.dart';
 import 'package:taste_tube/auth/domain/auth_repo.dart';
+import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
 import 'package:taste_tube/injection.dart';
 import 'package:taste_tube/storage.dart';
-import 'package:taste_tube/utils/user_data.util.dart';
 
 import '../../../data/login_request.dart';
 
@@ -46,7 +45,7 @@ class LoginEmailCubit extends Cubit<LoginEmailState> {
       },
       (response) async {
         logger.i('Login successfully: ${response.accessToken}');
-        UserDataUtil.initUser(response);
+        getIt<AuthBloc>().add(LoginEvent(response));
         emit(LoginEmailSuccess(
           state.email,
           state.password,
@@ -64,7 +63,7 @@ abstract class LoginEmailState {
   final String password;
   final bool isPasswordVisible;
   final String? message;
-  final LoginResponse? response;
+  final AuthData? response;
 
   const LoginEmailState({
     required this.email,
@@ -104,16 +103,16 @@ class LoginEmailLoaded extends LoginEmailState {
 
 class LoginEmailSuccess extends LoginEmailState {
   final String success;
-  final LoginResponse loginResponse;
+  final AuthData authData;
 
   const LoginEmailSuccess(String email, String password, bool isPasswordVisible,
-      this.success, this.loginResponse)
+      this.success, this.authData)
       : super(
           email: email,
           password: password,
           isPasswordVisible: isPasswordVisible,
           message: success,
-          response: loginResponse,
+          response: authData,
         );
 }
 
