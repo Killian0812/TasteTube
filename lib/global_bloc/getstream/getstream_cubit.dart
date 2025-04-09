@@ -1,10 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logger/logger.dart' as log;
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
+import 'package:taste_tube/injection.dart';
 
 class GetstreamCubit extends Cubit<GetstreamState> {
   GetstreamCubit() : super(GetstreamInitial());
-
+  final log.Logger logger = getIt<log.Logger>();
   StreamChatClient? get client =>
       state is GetstreamSuccess ? (state as GetstreamSuccess).client : null;
 
@@ -13,11 +15,11 @@ class GetstreamCubit extends Cubit<GetstreamState> {
 
     try {
       final client = StreamChatClient(
-        'uwbbeybqn98y',
+        'cd5kkff8cewb',
         logLevel: Level.OFF,
       );
 
-      await client.connectUser(
+      final user = await client.connectUser(
         User(
           id: userData.userId,
           name: userData.username,
@@ -26,6 +28,7 @@ class GetstreamCubit extends Cubit<GetstreamState> {
         streamToken,
       );
 
+      logger.i('Stream User connected: $user');
       emit(GetstreamSuccess(client));
     } catch (e) {
       emit(GetstreamFailure('Failed to initialize Stream client: $e'));

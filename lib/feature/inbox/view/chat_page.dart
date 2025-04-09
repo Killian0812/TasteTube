@@ -81,7 +81,6 @@ class _SplitViewState extends State<SplitView> {
             selectedChannel: selectedChannel,
           ),
         ),
-        // Vertical separator
         VerticalDivider(width: 1),
         Flexible(
           flex: 2,
@@ -121,23 +120,14 @@ class ChannelListPage extends StatefulWidget {
 }
 
 class _ChannelListPageState extends State<ChannelListPage> {
-  late StreamChannelListController _listController;
+  late final StreamChannelListController _listController;
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+  List<User>? _searchResults;
 
   @override
   void initState() {
     super.initState();
-    _initializeController();
-    _searchController.addListener(() {
-      setState(() {
-        _searchQuery = _searchController.text.trim();
-        _updateController();
-      });
-    });
-  }
-
-  void _initializeController() {
     _listController = StreamChannelListController(
       client: StreamChat.of(context).client,
       filter: Filter.in_(
@@ -147,26 +137,47 @@ class _ChannelListPageState extends State<ChannelListPage> {
       channelStateSort: const [SortOption('last_message_at')],
       limit: 20,
     );
+    _searchController.addListener(() {
+      setState(() {
+        _searchQuery = _searchController.text.trim();
+        _searchUsers();
+      });
+    });
   }
 
-  void _updateController() {
-    _listController.dispose();
-    Filter baseFilter = Filter.in_(
-      'members',
-      [StreamChat.of(context).currentUser!.id],
+  Future<void> _searchUsers() async {
+    if (_searchQuery.isEmpty) {
+      setState(() => _searchResults = null);
+      return;
+    }
+
+    final client = StreamChat.of(context).client;
+    try {
+      final response = await client.queryUsers(
+        filter: Filter.and([
+          Filter.notEqual('id', client.state.currentUser!.id),
+          Filter.autoComplete('name', _searchQuery),
+        ]),
+        sort: const [SortOption('name')],
+        pagination: const PaginationParams(limit: 20),
+      );
+      setState(() => _searchResults = response.users);
+    } catch (e) {
+      setState(() => _searchResults = []);
+    }
+  }
+
+  Future<void> _createChannel(User user) async {
+    final client = StreamChat.of(context).client;
+    final channel = client.channel(
+      'messaging',
+      extraData: {
+        'members': [client.state.currentUser!.id, user.id],
+      },
     );
-    _listController = StreamChannelListController(
-      client: StreamChat.of(context).client,
-      filter: _searchQuery.isNotEmpty
-          ? Filter.and([
-              baseFilter,
-              Filter.contains('name', _searchQuery),
-            ])
-          : baseFilter,
-      channelStateSort: const [SortOption('last_message_at')],
-      limit: 20,
-    );
-    setState(() {});
+
+    await channel.watch();
+    widget.onTap?.call(channel);
   }
 
   @override
@@ -176,8 +187,11 @@ class _ChannelListPageState extends State<ChannelListPage> {
         title: TextField(
           controller: _searchController,
           decoration: InputDecoration(
-            hintText: 'Search...',
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+            hintText: 'Search users...',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Colors.grey[400]!),
+            ),
             prefixIcon: const Icon(Icons.search),
             suffixIcon: _searchQuery.isNotEmpty
                 ? IconButton(
@@ -191,15 +205,31 @@ class _ChannelListPageState extends State<ChannelListPage> {
         ),
         elevation: 1,
       ),
-      body: StreamChannelListView(
-        onChannelTap: widget.onTap,
-        controller: _listController,
-        itemBuilder: (context, channels, index, defaultWidget) {
-          return defaultWidget.copyWith(
-            selected: channels[index] == widget.selectedChannel,
-          );
-        },
-      ),
+      body: _searchQuery.isEmpty
+          ? StreamChannelListView(
+              onChannelTap: widget.onTap,
+              controller: _listController,
+              itemBuilder: (context, channels, index, defaultWidget) {
+                return defaultWidget.copyWith(
+                  selected: channels[index] == widget.selectedChannel,
+                );
+              },
+            )
+          : _searchResults == null
+              ? const SizedBox.shrink()
+              : ListView.builder(
+                  itemCount: _searchResults!.length,
+                  itemBuilder: (context, index) {
+                    final user = _searchResults![index];
+                    return ListTile(
+                      leading: CircleAvatar(
+                        foregroundImage: NetworkImage(user.image!),
+                      ),
+                      title: Text(user.name),
+                      onTap: () => _createChannel(user),
+                    );
+                  },
+                ),
     );
   }
 
