@@ -2,9 +2,11 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:taste_tube/global_bloc/getstream/getstream_cubit.dart';
+import 'package:taste_tube/injection.dart';
 
 class ChatPage extends StatelessWidget {
   const ChatPage({super.key});
@@ -36,21 +38,19 @@ class ResponsiveChat extends StatelessWidget {
           return const SplitView();
         }
 
-        return ChannelListPage(
-          onTap: (c) => Navigator.push(
-            context,
+        return ChannelListPage(onTap: (c) {
+          Navigator.of(context, rootNavigator: true).push(
             MaterialPageRoute(
-              builder: (context) => StreamChannel(
-                channel: c,
-                child: ChannelPage(
-                  onBackPressed: (context) {
-                    Navigator.of(context, rootNavigator: true).pop();
-                  },
+              builder: (context) => StreamChat(
+                client: getIt<GetstreamCubit>().client!,
+                child: StreamChannel(
+                  channel: c,
+                  child: ChannelPage(channel: c),
                 ),
               ),
             ),
-          ),
-        );
+          );
+        });
       },
     );
   }
@@ -89,7 +89,10 @@ class _SplitViewState extends State<SplitView> {
                 ? StreamChannel(
                     key: ValueKey(selectedChannel!.cid),
                     channel: selectedChannel!,
-                    child: const ChannelPage(showBackButton: false),
+                    child: ChannelPage(
+                      showBackButton: false,
+                      channel: selectedChannel!,
+                    ),
                   )
                 : Center(
                     child: Text(
@@ -245,11 +248,11 @@ class ChannelPage extends StatefulWidget {
   const ChannelPage({
     super.key,
     this.showBackButton = true,
-    this.onBackPressed,
+    required this.channel,
   });
 
   final bool showBackButton;
-  final void Function(BuildContext)? onBackPressed;
+  final Channel channel;
 
   @override
   State<ChannelPage> createState() => _ChannelPageState();
@@ -259,16 +262,22 @@ class _ChannelPageState extends State<ChannelPage> {
   late final messageInputController = StreamMessageInputController();
   final focusNode = FocusNode();
 
+  Channel get channel => widget.channel;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: StreamChannelHeader(
-        onBackPressed: widget.onBackPressed != null
-            ? () {
-                widget.onBackPressed!(context);
-              }
-            : null,
+        onImageTap: () {
+          if (channel.isGroup) return;
+          final otherUser = channel.state!.members.firstWhere(
+            (member) => member.userId != channel.client.state.currentUser!.id,
+          );
+          context.push('/user/${otherUser.userId}');
+        },
+        onBackPressed: () => context.pop(),
         showBackButton: widget.showBackButton,
+        centerTitle: true,
       ),
       body: Column(
         children: <Widget>[
