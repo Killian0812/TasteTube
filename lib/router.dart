@@ -12,6 +12,7 @@ final GoRouter _router = GoRouter(
       builder: (context, state, shell) => Layout(
         currentIndex: shell.currentIndex,
         shell: shell,
+        goRouterState: state,
       ),
       branches: [
         StatefulShellBranch(
@@ -40,7 +41,7 @@ final GoRouter _router = GoRouter(
           preload: true,
           routes: [
             GoRoute(
-              path: '/inbox',
+              path: '/chat',
               builder: (context, state) => const ChatPage(),
             ),
           ],
@@ -123,7 +124,7 @@ final GoRouter _router = GoRouter(
       '/home',
       '/profile',
       '/store',
-      '/inbox',
+      '/chat',
     ];
 
     if (!isAuthenticated && protectedRoutes.contains(state.path)) {

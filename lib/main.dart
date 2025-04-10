@@ -197,22 +197,29 @@ class MyApp extends StatelessWidget {
 class Layout extends StatelessWidget {
   final int currentIndex;
   final StatefulNavigationShell shell;
+  final GoRouterState goRouterState;
 
   const Layout({
     super.key,
     required this.currentIndex,
     required this.shell,
+    required this.goRouterState,
   });
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthBloc, AuthState>(
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is Unauthenticated) {
+          context.go('/login');
+        }
+      },
       buildWhen: (previous, current) =>
           previous is Authenticated && current is! Authenticated ||
           previous is! Authenticated && current is Authenticated,
       builder: (context, state) {
         if (state is! Authenticated) {
-          final currentRoute = GoRouterState.of(context).matchedLocation;
+          final currentRoute = goRouterState.matchedLocation;
           return InitialPage(redirect: currentRoute);
         }
         final isCustomer = state.data.role == "CUSTOMER";
