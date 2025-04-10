@@ -96,7 +96,7 @@ class _SplitViewState extends State<SplitView> {
                   )
                 : Center(
                     child: Text(
-                      'Pick a channel to show the messages 💬',
+                      'TasteTube Messaging 💬',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
@@ -283,7 +283,7 @@ class _ChannelPageState extends State<ChannelPage> {
         children: <Widget>[
           Expanded(
             child: StreamMessageListView(
-              threadBuilder: (_, parent) => ThreadPage(parent: parent!),
+              threadBuilder: (context, parent) => const SizedBox.shrink(),
               messageBuilder: (
                 context,
                 messageDetails,
@@ -331,10 +331,7 @@ class _ChannelPageState extends State<ChannelPage> {
                                 color: streamTheme.colorTheme.borders,
                               ),
                               child: Center(
-                                child: StreamSvgIcon.reply(
-                                  size: 18,
-                                  color: streamTheme.colorTheme.accentPrimary,
-                                ),
+                                child: StreamSvgIcon.reply(size: 18),
                               ),
                             ),
                           ),
@@ -342,7 +339,13 @@ class _ChannelPageState extends State<ChannelPage> {
                       ),
                     );
                   },
-                  child: defaultWidget.copyWith(onReplyTap: reply),
+                  child: defaultWidget.copyWith(
+                    showEditMessage: true,
+                    showDeleteMessage: true,
+                    onReplyTap: reply,
+                    showReactionPicker: true,
+                    onThreadTap: (p0) {},
+                  ),
                 );
               },
             ),
