@@ -9,7 +9,9 @@
                 "--dart-define",
                 "ENVIRONMENT=ngrok",
                 "--web-port",
-                "5555"
+                "5555",
+                "-d",
+                "chrome"
             ]
         },
         {

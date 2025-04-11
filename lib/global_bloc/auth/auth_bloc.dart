@@ -5,6 +5,7 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
 import 'package:taste_tube/api.dart';
+import 'package:taste_tube/fcm_service.dart';
 import 'package:taste_tube/global_bloc/getstream/getstream_cubit.dart';
 import 'package:taste_tube/global_bloc/realtime/realtime_provider.dart';
 import 'package:taste_tube/injection.dart';
@@ -45,6 +46,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       getIt<RealtimeProvider>().initSocket(authData.userId);
       getIt<GetstreamCubit>().initializeClient(authData, authData.streamToken);
       UserDataUtil.refreshData();
+      FCMService.updateFcmToken();
     } on DioException {
       emit(Unauthenticated());
     } catch (e) {
@@ -60,6 +62,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     getIt<GetstreamCubit>()
         .initializeClient(event.data, event.data.streamToken);
     UserDataUtil.refreshData();
+    FCMService.updateFcmToken();
   }
 
   void _updateCurrency(UpdateCurrencyEvent event, Emitter<AuthState> emit) {

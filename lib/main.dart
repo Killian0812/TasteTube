@@ -25,7 +25,7 @@ import 'package:taste_tube/feature/record/camera/camera_page.dart';
 import 'package:taste_tube/feature/shop/view/cart_page.dart';
 import 'package:taste_tube/feature/shop/view/shop_page.dart';
 import 'package:taste_tube/feature/watch/view/public_videos_page.dart';
-import 'package:taste_tube/firebase_service.dart';
+import 'package:taste_tube/fcm_service.dart';
 import 'package:taste_tube/global_bloc/download/download_dialog.dart';
 import 'package:taste_tube/feature/home/view/home_page.dart';
 import 'package:taste_tube/feature/inbox/view/chat_page.dart';
@@ -53,6 +53,8 @@ void main() async {
   ).then((firebaseApp) {
     getIt.registerSingleton<FirebaseApp>(firebaseApp);
   });
+
+  FCMService.initialSetup();
 
   injectDependencies();
 
@@ -86,7 +88,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    FirebaseService.setupInteractedMessage();
+    FCMService.setupInteractedMessage();
   }
 
   @override
