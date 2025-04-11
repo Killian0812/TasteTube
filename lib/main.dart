@@ -88,7 +88,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    FCMService.setupInteractedMessage();
+    FCMService.setupInteractedMessage(context);
   }
 
   @override

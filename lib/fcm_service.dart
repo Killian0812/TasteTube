@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:taste_tube/injection.dart';
 
@@ -41,17 +42,18 @@ class FCMService {
     }
   }
 
-  static Future<void> setupInteractedMessage() async {
+  static Future<void> setupInteractedMessage(BuildContext context) async {
     // Get message which caused the application to open from terminated state.
     RemoteMessage? initialMessage =
         await FirebaseMessaging.instance.getInitialMessage();
 
-    if (initialMessage != null) {
-      _handleMessage(initialMessage);
-    }
+    if (initialMessage != null) {}
 
-    // Handle interaction when the app is in the background
-    FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
+    // Handle interaction when the app is in background
+    FirebaseMessaging.onMessageOpenedApp.listen(_handleBackgroundMessage);
+
+    // Handle interaction when the app is in foreground
+    FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
 
     FirebaseMessaging.instance.onTokenRefresh.listen(
       // Fired at each app startup and whenever a new token is generated.
@@ -65,5 +67,7 @@ class FCMService {
     );
   }
 
-  static void _handleMessage(RemoteMessage message) {}
+  static void _handleBackgroundMessage(RemoteMessage message) {}
+
+  static void _handleForegroundMessage(RemoteMessage message) {}
 }
