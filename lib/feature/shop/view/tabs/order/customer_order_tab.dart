@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/common/color.dart';
+import 'package:taste_tube/common/constant.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/shop/view/tabs/shopping/single_shop_product_page.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
@@ -22,26 +23,47 @@ class CustomerOrderTab extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        return RefreshIndicator(
-          onRefresh: () async {
-            await context.read<OrderCubit>().getOrders();
-          },
-          child: state.orders.isEmpty
-              ? ListView(
-                  children: const [
-                    SizedBox(height: 50),
-                    Center(
-                      child: Text('No orders found'),
-                    ),
-                  ],
-                )
-              : ListView.builder(
-                  itemCount: state.orders.length,
-                  itemBuilder: (context, index) {
-                    final order = state.orders[index];
-                    return _OrderCard(order: order);
-                  },
+        return DefaultTabController(
+          length: OrderStatus.values.length,
+          child: Column(
+            children: [
+              TabBar(
+                isScrollable: true,
+                tabs: OrderStatus.values.map((status) {
+                  return Tab(text: status.name);
+                }).toList(),
+              ),
+              Expanded(
+                child: TabBarView(
+                  children: OrderStatus.values.map((status) {
+                    final statusOrders = state.orders
+                        .where((order) => order.status == status.name)
+                        .toList();
+                    return RefreshIndicator(
+                      onRefresh: () async {
+                        await context.read<OrderCubit>().getOrders();
+                      },
+                      child: statusOrders.isEmpty
+                          ? ListView(
+                              children: [
+                                const SizedBox(height: 50),
+                                Center(
+                                    child: Text('No orders in ${status.name}')),
+                              ],
+                            )
+                          : ListView.builder(
+                              itemCount: statusOrders.length,
+                              itemBuilder: (context, index) {
+                                final order = statusOrders[index];
+                                return _OrderCard(order: order);
+                              },
+                            ),
+                    );
+                  }).toList(),
                 ),
+              ),
+            ],
+          ),
         );
       },
     );
