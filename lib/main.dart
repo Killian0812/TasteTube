@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:go_router/go_router.dart';
+import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/auth/view/login_page.dart';
 import 'package:taste_tube/auth/view/register_page.dart';
@@ -32,6 +33,7 @@ import 'package:taste_tube/feature/store/view/store_page.dart';
 import 'package:taste_tube/feature/shop/view/tabs/shopping/single_shop_page.dart';
 import 'package:taste_tube/firebase_options.dart';
 import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
+import 'package:taste_tube/global_bloc/getstream/getstream_cubit.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
 import 'package:taste_tube/injection.dart';
 import 'package:taste_tube/providers.dart';
@@ -85,8 +87,12 @@ class MyApp extends StatelessWidget {
         return MaterialApp.router(
           debugShowCheckedModeBanner: false,
           title: 'TasteTube',
-          builder: (context, child) =>
-              TasteTubeProvider(child: child ?? SizedBox.shrink()),
+          builder: (context, child) => TasteTubeProvider(
+            child: StreamChat(
+              client: streamClient,
+              child: child ?? SizedBox.shrink(),
+            ),
+          ),
           routerConfig: _router,
           theme: ThemeData.light().copyWith(
             primaryColor: Colors.black,

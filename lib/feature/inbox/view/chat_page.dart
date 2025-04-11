@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:taste_tube/global_bloc/getstream/getstream_cubit.dart';
-import 'package:taste_tube/injection.dart';
 
 class ChatPage extends StatelessWidget {
   const ChatPage({super.key});
@@ -17,7 +16,7 @@ class ChatPage extends StatelessWidget {
       builder: (context, state) {
         if (state is GetstreamSuccess) {
           return StreamChat(
-            client: state.client,
+            client: streamClient,
             child: const ResponsiveChat(),
           );
         }
@@ -42,7 +41,7 @@ class ResponsiveChat extends StatelessWidget {
           Navigator.of(context, rootNavigator: true).push(
             MaterialPageRoute(
               builder: (context) => StreamChat(
-                client: getIt<GetstreamCubit>().client!,
+                client: streamClient,
                 child: StreamChannel(
                   channel: c,
                   child: ChannelPage(channel: c),
@@ -284,6 +283,8 @@ class _ChannelPageState extends State<ChannelPage> {
           Expanded(
             child: StreamMessageListView(
               threadBuilder: (context, parent) => const SizedBox.shrink(),
+              showUnreadCountOnScrollToBottom: false,
+              showFloatingDateDivider: false,
               messageBuilder: (
                 context,
                 messageDetails,
@@ -340,11 +341,11 @@ class _ChannelPageState extends State<ChannelPage> {
                     );
                   },
                   child: defaultWidget.copyWith(
+                    showThreadReplyMessage: false,
                     showEditMessage: true,
                     showDeleteMessage: true,
                     onReplyTap: reply,
                     showReactionPicker: true,
-                    onThreadTap: (p0) {},
                   ),
                 );
               },
