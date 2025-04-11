@@ -25,6 +25,7 @@ class FCMService {
 
   // Send current fcmToken to server.
   static Future<void> updateFcmToken() async {
+    if (fcmToken.isEmpty) return;
     final http = getIt<Dio>();
     try {
       await http.post(
@@ -34,6 +35,7 @@ class FCMService {
           'token': fcmToken,
         },
       );
+      getIt<Logger>().i("Updated FCM Token $fcmToken");
     } catch (e) {
       getIt<Logger>().e("Error updating FCM token: $e");
     }

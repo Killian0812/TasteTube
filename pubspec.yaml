@@ -83,6 +83,7 @@ dependencies:
   flutter_launcher_icons: ^0.14.3
   responsive_builder: ^0.7.1
   firebase_messaging: ^15.2.5
+  flutter_native_splash: ^2.4.6
 
 dev_dependencies:
   flutter_test:
@@ -107,3 +108,10 @@ flutter:
         - asset: assets/fonts/Ganh/Ganh-ThinItalic.otf
           style: italic
           weight: 100
+
+flutter_native_splash:
+  color: "#000000"
+  image: assets/images/tastetube_inverted.png
+  android: true
+  ios: true
+  web: true
