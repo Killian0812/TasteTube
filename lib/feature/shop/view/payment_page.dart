@@ -124,14 +124,14 @@ class _PaymentPageState extends State<PaymentPage> {
         if (state is AddressLoaded) {
           setState(() {
             selectedAddress = state.addresses.firstOrNull;
+            cartCubit.updateOrderSummary(selectedAddress);
           });
-          cartCubit.updateOrderSummary(selectedAddress);
         }
         if (state is AddressAdded) {
           setState(() {
             selectedAddress = state.addresses.last;
+            cartCubit.updateOrderSummary(selectedAddress);
           });
-          cartCubit.updateOrderSummary(selectedAddress);
         }
       },
       builder: (context, state) {
@@ -198,6 +198,7 @@ class _PaymentPageState extends State<PaymentPage> {
                   } else {
                     setState(() {
                       selectedAddress = value;
+                      cartCubit.updateOrderSummary(selectedAddress);
                     });
                   }
                 },
