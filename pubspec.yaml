@@ -82,6 +82,7 @@ dependencies:
   # Launcher icons
   flutter_launcher_icons: ^0.14.3
   responsive_builder: ^0.7.1
+  firebase_messaging: ^15.2.5
 
 dev_dependencies:
   flutter_test:

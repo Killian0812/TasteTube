@@ -25,6 +25,7 @@ import 'package:taste_tube/feature/record/camera/camera_page.dart';
 import 'package:taste_tube/feature/shop/view/cart_page.dart';
 import 'package:taste_tube/feature/shop/view/shop_page.dart';
 import 'package:taste_tube/feature/watch/view/public_videos_page.dart';
+import 'package:taste_tube/firebase_service.dart';
 import 'package:taste_tube/global_bloc/download/download_dialog.dart';
 import 'package:taste_tube/feature/home/view/home_page.dart';
 import 'package:taste_tube/feature/inbox/view/chat_page.dart';
@@ -74,8 +75,19 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    FirebaseService.setupInteractedMessage();
+  }
 
   @override
   Widget build(BuildContext context) {
