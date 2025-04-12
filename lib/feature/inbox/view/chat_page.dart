@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
+import 'package:taste_tube/common/loading.dart';
 import 'package:taste_tube/global_bloc/getstream/getstream_cubit.dart';
 
 class ChatPage extends StatelessWidget {
@@ -20,7 +21,10 @@ class ChatPage extends StatelessWidget {
             child: const ResponsiveChat(),
           );
         }
-        return const SizedBox.shrink();
+        if (state is GetstreamFailure) {
+          return Center(child: Text(state.error));
+        }
+        return const Center(child: CommonLoadingIndicator.regular);
       },
     );
   }

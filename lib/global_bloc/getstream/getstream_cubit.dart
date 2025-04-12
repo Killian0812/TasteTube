@@ -10,7 +10,7 @@ final streamClient = StreamChatClient(
 );
 
 class GetstreamCubit extends Cubit<GetstreamState> {
-  GetstreamCubit() : super(GetstreamInitial());
+  GetstreamCubit() : super(GetstreamLoading());
 
   final log.Logger logger = getIt<log.Logger>();
 
@@ -18,6 +18,18 @@ class GetstreamCubit extends Cubit<GetstreamState> {
     emit(GetstreamLoading());
 
     try {
+      final currentUser = streamClient.state.currentUser;
+      if (currentUser?.id == userData.userId) {
+        logger.i(
+            'Stream User already connected: ${streamClient.state.currentUser}');
+        emit(GetstreamSuccess());
+        return;
+      }
+
+      if (currentUser != null) {
+        await streamClient.disconnectUser();
+      }
+
       final user = await streamClient.connectUser(
         User(
           id: userData.userId,
@@ -45,8 +57,6 @@ class InitializeStreamClient extends GetstreamEvent {
 }
 
 abstract class GetstreamState {}
-
-class GetstreamInitial extends GetstreamState {}
 
 class GetstreamLoading extends GetstreamState {}
 
