@@ -336,7 +336,10 @@ class _ChannelPageState extends State<ChannelPage> {
                                 color: streamTheme.colorTheme.borders,
                               ),
                               child: Center(
-                                child: StreamSvgIcon.reply(size: 18),
+                                child: StreamSvgIcon(
+                                  icon: StreamSvgIcons.reply,
+                                  size: 18,
+                                ),
                               ),
                             ),
                           ),
