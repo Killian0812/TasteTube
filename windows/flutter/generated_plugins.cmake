@@ -9,8 +9,10 @@ list(APPEND FLUTTER_PLUGIN_LIST
   firebase_core
   flutter_inappwebview_windows
   flutter_secure_storage_windows
+  gal
   geolocator_windows
   media_kit_video
+  record_windows
   share_plus
   thumblr_windows
   url_launcher_windows

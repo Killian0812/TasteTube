@@ -63,7 +63,7 @@ dependencies:
   animated_bottom_navigation_bar: ^1.4.0
 
   # Chat and streaming
-  stream_chat_flutter: ^8.0.0
+  stream_chat_flutter: ^9.7.0
   socket_io_client: ^3.0.2
 
   # Webview and maps
