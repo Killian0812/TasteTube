@@ -37,6 +37,7 @@ import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
 import 'package:taste_tube/global_bloc/getstream/getstream_cubit.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
 import 'package:taste_tube/injection.dart';
+import 'package:taste_tube/local_notification.dart';
 import 'package:taste_tube/providers.dart';
 import 'package:taste_tube/splash/initial_page.dart';
 import 'package:taste_tube/version.dart';
@@ -55,7 +56,8 @@ void main() async {
     getIt.registerSingleton<FirebaseApp>(firebaseApp);
   });
 
-  FCMService.initialSetup();
+  FCMService.setupFirebaseMessaging();
+  LocalNotification.setupLocalNotifications();
 
   injectDependencies();
 
@@ -78,19 +80,8 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  @override
-  void initState() {
-    super.initState();
-    FCMService.setupInteractedMessage(context);
-  }
 
   @override
   Widget build(BuildContext context) {

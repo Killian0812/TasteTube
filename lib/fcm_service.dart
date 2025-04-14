@@ -1,23 +1,28 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:go_router/go_router.dart';
 // ignore: library_prefixes
 import 'package:logger/logger.dart' as L;
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:taste_tube/global_bloc/getstream/getstream_cubit.dart';
 import 'package:taste_tube/injection.dart';
-import 'package:taste_tube/storage.dart';
+import 'package:taste_tube/local_notification.dart';
+import 'package:taste_tube/main.dart';
 
 class FCMService {
   static String fcmToken = '';
 
-  static Future<void> initialSetup() async {
+  static Future<void> setupFirebaseMessaging() async {
     final result = await FirebaseMessaging.instance.requestPermission(
       alert: true,
       badge: true,
       provisional: false,
+      sound: true,
+    );
+    FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
       sound: true,
     );
     getIt<L.Logger>()
@@ -27,18 +32,8 @@ class FCMService {
             vapidKey:
                 "BAUMYof6QKNUTMu3gTaO3VT-7QBQt9ZA1kfZDmiVhgzd9G_LJ7AOXqTKwGhXI2pBmgdGavVG4FhX33AzFO242mA") ??
         '';
-  }
 
-  static Future<FlutterLocalNotificationsPlugin>
-      setupLocalNotifications() async {
-    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-        FlutterLocalNotificationsPlugin();
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/launcher_icon');
-    final InitializationSettings initializationSettings =
-        InitializationSettings(android: initializationSettingsAndroid);
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-    return flutterLocalNotificationsPlugin;
+    setupInteractedMessage();
   }
 
   // Send current fcmToken to server.
@@ -69,56 +64,20 @@ class FCMService {
     }
   }
 
-  @pragma('vm:entry-point')
-  static Future<void> onBackgroundMessage(RemoteMessage message) async {
-    final chatClient = StreamChatClient("cd5kkff8cewb");
-    final streamData = await Future.wait([
-      getIt<LocalStorage>().getValue("STREAM_USERID"),
-      getIt<LocalStorage>().getValue("STREAM_TOKEN")
-    ]);
-    if (streamData[0] == null || streamData[1] == null) {
-      await chatClient.connectUser(
-        User(id: streamData[0]!),
-        streamData[1]!,
-        connectWebSocket: false,
-      );
-    }
-    handleNotification(message, chatClient);
-  }
-
-  static void handleNotification(
-    RemoteMessage message,
-    StreamChatClient chatClient,
-  ) async {
-    final data = message.data;
-    if (data['type'] == 'message.new') {
-      final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-          await setupLocalNotifications();
-      final messageId = data['id'];
-      final response = await streamClient.getMessage(messageId);
-      flutterLocalNotificationsPlugin.show(
-        1,
-        'New message from ${response.message.user!.name}',
-        response.message.text,
-        const NotificationDetails(
-            android: AndroidNotificationDetails(
-          'new_message',
-          'New message notifications channel',
-        )),
-      );
-    }
-  }
-
-  static Future<void> setupInteractedMessage(BuildContext context) async {
+  static void setupInteractedMessage() {
     // Handle interaction when the app is in background
-    FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
+    // FirebaseMessaging.onBackgroundMessage();
+
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      if (message.data['type'] == 'chat' &&
+          navigatorKey.currentContext?.mounted == true) {
+        navigatorKey.currentContext?.push('/chat');
+      }
+    });
 
     // Handle interaction when the app is in foreground
     FirebaseMessaging.onMessage.listen(
-      (message) => handleNotification(
-        message,
-        streamClient,
-      ),
+      (message) => LocalNotification.handleNotification(message),
     );
 
     FirebaseMessaging.instance.onTokenRefresh.listen(

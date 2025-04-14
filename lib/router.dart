@@ -1,6 +1,9 @@
 part of 'main.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 final GoRouter _router = GoRouter(
+  navigatorKey: navigatorKey,
   initialLocation: '/',
   observers: [CommonNavigatorObserver()],
   routes: [
