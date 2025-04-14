@@ -172,6 +172,8 @@ class OrderDetailTab extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           Text('Delivery: ${order.address.value}'),
+                          Text(
+                              'Receiver: ${order.address.name} - ${order.address.phone}'),
                           if (order.notes.isNotEmpty) ...[
                             const SizedBox(height: 8),
                             Text('Notes: ${order.notes}'),

@@ -114,6 +114,10 @@ final GoRouter _router = GoRouter(
       path: '/register/phone_or_email',
       builder: (context, state) => const RegisterWithPhoneOrEmailPage(),
     ),
+    GoRoute(
+      path: '/version',
+      builder: (context, state) => const VersionPage(),
+    ),
   ],
   redirect: (context, state) {
     final authBloc = getIt<AuthBloc>();

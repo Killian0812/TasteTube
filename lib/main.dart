@@ -39,6 +39,7 @@ import 'package:taste_tube/global_data/watch/video.dart';
 import 'package:taste_tube/injection.dart';
 import 'package:taste_tube/providers.dart';
 import 'package:taste_tube/splash/initial_page.dart';
+import 'package:taste_tube/version.dart';
 
 part 'router.dart';
 
