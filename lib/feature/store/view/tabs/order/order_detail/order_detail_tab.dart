@@ -5,6 +5,7 @@ import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/constant.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/order.dart';
+import 'package:taste_tube/utils/datetime.util.dart';
 
 class OrderDetailTab extends StatelessWidget {
   final Order order;
@@ -34,7 +35,17 @@ class OrderDetailTab extends StatelessWidget {
                         'Tracking ID: ${order.trackingId}',
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.access_time),
+                          SizedBox(width: 4),
+                          Text(DateTimeUtil.dateTimeHHmmddMMyyyy(
+                              order.createdAt)),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
                       Row(
                         children: [
                           const Text('Status: ',

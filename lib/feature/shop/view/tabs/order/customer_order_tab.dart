@@ -7,6 +7,7 @@ import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/shop/view/tabs/shopping/single_shop_product_page.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/order.dart';
+import 'package:taste_tube/utils/datetime.util.dart';
 
 class CustomerOrderTab extends StatelessWidget {
   const CustomerOrderTab({super.key});
@@ -101,6 +102,15 @@ class _OrderCard extends StatelessWidget {
                         'Order ID copied to clipboard', ToastType.info);
                   },
                 ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.access_time),
+                SizedBox(width: 4),
+                Text(DateTimeUtil.dateTimeHHmmddMMyyyy(order.createdAt)),
               ],
             ),
             const SizedBox(height: 8),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:taste_tube/common/constant.dart';
 import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/common/toast.dart';
@@ -10,6 +9,7 @@ import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/order.dart';
 import 'package:taste_tube/injection.dart';
 import 'package:taste_tube/providers.dart';
+import 'package:taste_tube/utils/datetime.util.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
 
 class OrderDeliveryTab extends StatelessWidget {
@@ -420,15 +420,15 @@ class OrderDeliveryTab extends StatelessWidget {
             if (quote.estimatedTimeline != null) ...[
               const SizedBox(height: 8),
               Text(
-                'Pickup: ${_formatDate(quote.estimatedTimeline!['pickup']!)}',
+                'Pickup: ${DateTimeUtil.dateTimeHHmmddMMyyyy(quote.estimatedTimeline!['pickup']!)}',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
               Text(
-                'Dropoff: ${_formatDate(quote.estimatedTimeline!['dropoff']!)}',
+                'Dropoff: ${DateTimeUtil.dateTimeHHmmddMMyyyy(quote.estimatedTimeline!['dropoff']!)}',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
               Text(
-                'Complete: ${_formatDate(quote.estimatedTimeline!['completed']!)}',
+                'Complete: ${DateTimeUtil.dateTimeHHmmddMMyyyy(quote.estimatedTimeline!['completed']!)}',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ],
@@ -436,10 +436,6 @@ class OrderDeliveryTab extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String _formatDate(DateTime date) {
-    return DateFormat('HH:mm dd/MM/yyyy').format(date.toLocal());
   }
 }
 

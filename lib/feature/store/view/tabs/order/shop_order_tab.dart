@@ -11,6 +11,7 @@ import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/order.dart';
 import 'package:taste_tube/injection.dart';
 import 'package:taste_tube/providers.dart';
+import 'package:taste_tube/utils/datetime.util.dart';
 
 class OrderFilter extends ChangeNotifier {
   String? totalCostRange;
@@ -442,6 +443,15 @@ class _OrderCardState extends State<_OrderCard> {
               ],
             ),
             SelectableText('Tracking ID: ${order.trackingId}'),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.access_time),
+                SizedBox(width: 4),
+                Text(DateTimeUtil.dateTimeHHmmddMMyyyy(order.createdAt)),
+              ],
+            ),
             const SizedBox(height: 8),
             Row(
               children: [
