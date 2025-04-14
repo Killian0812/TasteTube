@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/global_data/product/category.dart';
 import 'package:taste_tube/feature/store/domain/product_repo.dart';
-import 'package:taste_tube/injection.dart';
+import 'package:taste_tube/core/injection.dart';
 
 class CategoryCubit extends Cubit<CategoryState> {
   final ProductRepository repository;

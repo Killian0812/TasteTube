@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/feature/store/data/payment_card.dart';
 import 'package:taste_tube/feature/store/domain/payment_setting_repo.dart';
 import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
-import 'package:taste_tube/injection.dart';
+import 'package:taste_tube/core/injection.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
 
 abstract class PaymentSettingState {

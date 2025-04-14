@@ -9,8 +9,8 @@ import 'package:taste_tube/feature/store/view/tabs/product/category_cubit.dart';
 import 'package:taste_tube/feature/store/view/tabs/order/shop_order_tab.dart';
 import 'package:taste_tube/feature/store/view/tabs/product/product_cubit.dart';
 import 'package:taste_tube/feature/store/view/tabs/product/product_tab.dart';
-import 'package:taste_tube/injection.dart';
-import 'package:taste_tube/providers.dart';
+import 'package:taste_tube/core/injection.dart';
+import 'package:taste_tube/core/providers.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
 
 class StorePage extends StatefulWidget {

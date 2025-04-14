@@ -5,7 +5,7 @@ import 'package:logger/logger.dart';
 import 'package:taste_tube/auth/domain/auth_repo.dart';
 import 'package:taste_tube/auth/view/register_page.ext.dart';
 import 'package:taste_tube/common/toast.dart';
-import 'package:taste_tube/injection.dart';
+import 'package:taste_tube/core/injection.dart';
 
 import '../../../data/register_request.dart';
 

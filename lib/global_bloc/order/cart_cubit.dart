@@ -4,7 +4,7 @@ import 'package:taste_tube/global_data/order/cart.dart';
 import 'package:taste_tube/global_data/order/order.dart';
 import 'package:taste_tube/global_data/product/product.dart';
 import 'package:taste_tube/global_repo/cart_repo.dart';
-import 'package:taste_tube/injection.dart';
+import 'package:taste_tube/core/injection.dart';
 
 abstract class CartState {
   final Cart cart;

@@ -4,7 +4,7 @@ import 'package:taste_tube/global_data/user/user.dart';
 import 'package:taste_tube/feature/profile/domain/profile_repo.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
 import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
-import 'package:taste_tube/injection.dart';
+import 'package:taste_tube/core/injection.dart';
 
 class ProfileCubit extends Cubit<ProfileState> {
   final UserRepository repository;

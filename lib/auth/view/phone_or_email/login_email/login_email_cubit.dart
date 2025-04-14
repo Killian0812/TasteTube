@@ -2,8 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
 import 'package:taste_tube/auth/domain/auth_repo.dart';
 import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
-import 'package:taste_tube/injection.dart';
-import 'package:taste_tube/storage.dart';
+import 'package:taste_tube/core/injection.dart';
+import 'package:taste_tube/core/storage.dart';
 
 import '../../../data/login_request.dart';
 

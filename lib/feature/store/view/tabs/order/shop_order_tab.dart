@@ -9,8 +9,8 @@ import 'package:taste_tube/feature/payment/data/payment_data.dart';
 import 'package:taste_tube/feature/store/view/tabs/order/order_detail/order_detail_page.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/order.dart';
-import 'package:taste_tube/injection.dart';
-import 'package:taste_tube/providers.dart';
+import 'package:taste_tube/core/injection.dart';
+import 'package:taste_tube/core/providers.dart';
 import 'package:taste_tube/utils/datetime.util.dart';
 
 class OrderFilter extends ChangeNotifier {

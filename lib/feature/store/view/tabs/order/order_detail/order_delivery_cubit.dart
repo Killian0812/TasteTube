@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/feature/shop/data/delivery_data.dart';
 import 'package:taste_tube/feature/shop/domain/order_delivery_repo.dart';
-import 'package:taste_tube/injection.dart';
+import 'package:taste_tube/core/injection.dart';
 
 abstract class OrderDeliveryState {
   final String orderId;

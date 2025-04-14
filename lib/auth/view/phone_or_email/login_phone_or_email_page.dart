@@ -5,8 +5,8 @@ import 'package:taste_tube/auth/view/phone_or_email/login_email/login_email_tab.
 import 'package:taste_tube/auth/view/phone_or_email/login_phone/login_phone_tab.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/text.dart';
-import 'package:taste_tube/injection.dart';
-import 'package:taste_tube/providers.dart';
+import 'package:taste_tube/core/injection.dart';
+import 'package:taste_tube/core/providers.dart';
 
 class LoginWithPhoneOrEmailPage extends StatefulWidget {
   final int initialIndex;

@@ -1,10 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart' as log;
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
-import 'package:taste_tube/fcm_service.dart';
+import 'package:taste_tube/core/fcm_service.dart';
 import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
-import 'package:taste_tube/injection.dart';
-import 'package:taste_tube/storage.dart';
+import 'package:taste_tube/core/injection.dart';
+import 'package:taste_tube/core/storage.dart';
 
 final streamClient = StreamChatClient(
   'cd5kkff8cewb',

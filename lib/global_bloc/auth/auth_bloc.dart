@@ -5,11 +5,11 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
 import 'package:taste_tube/api.dart';
-import 'package:taste_tube/fcm_service.dart';
+import 'package:taste_tube/core/fcm_service.dart';
 import 'package:taste_tube/global_bloc/getstream/getstream_cubit.dart';
 import 'package:taste_tube/global_bloc/realtime/realtime_provider.dart';
-import 'package:taste_tube/injection.dart';
-import 'package:taste_tube/storage.dart';
+import 'package:taste_tube/core/injection.dart';
+import 'package:taste_tube/core/storage.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
 
 part 'auth_event.dart';

@@ -25,11 +25,11 @@ import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_bloc/realtime/realtime_provider.dart';
 import 'package:taste_tube/global_repo/cart_repo.dart';
-import 'package:taste_tube/providers.dart';
-import 'package:taste_tube/storage.dart';
+import 'package:taste_tube/core/providers.dart';
+import 'package:taste_tube/core/storage.dart';
 import 'package:uuid/uuid.dart';
 
-import 'auth/domain/auth_repo.dart';
+import '../auth/domain/auth_repo.dart';
 
 final getIt = GetIt.instance;
 

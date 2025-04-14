@@ -11,8 +11,8 @@ import 'package:taste_tube/auth/data/register_request.dart';
 import 'package:taste_tube/auth/data/register_response.dart';
 import 'package:taste_tube/common/error.dart';
 import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
-import 'package:taste_tube/injection.dart';
-import 'package:taste_tube/storage.dart';
+import 'package:taste_tube/core/injection.dart';
+import 'package:taste_tube/core/storage.dart';
 
 class AuthRepository {
   final SecureStorage secureStorage;

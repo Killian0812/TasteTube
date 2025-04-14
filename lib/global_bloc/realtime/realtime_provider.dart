@@ -4,9 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 import 'package:taste_tube/api.dart';
-import 'package:taste_tube/build_config.dart';
+import 'package:taste_tube/core/build_config.dart';
 import 'package:taste_tube/global_bloc/realtime/realtime_service.dart';
-import 'package:taste_tube/injection.dart';
+import 'package:taste_tube/core/injection.dart';
 
 part 'realtime_event.dart';
 

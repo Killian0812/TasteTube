@@ -17,8 +17,8 @@ import 'package:taste_tube/global_data/user/user.dart';
 import 'package:taste_tube/feature/profile/view/profile_cubit.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
 import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
-import 'package:taste_tube/injection.dart';
-import 'package:taste_tube/providers.dart';
+import 'package:taste_tube/core/injection.dart';
+import 'package:taste_tube/core/providers.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
 
 part 'profile_page.ext.dart';

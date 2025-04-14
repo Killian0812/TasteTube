@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/feature/shop/domain/order_repo.dart';
 import 'package:taste_tube/global_data/order/order.dart';
-import 'package:taste_tube/injection.dart';
+import 'package:taste_tube/core/injection.dart';
 
 abstract class OrderState {
   final List<Order> orders;

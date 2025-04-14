@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/feature/store/data/delivery_options.dart';
 import 'package:taste_tube/feature/store/domain/delivery_option_repo.dart';
-import 'package:taste_tube/injection.dart';
+import 'package:taste_tube/core/injection.dart';
 
 abstract class DeliveryOptionState {}
 

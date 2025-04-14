@@ -5,8 +5,8 @@ import 'package:taste_tube/common/button.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/store/data/payment_card.dart';
 import 'package:taste_tube/feature/store/view/tabs/payment/payment_setting_cubit.dart';
-import 'package:taste_tube/injection.dart';
-import 'package:taste_tube/providers.dart';
+import 'package:taste_tube/core/injection.dart';
+import 'package:taste_tube/core/providers.dart';
 
 part 'payment_setting_tab.ext.dart';
 

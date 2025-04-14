@@ -8,7 +8,7 @@ import 'package:taste_tube/common/loading.dart';
 import 'package:taste_tube/common/theme.dart';
 import 'package:taste_tube/global_data/user/user.dart';
 import 'package:taste_tube/feature/record/camera/camera_cubit.dart';
-import 'package:taste_tube/injection.dart';
+import 'package:taste_tube/core/injection.dart';
 
 import '../replay/replay_page.dart';
 

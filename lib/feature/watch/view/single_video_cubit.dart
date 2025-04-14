@@ -3,7 +3,7 @@ import 'package:taste_tube/global_data/watch/comment.dart';
 import 'package:taste_tube/global_data/watch/interaction.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
 import 'package:taste_tube/feature/watch/domain/single_video_repo.dart';
-import 'package:taste_tube/injection.dart';
+import 'package:taste_tube/core/injection.dart';
 
 abstract class SingleVideoState {
   final List<Comment> comments;

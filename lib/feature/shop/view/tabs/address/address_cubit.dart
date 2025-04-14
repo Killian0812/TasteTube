@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/feature/shop/domain/address_repo.dart';
 import 'package:taste_tube/global_data/order/address.dart';
-import 'package:taste_tube/injection.dart';
+import 'package:taste_tube/core/injection.dart';
 
 abstract class AddressState {
   final List<Address> addresses;

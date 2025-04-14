@@ -4,7 +4,7 @@ import 'package:taste_tube/common/error.dart';
 import 'package:taste_tube/global_data/product/category.dart';
 import 'package:taste_tube/global_data/product/product.dart';
 import 'package:taste_tube/feature/shop/domain/shop_repo.dart';
-import 'package:taste_tube/injection.dart';
+import 'package:taste_tube/core/injection.dart';
 
 Map<Category, List<Product>> _categorizeProducts(List<Product> products) {
   final Map<Category, List<Product>> categorizedProducts = {};

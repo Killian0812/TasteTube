@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:taste_tube/common/text.dart';
-import 'package:taste_tube/injection.dart';
-import 'package:taste_tube/providers.dart';
+import 'package:taste_tube/core/injection.dart';
+import 'package:taste_tube/core/providers.dart';
 
 class AuthButton extends StatelessWidget {
   final IconData icon;

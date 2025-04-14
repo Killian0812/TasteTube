@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:taste_tube/global_bloc/realtime/realtime_provider.dart';
-import 'package:taste_tube/injection.dart';
+import 'package:taste_tube/core/injection.dart';
 
 // Map to track unique payment events using pid as the key
 final Map<String?, PaymentRealtimeEvent> _paymentEvents = {};

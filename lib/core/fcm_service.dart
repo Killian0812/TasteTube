@@ -6,8 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart' as L;
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:taste_tube/global_bloc/getstream/getstream_cubit.dart';
-import 'package:taste_tube/injection.dart';
-import 'package:taste_tube/local_notification.dart';
+import 'package:taste_tube/core/injection.dart';
+import 'package:taste_tube/core/local_notification.dart';
 import 'package:taste_tube/main.dart';
 
 class FCMService {
