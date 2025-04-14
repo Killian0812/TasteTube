@@ -7,6 +7,7 @@ import 'package:responsive_builder/responsive_builder.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:taste_tube/common/loading.dart';
 import 'package:taste_tube/global_bloc/getstream/getstream_cubit.dart';
+import 'package:taste_tube/utils/user_data.util.dart';
 
 class ChatPage extends StatelessWidget {
   const ChatPage({super.key});
@@ -212,14 +213,20 @@ class _ChannelListPageState extends State<ChannelListPage> {
         elevation: 1,
       ),
       body: _searchQuery.isEmpty
-          ? StreamChannelListView(
-              onChannelTap: widget.onTap,
-              controller: _listController,
-              itemBuilder: (context, channels, index, defaultWidget) {
-                return defaultWidget.copyWith(
-                  selected: channels[index] == widget.selectedChannel,
-                );
-              },
+          ? RefreshIndicator(
+              onRefresh: () async => await context
+                  .read<GetstreamCubit>()
+                  .initializeClient(UserDataUtil.getUserData()!),
+              child: StreamChannelListView(
+                onChannelTap: widget.onTap,
+                controller: _listController,
+                loadingBuilder: (context) => CommonLoadingIndicator.regular,
+                itemBuilder: (context, channels, index, defaultWidget) {
+                  return defaultWidget.copyWith(
+                    selected: channels[index] == widget.selectedChannel,
+                  );
+                },
+              ),
             )
           : _searchResults == null
               ? const SizedBox.shrink()
@@ -287,6 +294,7 @@ class _ChannelPageState extends State<ChannelPage> {
           Expanded(
             child: StreamMessageListView(
               threadBuilder: (context, parent) => const SizedBox.shrink(),
+              markReadWhenAtTheBottom: true,
               showUnreadCountOnScrollToBottom: false,
               showFloatingDateDivider: false,
               messageBuilder: (
@@ -362,6 +370,7 @@ class _ChannelPageState extends State<ChannelPage> {
             onQuotedMessageCleared: messageInputController.clearQuotedMessage,
             focusNode: focusNode,
             messageInputController: messageInputController,
+            enableVoiceRecording: true,
           ),
         ],
       ),

@@ -44,7 +44,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       http.options.headers['Authorization'] = 'Bearer ${authData.accessToken}';
       emit(Authenticated(authData));
       getIt<RealtimeProvider>().initSocket(authData.userId);
-      getIt<GetstreamCubit>().initializeClient(authData, authData.streamToken);
+      getIt<GetstreamCubit>().initializeClient(authData);
       UserDataUtil.refreshData();
       FCMService.updateFcmToken();
     } on DioException {
@@ -60,7 +60,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     http.options.headers['Authorization'] = 'Bearer ${event.data.accessToken}';
     getIt<RealtimeProvider>().initSocket(event.data.userId);
     getIt<GetstreamCubit>()
-        .initializeClient(event.data, event.data.streamToken);
+        .initializeClient(event.data);
     UserDataUtil.refreshData();
     FCMService.updateFcmToken();
   }

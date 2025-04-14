@@ -7,6 +7,10 @@ import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/injection.dart';
 
 class UserDataUtil {
+  static AuthData? getUserData() {
+    return getIt<AuthBloc>().state.data;
+  }
+
   static String getUserId() {
     return getIt<AuthBloc>().state.data!.userId;
   }

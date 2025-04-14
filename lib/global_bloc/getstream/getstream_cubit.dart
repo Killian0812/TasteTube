@@ -14,7 +14,7 @@ class GetstreamCubit extends Cubit<GetstreamState> {
 
   final log.Logger logger = getIt<log.Logger>();
 
-  Future<void> initializeClient(AuthData userData, String streamToken) async {
+  Future<void> initializeClient(AuthData userData) async {
     emit(GetstreamLoading());
 
     try {
@@ -36,7 +36,7 @@ class GetstreamCubit extends Cubit<GetstreamState> {
           name: userData.username,
           image: userData.image,
         ),
-        streamToken,
+        userData.streamToken,
       );
 
       logger.i('Stream User connected: $user');
