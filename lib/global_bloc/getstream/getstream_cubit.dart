@@ -1,8 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart' as log;
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
+import 'package:taste_tube/fcm_service.dart';
 import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
 import 'package:taste_tube/injection.dart';
+import 'package:taste_tube/storage.dart';
 
 final streamClient = StreamChatClient(
   'cd5kkff8cewb',
@@ -38,6 +40,10 @@ class GetstreamCubit extends Cubit<GetstreamState> {
         ),
         userData.streamToken,
       );
+      getIt<LocalStorage>().setValue("STREAM_USERID", userData.userId);
+      getIt<LocalStorage>().setValue("STREAM_TOKEN", userData.streamToken);
+
+      FCMService.updateStreamFcmToken();
 
       logger.i('Stream User connected: $user');
       emit(GetstreamSuccess());
