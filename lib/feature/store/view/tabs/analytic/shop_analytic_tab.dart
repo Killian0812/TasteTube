@@ -225,36 +225,6 @@ class ShopAnalyticTab extends StatelessWidget {
                 ),
                 SizedBox(height: screenHeight * 0.03),
 
-                // Customer Demographics with Avg Spend
-                _buildSectionTitle('Customer Demographics'),
-                SizedBox(height: screenHeight * 0.03),
-
-                // Peak Hours
-                _buildSectionTitle('Peak Hours by Day'),
-                _buildTableContainer(
-                  child: DataTable(
-                    columns: const [
-                      DataColumn(
-                          label: Text('Day',
-                              style: TextStyle(fontWeight: FontWeight.bold))),
-                      DataColumn(
-                          label: Text('Peak Hours',
-                              style: TextStyle(fontWeight: FontWeight.bold))),
-                    ],
-                    rows: state.analytics.peakHours.entries
-                        .map(
-                          (entry) => DataRow(
-                            cells: [
-                              DataCell(Text(entry.key)),
-                              DataCell(Text(entry.value)),
-                            ],
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ),
-                SizedBox(height: screenHeight * 0.03),
-
                 // Payment Methods Pie Chart
                 _buildSectionTitle('Payment Methods'),
                 _buildChartContainer(

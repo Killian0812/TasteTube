@@ -62,15 +62,6 @@ class ShopAnalyticCubit extends Cubit<ShopAnalyticState> {
         conversionRate: 3.5,
         returningCustomers: 65,
         newCustomers: 85,
-        peakHours: {
-          'Monday': '17:00-19:00',
-          'Tuesday': '18:00-20:00',
-          'Wednesday': '17:00-19:00',
-          'Thursday': '18:00-20:00',
-          'Friday': '19:00-21:00',
-          'Saturday': '12:00-14:00',
-          'Sunday': '13:00-15:00',
-        },
         paymentMethods: [
           PaymentMethod(name: 'COD', count: 90, percentage: 60.0),
           PaymentMethod(name: 'VNPAY', count: 45, percentage: 30.0),
@@ -99,7 +90,6 @@ class AnalyticsData {
   final double conversionRate;
   final int returningCustomers;
   final int newCustomers;
-  final Map<String, String> peakHours;
   final List<PaymentMethod> paymentMethods;
 
   AnalyticsData({
@@ -116,7 +106,6 @@ class AnalyticsData {
     required this.conversionRate,
     required this.returningCustomers,
     required this.newCustomers,
-    required this.peakHours,
     required this.paymentMethods,
   });
 }
