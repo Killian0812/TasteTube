@@ -73,6 +73,10 @@ class FCMService {
           navigatorKey.currentContext?.mounted == true) {
         navigatorKey.currentContext?.push('/chat');
       }
+      if (message.data['type'] == 'order' &&
+          navigatorKey.currentContext?.mounted == true) {
+        navigatorKey.currentContext?.push('/store');
+      }
     });
 
     // Handle interaction when the app is in foreground
