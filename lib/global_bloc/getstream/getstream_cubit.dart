@@ -29,7 +29,7 @@ class GetstreamCubit extends Cubit<GetstreamState> {
       }
 
       if (currentUser != null) {
-        await streamClient.disconnectUser();
+        await streamClient.disconnectUser(flushChatPersistence: true);
       }
 
       final user = await streamClient.connectUser(
