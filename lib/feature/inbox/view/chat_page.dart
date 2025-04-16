@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -271,7 +272,7 @@ class ChannelPage extends StatefulWidget {
 class _ChannelPageState extends State<ChannelPage> {
   late final messageInputController = StreamMessageInputController();
   final focusNode = FocusNode();
-
+  bool _showEmojiPicker = false;
   Channel get channel => widget.channel;
 
   @override
@@ -371,6 +372,50 @@ class _ChannelPageState extends State<ChannelPage> {
             focusNode: focusNode,
             messageInputController: messageInputController,
             enableVoiceRecording: true,
+            actionsBuilder: (context, defaultActions) => [
+              ...defaultActions,
+              IconButton(
+                icon: Icon(
+                  _showEmojiPicker ? Icons.keyboard : Icons.emoji_emotions,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _showEmojiPicker = !_showEmojiPicker;
+                    if (_showEmojiPicker) {
+                      focusNode.unfocus();
+                    } else {
+                      focusNode.requestFocus();
+                    }
+                  });
+                },
+              ),
+            ],
+          ),
+          Offstage(
+            offstage: !_showEmojiPicker,
+            child: EmojiPicker(
+              textEditingController: messageInputController.textFieldController,
+              config: Config(
+                emojiTextStyle: DefaultEmojiTextStyle,
+                viewOrderConfig: const ViewOrderConfig(
+                  top: EmojiPickerItem.searchBar,
+                  middle: EmojiPickerItem.categoryBar,
+                  bottom: EmojiPickerItem.emojiView,
+                ),
+                emojiViewConfig: EmojiViewConfig(
+                  loadingIndicator: CommonLoadingIndicator.regular,
+                  backgroundColor:
+                      BottomNavigationBarTheme.of(context).backgroundColor!,
+                ),
+                categoryViewConfig: CategoryViewConfig(
+                  backgroundColor:
+                      BottomNavigationBarTheme.of(context).backgroundColor!,
+                ),
+                searchViewConfig: SearchViewConfig(
+                    customSearchView: (config, state, showEmojiView) =>
+                        const SizedBox.shrink()),
+              ),
+            ),
           ),
         ],
       ),
@@ -389,37 +434,5 @@ class _ChannelPageState extends State<ChannelPage> {
     focusNode.dispose();
     messageInputController.dispose();
     super.dispose();
-  }
-}
-
-class ThreadPage extends StatelessWidget {
-  const ThreadPage({
-    super.key,
-    required this.parent,
-  });
-
-  final Message parent;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: StreamThreadHeader(
-        parent: parent,
-      ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: StreamMessageListView(
-              parentMessage: parent,
-            ),
-          ),
-          StreamMessageInput(
-            messageInputController: StreamMessageInputController(
-              message: Message(parentId: parent.id),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
