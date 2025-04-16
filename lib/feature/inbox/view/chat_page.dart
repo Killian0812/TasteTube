@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:taste_tube/common/loading.dart';
+import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/global_bloc/getstream/getstream_cubit.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
 
@@ -277,6 +278,8 @@ class _ChannelPageState extends State<ChannelPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final numEmojiColumns = (screenSize.width / (28 + 25)).floor();
     return Scaffold(
       appBar: StreamChannelHeader(
         onImageTap: () {
@@ -367,6 +370,38 @@ class _ChannelPageState extends State<ChannelPage> {
               },
             ),
           ),
+          Offstage(
+            offstage: !_showEmojiPicker,
+            child: EmojiPicker(
+              textEditingController: messageInputController.textFieldController,
+              config: Config(
+                bottomActionBarConfig: BottomActionBarConfig(
+                  backgroundColor:
+                      BottomNavigationBarTheme.of(context).backgroundColor!,
+                  buttonColor: Colors.transparent,
+                ),
+                emojiViewConfig: EmojiViewConfig(
+                  gridPadding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  columns: numEmojiColumns,
+                  loadingIndicator: CommonLoadingIndicator.regular,
+                  backgroundColor:
+                      BottomNavigationBarTheme.of(context).backgroundColor!,
+                ),
+                categoryViewConfig: CategoryViewConfig(
+                  backgroundColor:
+                      BottomNavigationBarTheme.of(context).backgroundColor!,
+                ),
+                searchViewConfig: SearchViewConfig(
+                  buttonIconColor: AppBarTheme.of(context).iconTheme!.color!,
+                  hintTextStyle: CommonTextStyle.thin,
+                  inputTextStyle: CommonTextStyle.regular,
+                  backgroundColor:
+                      BottomNavigationBarTheme.of(context).backgroundColor!,
+                ),
+              ),
+            ),
+          ),
           StreamMessageInput(
             onQuotedMessageCleared: messageInputController.clearQuotedMessage,
             focusNode: focusNode,
@@ -390,32 +425,6 @@ class _ChannelPageState extends State<ChannelPage> {
                 },
               ),
             ],
-          ),
-          Offstage(
-            offstage: !_showEmojiPicker,
-            child: EmojiPicker(
-              textEditingController: messageInputController.textFieldController,
-              config: Config(
-                emojiTextStyle: DefaultEmojiTextStyle,
-                viewOrderConfig: const ViewOrderConfig(
-                  top: EmojiPickerItem.searchBar,
-                  middle: EmojiPickerItem.categoryBar,
-                  bottom: EmojiPickerItem.emojiView,
-                ),
-                emojiViewConfig: EmojiViewConfig(
-                  loadingIndicator: CommonLoadingIndicator.regular,
-                  backgroundColor:
-                      BottomNavigationBarTheme.of(context).backgroundColor!,
-                ),
-                categoryViewConfig: CategoryViewConfig(
-                  backgroundColor:
-                      BottomNavigationBarTheme.of(context).backgroundColor!,
-                ),
-                searchViewConfig: SearchViewConfig(
-                    customSearchView: (config, state, showEmojiView) =>
-                        const SizedBox.shrink()),
-              ),
-            ),
           ),
         ],
       ),
