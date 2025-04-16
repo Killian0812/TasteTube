@@ -102,7 +102,31 @@ class OrderCubit extends Cubit<OrderState> {
       result.fold(
         (error) => emit(OrderError(
           state.orders,
-          error.message ?? 'Error creating new order',
+          error.message ?? 'Error updating order status',
+        )),
+        (updatedOrder) {
+          final index = state.orders.indexWhere((order) => order.id == id);
+          state.orders[index] = updatedOrder;
+          emit(OrderLoaded(state.orders));
+        },
+      );
+    } catch (e) {
+      emit(OrderError(state.orders, e.toString()));
+    }
+  }
+
+  Future<void> updateOrderFeedback(
+    String id,
+    String feedback,
+    Map<String, double?> ratings,
+  ) async {
+    try {
+      final result = await repository.updateOrderFeedback(
+          id: id, feedback: feedback, ratings: ratings);
+      result.fold(
+        (error) => emit(OrderError(
+          state.orders,
+          error.message ?? 'Error updating order feedback',
         )),
         (updatedOrder) {
           final index = state.orders.indexWhere((order) => order.id == id);

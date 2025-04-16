@@ -58,9 +58,28 @@ class OrderRepository {
     required String? newStatus,
   }) async {
     try {
-      final response =
-          await http.put(Api.singleOrderApi.replaceFirst(':orderId', id), data: {
+      final response = await http
+          .put(Api.orderStatusApi.replaceFirst(':orderId', id), data: {
         'newStatus': newStatus,
+      });
+      return fpdart.Right(Order.fromJson(response.data));
+    } on DioException catch (e) {
+      return fpdart.Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return fpdart.Left(ApiError(500, e.toString()));
+    }
+  }
+
+  Future<fpdart.Either<ApiError, Order>> updateOrderFeedback({
+    required String id,
+    required String feedback,
+    required Map<String, double?> ratings,
+  }) async {
+    try {
+      final response = await http
+          .put(Api.orderFeedbackApi.replaceFirst(':orderId', id), data: {
+        'feedback': feedback,
+        'ratings': ratings,
       });
       return fpdart.Right(Order.fromJson(response.data));
     } on DioException catch (e) {

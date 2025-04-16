@@ -9,6 +9,8 @@ import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/order.dart';
 import 'package:taste_tube/utils/datetime.util.dart';
 
+part 'order_feedback_dialog.dart';
+
 class CustomerOrderTab extends StatelessWidget {
   const CustomerOrderTab({super.key});
 
@@ -108,8 +110,8 @@ class _OrderCard extends StatelessWidget {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.access_time),
-                SizedBox(width: 4),
+                const Icon(Icons.access_time),
+                const SizedBox(width: 4),
                 Text(DateTimeUtil.dateTimeHHmmddMMyyyy(order.createdAt)),
               ],
             ),
@@ -143,7 +145,7 @@ class _OrderCard extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ]
+                  ],
                 ],
               ),
             ),
@@ -169,7 +171,30 @@ class _OrderCard extends StatelessWidget {
                   title: Text(product.name),
                   trailing: Text(
                       '${product.cost.toStringAsFixed(2)} ${product.currency}'),
-                  subtitle: Text('Quantity: ${item.quantity}'),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Quantity: ${item.quantity}'),
+                      if (item.rating != null) ...[
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Text("Your rating: "),
+                            ...List.generate(5, (index) {
+                              final starValue = index + 1;
+                              return Icon(
+                                item.rating! >= starValue
+                                    ? Icons.star
+                                    : Icons.star_border,
+                                color: Colors.amber,
+                                size: 20,
+                              );
+                            })
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
                   onTap: () {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) =>
@@ -178,6 +203,22 @@ class _OrderCard extends StatelessWidget {
                 );
               },
             ),
+            if (order.status == 'COMPLETED' && order.feedback == null) ...[
+              const SizedBox(height: 8),
+              ElevatedButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => _FeedbackDialog(order: order),
+                  );
+                },
+                child: const Text('Send Feedback'),
+              ),
+            ],
+            if (order.feedback != null) ...[
+              const SizedBox(height: 8),
+              Text('Your Feedback: ${order.feedback}'),
+            ],
           ],
         ),
       ),
