@@ -9,6 +9,7 @@ import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/order.dart';
 import 'package:taste_tube/core/injection.dart';
 import 'package:taste_tube/core/providers.dart';
+import 'package:taste_tube/utils/currency.util.dart';
 import 'package:taste_tube/utils/datetime.util.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
 
@@ -408,7 +409,8 @@ class OrderDeliveryTab extends StatelessWidget {
                       ),
                 const Spacer(),
                 Text(
-                  '${quote.amount.toString()} ${UserDataUtil.getCurrency()}',
+                  CurrencyUtil.amountWithCurrency(
+                      quote.amount, UserDataUtil.getCurrency()),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color:

@@ -81,7 +81,8 @@ class CartItemTile extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${item.product.cost.toStringAsFixed(2)} ${item.currency}',
+                    CurrencyUtil.amountWithCurrency(
+                        item.product.cost, item.currency),
                     style: const TextStyle(
                       fontSize: 14,
                       color: Colors.grey,
@@ -105,7 +106,7 @@ class CartItemTile extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${(item.cost).toStringAsFixed(2)} ${item.currency}',
+                  CurrencyUtil.amountWithCurrency(item.cost, item.currency),
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,

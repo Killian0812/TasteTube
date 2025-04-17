@@ -14,6 +14,7 @@ import 'package:taste_tube/feature/store/view/tabs/product/category_cubit.dart';
 import 'package:taste_tube/global_data/product/category.dart';
 import 'package:taste_tube/global_data/product/product.dart';
 import 'package:taste_tube/feature/store/view/tabs/product/product_cubit.dart';
+import 'package:taste_tube/utils/currency.util.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
 
 part 'product_tab.ext.dart';
@@ -236,7 +237,11 @@ class ProductTab extends StatelessWidget {
                                                         const SizedBox(
                                                             height: 4),
                                                         Text(
-                                                          '${product.cost} ${product.currency}',
+                                                          CurrencyUtil
+                                                              .amountWithCurrency(
+                                                                  product.cost,
+                                                                  product
+                                                                      .currency),
                                                           style: TextStyle(
                                                             color: Colors
                                                                 .green[700],

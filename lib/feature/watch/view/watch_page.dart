@@ -20,6 +20,7 @@ import 'package:taste_tube/global_data/watch/comment.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
 import 'package:taste_tube/feature/watch/view/single_video_cubit.dart';
 import 'package:taste_tube/core/injection.dart';
+import 'package:taste_tube/utils/currency.util.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
 import 'package:video_player/video_player.dart';
 import 'package:timeago/timeago.dart' as timeago;

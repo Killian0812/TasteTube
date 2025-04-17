@@ -11,6 +11,7 @@ import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/order.dart';
 import 'package:taste_tube/core/injection.dart';
 import 'package:taste_tube/core/providers.dart';
+import 'package:taste_tube/utils/currency.util.dart';
 import 'package:taste_tube/utils/datetime.util.dart';
 
 class OrderFilter extends ChangeNotifier {
@@ -498,7 +499,7 @@ class _OrderCardState extends State<_OrderCard> {
             ),
             const SizedBox(height: 8),
             Text(
-                'Total: ${order.total.toStringAsFixed(2)} ${order.items.first.product.currency}'),
+                'Total: ${CurrencyUtil.amountWithCurrency(order.total, order.items.first.product.currency)}'),
             const SizedBox(height: 8),
             ExpansionTile(
               title: Text('Items: ${order.items.length}'),
@@ -520,8 +521,8 @@ class _OrderCardState extends State<_OrderCard> {
                           fit: BoxFit.cover,
                         ),
                         title: Text(product.name),
-                        trailing: Text(
-                            '${product.cost.toStringAsFixed(2)} ${product.currency}'),
+                        trailing: Text(CurrencyUtil.amountWithCurrency(
+                            product.cost, product.currency)),
                         subtitle: Text('Quantity: ${item.quantity}'),
                       );
                     },

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/feature/shop/view/tabs/shopping/shop_cubit.dart';
 import 'package:taste_tube/feature/shop/view/tabs/shopping/single_shop_product_page.dart';
 import 'package:taste_tube/global_data/product/product.dart';
+import 'package:taste_tube/utils/currency.util.dart';
 
 class ShopTab extends StatefulWidget {
   const ShopTab({super.key});
@@ -124,7 +125,8 @@ class _ShopTabState extends State<ShopTab> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  '${product.currency} ${product.cost.toStringAsFixed(2)}',
+                                  CurrencyUtil.amountWithCurrency(
+                                      product.cost, product.currency),
                                   style: const TextStyle(fontSize: 14),
                                 ),
                               ],

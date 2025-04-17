@@ -7,6 +7,7 @@ import 'package:taste_tube/feature/shop/view/payment_page.dart';
 import 'package:taste_tube/feature/shop/view/quantity_dialog.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_data/product/product.dart';
+import 'package:taste_tube/utils/currency.util.dart';
 import 'package:taste_tube/utils/phone_call.util.dart';
 
 class SingleShopProductPage extends StatelessWidget {
@@ -148,7 +149,7 @@ class SingleShopProductPage extends StatelessWidget {
             const SizedBox(height: 16),
           ],
           Text(
-            'Price: ${product.currency} ${product.cost.toStringAsFixed(2)}',
+            'Price: ${CurrencyUtil.amountWithCurrency(product.cost, product.currency)}',
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,

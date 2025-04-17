@@ -7,6 +7,7 @@ import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/shop/view/tabs/shopping/single_shop_product_page.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/order.dart';
+import 'package:taste_tube/utils/currency.util.dart';
 import 'package:taste_tube/utils/datetime.util.dart';
 
 part 'order_feedback_dialog.dart';
@@ -150,7 +151,7 @@ class _OrderCard extends StatelessWidget {
               ),
             ),
             Text(
-                'Total: ${order.total.toStringAsFixed(2)} ${order.items.first.product.currency}'),
+                'Total: ${CurrencyUtil.amountWithCurrency(order.total, order.items.first.product.currency)}'),
             const SizedBox(height: 8),
             Text('Items: ${order.items.length}'),
             const Divider(),
@@ -169,8 +170,8 @@ class _OrderCard extends StatelessWidget {
                     fit: BoxFit.cover,
                   ),
                   title: Text(product.name),
-                  trailing: Text(
-                      '${product.cost.toStringAsFixed(2)} ${product.currency}'),
+                  trailing: Text(CurrencyUtil.amountWithCurrency(
+                      product.cost, product.currency)),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

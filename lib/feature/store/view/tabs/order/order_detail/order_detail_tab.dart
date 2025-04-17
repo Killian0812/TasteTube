@@ -5,6 +5,7 @@ import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/constant.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/order.dart';
+import 'package:taste_tube/utils/currency.util.dart';
 import 'package:taste_tube/utils/datetime.util.dart';
 
 class OrderDetailTab extends StatelessWidget {
@@ -92,7 +93,7 @@ class OrderDetailTab extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Total: ${order.total.toStringAsFixed(2)} ${order.items.first.product.currency}',
+                        'Total: ${CurrencyUtil.amountWithCurrency(order.total, order.items.first.product.currency)}',
                         style: const TextStyle(fontSize: 16),
                       ),
                     ],
@@ -130,8 +131,8 @@ class OrderDetailTab extends StatelessWidget {
                               fit: BoxFit.cover,
                             ),
                             title: Text(product.name),
-                            trailing: Text(
-                                '${product.cost.toStringAsFixed(2)} ${product.currency}'),
+                            trailing: Text(CurrencyUtil.amountWithCurrency(
+                                product.cost, product.currency)),
                             subtitle: Text('Quantity: ${item.quantity}'),
                           );
                         },

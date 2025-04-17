@@ -426,7 +426,8 @@ class _SingleVideoState extends State<SingleVideo>
                                     ),
                                   ),
                                 Text(
-                                  '${product.cost.toString()} ${product.currency}',
+                                  CurrencyUtil.amountWithCurrency(
+                                      product.cost, product.currency),
                                   style: const TextStyle(
                                       fontSize: 18, color: Colors.green),
                                 ),

@@ -14,6 +14,7 @@ import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/address.dart';
 import 'package:taste_tube/global_data/order/cart.dart';
 import 'package:taste_tube/core/injection.dart';
+import 'package:taste_tube/utils/currency.util.dart';
 import 'package:taste_tube/utils/location/location.util.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -405,7 +406,7 @@ class _OrderSummarySection extends StatelessWidget {
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: Text(
-                                      '${item.product.name} x ${item.quantity}: ${(item.quantity * item.product.cost).toStringAsFixed(2)} ${item.product.currency}',
+                                      '${item.product.name} x ${item.quantity}: ${CurrencyUtil.amountWithCurrency(item.cost, item.product.currency)}',
                                     ),
                                   ),
                                 ],
