@@ -1,13 +1,15 @@
 class Discount {
   final String id;
   final String shopId;
-  final String code;
-  final String type; // 'fixed' or 'percentage'
+  final String name;
+  final String? code;
+  final String type; // 'coupon' or 'voucher'
   final double value;
+  final String valueType; // 'fixed' or 'percentage'
   final String? description;
   final DateTime? startDate;
   final DateTime? endDate;
-  final bool isActive;
+  final String status; // 'active', 'inactive', 'expired'
   final int? maxUses;
   final int? usesPerUser;
   final double? minOrderAmount;
@@ -17,13 +19,15 @@ class Discount {
   Discount({
     required this.id,
     required this.shopId,
-    required this.code,
+    required this.name,
+    this.code,
     required this.type,
     required this.value,
+    required this.valueType,
     this.description,
     this.startDate,
     this.endDate,
-    required this.isActive,
+    required this.status,
     this.maxUses,
     this.usesPerUser,
     this.minOrderAmount,
@@ -35,14 +39,16 @@ class Discount {
     return Discount(
       id: json['_id'],
       shopId: json['shopId'],
+      name: json['name'],
       code: json['code'],
       type: json['type'],
       value: (json['value'] as num).toDouble(),
+      valueType: json['valueType'],
       description: json['description'],
       startDate:
           json['startDate'] != null ? DateTime.parse(json['startDate']) : null,
       endDate: json['endDate'] != null ? DateTime.parse(json['endDate']) : null,
-      isActive: json['isActive'],
+      status: json['status'],
       maxUses: json['maxUses'],
       usesPerUser: json['usesPerUser'],
       minOrderAmount: json['minOrderAmount'] != null
@@ -57,13 +63,15 @@ class Discount {
   Map<String, dynamic> toJson() {
     return {
       'shopId': shopId,
+      'name': name,
       'code': code,
       'type': type,
       'value': value,
+      'valueType': valueType,
       'description': description,
       'startDate': startDate?.toIso8601String(),
       'endDate': endDate?.toIso8601String(),
-      'isActive': isActive,
+      'status': status,
       'maxUses': maxUses,
       'usesPerUser': usesPerUser,
       'minOrderAmount': minOrderAmount,

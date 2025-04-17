@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/store/view/tabs/discount/discount_cubit.dart';
@@ -32,7 +31,26 @@ class DiscountPage extends StatelessWidget {
             if (state is DiscountLoading) {
               return const Center(child: CircularProgressIndicator());
             }
-            return DiscountList(discounts: state.discounts);
+            if (state is DiscountLoaded) {
+              return DiscountList(discounts: state.discounts);
+            }
+            if (state is DiscountError) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(state.message),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () =>
+                          context.read<DiscountCubit>().fetchDiscounts(),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              );
+            }
+            return const Center(child: Text('No discounts available'));
           },
         ),
       ),
@@ -75,17 +93,25 @@ class DiscountList extends StatelessWidget {
                         itemBuilder: (context, index) {
                           final discount = discounts[index];
                           return ListTile(
-                            title: SelectableText('Code: ${discount.code}'),
+                            title: Text(discount.name),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                if (discount.code != null)
+                                  Text('Coupon Code: ${discount.code}'),
                                 Text(
-                                  'Type: ${discount.type.capitalize()} - Value: ${discount.value}${discount.type == "percentage" ? "%" : " ${UserDataUtil.getCurrency()}"}',
+                                  'Type: ${discount.type.toUpperCase()} - Value: ${discount.value}${discount.valueType == "percentage" ? "%" : " ${UserDataUtil.getCurrency()}"}',
                                 ),
                                 if (discount.startDate != null ||
                                     discount.endDate != null)
-                                  Text(
-                                    'Valid: ${discount.startDate != null ? DateFormat(_discountDateFormat).format(discount.startDate!) : "∞"} - ${discount.endDate != null ? DateFormat(_discountDateFormat).format(discount.endDate!) : "∞"}',
+                                  Row(
+                                    children: [
+                                      Icon(Icons.calendar_month),
+                                      SizedBox(width: 4),
+                                      Text(
+                                        '${discount.startDate != null ? DateFormat(_discountDateFormat).format(discount.startDate!) : "∞"} - ${discount.endDate != null ? DateFormat(_discountDateFormat).format(discount.endDate!) : "∞"}',
+                                      ),
+                                    ],
                                   ),
                                 if (discount.minOrderAmount != null)
                                   Text(
@@ -94,19 +120,17 @@ class DiscountList extends StatelessWidget {
                                 if (discount.maxUses != null)
                                   Text('Max Uses: ${discount.maxUses}'),
                                 if (discount.usesPerUser != null)
-                                  Text('Uses Per User: ${discount.usesPerUser}'),
-                                Row(
-                                  children: [
-                                    Text('Status: '),
-                                    Text(
-                                      discount.isActive ? "Active" : "Inactive",
-                                      style: TextStyle(
-                                        color: discount.isActive
-                                            ? Colors.green
-                                            : Colors.red,
-                                      ),
-                                    ),
-                                  ],
+                                  Text(
+                                      'Uses Per User: ${discount.usesPerUser}'),
+                                Text(
+                                  'Status: ${discount.status.toUpperCase()}',
+                                  style: TextStyle(
+                                    color: discount.status == "active"
+                                        ? Colors.green
+                                        : discount.status == "inactive"
+                                            ? Colors.red
+                                            : Colors.yellow,
+                                  ),
                                 ),
                               ],
                             ),
@@ -116,7 +140,8 @@ class DiscountList extends StatelessWidget {
                                 IconButton(
                                   icon: const Icon(Icons.edit),
                                   onPressed: () {
-                                    showDiscountForm(context, discount: discount);
+                                    showDiscountForm(context,
+                                        discount: discount);
                                   },
                                 ),
                                 IconButton(
@@ -125,7 +150,7 @@ class DiscountList extends StatelessWidget {
                                     final result = await showConfirmDialog(
                                       context,
                                       title:
-                                          'Are you sure you want to delete discount: ${discount.code}?',
+                                          'Are you sure you want to delete discount: ${discount.name}?',
                                     );
                                     if (result == true && context.mounted) {
                                       context
@@ -177,6 +202,7 @@ class DiscountForm extends StatefulWidget {
 }
 
 class _DiscountFormState extends State<DiscountForm> {
+  late TextEditingController _nameController;
   late TextEditingController _codeController;
   late TextEditingController _valueController;
   late TextEditingController _maxUsesController;
@@ -185,43 +211,54 @@ class _DiscountFormState extends State<DiscountForm> {
   late TextEditingController _startDateController;
   late TextEditingController _endDateController;
   late String _type;
-  late bool _isActive;
+  late String _valueType;
+  late String _status;
   DateTime? _startDate;
   DateTime? _endDate;
 
   @override
   void initState() {
     super.initState();
+    _nameController = TextEditingController(text: widget.discount?.name ?? '');
     _codeController = TextEditingController(text: widget.discount?.code ?? '');
-    _valueController =
-        TextEditingController(text: widget.discount?.value.toString() ?? '');
+    _valueController = TextEditingController(
+      text: widget.discount != null ? widget.discount!.value.toString() : '',
+    );
     _maxUsesController =
         TextEditingController(text: widget.discount?.maxUses?.toString() ?? '');
     _usesPerUserController = TextEditingController(
         text: widget.discount?.usesPerUser?.toString() ?? '');
     _minOrderAmountController = TextEditingController(
         text: widget.discount?.minOrderAmount?.toString() ?? '');
-    _type = widget.discount?.type ?? 'fixed';
-    _isActive = widget.discount?.isActive ?? true;
+    _type = widget.discount?.type ?? 'voucher';
+    _valueType = widget.discount?.valueType ?? 'fixed';
+    _status = widget.discount?.status == 'expired'
+        ? 'inactive'
+        : (widget.discount?.status ?? 'active');
     _startDate = widget.discount?.startDate;
     _endDate = widget.discount?.endDate;
     _startDateController = TextEditingController(
-        text: _startDate == null
-            ? null
-            : DateFormat(_discountDateFormat).format(_startDate!));
+      text: _startDate == null
+          ? ''
+          : DateFormat(_discountDateFormat).format(_startDate!),
+    );
     _endDateController = TextEditingController(
-        text: _endDate == null
-            ? null
-            : DateFormat(_discountDateFormat).format(_endDate!));
+      text: _endDate == null
+          ? ''
+          : DateFormat(_discountDateFormat).format(_endDate!),
+    );
   }
 
   @override
   void dispose() {
+    _nameController.dispose();
     _codeController.dispose();
     _valueController.dispose();
     _maxUsesController.dispose();
     _usesPerUserController.dispose();
     _minOrderAmountController.dispose();
+    _startDateController.dispose();
+    _endDateController.dispose();
     super.dispose();
   }
 
@@ -260,8 +297,19 @@ class _DiscountFormState extends State<DiscountForm> {
     }
   }
 
+  ({double value, String valueType}) _parseValueInput(
+      String input, String selectedValueType) {
+    input = input.trim();
+    final value = double.tryParse(input) ?? 0.0;
+    if (selectedValueType == 'percentage' && (value < 0 || value > 100)) {
+      return (value: value, valueType: 'percentage');
+    }
+    return (value: value, valueType: selectedValueType);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final currency = UserDataUtil.getCurrency();
     return AlertDialog(
       title: Text(widget.discount == null ? 'Add Discount' : 'Edit Discount'),
       content: ConstrainedBox(
@@ -275,39 +323,68 @@ class _DiscountFormState extends State<DiscountForm> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TextField(
-                controller: _codeController,
-                readOnly: widget.discount != null,
-                decoration: InputDecoration(
-                  labelText: 'Discount Code',
-                  border: const OutlineInputBorder(),
-                  suffixIcon: widget.discount == null
-                      ? IconButton(
-                          icon: const Icon(Icons.shuffle),
-                          tooltip: 'Random Code',
-                          onPressed: () {
-                            setState(() {
-                              _codeController.text = _generateRandomCode();
-                            });
-                          },
-                        )
-                      : null,
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Discount Name',
+                  border: OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 16),
-              DropdownButton<String>(
-                value: _type,
-                isExpanded: true,
-                items: const [
-                  DropdownMenuItem(value: 'fixed', child: Text('Fixed Amount')),
-                  DropdownMenuItem(
-                      value: 'percentage', child: Text('Percentage')),
+              const Text('Discount Type',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              Row(
+                children: [
+                  Expanded(
+                    child: RadioListTile<String>(
+                      title: const Text('Voucher'),
+                      value: 'voucher',
+                      groupValue: _type,
+                      onChanged: (value) {
+                        setState(() {
+                          _type = value!;
+                          if (_type != 'coupon') {
+                            _codeController.clear();
+                          }
+                        });
+                      },
+                    ),
+                  ),
+                  Expanded(
+                    child: RadioListTile<String>(
+                      title: const Text('Coupon'),
+                      value: 'coupon',
+                      groupValue: _type,
+                      onChanged: (value) {
+                        setState(() {
+                          _type = value!;
+                        });
+                      },
+                    ),
+                  ),
                 ],
-                onChanged: (value) {
-                  setState(() {
-                    _type = value!;
-                  });
-                },
               ),
+              if (_type == 'coupon') ...[
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _codeController,
+                  readOnly: widget.discount != null,
+                  decoration: InputDecoration(
+                    labelText: 'Coupon Code',
+                    border: const OutlineInputBorder(),
+                    suffixIcon: widget.discount == null
+                        ? IconButton(
+                            icon: const Icon(Icons.shuffle),
+                            tooltip: 'Random Code',
+                            onPressed: () {
+                              setState(() {
+                                _codeController.text = _generateRandomCode();
+                              });
+                            },
+                          )
+                        : null,
+                  ),
+                ),
+              ],
               const SizedBox(height: 16),
               TextField(
                 controller: _valueController,
@@ -315,9 +392,20 @@ class _DiscountFormState extends State<DiscountForm> {
                     const TextInputType.numberWithOptions(decimal: true),
                 decoration: InputDecoration(
                   labelText: 'Value',
-                  suffixText:
-                      _type == 'percentage' ? '%' : UserDataUtil.getCurrency(),
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
+                  suffixIcon: DropdownButton<String>(
+                    value: _valueType,
+                    items: [
+                      DropdownMenuItem(value: 'fixed', child: Text(currency)),
+                      const DropdownMenuItem(
+                          value: 'percentage', child: Text('%')),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        _valueType = value!;
+                      });
+                    },
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -355,22 +443,30 @@ class _DiscountFormState extends State<DiscountForm> {
                 ],
               ),
               const SizedBox(height: 16),
-              TextField(
-                controller: _maxUsesController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Max Uses (Optional)',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _usesPerUserController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Uses Per User (Optional)',
-                  border: OutlineInputBorder(),
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _maxUsesController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        labelText: 'Max Uses (Optional)',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: TextField(
+                      controller: _usesPerUserController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        labelText: 'Uses Per User (Optional)',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
               TextField(
@@ -380,16 +476,16 @@ class _DiscountFormState extends State<DiscountForm> {
                 decoration: InputDecoration(
                   labelText: 'Minimum Order Amount (Optional)',
                   suffixText: UserDataUtil.getCurrency(),
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 16),
-              CheckboxListTile(
+              SwitchListTile(
                 title: const Text('Active'),
-                value: _isActive,
+                value: _status == 'active',
                 onChanged: (value) {
                   setState(() {
-                    _isActive = value!;
+                    _status = value ? 'active' : 'inactive';
                   });
                 },
                 contentPadding: EdgeInsets.zero,
@@ -405,16 +501,20 @@ class _DiscountFormState extends State<DiscountForm> {
         ),
         ElevatedButton(
           onPressed: () {
+            final valueInput =
+                _parseValueInput(_valueController.text, _valueType);
             final discount = Discount(
               id: widget.discount?.id ?? '',
               shopId: UserDataUtil.getUserId(),
-              code: _codeController.text.trim(),
+              name: _nameController.text.trim(),
+              code: _type == 'coupon' ? _codeController.text.trim() : null,
               type: _type,
-              value: double.tryParse(_valueController.text) ?? 0.0,
+              value: valueInput.value,
+              valueType: valueInput.valueType,
               description: widget.discount?.description,
               startDate: _startDate,
               endDate: _endDate,
-              isActive: _isActive,
+              status: _status,
               maxUses: int.tryParse(_maxUsesController.text),
               usesPerUser: int.tryParse(_usesPerUserController.text),
               minOrderAmount: double.tryParse(_minOrderAmountController.text),
@@ -422,15 +522,40 @@ class _DiscountFormState extends State<DiscountForm> {
               userUsedIds: widget.discount?.userUsedIds ?? [],
             );
 
-            if (discount.code.isEmpty || discount.value <= 0) {
+            if (discount.name.isEmpty) {
               ToastService.showToast(
                 context,
-                'Please enter a valid code and value',
+                'Please enter a discount name',
                 ToastType.warning,
               );
               return;
             }
-
+            if (discount.type == 'coupon' &&
+                (discount.code == null || discount.code!.isEmpty)) {
+              ToastService.showToast(
+                context,
+                'Please enter a coupon code',
+                ToastType.warning,
+              );
+              return;
+            }
+            if (discount.value <= 0) {
+              ToastService.showToast(
+                context,
+                'Please enter a valid value',
+                ToastType.warning,
+              );
+              return;
+            }
+            if (discount.valueType == 'percentage' &&
+                (discount.value < 0 || discount.value > 100)) {
+              ToastService.showToast(
+                context,
+                'Percentage value must be between 0 and 100',
+                ToastType.warning,
+              );
+              return;
+            }
             if (_startDate != null &&
                 _endDate != null &&
                 _startDate!.isAfter(_endDate!)) {
@@ -445,7 +570,9 @@ class _DiscountFormState extends State<DiscountForm> {
             if (widget.discount == null) {
               context.read<DiscountCubit>().createDiscount(discount);
             } else {
-              context.read<DiscountCubit>().updateDiscount(discount.id, discount);
+              context
+                  .read<DiscountCubit>()
+                  .updateDiscount(discount.id, discount);
             }
             Navigator.pop(context);
           },
