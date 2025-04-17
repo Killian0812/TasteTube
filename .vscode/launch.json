@@ -24,6 +24,17 @@
                 "--web-port",
                 "5555"
             ]
+        },
+        {
+            "name": "taste_tube localhost",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "--dart-define",
+                "ENVIRONMENT=localhost",
+                "--web-port",
+                "5555"
+            ]
         }
     ]
 }

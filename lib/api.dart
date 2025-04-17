@@ -66,6 +66,13 @@ class Api {
   static const setDefaultCard = '/payment-option/set-default-card/:cardId';
   static const removeCard = '/payment-option/remove-card/:cardId';
 
+  // Voucher
+  static const voucherApi = '/voucher';
+  static const voucherByCodeApi = '/voucher/:code';
+  static const voucherByShopApi = '/voucher/shop/:shopId';
+  static const voucherValidateApi = '/voucher/validate';
+  static const singleVoucherApi = '/voucher/:id';
+
   // User
   static const userApi = '/users/:userId';
   static const changePasswordApi = '/users/:userId/change_password';
@@ -79,6 +86,9 @@ class Api {
         break;
       case 'vercel':
         baseUrl = 'https://taste-tube-api.vercel.app';
+        break;
+      case 'localhost':
+        baseUrl = 'http://localhost:8080';
         break;
       default:
         throw ArgumentError('Unknown environment: $environment');
