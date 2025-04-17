@@ -3,12 +3,14 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/common/button.dart';
+import 'package:taste_tube/common/constant.dart';
 import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/payment/data/payment_data.dart';
 import 'package:taste_tube/feature/payment/view/payment_cubit.dart';
 import 'package:taste_tube/feature/shop/view/online_payment_page.dart';
 import 'package:taste_tube/feature/shop/view/tabs/address/address_cubit.dart';
+import 'package:taste_tube/feature/store/view/tabs/payment/payment_setting_cubit.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/address.dart';
@@ -30,6 +32,9 @@ class PaymentPage extends StatefulWidget {
         ),
         BlocProvider(
           create: (context) => PaymentCubit(),
+        ),
+        BlocProvider(
+          create: (context) => PaymentSettingCubit()..fetchCards(),
         ),
       ], child: const PaymentPage());
 
@@ -220,8 +225,38 @@ class _PaymentPageState extends State<PaymentPage> {
         children: [
           const Text('Payment Method',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          ...PaymentMethod.values.map(
-            (e) => RadioListTile<PaymentMethod>(
+          ...PaymentMethod.values.map((e) {
+            if (e == PaymentMethod.CARD) {
+              return BlocBuilder<PaymentSettingCubit, PaymentSettingState>(
+                builder: (context, state) {
+                  final defaultCard =
+                      state.cards.firstWhereOrNull((card) => card.isDefault);
+                  if (state.cards.isEmpty || defaultCard == null) {
+                    return const SizedBox.shrink();
+                  }
+                  return RadioListTile<PaymentMethod>(
+                    title: Row(
+                      children: [
+                        Image.asset(cardAssetPath[defaultCard.type]!,
+                            width: 24, height: 24),
+                        const SizedBox(width: 10),
+                        Text(
+                            '${defaultCard.holderName} - **** ${defaultCard.lastFour}'),
+                      ],
+                    ),
+                    value: e,
+                    groupValue: _selectedPaymentMethod,
+                    onChanged: (PaymentMethod? value) {
+                      if (value == null) return;
+                      setState(() {
+                        _selectedPaymentMethod = value;
+                      });
+                    },
+                  );
+                },
+              );
+            }
+            return RadioListTile<PaymentMethod>(
               title: Row(
                 children: [
                   Image.asset(e.assetPath, width: 24, height: 24),
@@ -237,8 +272,8 @@ class _PaymentPageState extends State<PaymentPage> {
                   _selectedPaymentMethod = value;
                 });
               },
-            ),
-          ),
+            );
+          }),
         ],
       ),
     );

@@ -84,6 +84,7 @@ Future<void> _showEditProfileDialog(BuildContext context, User user) {
             const SizedBox(height: 10),
             TextField(
               controller: emailController,
+              readOnly: true,
               decoration: const InputDecoration(labelText: 'Email address'),
             ),
             TextField(

@@ -54,7 +54,8 @@ class PaymentCubit extends Cubit<PaymentState> {
     String currency,
   ) async {
     emit(PaymentLoading());
-    if (paymentMethod == PaymentMethod.COD) {
+    if (paymentMethod == PaymentMethod.COD ||
+        paymentMethod == PaymentMethod.CARD) {
       emit(PaymentSuccess(''));
       return;
     }

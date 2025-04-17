@@ -4,6 +4,7 @@ enum PaymentMethod {
   VNPAY,
   ZALOPAY,
   COD,
+  CARD,
 }
 
 extension PaymentMethodExtension on PaymentMethod {
@@ -14,6 +15,8 @@ extension PaymentMethodExtension on PaymentMethod {
       case PaymentMethod.ZALOPAY:
         return AssetPath.zalopay;
       case PaymentMethod.COD:
+        return AssetPath.cod;
+      default:
         return AssetPath.cod;
     }
   }
@@ -26,6 +29,8 @@ extension PaymentMethodExtension on PaymentMethod {
         return 'ZaloPay';
       case PaymentMethod.COD:
         return 'Cash on Delivery (COD)';
+      case PaymentMethod.CARD:
+        return 'Card';
     }
   }
 

@@ -121,7 +121,7 @@ class _AddCardPageState extends State<AddCardPage> {
                             cardNumber: cardNumber,
                             expiryDate: expiryDate,
                             holderName: cardHolderName,
-                            type: cardTypeNames[selectedCardType] ?? 'CARD',
+                            type: cardTypeNames[selectedCardType] ?? 'Card',
                           );
                     } else if (selectedCardType == null) {
                       ToastService.showToast(

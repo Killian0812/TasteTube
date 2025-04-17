@@ -58,4 +58,18 @@ class AssetPath {
   static const String vnpay = 'assets/images/vnpay.jpg';
   static const String zalopay = 'assets/images/zalopay.png';
   static const String grab = 'assets/images/grab.png';
+  static const String visa = 'assets/images/visa.png';
+  static const String mastercard = 'assets/images/mastercard.png';
+  static const String americanExpress = 'assets/images/amex.png';
+  static const String unionpay = 'assets/images/unionpay.png';
+  static const String discover = 'assets/images/discover.png';
 }
+
+Map<String, String> cardAssetPath = {
+  'Visa': AssetPath.visa,
+  'Mastercard': AssetPath.mastercard,
+  'American Express': AssetPath.americanExpress,
+  'Discover': AssetPath.discover,
+  'UnionPay': AssetPath.unionpay,
+  'Card': AssetPath.tastetube
+};

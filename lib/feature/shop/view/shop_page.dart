@@ -9,6 +9,8 @@ import 'package:taste_tube/feature/shop/view/tabs/address/address_tab.dart';
 import 'package:taste_tube/feature/shop/view/tabs/order/customer_order_tab.dart';
 import 'package:taste_tube/feature/shop/view/tabs/shopping/shop_tab.dart';
 import 'package:taste_tube/feature/shop/view/tabs/shopping/shop_cubit.dart';
+import 'package:taste_tube/feature/store/view/tabs/payment/payment_setting_cubit.dart';
+import 'package:taste_tube/feature/store/view/tabs/payment/payment_setting_tab.dart';
 
 class ShopPage extends StatefulWidget {
   const ShopPage({super.key});
@@ -20,6 +22,9 @@ class ShopPage extends StatefulWidget {
           ),
           BlocProvider(
             create: (context) => AddressCubit()..fetchAddresses(),
+          ),
+          BlocProvider(
+            create: (context) => PaymentSettingCubit()..fetchCards(),
           ),
         ],
         child: const ShopPage(),
@@ -73,7 +78,7 @@ class _ShopPageState extends State<ShopPage> {
               tabs: [
                 Tab(icon: Icon(Icons.shopping_basket_rounded), text: 'Shop'),
                 Tab(icon: Icon(Icons.receipt_long), text: 'Order'),
-                Tab(icon: Icon(Icons.card_giftcard), text: 'Voucher'),
+                Tab(icon: Icon(Icons.payment), text: 'Payment'),
                 Tab(icon: Icon(Icons.location_on), text: 'Address'),
               ],
             ),
@@ -90,7 +95,7 @@ class _ShopPageState extends State<ShopPage> {
               children: [
                 ShopTab(),
                 CustomerOrderTab(),
-                Placeholder(),
+                PaymentSettingTab(),
                 AddressTab(),
               ],
             ),
