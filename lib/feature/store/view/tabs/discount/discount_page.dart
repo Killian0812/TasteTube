@@ -2,9 +2,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/common/dialog.dart';
+import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/store/view/tabs/discount/discount_cubit.dart';
+import 'package:taste_tube/feature/store/view/tabs/product/product_cubit.dart';
 import 'package:taste_tube/global_data/discount/discount.dart';
+import 'package:taste_tube/global_data/product/product.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
 import 'package:intl/intl.dart';
 
@@ -31,26 +34,7 @@ class DiscountPage extends StatelessWidget {
             if (state is DiscountLoading) {
               return const Center(child: CircularProgressIndicator());
             }
-            if (state is DiscountLoaded) {
-              return DiscountList(discounts: state.discounts);
-            }
-            if (state is DiscountError) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(state.message),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () =>
-                          context.read<DiscountCubit>().fetchDiscounts(),
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-              );
-            }
-            return const Center(child: Text('No discounts available'));
+            return DiscountList(discounts: state.discounts);
           },
         ),
       ),
@@ -86,81 +70,96 @@ class DiscountList extends StatelessWidget {
                     if (discounts.isEmpty)
                       const Text('No discounts found')
                     else
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: discounts.length,
-                        itemBuilder: (context, index) {
-                          final discount = discounts[index];
-                          return ListTile(
-                            title: Text(discount.name),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (discount.code != null)
-                                  Text('Coupon Code: ${discount.code}'),
-                                Text(
-                                  'Type: ${discount.type.toUpperCase()} - Value: ${discount.value}${discount.valueType == "percentage" ? "%" : " ${UserDataUtil.getCurrency()}"}',
-                                ),
-                                if (discount.startDate != null ||
-                                    discount.endDate != null)
-                                  Row(
-                                    children: [
-                                      Icon(Icons.calendar_month),
-                                      SizedBox(width: 4),
-                                      Text(
-                                        '${discount.startDate != null ? DateFormat(_discountDateFormat).format(discount.startDate!) : "∞"} - ${discount.endDate != null ? DateFormat(_discountDateFormat).format(discount.endDate!) : "∞"}',
+                      BlocBuilder<ProductCubit, ProductState>(
+                        builder: (context, state) {
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: discounts.length,
+                            itemBuilder: (context, index) {
+                              final discount = discounts[index];
+                              final products = state.categorizedProducts.values
+                                  .expand((list) => list)
+                                  .toList();
+                              final productNames = products
+                                  .where(
+                                      (e) => discount.productIds.contains(e.id))
+                                  .map((e) => e.name)
+                                  .toList()
+                                  .join(', ');
+                              return ListTile(
+                                title: Text(discount.name),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    if (discount.code != null)
+                                      Text('Coupon Code: ${discount.code}'),
+                                    Text(
+                                      'Type: ${discount.type.toUpperCase()} - Value: ${discount.value}${discount.valueType == "percentage" ? "%" : " ${UserDataUtil.getCurrency()}"}',
+                                    ),
+                                    if (discount.startDate != null ||
+                                        discount.endDate != null)
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.calendar_month),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            '${discount.startDate != null ? DateFormat(_discountDateFormat).format(discount.startDate!) : "∞"} - ${discount.endDate != null ? DateFormat(_discountDateFormat).format(discount.endDate!) : "∞"}',
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                                if (discount.minOrderAmount != null)
-                                  Text(
-                                    'Min Order: ${discount.minOrderAmount} ${UserDataUtil.getCurrency()}',
-                                  ),
-                                if (discount.maxUses != null)
-                                  Text('Max Uses: ${discount.maxUses}'),
-                                if (discount.usesPerUser != null)
-                                  Text(
-                                      'Uses Per User: ${discount.usesPerUser}'),
-                                Text(
-                                  'Status: ${discount.status.toUpperCase()}',
-                                  style: TextStyle(
-                                    color: discount.status == "active"
-                                        ? Colors.green
-                                        : discount.status == "inactive"
-                                            ? Colors.red
-                                            : Colors.yellow,
-                                  ),
+                                    if (discount.minOrderAmount != null)
+                                      Text(
+                                          'Min Order: ${discount.minOrderAmount} ${UserDataUtil.getCurrency()}'),
+                                    if (discount.maxUses != null)
+                                      Text('Max Uses: ${discount.maxUses}'),
+                                    if (discount.usesPerUser != null)
+                                      Text(
+                                          'Uses Per User: ${discount.usesPerUser}'),
+                                    if (productNames.isNotEmpty)
+                                      Text('Products: $productNames',
+                                          overflow: TextOverflow.ellipsis),
+                                    Text(
+                                      'Status: ${discount.status.toUpperCase()}',
+                                      style: TextStyle(
+                                        color: discount.status == "active"
+                                            ? Colors.green
+                                            : discount.status == "inactive"
+                                                ? Colors.red
+                                                : Colors.yellow,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.edit),
-                                  onPressed: () {
-                                    showDiscountForm(context,
-                                        discount: discount);
-                                  },
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(Icons.edit),
+                                      onPressed: () {
+                                        showDiscountForm(context,
+                                            discount: discount);
+                                      },
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.delete),
+                                      onPressed: () async {
+                                        final result = await showConfirmDialog(
+                                          context,
+                                          title:
+                                              'Are you sure you want to delete discount: ${discount.name}?',
+                                        );
+                                        if (result == true && context.mounted) {
+                                          context
+                                              .read<DiscountCubit>()
+                                              .deleteDiscount(discount.id);
+                                        }
+                                      },
+                                    ),
+                                  ],
                                 ),
-                                IconButton(
-                                  icon: const Icon(Icons.delete),
-                                  onPressed: () async {
-                                    final result = await showConfirmDialog(
-                                      context,
-                                      title:
-                                          'Are you sure you want to delete discount: ${discount.name}?',
-                                    );
-                                    if (result == true && context.mounted) {
-                                      context
-                                          .read<DiscountCubit>()
-                                          .deleteDiscount(discount.id);
-                                    }
-                                  },
-                                ),
-                              ],
-                            ),
+                              );
+                            },
                           );
                         },
                       ),
@@ -183,10 +182,14 @@ class DiscountList extends StatelessWidget {
 
 void showDiscountForm(BuildContext context, {Discount? discount}) {
   final cubit = context.read<DiscountCubit>();
+  final productCubit = context.read<ProductCubit>();
   showDialog(
     context: context,
-    builder: (context) => BlocProvider.value(
-      value: cubit,
+    builder: (context) => MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: cubit),
+        BlocProvider.value(value: productCubit)
+      ],
       child: DiscountForm(discount: discount),
     ),
   );
@@ -213,6 +216,8 @@ class _DiscountFormState extends State<DiscountForm> {
   late String _type;
   late String _valueType;
   late String _status;
+  late List<String> _selectedProductIds;
+  late String _productSelectionType;
   DateTime? _startDate;
   DateTime? _endDate;
 
@@ -235,7 +240,9 @@ class _DiscountFormState extends State<DiscountForm> {
     _status = widget.discount?.status == 'expired'
         ? 'inactive'
         : (widget.discount?.status ?? 'active');
-    _startDate = widget.discount?.startDate;
+    _selectedProductIds = widget.discount?.productIds ?? [];
+    _productSelectionType = _selectedProductIds.isEmpty ? 'entire' : 'specific';
+    _startDate = widget.discount?.startDate ?? DateTime.now();
     _endDate = widget.discount?.endDate;
     _startDateController = TextEditingController(
       text: _startDate == null
@@ -297,19 +304,140 @@ class _DiscountFormState extends State<DiscountForm> {
     }
   }
 
+  Future<void> _selectProducts(
+      BuildContext context, List<Product> products) async {
+    final tempSelected = List<String>.from(_selectedProductIds);
+    List<Product> filteredProducts = products;
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return SizedBox(
+          height: CommonSize.screenSize.height * 0.4,
+          child: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Column(
+                children: [
+                  ListTile(
+                    title: const Text('Select Products'),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            this.setState(() {
+                              _selectedProductIds = List.from(tempSelected);
+                              _productSelectionType =
+                                  _selectedProductIds.isEmpty
+                                      ? 'entire'
+                                      : 'specific';
+                            });
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Confirm'),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
+                    child: TextField(
+                      decoration: InputDecoration(
+                        labelText: 'Search Products',
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.search),
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          filteredProducts = products
+                              .where((product) => product.name
+                                  .toLowerCase()
+                                  .contains(value.toLowerCase()))
+                              .toList();
+                        });
+                      },
+                    ),
+                  ),
+                  Expanded(
+                    child: filteredProducts.isEmpty
+                        ? const Center(child: Text('No products found'))
+                        : ListView(
+                            padding: const EdgeInsets.only(top: 8, bottom: 8),
+                            children: filteredProducts.map((product) {
+                              return CheckboxListTile(
+                                title: Row(
+                                  children: [
+                                    product.images.isNotEmpty
+                                        ? Image.network(
+                                            product.images[0].url,
+                                            width: 45,
+                                            height: 45,
+                                            fit: BoxFit.cover,
+                                            errorBuilder:
+                                                (context, error, stackTrace) =>
+                                                    const Icon(
+                                              Icons.broken_image,
+                                              size: 45,
+                                              color: Colors.grey,
+                                            ),
+                                          )
+                                        : const Icon(
+                                            Icons.image_not_supported,
+                                            size: 45,
+                                            color: Colors.grey,
+                                          ),
+                                    const SizedBox(width: 25),
+                                    Expanded(
+                                        child: Text(product.name,
+                                            overflow: TextOverflow.ellipsis)),
+                                  ],
+                                ),
+                                value: tempSelected.contains(product.id),
+                                onChanged: (selected) {
+                                  setState(() {
+                                    if (selected == true) {
+                                      tempSelected.add(product.id);
+                                    } else {
+                                      tempSelected.remove(product.id);
+                                    }
+                                  });
+                                },
+                              );
+                            }).toList(),
+                          ),
+                  ),
+                ],
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
   ({double value, String valueType}) _parseValueInput(
       String input, String selectedValueType) {
     input = input.trim();
     final value = double.tryParse(input) ?? 0.0;
-    if (selectedValueType == 'percentage' && (value < 0 || value > 100)) {
-      return (value: value, valueType: 'percentage');
-    }
     return (value: value, valueType: selectedValueType);
   }
 
   @override
   Widget build(BuildContext context) {
     final currency = UserDataUtil.getCurrency();
+    final products = context
+        .read<ProductCubit>()
+        .state
+        .categorizedProducts
+        .values
+        .expand((list) => list)
+        .toList();
     return AlertDialog(
       title: Text(widget.discount == null ? 'Add Discount' : 'Edit Discount'),
       content: ConstrainedBox(
@@ -393,21 +521,95 @@ class _DiscountFormState extends State<DiscountForm> {
                 decoration: InputDecoration(
                   labelText: 'Value',
                   border: const OutlineInputBorder(),
-                  suffixIcon: DropdownButton<String>(
-                    value: _valueType,
-                    items: [
-                      DropdownMenuItem(value: 'fixed', child: Text(currency)),
-                      const DropdownMenuItem(
-                          value: 'percentage', child: Text('%')),
+                  suffixIcon: PopupMenuButton<String>(
+                    tooltip: 'Value type',
+                    initialValue: _valueType,
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: 'fixed',
+                        child: Text(currency),
+                      ),
+                      const PopupMenuItem(
+                        value: 'percentage',
+                        child: Text('%'),
+                      ),
                     ],
-                    onChanged: (value) {
+                    onSelected: (value) {
                       setState(() {
-                        _valueType = value!;
+                        _valueType = value;
                       });
                     },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0, vertical: 12.0),
+                      child: Text(
+                        _valueType == 'fixed' ? currency : '%',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
                   ),
                 ),
               ),
+              const SizedBox(height: 16),
+              const Text('Apply To',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              RadioListTile<String>(
+                title: const Text('Entire shop'),
+                value: 'entire',
+                groupValue: _productSelectionType,
+                onChanged: (value) {
+                  setState(() {
+                    _productSelectionType = value!;
+                    _selectedProductIds = [];
+                  });
+                },
+              ),
+              RadioListTile<String>(
+                title: const Text('Specific products'),
+                value: 'specific',
+                groupValue: _productSelectionType,
+                onChanged: (value) {
+                  setState(() {
+                    _productSelectionType = value!;
+                  });
+                },
+              ),
+              if (_productSelectionType == 'specific')
+                ExpansionTile(
+                  trailing: IconButton(
+                      onPressed: () => _selectProducts(context, products),
+                      icon: Icon(Icons.edit)),
+                  title: Text(
+                    _selectedProductIds.isEmpty
+                        ? 'No products selected'
+                        : '${_selectedProductIds.length} product${_selectedProductIds.length == 1 ? '' : 's'} selected',
+                  ),
+                  children: products
+                      .where((e) => _selectedProductIds.contains(e.id))
+                      .map(
+                        (e) => ListTile(
+                          title: Row(
+                            children: [
+                              Image.network(
+                                e.images[0].url,
+                                width: 45,
+                                height: 45,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(
+                                  Icons.broken_image,
+                                  size: 45,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              const SizedBox(width: 25),
+                              Text(e.name, overflow: TextOverflow.ellipsis),
+                            ],
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
               const SizedBox(height: 16),
               Row(
                 children: [
@@ -420,8 +622,9 @@ class _DiscountFormState extends State<DiscountForm> {
                           icon: const Icon(Icons.calendar_today),
                           onPressed: () => _selectDate(context, true),
                         ),
-                        labelText: 'Start Date (Optional)',
-                        border: const OutlineInputBorder(),
+                        labelText: 'Start Date',
+                        helperText: "",
+                        border: OutlineInputBorder(),
                       ),
                     ),
                   ),
@@ -435,8 +638,10 @@ class _DiscountFormState extends State<DiscountForm> {
                           icon: const Icon(Icons.calendar_today),
                           onPressed: () => _selectDate(context, false),
                         ),
-                        labelText: 'End Date (Optional)',
-                        border: const OutlineInputBorder(),
+                        labelText: 'End Date',
+                        hintText: "Optional",
+                        helperText: 'Leave blank for unlimited use time',
+                        border: OutlineInputBorder(),
                       ),
                     ),
                   ),
@@ -450,7 +655,9 @@ class _DiscountFormState extends State<DiscountForm> {
                       controller: _maxUsesController,
                       keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
-                        labelText: 'Max Uses (Optional)',
+                        labelText: 'Max Uses',
+                        hintText: "Optional",
+                        helperText: 'Leave blank for unlimited total uses',
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -461,7 +668,9 @@ class _DiscountFormState extends State<DiscountForm> {
                       controller: _usesPerUserController,
                       keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
-                        labelText: 'Uses Per User (Optional)',
+                        labelText: 'Uses Per User',
+                        hintText: "Optional",
+                        helperText: 'Leave blank for unlimited uses per user',
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -474,7 +683,9 @@ class _DiscountFormState extends State<DiscountForm> {
                 keyboardType:
                     const TextInputType.numberWithOptions(decimal: true),
                 decoration: InputDecoration(
-                  labelText: 'Minimum Order Amount (Optional)',
+                  labelText: 'Minimum Order Amount',
+                  hintText: "Optional",
+                  helperText: 'Leave blank for all order uses',
                   suffixText: UserDataUtil.getCurrency(),
                   border: const OutlineInputBorder(),
                 ),
@@ -518,7 +729,7 @@ class _DiscountFormState extends State<DiscountForm> {
               maxUses: int.tryParse(_maxUsesController.text),
               usesPerUser: int.tryParse(_usesPerUserController.text),
               minOrderAmount: double.tryParse(_minOrderAmountController.text),
-              productIds: widget.discount?.productIds ?? [],
+              productIds: _selectedProductIds,
               userUsedIds: widget.discount?.userUsedIds ?? [],
             );
 
