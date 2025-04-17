@@ -66,12 +66,12 @@ class Api {
   static const setDefaultCard = '/payment-option/set-default-card/:cardId';
   static const removeCard = '/payment-option/remove-card/:cardId';
 
-  // Voucher
-  static const voucherApi = '/voucher';
-  static const voucherByCodeApi = '/voucher/:code';
-  static const voucherByShopApi = '/voucher/shop/:shopId';
-  static const voucherValidateApi = '/voucher/validate';
-  static const singleVoucherApi = '/voucher/:id';
+  // Discount
+  static const discountApi = '/discount';
+  static const discountByCodeApi = '/discount/:code';
+  static const discountByShopApi = '/discount/shop/:shopId';
+  static const discountValidateApi = '/discount/validate';
+  static const singleDiscountApi = '/discount/:id';
 
   // User
   static const userApi = '/users/:userId';

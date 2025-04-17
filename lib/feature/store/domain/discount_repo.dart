@@ -2,20 +2,20 @@ import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/common/error.dart';
-import 'package:taste_tube/global_data/voucher/voucher.dart';
+import 'package:taste_tube/global_data/discount/discount.dart';
 
-class VoucherRepository {
+class DiscountRepository {
   final Dio http;
 
-  VoucherRepository({required this.http});
+  DiscountRepository({required this.http});
 
-  Future<Either<ApiError, List<Voucher>>> fetchVouchers(String shopId) async {
+  Future<Either<ApiError, List<Discount>>> fetchDiscounts(String shopId) async {
     try {
       final response =
-          await http.get(Api.voucherByShopApi.replaceFirst(":shopId", shopId));
+          await http.get(Api.discountByShopApi.replaceFirst(":shopId", shopId));
       final List<dynamic> data = response.data;
-      final vouchers = data.map((json) => Voucher.fromJson(json)).toList();
-      return Right(vouchers);
+      final discounts = data.map((json) => Discount.fromJson(json)).toList();
+      return Right(discounts);
     } on DioException catch (e) {
       return Left(ApiError.fromDioException(e));
     } catch (e) {
@@ -23,13 +23,13 @@ class VoucherRepository {
     }
   }
 
-  Future<Either<ApiError, Voucher>> createVoucher(Voucher voucher) async {
+  Future<Either<ApiError, Discount>> createDiscount(Discount discount) async {
     try {
       final response = await http.post(
-        Api.voucherApi,
-        data: voucher.toJson(),
+        Api.discountApi,
+        data: discount.toJson(),
       );
-      return Right(Voucher.fromJson(response.data));
+      return Right(Discount.fromJson(response.data));
     } on DioException catch (e) {
       return Left(ApiError.fromDioException(e));
     } catch (e) {
@@ -37,14 +37,14 @@ class VoucherRepository {
     }
   }
 
-  Future<Either<ApiError, Voucher>> updateVoucher(
-      String voucherId, Voucher voucher) async {
+  Future<Either<ApiError, Discount>> updateDiscount(
+      String discountId, Discount discount) async {
     try {
       final response = await http.put(
-        Api.singleVoucherApi.replaceFirst(":id", voucherId),
-        data: voucher.toJson(),
+        Api.singleDiscountApi.replaceFirst(":id", discountId),
+        data: discount.toJson(),
       );
-      return Right(Voucher.fromJson(response.data));
+      return Right(Discount.fromJson(response.data));
     } on DioException catch (e) {
       return Left(ApiError.fromDioException(e));
     } catch (e) {
@@ -52,9 +52,9 @@ class VoucherRepository {
     }
   }
 
-  Future<Either<ApiError, void>> deleteVoucher(String voucherId) async {
+  Future<Either<ApiError, void>> deleteDiscount(String discountId) async {
     try {
-      await http.delete(Api.singleVoucherApi.replaceFirst(":id", voucherId));
+      await http.delete(Api.singleDiscountApi.replaceFirst(":id", discountId));
       return const Right(null);
     } on DioException catch (e) {
       return Left(ApiError.fromDioException(e));

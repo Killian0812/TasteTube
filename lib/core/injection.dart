@@ -16,7 +16,7 @@ import 'package:taste_tube/feature/search/domain/search_repo.dart';
 import 'package:taste_tube/feature/shop/domain/address_repo.dart';
 import 'package:taste_tube/feature/shop/domain/order_repo.dart';
 import 'package:taste_tube/feature/shop/domain/shop_repo.dart';
-import 'package:taste_tube/feature/store/domain/voucher_repo.dart';
+import 'package:taste_tube/feature/store/domain/discount_repo.dart';
 import 'package:taste_tube/feature/upload/domain/upload_repo.dart';
 import 'package:taste_tube/feature/watch/domain/single_video_repo.dart';
 import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
@@ -91,8 +91,8 @@ void injectDependencies() {
       () => DeliveryOptionRepository(http: getIt()));
   getIt.registerLazySingleton<OrderDeliveryRepository>(
       () => OrderDeliveryRepository(http: getIt()));
-  getIt.registerLazySingleton<VoucherRepository>(
-      () => VoucherRepository(http: getIt()));
+  getIt.registerLazySingleton<DiscountRepository>(
+      () => DiscountRepository(http: getIt()));
 
   // Global blocs / cubits
   getIt.registerSingleton<AuthBloc>(AuthBloc());

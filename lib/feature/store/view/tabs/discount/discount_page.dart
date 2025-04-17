@@ -4,54 +4,35 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/common/toast.dart';
-import 'package:taste_tube/feature/store/view/tabs/voucher/voucher_cubit.dart';
-import 'package:taste_tube/global_data/voucher/voucher.dart';
+import 'package:taste_tube/feature/store/view/tabs/discount/discount_cubit.dart';
+import 'package:taste_tube/global_data/discount/discount.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
 import 'package:intl/intl.dart';
 
-class VoucherPage extends StatelessWidget {
-  const VoucherPage({super.key});
+class DiscountPage extends StatelessWidget {
+  const DiscountPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => VoucherCubit()..fetchVouchers(),
+      create: (context) => DiscountCubit()..fetchDiscounts(),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: BlocConsumer<VoucherCubit, VoucherState>(
+        child: BlocConsumer<DiscountCubit, DiscountState>(
           listener: (context, state) {
-            if (state is VoucherError) {
+            if (state is DiscountError) {
               ToastService.showToast(context, state.message, ToastType.error);
             }
-            if (state is VoucherLoaded && state.message != null) {
+            if (state is DiscountLoaded && state.message != null) {
               ToastService.showToast(
                   context, state.message!, ToastType.success);
             }
           },
           builder: (context, state) {
-            if (state is VoucherLoading) {
+            if (state is DiscountLoading) {
               return const Center(child: CircularProgressIndicator());
             }
-            if (state is VoucherLoaded) {
-              return VoucherList(vouchers: state.vouchers);
-            }
-            if (state is VoucherError) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(state.message),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () =>
-                          context.read<VoucherCubit>().fetchVouchers(),
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-              );
-            }
-            return const Center(child: Text('No vouchers available'));
+            return DiscountList(discounts: state.discounts);
           },
         ),
       ),
@@ -59,15 +40,15 @@ class VoucherPage extends StatelessWidget {
   }
 }
 
-class VoucherList extends StatelessWidget {
-  final List<Voucher> vouchers;
+class DiscountList extends StatelessWidget {
+  final List<Discount> discounts;
 
-  const VoucherList({super.key, required this.vouchers});
+  const DiscountList({super.key, required this.discounts});
 
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
-      onRefresh: () => context.read<VoucherCubit>().fetchVouchers(),
+      onRefresh: () => context.read<DiscountCubit>().fetchDiscounts(),
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
@@ -80,46 +61,53 @@ class VoucherList extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Vouchers',
+                      'Discounts',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 16),
-                    if (vouchers.isEmpty)
-                      const Text('No vouchers found')
+                    if (discounts.isEmpty)
+                      const Text('No discounts found')
                     else
                       ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount: vouchers.length,
+                        itemCount: discounts.length,
                         itemBuilder: (context, index) {
-                          final voucher = vouchers[index];
+                          final discount = discounts[index];
                           return ListTile(
-                            title: Text('Code: ${voucher.code}'),
+                            title: SelectableText('Code: ${discount.code}'),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Type: ${voucher.type.capitalize()} - Value: ${voucher.value}${voucher.type == "percentage" ? "%" : " ${UserDataUtil.getCurrency()}"}',
+                                  'Type: ${discount.type.capitalize()} - Value: ${discount.value}${discount.type == "percentage" ? "%" : " ${UserDataUtil.getCurrency()}"}',
                                 ),
-                                Text(
-                                  'Status: ${voucher.isActive ? "Active" : "Inactive"}',
+                                if (discount.startDate != null ||
+                                    discount.endDate != null)
+                                  Text(
+                                    'Valid: ${discount.startDate != null ? DateFormat(_discountDateFormat).format(discount.startDate!) : "∞"} - ${discount.endDate != null ? DateFormat(_discountDateFormat).format(discount.endDate!) : "∞"}',
+                                  ),
+                                if (discount.minOrderAmount != null)
+                                  Text(
+                                    'Min Order: ${discount.minOrderAmount} ${UserDataUtil.getCurrency()}',
+                                  ),
+                                if (discount.maxUses != null)
+                                  Text('Max Uses: ${discount.maxUses}'),
+                                if (discount.usesPerUser != null)
+                                  Text('Uses Per User: ${discount.usesPerUser}'),
+                                Row(
+                                  children: [
+                                    Text('Status: '),
+                                    Text(
+                                      discount.isActive ? "Active" : "Inactive",
+                                      style: TextStyle(
+                                        color: discount.isActive
+                                            ? Colors.green
+                                            : Colors.red,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                if (voucher.startDate != null)
-                                  Text(
-                                    'Start: ${DateFormat(_voucherDateFormat).format(voucher.startDate!)}',
-                                  ),
-                                if (voucher.endDate != null)
-                                  Text(
-                                    'End: ${DateFormat(_voucherDateFormat).format(voucher.endDate!)}',
-                                  ),
-                                if (voucher.minOrderAmount != null)
-                                  Text(
-                                    'Min Order: ${voucher.minOrderAmount} ${UserDataUtil.getCurrency()}',
-                                  ),
-                                if (voucher.maxUses != null)
-                                  Text('Max Uses: ${voucher.maxUses}'),
-                                if (voucher.usesPerUser != null)
-                                  Text('Uses Per User: ${voucher.usesPerUser}'),
                               ],
                             ),
                             trailing: Row(
@@ -128,7 +116,7 @@ class VoucherList extends StatelessWidget {
                                 IconButton(
                                   icon: const Icon(Icons.edit),
                                   onPressed: () {
-                                    showVoucherForm(context, voucher: voucher);
+                                    showDiscountForm(context, discount: discount);
                                   },
                                 ),
                                 IconButton(
@@ -137,12 +125,12 @@ class VoucherList extends StatelessWidget {
                                     final result = await showConfirmDialog(
                                       context,
                                       title:
-                                          'Are you sure you want to delete voucher: ${voucher.code}?',
+                                          'Are you sure you want to delete discount: ${discount.code}?',
                                     );
                                     if (result == true && context.mounted) {
                                       context
-                                          .read<VoucherCubit>()
-                                          .deleteVoucher(voucher.id);
+                                          .read<DiscountCubit>()
+                                          .deleteDiscount(discount.id);
                                     }
                                   },
                                 ),
@@ -153,9 +141,9 @@ class VoucherList extends StatelessWidget {
                       ),
                     const SizedBox(height: 16),
                     ElevatedButton.icon(
-                      onPressed: () => showVoucherForm(context),
+                      onPressed: () => showDiscountForm(context),
                       icon: const Icon(Icons.add),
-                      label: const Text('Add New Voucher'),
+                      label: const Text('Add New Discount'),
                     ),
                   ],
                 ),
@@ -168,27 +156,27 @@ class VoucherList extends StatelessWidget {
   }
 }
 
-void showVoucherForm(BuildContext context, {Voucher? voucher}) {
-  final cubit = context.read<VoucherCubit>();
+void showDiscountForm(BuildContext context, {Discount? discount}) {
+  final cubit = context.read<DiscountCubit>();
   showDialog(
     context: context,
     builder: (context) => BlocProvider.value(
       value: cubit,
-      child: VoucherForm(voucher: voucher),
+      child: DiscountForm(discount: discount),
     ),
   );
 }
 
-class VoucherForm extends StatefulWidget {
-  final Voucher? voucher;
+class DiscountForm extends StatefulWidget {
+  final Discount? discount;
 
-  const VoucherForm({super.key, this.voucher});
+  const DiscountForm({super.key, this.discount});
 
   @override
-  State<VoucherForm> createState() => _VoucherFormState();
+  State<DiscountForm> createState() => _DiscountFormState();
 }
 
-class _VoucherFormState extends State<VoucherForm> {
+class _DiscountFormState extends State<DiscountForm> {
   late TextEditingController _codeController;
   late TextEditingController _valueController;
   late TextEditingController _maxUsesController;
@@ -204,23 +192,27 @@ class _VoucherFormState extends State<VoucherForm> {
   @override
   void initState() {
     super.initState();
-    _codeController = TextEditingController(text: widget.voucher?.code ?? '');
+    _codeController = TextEditingController(text: widget.discount?.code ?? '');
     _valueController =
-        TextEditingController(text: widget.voucher?.value.toString() ?? '');
+        TextEditingController(text: widget.discount?.value.toString() ?? '');
     _maxUsesController =
-        TextEditingController(text: widget.voucher?.maxUses?.toString() ?? '');
+        TextEditingController(text: widget.discount?.maxUses?.toString() ?? '');
     _usesPerUserController = TextEditingController(
-        text: widget.voucher?.usesPerUser?.toString() ?? '');
+        text: widget.discount?.usesPerUser?.toString() ?? '');
     _minOrderAmountController = TextEditingController(
-        text: widget.voucher?.minOrderAmount?.toString() ?? '');
-    _type = widget.voucher?.type ?? 'fixed';
-    _isActive = widget.voucher?.isActive ?? true;
-    _startDate = widget.voucher?.startDate;
-    _endDate = widget.voucher?.endDate;
+        text: widget.discount?.minOrderAmount?.toString() ?? '');
+    _type = widget.discount?.type ?? 'fixed';
+    _isActive = widget.discount?.isActive ?? true;
+    _startDate = widget.discount?.startDate;
+    _endDate = widget.discount?.endDate;
     _startDateController = TextEditingController(
-        text: _startDate == null ? null : DateFormat(_voucherDateFormat).format(_startDate!));
+        text: _startDate == null
+            ? null
+            : DateFormat(_discountDateFormat).format(_startDate!));
     _endDateController = TextEditingController(
-        text: _endDate == null ? null : DateFormat(_voucherDateFormat).format(_endDate!));
+        text: _endDate == null
+            ? null
+            : DateFormat(_discountDateFormat).format(_endDate!));
   }
 
   @override
@@ -257,10 +249,12 @@ class _VoucherFormState extends State<VoucherForm> {
       setState(() {
         if (isStart) {
           _startDate = picked;
-          _startDateController.text = DateFormat(_voucherDateFormat).format(_startDate!);
+          _startDateController.text =
+              DateFormat(_discountDateFormat).format(_startDate!);
         } else {
           _endDate = picked;
-          _endDateController.text = DateFormat(_voucherDateFormat).format(_endDate!);
+          _endDateController.text =
+              DateFormat(_discountDateFormat).format(_endDate!);
         }
       });
     }
@@ -269,7 +263,7 @@ class _VoucherFormState extends State<VoucherForm> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.voucher == null ? 'Add Voucher' : 'Edit Voucher'),
+      title: Text(widget.discount == null ? 'Add Discount' : 'Edit Discount'),
       content: ConstrainedBox(
         constraints: BoxConstraints(
           minWidth: MediaQuery.of(context).size.width * 0.5,
@@ -282,11 +276,11 @@ class _VoucherFormState extends State<VoucherForm> {
             children: [
               TextField(
                 controller: _codeController,
-                readOnly: widget.voucher != null,
+                readOnly: widget.discount != null,
                 decoration: InputDecoration(
-                  labelText: 'Voucher Code',
+                  labelText: 'Discount Code',
                   border: const OutlineInputBorder(),
-                  suffixIcon: widget.voucher == null
+                  suffixIcon: widget.discount == null
                       ? IconButton(
                           icon: const Icon(Icons.shuffle),
                           tooltip: 'Random Code',
@@ -411,24 +405,24 @@ class _VoucherFormState extends State<VoucherForm> {
         ),
         ElevatedButton(
           onPressed: () {
-            final voucher = Voucher(
-              id: widget.voucher?.id ?? '',
+            final discount = Discount(
+              id: widget.discount?.id ?? '',
               shopId: UserDataUtil.getUserId(),
               code: _codeController.text.trim(),
               type: _type,
               value: double.tryParse(_valueController.text) ?? 0.0,
-              description: widget.voucher?.description,
+              description: widget.discount?.description,
               startDate: _startDate,
               endDate: _endDate,
               isActive: _isActive,
               maxUses: int.tryParse(_maxUsesController.text),
               usesPerUser: int.tryParse(_usesPerUserController.text),
               minOrderAmount: double.tryParse(_minOrderAmountController.text),
-              productIds: widget.voucher?.productIds ?? [],
-              userUsedIds: widget.voucher?.userUsedIds ?? [],
+              productIds: widget.discount?.productIds ?? [],
+              userUsedIds: widget.discount?.userUsedIds ?? [],
             );
 
-            if (voucher.code.isEmpty || voucher.value <= 0) {
+            if (discount.code.isEmpty || discount.value <= 0) {
               ToastService.showToast(
                 context,
                 'Please enter a valid code and value',
@@ -448,10 +442,10 @@ class _VoucherFormState extends State<VoucherForm> {
               return;
             }
 
-            if (widget.voucher == null) {
-              context.read<VoucherCubit>().createVoucher(voucher);
+            if (widget.discount == null) {
+              context.read<DiscountCubit>().createDiscount(discount);
             } else {
-              context.read<VoucherCubit>().updateVoucher(voucher.id, voucher);
+              context.read<DiscountCubit>().updateDiscount(discount.id, discount);
             }
             Navigator.pop(context);
           },
@@ -462,4 +456,4 @@ class _VoucherFormState extends State<VoucherForm> {
   }
 }
 
-const _voucherDateFormat = 'dd/MM/yyyy';
+const _discountDateFormat = 'dd/MM/yyyy';

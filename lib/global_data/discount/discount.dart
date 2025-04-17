@@ -1,4 +1,4 @@
-class Voucher {
+class Discount {
   final String id;
   final String shopId;
   final String code;
@@ -14,7 +14,7 @@ class Voucher {
   final List<String> productIds;
   final List<String> userUsedIds;
 
-  Voucher({
+  Discount({
     required this.id,
     required this.shopId,
     required this.code,
@@ -31,8 +31,8 @@ class Voucher {
     required this.userUsedIds,
   });
 
-  factory Voucher.fromJson(Map<String, dynamic> json) {
-    return Voucher(
+  factory Discount.fromJson(Map<String, dynamic> json) {
+    return Discount(
       id: json['_id'],
       shopId: json['shopId'],
       code: json['code'],

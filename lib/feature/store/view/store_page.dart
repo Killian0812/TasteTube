@@ -9,7 +9,7 @@ import 'package:taste_tube/feature/store/view/tabs/product/category_cubit.dart';
 import 'package:taste_tube/feature/store/view/tabs/order/shop_order_tab.dart';
 import 'package:taste_tube/feature/store/view/tabs/product/product_cubit.dart';
 import 'package:taste_tube/feature/store/view/tabs/product/product_tab.dart';
-import 'package:taste_tube/feature/store/view/tabs/voucher/voucher_page.dart';
+import 'package:taste_tube/feature/store/view/tabs/discount/discount_page.dart';
 import 'package:taste_tube/core/injection.dart';
 import 'package:taste_tube/core/providers.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
@@ -68,7 +68,7 @@ class _StorePageState extends State<StorePage>
                 tabs: const [
                   Tab(icon: Icon(Icons.receipt_long), text: 'Orders'),
                   Tab(icon: Icon(Icons.food_bank_rounded), text: 'Products'),
-                  Tab(icon: Icon(Icons.discount_rounded), text: 'Voucher'),
+                  Tab(icon: Icon(Icons.discount_rounded), text: 'Discount'),
                   Tab(icon: Icon(Icons.local_shipping), text: 'Delivery'),
                   Tab(icon: Icon(Icons.payment), text: 'Payment'),
                   Tab(icon: Icon(Icons.analytics), text: 'Analytics'),
@@ -99,7 +99,7 @@ class _StorePageState extends State<StorePage>
             children: const [
               ShopOrderTab(),
               ProductTab(),
-              VoucherPage(),
+              DiscountPage(),
               DeliveryOptionTab(),
               PaymentSettingTab(),
               ShopAnalyticTab(),
