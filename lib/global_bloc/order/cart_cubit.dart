@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taste_tube/global_data/discount/discount.dart';
 import 'package:taste_tube/global_data/order/address.dart';
 import 'package:taste_tube/global_data/order/cart.dart';
 import 'package:taste_tube/global_data/order/order.dart';
@@ -131,7 +132,7 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
-  Future<void> updateOrderSummary(Address? address) async {
+  Future<void> updateOrderAddress(Address? address) async {
     emit(CartLoaded(
       state.cart,
       state.selectedItems,
@@ -159,6 +160,10 @@ class CartCubit extends Cubit<CartState> {
         ));
       },
     );
+  }
+
+  Future<void> applyOrderDiscount(Discount? discount) async {
+    // TODO: Implement this
   }
 
   Future<void> addToCart(Product product, int quantity) async {

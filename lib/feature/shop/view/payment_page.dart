@@ -130,13 +130,13 @@ class _PaymentPageState extends State<PaymentPage> {
         if (state is AddressLoaded) {
           setState(() {
             selectedAddress = state.addresses.firstOrNull;
-            cartCubit.updateOrderSummary(selectedAddress);
+            cartCubit.updateOrderAddress(selectedAddress);
           });
         }
         if (state is AddressAdded) {
           setState(() {
             selectedAddress = state.addresses.last;
-            cartCubit.updateOrderSummary(selectedAddress);
+            cartCubit.updateOrderAddress(selectedAddress);
           });
         }
       },
@@ -204,7 +204,7 @@ class _PaymentPageState extends State<PaymentPage> {
                   } else {
                     setState(() {
                       selectedAddress = value;
-                      cartCubit.updateOrderSummary(selectedAddress);
+                      cartCubit.updateOrderAddress(selectedAddress);
                     });
                   }
                 },
@@ -317,7 +317,7 @@ class _PaymentPageState extends State<PaymentPage> {
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   Text(
-                    'Total: ${grandTotal.toStringAsFixed(2)} $currency',
+                    'Total: ${CurrencyUtil.amountWithCurrency(grandTotal, currency)}',
                     style: const TextStyle(
                       fontSize: 19,
                       fontWeight: FontWeight.bold,
@@ -460,15 +460,15 @@ class _OrderSummarySection extends StatelessWidget {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(
-                                    'Delivery Fee: ${orderSummary.deliveryFee!.toStringAsFixed(2)} $currency',
+                                    'Delivery Fee: ${CurrencyUtil.amountWithCurrency(orderSummary.deliveryFee!, currency)}',
                                     style: TextStyle(color: Colors.blue[200]),
                                   ),
                                   Text(
-                                    'Discount: ${orderSummary.discountAmount!.toStringAsFixed(2)} $currency',
+                                    'Discount: ${CurrencyUtil.amountWithCurrency(orderSummary.discountAmount!, currency)}',
                                     style: TextStyle(color: Colors.green[600]),
                                   ),
                                   Text(
-                                    'Subtotal: ${orderSummary.totalAmount!.toStringAsFixed(2)} $currency',
+                                    'Subtotal: ${CurrencyUtil.amountWithCurrency(orderSummary.totalAmount!, currency)}',
                                     style: const TextStyle(
                                         fontWeight: FontWeight.bold),
                                   ),
@@ -479,6 +479,9 @@ class _OrderSummarySection extends StatelessWidget {
                                 style: TextStyle(color: Colors.red[200]),
                               ),
                       ),
+
+                    // TODO: Discount for this shop
+                    
                     const Divider(),
                   ],
                 );
