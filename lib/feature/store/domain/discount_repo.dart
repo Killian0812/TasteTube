@@ -23,6 +23,21 @@ class DiscountRepository {
     }
   }
 
+  Future<Either<ApiError, List<Discount>>> fetchAvailableDiscountsForCustomer(
+      String shopId) async {
+    try {
+      final response = await http.get(
+          "${Api.discountByShopApi.replaceFirst(":shopId", shopId)}?customer=true");
+      final List<dynamic> data = response.data;
+      final discounts = data.map((json) => Discount.fromJson(json)).toList();
+      return Right(discounts);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
+
   Future<Either<ApiError, Discount>> createDiscount(Discount discount) async {
     try {
       final response = await http.post(
