@@ -35,6 +35,7 @@ class OrderRepository {
     required String notes,
     required String pid,
     required List<OrderSummary> orderSummary,
+    required List<String> discounts,
   }) async {
     try {
       final response = await http.post(Api.orderApi, data: {
@@ -44,6 +45,7 @@ class OrderRepository {
         'notes': notes,
         'pid': pid,
         'orderSummary': orderSummary.map((e) => e.toJson()).toList(),
+        'discounts': discounts,
       });
       return fpdart.Right(response.data['message']);
     } on DioException catch (e) {

@@ -62,6 +62,8 @@ class _PaymentPageState extends State<PaymentPage> {
               final selectedItems = cartState.cart.items
                   .where((item) => cartState.selectedItems.contains(item.id))
                   .toList();
+              final selectedDiscounts =
+                  cartState.appliedDiscounts.map((e) => e.id).toList();
 
               context.read<OrderCubit>().createOrder(
                     selectedItems.map((e) => e.id).toList(),
@@ -70,6 +72,7 @@ class _PaymentPageState extends State<PaymentPage> {
                     _notes,
                     state.pid,
                     cartState.orderSummary,
+                    selectedDiscounts,
                   );
             }
             if (state is PaymentUrlReady) {
@@ -474,13 +477,16 @@ class _OrderSummarySection extends StatelessWidget {
                                             Icons.more_vert_outlined),
                                         onPressed: () => DiscountDialog.show(
                                           context,
-                                          state.appliedDiscounts,
+                                          state.appliedDiscounts
+                                              .where((e) => e.shopId == shopId)
+                                              .toList(),
                                           shopId,
                                           (selectedDiscounts) {
                                             context
                                                 .read<CartCubit>()
                                                 .updateOrderAddressOrDiscount(
                                                   discounts: selectedDiscounts,
+                                                  shopId: shopId,
                                                 );
                                           },
                                         ),

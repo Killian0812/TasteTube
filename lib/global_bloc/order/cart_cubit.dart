@@ -164,30 +164,46 @@ class CartCubit extends Cubit<CartState> {
                 state.cart,
                 state.selectedItems,
                 state.orderSummary,
-                state.appliedDiscounts,
+                [],
                 state.address,
                 error.message ?? 'Error fetching cart',
               )), (cart) {
         final updatedSelectedItems = state.selectedItems
             .where((t) => cart.items.any((e) => e.id == t))
             .toList();
-        emit(CartLoaded(cart, updatedSelectedItems, state.orderSummary,
-            state.appliedDiscounts, state.address));
+        emit(CartLoaded(
+          cart,
+          updatedSelectedItems,
+          state.orderSummary,
+          [],
+          state.address,
+        ));
       });
     } catch (e) {
-      emit(CartError(state.cart, state.selectedItems, state.orderSummary,
-          state.appliedDiscounts, state.address, e.toString()));
+      emit(CartError(
+        state.cart,
+        state.selectedItems,
+        state.orderSummary,
+        [],
+        state.address,
+        e.toString(),
+      ));
     }
   }
 
   Future<void> updateOrderAddressOrDiscount(
-      {Address? address, List<Discount>? discounts}) async {
+      {Address? address, List<Discount>? discounts, String? shopId}) async {
     // Update address if provided, otherwise keep existing
     final updatedAddress = address ?? state.address;
     if (updatedAddress == null) return;
 
-    // Update applied discounts if provided, otherwise keep existing
-    final updatedDiscounts = discounts ?? state.appliedDiscounts;
+    // Replace existing discounts for the shopId if provided, otherwise keep existing
+    final updatedDiscounts = discounts != null
+        ? [
+            ...state.appliedDiscounts.where((e) => e.shopId != shopId),
+            ...discounts
+          ]
+        : state.appliedDiscounts;
 
     final orderSummaries = await repository.getOrderSummary(
       state.selectedItems,
