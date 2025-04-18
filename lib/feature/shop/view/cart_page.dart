@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/toast.dart';
-import 'package:taste_tube/feature/shop/view/payment_page.dart';
+import 'package:taste_tube/feature/shop/view/payment/payment_page.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_data/order/cart.dart';
 import 'package:taste_tube/utils/currency.util.dart';

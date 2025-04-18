@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/feature/shop/view/cart_page.dart';
-import 'package:taste_tube/feature/shop/view/payment_page.dart';
+import 'package:taste_tube/feature/shop/view/payment/payment_page.dart';
 import 'package:taste_tube/feature/shop/view/quantity_dialog.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_data/product/product.dart';

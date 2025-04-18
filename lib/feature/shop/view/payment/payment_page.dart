@@ -8,7 +8,7 @@ import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/payment/data/payment_data.dart';
 import 'package:taste_tube/feature/payment/view/payment_cubit.dart';
-import 'package:taste_tube/feature/shop/view/online_payment_page.dart';
+import 'package:taste_tube/feature/shop/view/payment/online_payment_page.dart';
 import 'package:taste_tube/feature/shop/view/tabs/address/address_cubit.dart';
 import 'package:taste_tube/feature/store/view/tabs/payment/payment_setting_cubit.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';

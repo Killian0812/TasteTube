@@ -12,11 +12,13 @@ abstract class CartState {
   final String? message;
   final List<String> selectedItems;
   final List<OrderSummary> orderSummary;
+  final List<Discount> appliedDiscounts;
 
   const CartState({
     required this.cart,
     required this.selectedItems,
     required this.orderSummary,
+    required this.appliedDiscounts,
     this.message,
   });
 }
@@ -32,38 +34,52 @@ class CartInitial extends CartState {
               updatedAt: DateTime.now()),
           selectedItems: [],
           orderSummary: [],
+          appliedDiscounts: [],
         );
 }
 
 class CartLoading extends CartState {
   const CartLoading(
-      Cart cart, List<String> selectedItems, List<OrderSummary> orderSummary)
-      : super(
+    Cart cart,
+    List<String> selectedItems,
+    List<OrderSummary> orderSummary,
+    List<Discount> appliedDiscounts,
+  ) : super(
           cart: cart,
           selectedItems: selectedItems,
           orderSummary: orderSummary,
+          appliedDiscounts: appliedDiscounts,
         );
 }
 
 class CartLoaded extends CartState {
   const CartLoaded(
-      Cart cart, List<String> selectedItems, List<OrderSummary> orderSummary)
-      : super(
+    Cart cart,
+    List<String> selectedItems,
+    List<OrderSummary> orderSummary,
+    List<Discount> appliedDiscounts,
+  ) : super(
           cart: cart,
           selectedItems: selectedItems,
           orderSummary: orderSummary,
+          appliedDiscounts: appliedDiscounts,
         );
 }
 
 class CartSuccess extends CartState {
   final String success;
 
-  const CartSuccess(Cart cart, List<String> selectedItems,
-      List<OrderSummary> orderSummary, this.success)
-      : super(
+  const CartSuccess(
+    Cart cart,
+    List<String> selectedItems,
+    List<OrderSummary> orderSummary,
+    List<Discount> appliedDiscounts,
+    this.success,
+  ) : super(
           cart: cart,
           selectedItems: selectedItems,
           orderSummary: orderSummary,
+          appliedDiscounts: appliedDiscounts,
           message: success,
         );
 }
@@ -71,12 +87,17 @@ class CartSuccess extends CartState {
 class CartError extends CartState {
   final String error;
 
-  const CartError(Cart cart, List<String> selectedItems,
-      List<OrderSummary> orderSummary, this.error)
-      : super(
+  const CartError(
+    Cart cart,
+    List<String> selectedItems,
+    List<OrderSummary> orderSummary,
+    List<Discount> appliedDiscounts,
+    this.error,
+  ) : super(
           cart: cart,
           selectedItems: selectedItems,
           orderSummary: orderSummary,
+          appliedDiscounts: appliedDiscounts,
           message: error,
         );
 }
@@ -84,24 +105,26 @@ class CartError extends CartState {
 class CartSelectItemUpdated extends CartState {
   final List<String> updateItemList;
 
-  const CartSelectItemUpdated(
-      Cart cart, List<OrderSummary> orderSummary, this.updateItemList)
+  const CartSelectItemUpdated(Cart cart, List<OrderSummary> orderSummary,
+      this.updateItemList, List<Discount> appliedDiscounts)
       : super(
           cart: cart,
           orderSummary: orderSummary,
           selectedItems: updateItemList,
+          appliedDiscounts: appliedDiscounts,
         );
 }
 
 class AddedToCartAndReadyToPay extends CartState {
   final List<String> updateItemList;
 
-  const AddedToCartAndReadyToPay(
-      Cart cart, List<OrderSummary> orderSummary, this.updateItemList)
+  const AddedToCartAndReadyToPay(Cart cart, List<OrderSummary> orderSummary,
+      this.updateItemList, List<Discount> appliedDiscounts)
       : super(
           cart: cart,
           orderSummary: orderSummary,
           selectedItems: updateItemList,
+          appliedDiscounts: appliedDiscounts,
         );
 }
 
@@ -111,7 +134,8 @@ class CartCubit extends Cubit<CartState> {
   CartCubit() : super(CartInitial());
 
   Future<void> getCart() async {
-    emit(CartLoading(state.cart, state.selectedItems, state.orderSummary));
+    emit(CartLoading(state.cart, state.selectedItems, state.orderSummary,
+        state.appliedDiscounts));
     try {
       final result = await repository.getCart();
       result.fold(
@@ -119,16 +143,18 @@ class CartCubit extends Cubit<CartState> {
                 state.cart,
                 state.selectedItems,
                 state.orderSummary,
+                state.appliedDiscounts,
                 error.message ?? 'Error fetching cart',
               )), (cart) {
         final updatedSelectedItems = state.selectedItems
             .where((t) => cart.items.any((e) => e.id == t))
             .toList();
-        emit(CartLoaded(cart, updatedSelectedItems, state.orderSummary));
+        emit(CartLoaded(cart, updatedSelectedItems, state.orderSummary,
+            state.appliedDiscounts));
       });
     } catch (e) {
-      emit(CartError(
-          state.cart, state.selectedItems, state.orderSummary, e.toString()));
+      emit(CartError(state.cart, state.selectedItems, state.orderSummary,
+          state.appliedDiscounts, e.toString()));
     }
   }
 
@@ -137,6 +163,7 @@ class CartCubit extends Cubit<CartState> {
       state.cart,
       state.selectedItems,
       [],
+      state.appliedDiscounts,
     ));
 
     if (address == null) return;
@@ -150,6 +177,7 @@ class CartCubit extends Cubit<CartState> {
         state.cart,
         state.selectedItems,
         [],
+        state.appliedDiscounts,
         error.message ?? 'Error fetching order summary',
       )),
       (orderSummaryList) {
@@ -157,17 +185,30 @@ class CartCubit extends Cubit<CartState> {
           state.cart,
           state.selectedItems,
           orderSummaryList,
+          state.appliedDiscounts,
         ));
       },
     );
   }
 
   Future<void> applyOrderDiscount(Discount? discount) async {
-    // TODO: Implement this
+    emit(CartLoading(state.cart, state.selectedItems, state.orderSummary,
+        state.appliedDiscounts));
+    try {
+      if (discount == null) return;
+
+      final updatedDiscounts = [...state.appliedDiscounts, discount];
+      emit(CartLoaded(state.cart, state.selectedItems, state.orderSummary,
+          updatedDiscounts));
+    } catch (e) {
+      emit(CartError(state.cart, state.selectedItems, state.orderSummary,
+          state.appliedDiscounts, e.toString()));
+    }
   }
 
   Future<void> addToCart(Product product, int quantity) async {
-    emit(CartLoading(state.cart, state.selectedItems, state.orderSummary));
+    emit(CartLoading(state.cart, state.selectedItems, state.orderSummary,
+        state.appliedDiscounts));
     try {
       final result = await repository.addToCart(product, quantity);
       result.fold(
@@ -175,6 +216,7 @@ class CartCubit extends Cubit<CartState> {
           state.cart,
           state.selectedItems,
           state.orderSummary,
+          state.appliedDiscounts,
           error.message ?? 'Error add item to cart',
         )),
         (item) {
@@ -187,17 +229,18 @@ class CartCubit extends Cubit<CartState> {
             updatedCart.items[index] = item;
           }
           emit(CartSuccess(updatedCart, state.selectedItems, state.orderSummary,
-              "Added to cart"));
+              state.appliedDiscounts, "Added to cart"));
         },
       );
     } catch (e) {
-      emit(CartError(
-          state.cart, state.selectedItems, state.orderSummary, e.toString()));
+      emit(CartError(state.cart, state.selectedItems, state.orderSummary,
+          state.appliedDiscounts, e.toString()));
     }
   }
 
   Future<void> removeFromCart(CartItem item) async {
-    emit(CartLoading(state.cart, state.selectedItems, state.orderSummary));
+    emit(CartLoading(state.cart, state.selectedItems, state.orderSummary,
+        state.appliedDiscounts));
     try {
       final result = await repository.removeFromCart(item);
       result.fold(
@@ -205,6 +248,7 @@ class CartCubit extends Cubit<CartState> {
           state.cart,
           state.selectedItems,
           state.orderSummary,
+          state.appliedDiscounts,
           error.message ?? 'Error removing cart item',
         )),
         (success) {
@@ -214,18 +258,19 @@ class CartCubit extends Cubit<CartState> {
           if (updatedSelectedItems.contains(item.id)) {
             updatedSelectedItems.removeWhere((e) => e == item.id);
           }
-          emit(CartLoaded(
-              updatedCart, updatedSelectedItems, state.orderSummary));
+          emit(CartLoaded(updatedCart, updatedSelectedItems, state.orderSummary,
+              state.appliedDiscounts));
         },
       );
     } catch (e) {
-      emit(CartError(
-          state.cart, state.selectedItems, state.orderSummary, e.toString()));
+      emit(CartError(state.cart, state.selectedItems, state.orderSummary,
+          state.appliedDiscounts, e.toString()));
     }
   }
 
   Future<void> updateItemQuantity(CartItem item, int quantity) async {
-    emit(CartLoading(state.cart, state.selectedItems, state.orderSummary));
+    emit(CartLoading(state.cart, state.selectedItems, state.orderSummary,
+        state.appliedDiscounts));
     try {
       final result = await repository.updateItemQuantity(item, quantity);
       result.fold(
@@ -233,19 +278,20 @@ class CartCubit extends Cubit<CartState> {
           state.cart,
           state.selectedItems,
           state.orderSummary,
+          state.appliedDiscounts,
           error.message ?? 'Error updating cart',
         )),
         (updatedItem) {
           final updatedCart = state.cart.clone();
           final index = updatedCart.items.indexWhere((e) => e.id == item.id);
           updatedCart.items[index] = updatedItem;
-          emit(
-              CartLoaded(updatedCart, state.selectedItems, state.orderSummary));
+          emit(CartLoaded(updatedCart, state.selectedItems, state.orderSummary,
+              state.appliedDiscounts));
         },
       );
     } catch (e) {
-      emit(CartError(
-          state.cart, state.selectedItems, state.orderSummary, e.toString()));
+      emit(CartError(state.cart, state.selectedItems, state.orderSummary,
+          state.appliedDiscounts, e.toString()));
     }
   }
 
@@ -260,6 +306,7 @@ class CartCubit extends Cubit<CartState> {
       state.cart,
       [],
       updateItemList,
+      state.appliedDiscounts,
     ));
   }
 
@@ -268,7 +315,8 @@ class CartCubit extends Cubit<CartState> {
     for (var item in items) {
       if (!updateItemList.contains(item.id)) updateItemList.add(item.id);
     }
-    emit(CartSelectItemUpdated(state.cart, state.orderSummary, updateItemList));
+    emit(CartSelectItemUpdated(state.cart, state.orderSummary, updateItemList,
+        state.appliedDiscounts));
   }
 
   Future<void> addToCartAndPayImmediate(Product product, int quantity) async {
@@ -276,6 +324,7 @@ class CartCubit extends Cubit<CartState> {
       state.cart,
       state.selectedItems,
       state.orderSummary,
+      state.appliedDiscounts,
     ));
     try {
       final result = await repository.addToCart(product, quantity);
@@ -284,6 +333,7 @@ class CartCubit extends Cubit<CartState> {
           state.cart,
           state.selectedItems,
           state.orderSummary,
+          state.appliedDiscounts,
           error.message ?? 'Error add item to cart',
         )),
         (item) {
@@ -297,12 +347,21 @@ class CartCubit extends Cubit<CartState> {
           }
           final updateItemList = [item.id];
           emit(AddedToCartAndReadyToPay(
-              updatedCart, state.orderSummary, updateItemList));
+            updatedCart,
+            state.orderSummary,
+            updateItemList,
+            state.appliedDiscounts,
+          ));
         },
       );
     } catch (e) {
       emit(CartError(
-          state.cart, state.selectedItems, state.orderSummary, e.toString()));
+        state.cart,
+        state.selectedItems,
+        state.orderSummary,
+        state.appliedDiscounts,
+        e.toString(),
+      ));
     }
   }
 }
