@@ -6,6 +6,7 @@ import 'package:taste_tube/common/button.dart';
 import 'package:taste_tube/common/constant.dart';
 import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/common/toast.dart';
+import 'package:taste_tube/feature/cart/view/discount_dialog.dart';
 import 'package:taste_tube/feature/payment/data/payment_data.dart';
 import 'package:taste_tube/feature/payment/view/payment_cubit.dart';
 import 'package:taste_tube/feature/shop/view/payment/online_payment_page.dart';
@@ -130,13 +131,13 @@ class _PaymentPageState extends State<PaymentPage> {
         if (state is AddressLoaded) {
           setState(() {
             selectedAddress = state.addresses.firstOrNull;
-            cartCubit.updateOrderAddress(selectedAddress);
+            cartCubit.updateOrderAddressOrDiscount(address: selectedAddress);
           });
         }
         if (state is AddressAdded) {
           setState(() {
             selectedAddress = state.addresses.last;
-            cartCubit.updateOrderAddress(selectedAddress);
+            cartCubit.updateOrderAddressOrDiscount(address: selectedAddress);
           });
         }
       },
@@ -204,7 +205,8 @@ class _PaymentPageState extends State<PaymentPage> {
                   } else {
                     setState(() {
                       selectedAddress = value;
-                      cartCubit.updateOrderAddress(selectedAddress);
+                      cartCubit.updateOrderAddressOrDiscount(
+                          address: selectedAddress);
                     });
                   }
                 },
@@ -459,18 +461,43 @@ class _OrderSummarySection extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Discount: ${CurrencyUtil.amountWithCurrency(orderSummary.discountAmount!, currency)}',
+                                        style:
+                                            TextStyle(color: Colors.green[600]),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      IconButton(
+                                        icon: const Icon(
+                                            Icons.more_vert_outlined),
+                                        onPressed: () => DiscountDialog.show(
+                                          context,
+                                          state.appliedDiscounts,
+                                          shopId,
+                                          (selectedDiscounts) {
+                                            context
+                                                .read<CartCubit>()
+                                                .updateOrderAddressOrDiscount(
+                                                  discounts: selectedDiscounts,
+                                                );
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 10),
                                   Text(
                                     'Delivery Fee: ${CurrencyUtil.amountWithCurrency(orderSummary.deliveryFee!, currency)}',
                                     style: TextStyle(color: Colors.blue[200]),
                                   ),
-                                  Text(
-                                    'Discount: ${CurrencyUtil.amountWithCurrency(orderSummary.discountAmount!, currency)}',
-                                    style: TextStyle(color: Colors.green[600]),
-                                  ),
+                                  const SizedBox(height: 5),
                                   Text(
                                     'Subtotal: ${CurrencyUtil.amountWithCurrency(orderSummary.totalAmount!, currency)}',
                                     style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16),
                                   ),
                                 ],
                               )
@@ -480,8 +507,6 @@ class _OrderSummarySection extends StatelessWidget {
                               ),
                       ),
 
-                    // TODO: Discount for this shop
-                    
                     const Divider(),
                   ],
                 );

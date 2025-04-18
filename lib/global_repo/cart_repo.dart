@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/common/error.dart';
+import 'package:taste_tube/global_data/discount/discount.dart';
 import 'package:taste_tube/global_data/order/address.dart';
 import 'package:taste_tube/global_data/order/cart.dart';
 import 'package:taste_tube/global_data/order/order.dart';
@@ -68,11 +69,15 @@ class CartRepository {
   }
 
   Future<Either<ApiError, List<OrderSummary>>> getOrderSummary(
-      List<String> selectedItems, Address address) async {
+    List<String> selectedItems, {
+    Address? address,
+    List<Discount>? discounts,
+  }) async {
     try {
       final response = await http.post(Api.orderSummary, data: {
         'selectedItems': selectedItems,
-        'address': address.toJson(),
+        if (address != null) 'address': address.toJson(),
+        if (discounts != null) 'discounts': discounts.map((e) => e.id).toList(),
       });
 
       final orderSummaryList = (response.data['orderSummary'] as List<dynamic>)
