@@ -104,4 +104,14 @@ class DiscountCubit extends Cubit<DiscountState> {
       (discounts) => emit(DiscountLoaded(discounts)),
     );
   }
+
+  Future<void> checkCouponDiscount(String shopId, String coupon) async {
+    emit(DiscountLoading(discounts: state.discounts));
+    final result = await repository.checkCouponDiscount(shopId, coupon);
+    result.fold(
+      (error) => emit(DiscountError(
+          state.discounts, error.message ?? 'Error loading discounts')),
+      (discount) => emit(DiscountLoaded([...state.discounts, discount])),
+    );
+  }
 }

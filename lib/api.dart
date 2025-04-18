@@ -68,7 +68,7 @@ class Api {
 
   // Discount
   static const discountApi = '/discount';
-  static const discountByCodeApi = '/discount/:code';
+  static const discountByCodeApi = '/discount/code/:code';
   static const discountByShopApi = '/discount/shop/:shopId';
   static const discountValidateApi = '/discount/validate';
   static const singleDiscountApi = '/discount/:id';

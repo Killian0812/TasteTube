@@ -8,6 +8,7 @@ import 'package:taste_tube/utils/user_data.util.dart';
 
 class DiscountDialog extends StatefulWidget {
   final List<Discount> appliedDiscounts;
+  final String shopId;
   final void Function(List<Discount> selectedDiscounts) onApply;
 
   static Future<void> show(
@@ -24,6 +25,7 @@ class DiscountDialog extends StatefulWidget {
               DiscountCubit()..fetchAvailableDiscountsForCustomer(shopId),
           child: DiscountDialog(
             appliedDiscounts: appliedDiscounts,
+            shopId: shopId,
             onApply: onApply,
           ),
         );
@@ -34,6 +36,7 @@ class DiscountDialog extends StatefulWidget {
   const DiscountDialog({
     super.key,
     required this.appliedDiscounts,
+    required this.shopId,
     required this.onApply,
   });
 
@@ -67,25 +70,31 @@ class _DiscountDialogState extends State<DiscountDialog> {
           title: Text('Apply Discount'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextField(
                 controller: promoCodeController,
                 decoration: InputDecoration(
                   labelText: 'Promo Code',
                   hintText: 'Enter promo code',
-                  suffixIcon: TextButton(
+                  suffixIcon: IconButton(
                     onPressed: () {
                       final promoCode = promoCodeController.text.trim();
                       if (promoCode.isNotEmpty) {
-                        // TODO: Handle promo code application
+                        context
+                            .read<DiscountCubit>()
+                            .checkCouponDiscount(widget.shopId, promoCode);
                       }
                     },
-                    child: Text('Apply'),
+                    icon: Icon(Icons.add_circle_rounded),
                   ),
                 ),
               ),
               const SizedBox(height: 16),
-              Text('Available Discounts:'),
+              Text(
+                'Available Discounts:',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
               ConstrainedBox(
                 constraints: BoxConstraints(
                     maxHeight: CommonSize.screenSize.height * 0.3),
@@ -94,11 +103,24 @@ class _DiscountDialogState extends State<DiscountDialog> {
                     ...discounts.map((discount) {
                       final applied = discountSelection[discount.id] ?? false;
                       return CheckboxListTile(
-                        title: Text(discount.name),
-                        subtitle: discount.valueType == 'percentage'
-                            ? Text("${discount.value.toString()}%")
-                            : Text(CurrencyUtil.amountWithCurrency(
-                                discount.value, UserDataUtil.getCurrency())),
+                        title: Text(
+                          discount.name,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            discount.valueType == 'percentage'
+                                ? Text(
+                                    "Discount: ${discount.value.toString()}%")
+                                : Text(
+                                    "Discount: ${CurrencyUtil.amountWithCurrency(discount.value, UserDataUtil.getCurrency())}"),
+                            if (discount.minOrderAmount != null)
+                              Text(
+                                  "Min order amount: ${CurrencyUtil.amountWithCurrency(discount.minOrderAmount!, UserDataUtil.getCurrency())}"),
+                          ],
+                        ),
                         value: applied,
                         onChanged: (value) {
                           setState(() {
