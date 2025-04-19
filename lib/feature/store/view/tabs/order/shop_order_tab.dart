@@ -13,6 +13,7 @@ import 'package:taste_tube/core/injection.dart';
 import 'package:taste_tube/core/providers.dart';
 import 'package:taste_tube/utils/currency.util.dart';
 import 'package:taste_tube/utils/datetime.util.dart';
+import 'package:taste_tube/utils/user_data.util.dart';
 
 class OrderFilter extends ChangeNotifier {
   String? totalCostRange;
@@ -403,6 +404,8 @@ class _OrderCardState extends State<_OrderCard> {
 
   @override
   Widget build(BuildContext context) {
+    final currency = UserDataUtil.getCurrency();
+
     return Card(
       margin: const EdgeInsets.all(8.0),
       child: Padding(
@@ -499,10 +502,50 @@ class _OrderCardState extends State<_OrderCard> {
             ),
             const SizedBox(height: 8),
             Text(
-                'Total: ${CurrencyUtil.amountWithCurrency(order.total, order.items.first.product.currency)}'),
+              'Total: ${CurrencyUtil.amountWithCurrency(order.total, currency)}',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
             const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: Text(
+                'Delivery fee: +${CurrencyUtil.amountWithCurrency(order.deliveryFee, currency)}',
+              ),
+            ),
             ExpansionTile(
-              title: Text('Items: ${order.items.length}'),
+              minTileHeight: 20,
+              title: Text(
+                'Discounts: -${CurrencyUtil.amountWithCurrency(order.discounts.fold(0.0, (sum, appliedDiscount) => sum + appliedDiscount.amount), currency)}',
+                style: const TextStyle(fontSize: 14),
+              ),
+              childrenPadding: const EdgeInsets.only(left: 16.0),
+              children: [
+                ...order.discounts.map((appliedDiscount) {
+                  return ListTile(
+                    minTileHeight: 20,
+                    title: Row(
+                      children: [
+                        Text(
+                          appliedDiscount.discount.name,
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          "-${CurrencyUtil.amountWithCurrency(appliedDiscount.amount, currency)}",
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ],
+            ),
+            ExpansionTile(
+              minTileHeight: 20,
+              title: Text(
+                'Items: ${order.items.length}',
+                style: const TextStyle(fontSize: 14),
+              ),
               initiallyExpanded: true,
               children: [
                 ConstrainedBox(

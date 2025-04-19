@@ -7,6 +7,7 @@ import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/order.dart';
 import 'package:taste_tube/utils/currency.util.dart';
 import 'package:taste_tube/utils/datetime.util.dart';
+import 'package:taste_tube/utils/user_data.util.dart';
 
 class OrderDetailTab extends StatelessWidget {
   final Order order;
@@ -14,6 +15,8 @@ class OrderDetailTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currency = UserDataUtil.getCurrency();
+
     return RefreshIndicator(
       onRefresh: () async {
         context.read<OrderCubit>().getOrders();
@@ -93,8 +96,44 @@ class OrderDetailTab extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Total: ${CurrencyUtil.amountWithCurrency(order.total, order.items.first.product.currency)}',
-                        style: const TextStyle(fontSize: 16),
+                        'Total: ${CurrencyUtil.amountWithCurrency(order.total, currency)}',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 18),
+                      ),
+                      const SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16.0),
+                        child: Text(
+                          'Delivery fee: +${CurrencyUtil.amountWithCurrency(order.deliveryFee, currency)}',
+                        ),
+                      ),
+                      ExpansionTile(
+                        minTileHeight: 20,
+                        title: Text(
+                          'Discounts: -${CurrencyUtil.amountWithCurrency(order.discounts.fold(0.0, (sum, appliedDiscount) => sum + appliedDiscount.amount), currency)}',
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                        childrenPadding: const EdgeInsets.only(left: 16.0),
+                        children: [
+                          ...order.discounts.map((appliedDiscount) {
+                            return ListTile(
+                              minTileHeight: 20,
+                              title: Row(
+                                children: [
+                                  Text(
+                                    appliedDiscount.discount.name,
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    "-${CurrencyUtil.amountWithCurrency(appliedDiscount.amount, currency)}",
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                        ],
                       ),
                     ],
                   ),

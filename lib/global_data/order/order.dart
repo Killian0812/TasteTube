@@ -1,3 +1,4 @@
+import 'package:taste_tube/global_data/discount/discount.dart';
 import 'package:taste_tube/global_data/order/address.dart';
 import 'package:taste_tube/global_data/product/product.dart';
 import 'package:taste_tube/global_data/user/user_basic.dart';
@@ -31,9 +32,11 @@ class Order {
   final String trackingId;
   final String orderId;
   final double total;
+  final double deliveryFee;
   final Address address;
   final String notes;
   final List<OrderProduct> items;
+  final List<AppliedDiscount> discounts;
   final String paymentMethod;
   final bool paid;
   final String status;
@@ -50,9 +53,11 @@ class Order {
     required this.shopId,
     required this.orderNum,
     required this.total,
+    required this.deliveryFee,
     required this.address,
     required this.notes,
     required this.items,
+    required this.discounts,
     required this.paymentMethod,
     required this.paid,
     required this.status,
@@ -71,10 +76,14 @@ class Order {
       shopId: json['shopId'],
       orderNum: json['orderNum'],
       total: json['total'] * 1.0,
+      deliveryFee: json['deliveryFee'] * 1.0,
       address: Address.fromJson(json['address']),
       notes: json['notes'],
       items: (json['items'] as List<dynamic>)
           .map((item) => OrderProduct.fromJson(item))
+          .toList(),
+      discounts: (json['discounts'] as List<dynamic>)
+          .map((item) => AppliedDiscount.fromJson(item))
           .toList(),
       paymentMethod: json['paymentMethod'],
       paid: json['paid'],

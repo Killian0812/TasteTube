@@ -37,6 +37,40 @@ class CommonTextStyle {
   );
 }
 
+final lightTextTheme =
+    ThemeData.light().textTheme.apply(fontFamily: 'Ganh').copyWith(
+          bodyMedium: const TextStyle(
+            color: Colors.black,
+            decoration: TextDecoration.none,
+          ),
+          bodyLarge: const TextStyle(
+            color: Colors.black,
+            decoration: TextDecoration.none,
+          ),
+          titleLarge: const TextStyle(
+            color: Colors.black,
+            decoration: TextDecoration.none,
+          ),
+          // Add other styles if needed
+        );
+
+final darkTextTheme =
+    ThemeData.dark().textTheme.apply(fontFamily: 'Ganh').copyWith(
+          bodyMedium: const TextStyle(
+            color: Colors.white,
+            decoration: TextDecoration.none,
+          ),
+          bodyLarge: const TextStyle(
+            color: Colors.white,
+            decoration: TextDecoration.none,
+          ),
+          titleLarge: const TextStyle(
+            color: Colors.white,
+            decoration: TextDecoration.none,
+          ),
+          // Add other styles if needed
+        );
+
 class CommonTextWidget {
   static Widget tasteTube = const Row(
     mainAxisSize: MainAxisSize.min,

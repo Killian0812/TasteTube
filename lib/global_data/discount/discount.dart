@@ -81,3 +81,27 @@ class Discount {
     };
   }
 }
+
+class AppliedDiscount {
+  final Discount discount;
+  final double amount;
+
+  AppliedDiscount({
+    required this.discount,
+    required this.amount,
+  });
+
+  factory AppliedDiscount.fromJson(Map<String, dynamic> json) {
+    return AppliedDiscount(
+      discount: Discount.fromJson(json['discountId']),
+      amount: (json['amount'] as num).toDouble(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'discount': discount.toJson(),
+      'amount': amount,
+    };
+  }
+}

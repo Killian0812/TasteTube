@@ -103,22 +103,8 @@ class MyApp extends StatelessWidget {
           theme: ThemeData.light().copyWith(
             primaryColor: Colors.black,
             hintColor: Colors.amber[300],
-            textTheme:
-                ThemeData.light().textTheme.apply(fontFamily: 'Ganh').copyWith(
-                      bodyMedium: const TextStyle(
-                        color: Colors.black,
-                        decoration: TextDecoration.none,
-                      ),
-                      bodyLarge: const TextStyle(
-                        color: Colors.black,
-                        decoration: TextDecoration.none,
-                      ),
-                      titleLarge: const TextStyle(
-                        color: Colors.black,
-                        decoration: TextDecoration.none,
-                      ),
-                      // Add other styles if needed
-                    ),
+            textTheme: lightTextTheme,
+            primaryTextTheme: lightTextTheme,
             scaffoldBackgroundColor: Colors.white,
             textSelectionTheme:
                 const TextSelectionThemeData(cursorColor: Colors.black),
@@ -132,7 +118,8 @@ class MyApp extends StatelessWidget {
               backgroundColor: CommonColor.lightGrey,
               unselectedItemColor: Colors.black,
               selectedItemColor: CommonColor.activeBgColor,
-              selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
+              selectedLabelStyle: CommonTextStyle.bold,
+              unselectedLabelStyle: CommonTextStyle.regular,
               showUnselectedLabels: true,
               type: BottomNavigationBarType.fixed,
             ),
@@ -148,22 +135,8 @@ class MyApp extends StatelessWidget {
           ),
           darkTheme: ThemeData.dark().copyWith(
             primaryColor: Colors.white,
-            textTheme:
-                ThemeData.dark().textTheme.apply(fontFamily: 'Ganh').copyWith(
-                      bodyMedium: const TextStyle(
-                        color: Colors.white,
-                        decoration: TextDecoration.none,
-                      ),
-                      bodyLarge: const TextStyle(
-                        color: Colors.white,
-                        decoration: TextDecoration.none,
-                      ),
-                      titleLarge: const TextStyle(
-                        color: Colors.white,
-                        decoration: TextDecoration.none,
-                      ),
-                      // Add other styles if needed
-                    ),
+            textTheme: darkTextTheme,
+            primaryTextTheme: darkTextTheme,
             scaffoldBackgroundColor: Colors.black,
             textSelectionTheme:
                 const TextSelectionThemeData(cursorColor: Colors.white),
@@ -177,7 +150,8 @@ class MyApp extends StatelessWidget {
               backgroundColor: CommonColor.darkGrey,
               unselectedItemColor: Colors.white,
               selectedItemColor: CommonColor.activeBgColor,
-              selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
+              selectedLabelStyle: CommonTextStyle.bold,
+              unselectedLabelStyle: CommonTextStyle.regular,
               showUnselectedLabels: true,
               type: BottomNavigationBarType.fixed,
             ),
