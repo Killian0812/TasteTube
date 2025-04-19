@@ -90,14 +90,16 @@ class Order {
 class OrderSummary {
   final String shopId;
   final double? deliveryFee;
-  final double? discountAmount;
+  final double? totalDiscountAmount;
+  final Map<String, double>? discountDetails;
   final double? totalAmount;
   final String? message;
 
   const OrderSummary({
     required this.shopId,
     required this.deliveryFee,
-    required this.discountAmount,
+    required this.totalDiscountAmount,
+    required this.discountDetails,
     required this.totalAmount,
     required this.message,
   });
@@ -106,7 +108,9 @@ class OrderSummary {
     return OrderSummary(
       shopId: json['shopId'],
       deliveryFee: (json['deliveryFee'] as num?)?.toDouble(),
-      discountAmount: (json['discountAmount'] as num?)?.toDouble(),
+      totalDiscountAmount: (json['totalDiscountAmount'] as num?)?.toDouble(),
+      discountDetails: (json['discountDetails'] as Map<String, dynamic>?)
+          ?.map((key, value) => MapEntry(key, (value as num).toDouble())),
       totalAmount: (json['totalAmount'] as num?)?.toDouble(),
       message: json['message'] as String?,
     );
@@ -116,7 +120,10 @@ class OrderSummary {
     final map = <String, dynamic>{};
     map['shopId'] = shopId;
     if (deliveryFee != null) map['deliveryFee'] = deliveryFee;
-    if (discountAmount != null) map['discountAmount'] = discountAmount;
+    if (totalDiscountAmount != null) {
+      map['totalDiscountAmount'] = totalDiscountAmount;
+    }
+    if (discountDetails != null) map['discountDetails'] = discountDetails;
     if (totalAmount != null) map['totalAmount'] = totalAmount;
     if (message != null) map['message'] = message;
     return map;

@@ -73,6 +73,7 @@ class _PaymentPageState extends State<PaymentPage> {
                     state.pid,
                     cartState.orderSummary,
                     selectedDiscounts,
+                    context.read<CartCubit>().appliedDiscountDetails,
                   );
             }
             if (state is PaymentUrlReady) {
@@ -464,36 +465,65 @@ class _OrderSummarySection extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Discount: ${CurrencyUtil.amountWithCurrency(orderSummary.discountAmount!, currency)}',
-                                        style:
-                                            TextStyle(color: Colors.green[600]),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      IconButton(
-                                        icon: const Icon(
-                                            Icons.more_vert_outlined),
-                                        onPressed: () => DiscountDialog.show(
-                                          context,
-                                          state.appliedDiscounts
-                                              .where((e) => e.shopId == shopId)
-                                              .toList(),
-                                          shopId,
-                                          (selectedDiscounts) {
-                                            context
-                                                .read<CartCubit>()
-                                                .updateOrderAddressOrDiscount(
-                                                  discounts: selectedDiscounts,
-                                                  shopId: shopId,
-                                                );
-                                          },
+                                  ExpansionTile(
+                                    tilePadding: EdgeInsets.zero,
+                                    title: Row(
+                                      children: [
+                                        Text(
+                                          'Discount: ${CurrencyUtil.amountWithCurrency(orderSummary.totalDiscountAmount!, currency)}',
+                                          style: TextStyle(
+                                            color: Colors.green[600],
+                                            fontSize: 14,
+                                          ),
                                         ),
-                                      ),
+                                        const SizedBox(width: 10),
+                                        IconButton(
+                                          icon: const Icon(
+                                              Icons.more_vert_outlined),
+                                          onPressed: () => DiscountDialog.show(
+                                            context,
+                                            state.appliedDiscounts
+                                                .where(
+                                                    (e) => e.shopId == shopId)
+                                                .toList(),
+                                            shopId,
+                                            (selectedDiscounts) {
+                                              context
+                                                  .read<CartCubit>()
+                                                  .updateOrderAddressOrDiscount(
+                                                    discounts:
+                                                        selectedDiscounts,
+                                                    shopId: shopId,
+                                                  );
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    expandedAlignment: Alignment.centerLeft,
+                                    childrenPadding:
+                                        const EdgeInsets.only(left: 20),
+                                    children: [
+                                      ...orderSummary.discountDetails!.entries
+                                          .map((entry) {
+                                        final discountId = entry.key;
+                                        final discountName = state
+                                            .appliedDiscounts
+                                            .firstWhereOrNull(
+                                                (e) => e.id == discountId)
+                                            ?.name;
+                                        if (discountName == null) {
+                                          return const SizedBox.shrink();
+                                        }
+                                        final discountValue = entry.value;
+                                        return Text(
+                                          '$discountName: ${CurrencyUtil.amountWithCurrency(discountValue, currency)}',
+                                          style: const TextStyle(fontSize: 14),
+                                        );
+                                      }),
                                     ],
                                   ),
-                                  const SizedBox(height: 10),
+                                  const SizedBox(height: 5),
                                   Text(
                                     'Delivery Fee: ${CurrencyUtil.amountWithCurrency(orderSummary.deliveryFee!, currency)}',
                                     style: TextStyle(color: Colors.blue[200]),

@@ -151,6 +151,7 @@ class AddedToCartAndReadyToPay extends CartState {
 
 class CartCubit extends Cubit<CartState> {
   final CartRepository repository = getIt<CartRepository>();
+  Map<String, double> appliedDiscountDetails = {};
 
   CartCubit() : super(CartInitial());
 
@@ -220,6 +221,18 @@ class CartCubit extends Cubit<CartState> {
         error.message ?? 'Error fetching order summary',
       )),
       (orderSummaryList) {
+        if (discounts != null) {
+          final ids = state.appliedDiscounts
+              .where((e) => e.shopId == shopId)
+              .map((e) => e.id)
+              .toList();
+          // Replace all discounts from current shop with new ones
+          appliedDiscountDetails.removeWhere((key, value) => ids.contains(key));
+          appliedDiscountDetails.addAll(orderSummaryList
+                  .firstWhere((e) => e.shopId == shopId)
+                  .discountDetails ??
+              {});
+        }
         emit(CartLoaded(
           state.cart,
           state.selectedItems,
