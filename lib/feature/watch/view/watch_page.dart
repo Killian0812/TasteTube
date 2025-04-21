@@ -111,13 +111,13 @@ class _WatchPageState extends State<WatchPage> {
             scrollDirection: Axis.vertical,
             itemCount: state.videos.length,
             onPageChanged: (int index) {
-              setState(() {});
-
               if (currentPlayingVideoId != "none") {
                 WatchPage.pauseVideo(currentPlayingVideoId);
               }
               // Update the currently playing video index
-              currentPlayingVideoId = state.videos[index].id;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                currentPlayingVideoId = state.videos[index].id;
+              });
             },
             itemBuilder: (context, index) {
               return ValueListenableBuilder<String>(

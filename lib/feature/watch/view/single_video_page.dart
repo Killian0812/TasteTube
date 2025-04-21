@@ -44,7 +44,9 @@ class _SingleVideoState extends State<SingleVideo>
     _focusNode = FocusNode();
     _focusNode!.addListener(_setReplyingComment);
 
-    currentPlayingVideoId = videoId;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      currentPlayingVideoId = videoId;
+    });
 
     _videoController =
         VideoPlayerController.networkUrl(Uri.parse(widget.video.url))
