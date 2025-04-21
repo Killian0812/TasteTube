@@ -257,10 +257,10 @@ class ProfilePage extends StatelessWidget {
   Widget _buildVideosTab(List<Video> videos, bool isOwner) {
     return GridView.builder(
       padding: const EdgeInsets.all(8.0),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        crossAxisSpacing: 5,
-        mainAxisSpacing: 5,
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 250,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
       ),
       itemCount: videos.length,
       itemBuilder: (context, index) {
@@ -349,10 +349,10 @@ class ProfilePage extends StatelessWidget {
     return BlocBuilder<ProfileCubit, ProfileState>(
         builder: (context, state) => GridView.builder(
               padding: const EdgeInsets.all(8.0),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                crossAxisSpacing: 5,
-                mainAxisSpacing: 5,
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 250,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
               ),
               itemCount: state.reviews.length,
               itemBuilder: (context, index) {
