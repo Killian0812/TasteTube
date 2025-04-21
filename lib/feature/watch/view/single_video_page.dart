@@ -26,23 +26,13 @@ class _SingleVideoState extends State<SingleVideo>
       widget.video.description!.length > 100;
 
   late FocusNode? _focusNode;
-  Comment? _replyingComment;
 
   String get videoId => widget.video.id;
-
-  void _setReplyingComment() {
-    if (_focusNode != null && !_focusNode!.hasFocus) {
-      setState(() {
-        _replyingComment = null;
-      });
-    }
-  }
 
   @override
   void initState() {
     super.initState();
     _focusNode = FocusNode();
-    _focusNode!.addListener(_setReplyingComment);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       currentPlayingVideoId = videoId;
@@ -65,7 +55,6 @@ class _SingleVideoState extends State<SingleVideo>
   void dispose() {
     WatchPage.controllers.remove(videoId);
     _videoController.dispose();
-    _focusNode?.removeListener(_setReplyingComment);
     _focusNode?.dispose();
     super.dispose();
   }
@@ -84,57 +73,57 @@ class _SingleVideoState extends State<SingleVideo>
   Widget build(BuildContext context) {
     super.build(context);
     return BlocListener<SingleVideoCubit, SingleVideoState>(
-      listener: (context, state) {
-        if (state is DeleteVideoSuccess) {
-          Navigator.of(context).pop();
-          return;
-        }
-        if (state is DeleteVideoError) {
-          ToastService.showToast(context, state.message, ToastType.error);
-        }
-      },
+      listener: _handleStateChanges,
       child: Center(
         child: _videoController.value.isInitialized
-            ? Stack(
-                alignment: Alignment.bottomCenter,
-                children: [
-                  // Video display
-                  Align(
-                    alignment: Alignment.center,
-                    child: AspectRatio(
-                      aspectRatio: _videoController.value.aspectRatio,
-                      child: VideoPlayer(_videoController),
-                    ),
-                  ),
-
-                  // Video controls
-                  SafeArea(
-                      child: Stack(
-                    alignment: Alignment.bottomCenter,
-                    children: [
-                      // Center play/pause icon
-                      _videoPauseButton(),
-
-                      _videoInfo(),
-                      _reviewTarget(),
-
-                      // Video Scrub
-                      _videoScrubber(),
-                      // Time indicator
-                      if (_isScrubbing || !_videoController.value.isPlaying)
-                        _timeIndicator(),
-                    ],
-                  )),
-
-                  // Video interactions
-                  _videoLikes(),
-                  _videoComments(),
-                  _videoShare(),
-                  _videoSettings(),
-                ],
-              )
+            ? _buildVideoContent()
             : const CircularProgressIndicator(color: Colors.white),
       ),
+    );
+  }
+
+  void _handleStateChanges(BuildContext context, SingleVideoState state) {
+    if (state is DeleteVideoSuccess) {
+      Navigator.of(context).pop();
+    } else if (state is DeleteVideoError) {
+      ToastService.showToast(context, state.message, ToastType.error);
+    }
+  }
+
+  Widget _buildVideoContent() {
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: [
+        _buildVideoDisplay(),
+        SafeArea(child: _buildVideoControls()),
+        _videoLikes(),
+        _videoComments(),
+        _videoShare(),
+        _videoSettings(),
+      ],
+    );
+  }
+
+  Widget _buildVideoDisplay() {
+    return Align(
+      alignment: Alignment.center,
+      child: AspectRatio(
+        aspectRatio: _videoController.value.aspectRatio,
+        child: VideoPlayer(_videoController),
+      ),
+    );
+  }
+
+  Widget _buildVideoControls() {
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: [
+        _videoPauseButton(),
+        _videoInfo(),
+        _reviewTarget(),
+        _videoScrubber(),
+        if (_isScrubbing || !_videoController.value.isPlaying) _timeIndicator(),
+      ],
     );
   }
 
@@ -605,15 +594,18 @@ class _SingleVideoState extends State<SingleVideo>
         ),
       );
 
-  Widget _timeIndicator() => Align(
-        alignment: Alignment.bottomLeft,
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 10, left: 10),
-          child: Text(
-            "${_formatDuration(_videoController.value.position)} / ${_formatDuration(_videoController.value.duration)}",
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
+  Widget _timeIndicator() => ValueListenableBuilder<VideoPlayerValue>(
+        valueListenable: _videoController,
+        builder: (context, value, child) => Align(
+          alignment: Alignment.bottomLeft,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 10, left: 10),
+            child: Text(
+              "${_formatDuration(_videoController.value.position)} / ${_formatDuration(_videoController.value.duration)}",
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
             ),
           ),
         ),
@@ -765,39 +757,53 @@ class _SingleVideoState extends State<SingleVideo>
       TextEditingController commentController, SingleVideoCubit cubit) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              focusNode: _focusNode,
-              controller: commentController,
-              style: const TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                hintText: _replyingComment != null
-                    ? 'Replying to ${_replyingComment!.username}'
-                    : "Add a comment...",
-                hintStyle: const TextStyle(color: Colors.white54),
-                filled: true,
-                fillColor: Colors.white12,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20),
-                  borderSide: BorderSide.none,
+      child: BlocBuilder<SingleVideoCubit, SingleVideoState>(
+        bloc: cubit,
+        builder: (context, state) => Row(
+          children: [
+            Expanded(
+              child: TextField(
+                focusNode: _focusNode,
+                controller: commentController,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: state.replyingComment != null
+                      ? 'Replying to ${state.replyingComment!.username}'
+                      : "Add a comment...",
+                  hintStyle: const TextStyle(color: Colors.white54),
+                  filled: true,
+                  fillColor: Colors.white12,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                  suffixIcon: state.replyingComment != null
+                      ? IconButton(
+                          onPressed: () {
+                            cubit.setReplyToComment(null);
+                            commentController.clear();
+                          },
+                          icon: const Icon(
+                            Icons.cancel,
+                            color: Colors.white,
+                          ),
+                        )
+                      : null,
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
               ),
             ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.send, color: Colors.white),
-            onPressed: () {
-              if (commentController.text.isNotEmpty) {
-                cubit.postComment(commentController.text,
-                    replyingTo: _replyingComment);
-                commentController.clear();
-              }
-            },
-          ),
-        ],
+            IconButton(
+              icon: const Icon(Icons.send, color: Colors.white),
+              onPressed: () {
+                if (commentController.text.isNotEmpty) {
+                  cubit.postComment(commentController.text);
+                  commentController.clear();
+                }
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -861,9 +867,7 @@ class _SingleVideoState extends State<SingleVideo>
                 GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: () {
-                    setState(() {
-                      _replyingComment = comment;
-                    });
+                    cubit.setReplyToComment(comment);
                     expansionTileController.expand();
                     _focusNode?.requestFocus();
                   },

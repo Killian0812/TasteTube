@@ -8,10 +8,17 @@ import 'package:taste_tube/core/injection.dart';
 abstract class SingleVideoState {
   final List<Comment> comments;
   final Interaction interaction;
+  final Comment? replyingComment;
 
   SingleVideoState(
     this.comments,
     this.interaction,
+  ) : replyingComment = null;
+
+  SingleVideoState.withReplyingComment(
+    this.comments,
+    this.interaction,
+    this.replyingComment,
   );
 }
 
@@ -43,7 +50,8 @@ class SingleVideoLoaded extends SingleVideoState {
   SingleVideoLoaded(
     super.comments,
     super.interaction,
-  );
+    super.replyingComment,
+  ) : super.withReplyingComment();
 }
 
 class SingleVideoError extends SingleVideoState {
@@ -97,7 +105,7 @@ class SingleVideoCubit extends Cubit<SingleVideoState> {
         (error) => emit(SingleVideoError(state.comments, state.interaction,
             error.message ?? 'Error fetching video')),
         (interaction) {
-          emit(SingleVideoLoaded(state.comments, interaction));
+          emit(SingleVideoLoaded(state.comments, interaction, null));
         },
       );
     } catch (e) {
@@ -112,7 +120,7 @@ class SingleVideoCubit extends Cubit<SingleVideoState> {
         (error) => emit(SingleVideoError(state.comments, state.interaction,
             error.message ?? 'Error fetching video')),
         (comments) {
-          emit(SingleVideoLoaded(comments, state.interaction));
+          emit(SingleVideoLoaded(comments, state.interaction, null));
         },
       );
     } catch (e) {
@@ -120,29 +128,33 @@ class SingleVideoCubit extends Cubit<SingleVideoState> {
     }
   }
 
-  Future<void> postComment(String text, {Comment? replyingTo}) async {
+  Future<void> setReplyToComment(Comment? comment) async {
+    emit(SingleVideoLoaded(state.comments, state.interaction, comment));
+  }
+
+  Future<void> postComment(String text) async {
     try {
       final result = await singleVideoRepo.postComment(
         video.id,
         text,
-        replyingTo: replyingTo,
+        replyingTo: state.replyingComment,
       );
       result.fold(
         (error) => emit(SingleVideoError(state.comments, state.interaction,
             error.message ?? 'Error commenting video')),
         (comment) {
-          if (replyingTo == null) {
+          if (state.replyingComment == null) {
             emit(SingleVideoLoaded(
-                state.comments..add(comment), state.interaction));
+                state.comments..add(comment), state.interaction, null));
           }
           final parentCommentIndex = state.comments.indexWhere(
-            (c) => c.id == replyingTo!.id,
+            (c) => c.id == state.replyingComment!.id,
           );
           if (parentCommentIndex != -1) {
             final parentComment = state.comments[parentCommentIndex];
             parentComment.replies.add(comment);
             emit(SingleVideoLoaded(
-                List.from(state.comments), state.interaction));
+                List.from(state.comments), state.interaction, null));
           }
         },
       );
@@ -165,6 +177,7 @@ class SingleVideoCubit extends Cubit<SingleVideoState> {
                   (c) => c.id == comment.id,
                 ),
               state.interaction,
+              null,
             ));
           }
           final parentCommentIndex = state.comments.indexWhere(
@@ -176,7 +189,7 @@ class SingleVideoCubit extends Cubit<SingleVideoState> {
               (c) => c.id == comment.id,
             );
             emit(SingleVideoLoaded(
-                List.from(state.comments), state.interaction));
+                List.from(state.comments), state.interaction, null));
           }
         },
       );
@@ -207,10 +220,11 @@ class SingleVideoCubit extends Cubit<SingleVideoState> {
         (success) {
           if (state.interaction.userLiked) return;
           emit(SingleVideoLoaded(
-              state.comments,
-              state.interaction.copyWith(
-                  userLiked: true,
-                  totalLikes: state.interaction.totalLikes + 1)));
+            state.comments,
+            state.interaction.copyWith(
+                userLiked: true, totalLikes: state.interaction.totalLikes + 1),
+            null,
+          ));
         },
       );
     } catch (e) {
@@ -227,10 +241,11 @@ class SingleVideoCubit extends Cubit<SingleVideoState> {
         (success) {
           if (!state.interaction.userLiked) return;
           emit(SingleVideoLoaded(
-              state.comments,
-              state.interaction.copyWith(
-                  userLiked: false,
-                  totalLikes: state.interaction.totalLikes - 1)));
+            state.comments,
+            state.interaction.copyWith(
+                userLiked: false, totalLikes: state.interaction.totalLikes - 1),
+            null,
+          ));
         },
       );
     } catch (e) {
