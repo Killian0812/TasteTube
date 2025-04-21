@@ -18,6 +18,7 @@ class ReplayPage extends StatefulWidget {
   final bool recordedWithFrontCamera;
   final User? reviewTarget;
   final XFile? xfile;
+  final Uint8List? bytes;
 
   const ReplayPage({
     super.key,
@@ -25,6 +26,7 @@ class ReplayPage extends StatefulWidget {
     required this.recordedWithFrontCamera,
     this.reviewTarget,
     this.xfile,
+    this.bytes,
   });
 
   @override
@@ -38,7 +40,8 @@ class _ReplayPageState extends State<ReplayPage> {
   void initState() {
     super.initState();
     _videoPlayerController = kIsWeb
-        ? VideoPlayerController.networkUrl(Uri.parse(widget.filePath))
+        ? VideoPlayerController.networkUrl(
+            Uri.dataFromBytes(widget.bytes!, mimeType: 'video/mp4'))
         : VideoPlayerController.file(File(widget.filePath));
     _videoPlayerController.initialize().then((_) {
       setState(() {});
@@ -149,6 +152,17 @@ class _ReplayPageState extends State<ReplayPage> {
 
   Future<Uint8List> _createThumbnail() async {
     try {
+      if (kIsWeb) {
+        final xfile = await VideoThumbnail.thumbnailFile(
+          video: Uri.dataFromBytes(widget.bytes!, mimeType: 'video/mp4')
+              .toString(),
+          imageFormat: ImageFormat.JPEG,
+          maxWidth: 100,
+          maxHeight: 200,
+          quality: 80,
+        );
+        return xfile.readAsBytes();
+      }
       return await VideoThumbnail.thumbnailData(
           video: widget.filePath,
           imageFormat: ImageFormat.JPEG,

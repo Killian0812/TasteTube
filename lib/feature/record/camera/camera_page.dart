@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
@@ -162,18 +163,17 @@ class CameraPage extends StatelessWidget {
                   type: FileType.video,
                 );
 
-                if (result != null && result.files.single.path != null) {
-                  String filePath = result.files.single.path!;
-
+                if (result != null) {
                   if (context.mounted) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         fullscreenDialog: true,
                         builder: (_) => ReplayPage(
-                          filePath: filePath,
+                          filePath: kIsWeb ? '' : result.files.single.path!,
                           recordedWithFrontCamera: false,
                           xfile: result.xFiles.single,
+                          bytes: result.files.single.bytes,
                         ),
                       ),
                     );
