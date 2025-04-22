@@ -2,8 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
-import 'package:taste_tube/api.dart';
 import 'package:taste_tube/auth/view/oauth/oauth_cubit.dart';
+import 'package:taste_tube/core/http_client.dart';
 import 'package:taste_tube/feature/home/domain/content_repo.dart';
 import 'package:taste_tube/feature/home/view/content_cubit.dart';
 import 'package:taste_tube/feature/payment/domain/payment_repo.dart';
@@ -40,17 +40,7 @@ void injectDependencies() {
   getIt.registerLazySingleton<AppSettings>(() => AppSettings());
   getIt.registerLazySingleton(() => BottomNavigationBarToggleNotifier());
   getIt.registerLazySingleton<Logger>(() => Logger());
-  getIt.registerLazySingleton<Dio>(() => Dio(
-        BaseOptions(
-          baseUrl: '${Api.baseUrl}/api',
-          connectTimeout: const Duration(seconds: 10),
-          receiveTimeout: const Duration(seconds: 10),
-          headers: {
-            'Content-Type': 'application/json',
-            'ngrok-skip-browser-warning': true, // Bypass ngrok warning
-          },
-        ),
-      ));
+  getIt.registerLazySingleton<Dio>(getHttpClient);
   getIt.registerLazySingleton<SecureStorage>(() => SecureStorage());
   getIt.registerLazySingleton<LocalStorage>(() => LocalStorage());
   getIt.registerLazySingleton<Uuid>(() => const Uuid());

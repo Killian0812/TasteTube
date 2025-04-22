@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -47,6 +48,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       getIt<GetstreamCubit>().initializeClient(authData);
       UserDataUtil.refreshData();
       FCMService.updateFcmToken();
+      FirebaseAnalytics.instance.logLogin(
+        loginMethod: "Refresh",
+      );
     } on DioException {
       emit(Unauthenticated());
     } catch (e) {
@@ -59,8 +63,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     await secureStorage.setRefreshToken(event.data.refreshToken);
     http.options.headers['Authorization'] = 'Bearer ${event.data.accessToken}';
     getIt<RealtimeProvider>().initSocket(event.data.userId);
-    getIt<GetstreamCubit>()
-        .initializeClient(event.data);
+    getIt<GetstreamCubit>().initializeClient(event.data);
     UserDataUtil.refreshData();
     FCMService.updateFcmToken();
   }

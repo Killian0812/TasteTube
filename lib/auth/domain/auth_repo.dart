@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -29,6 +30,7 @@ class AuthRepository {
         data: request.toJson(),
       );
       final registerResponse = RegisterResponse.fromJson(response.data);
+      FirebaseAnalytics.instance.logSignUp(signUpMethod: "Email");
       return Right(registerResponse);
     } on DioException catch (e) {
       return Left(ApiError.fromDioException(e));
@@ -63,6 +65,9 @@ class AuthRepository {
             response.data['refreshToken'] ??
             ''
       });
+      FirebaseAnalytics.instance.logLogin(
+        loginMethod: "Email",
+      );
       return Right(authData);
     } on DioException catch (e) {
       return Left(ApiError.fromDioException(e));
@@ -88,6 +93,9 @@ class AuthRepository {
             response.data['refreshToken'] ??
             ''
       });
+      FirebaseAnalytics.instance.logLogin(
+        loginMethod: "Facebook",
+      );
       return Right(authData);
     } on DioException catch (e) {
       await FacebookAuth.instance.logOut();
@@ -119,6 +127,9 @@ class AuthRepository {
             response.data['refreshToken'] ??
             ''
       });
+      FirebaseAnalytics.instance.logLogin(
+        loginMethod: "Google",
+      );
       return Right(authData);
     } on DioException catch (e) {
       await getIt<GoogleSignIn>().signOut();

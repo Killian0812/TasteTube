@@ -15,7 +15,7 @@ class SingleVideoRepository {
   Future<Either<ApiError, Interaction>> getVideoInfo(String videoId) async {
     try {
       final response =
-          await http.get(Api.videoApi.replaceFirst(':videoId', videoId));
+          await http.get(Api.singleVideoApi.replaceFirst(':videoId', videoId));
       final interaction = Interaction.fromJson(response.data);
       return Right(interaction);
     } on DioException catch (e) {
@@ -77,7 +77,7 @@ class SingleVideoRepository {
 
   Future<Either<ApiError, bool>> deleteVideo(String videoId) async {
     try {
-      await http.delete(Api.videoApi.replaceFirst(':videoId', videoId));
+      await http.delete(Api.singleVideoApi.replaceFirst(':videoId', videoId));
       return const Right(true);
     } on DioException catch (e) {
       return Left(ApiError.fromDioException(e));

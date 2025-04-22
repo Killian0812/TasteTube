@@ -31,7 +31,7 @@ class UploadRepository {
         formData.fields.add(MapEntry(key, value.toString()));
       });
       final response = await http.post(
-        Api.uploadVideoApi,
+        Api.videoApi,
         data: formData,
         options: Options(
           headers: {

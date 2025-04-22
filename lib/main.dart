@@ -57,7 +57,8 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   ).then((firebaseApp) {
     getIt.registerSingleton<FirebaseApp>(firebaseApp);
-    getIt.registerSingleton<FirebaseAnalytics>(FirebaseAnalytics.instance);
+    getIt.registerSingleton<FirebaseAnalytics>(
+        FirebaseAnalytics.instance..logAppOpen());
   });
   if (!kIsWeb) {
     FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(!kDebugMode);
