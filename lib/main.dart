@@ -59,12 +59,14 @@ void main() async {
     getIt.registerSingleton<FirebaseApp>(firebaseApp);
     getIt.registerSingleton<FirebaseAnalytics>(FirebaseAnalytics.instance);
   });
-  FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(!kDebugMode);
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-  PlatformDispatcher.instance.onError = (error, stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    return true;
-  };
+  if (!kIsWeb) {
+    FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(!kDebugMode);
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
+    };
+  }
 
   FCMService.setupFirebaseMessaging();
   LocalNotification.setupLocalNotifications();
