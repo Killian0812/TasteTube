@@ -11,6 +11,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   flutter_web_plugins:
     sdk: flutter
 
@@ -79,7 +81,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
+  generate: true
   assets:
     - assets/images/
 
@@ -95,6 +97,14 @@ flutter:
         - asset: assets/fonts/Ganh/Ganh-ThinItalic.otf
           style: italic
           weight: 100
+
+flutter_localizations:
+  arb-dir: lib/l10n
+  template-arb-file: app_en.arb
+  output-localization-file: app_localizations.dart
+  supported-locales:
+    - en
+    - vi
 
 flutter_native_splash:
   color: "#000000"

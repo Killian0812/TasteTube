@@ -44,6 +44,8 @@ import 'package:taste_tube/core/local_notification.dart';
 import 'package:taste_tube/core/providers.dart';
 import 'package:taste_tube/splash/initial_page.dart';
 import 'package:taste_tube/version.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 part 'router.dart';
 
@@ -179,6 +181,17 @@ class MyApp extends StatelessWidget {
             ),
           ),
           themeMode: getIt<AppSettings>().getTheme,
+          locale: getIt<AppSettings>().locale,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en'),
+            Locale('vi'),
+          ],
           scrollBehavior: const MaterialScrollBehavior().copyWith(
             dragDevices: {
               PointerDeviceKind.mouse,

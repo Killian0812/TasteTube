@@ -1,0 +1,17 @@
+{
+    "@@locale": "en",
+    "appTitle": "TasteTube",
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "phone": "Phone Number",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "settings": "Settings",
+    "profile": "Profile",
+    "language": "Language",
+    "english": "English",
+    "vietnamese": "Vietnamese"
+}

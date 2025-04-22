@@ -9,6 +9,7 @@ import 'package:taste_tube/global_bloc/getstream/getstream_cubit.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/core/injection.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<void> logApiCallEvent(String apiName) async {
   await FirebaseAnalytics.instance.logEvent(
@@ -54,7 +55,6 @@ class TasteTubeProvider extends StatelessWidget {
 
 class AppSettings extends ChangeNotifier {
   ThemeMode _theme = ThemeMode.dark;
-
   ThemeMode get getTheme => _theme;
 
   void setTheme(ThemeMode theme) {
@@ -71,10 +71,35 @@ class AppSettings extends ChangeNotifier {
     notifyListeners();
   }
 
+  AppLanguage _currentLanguage = AppLanguage.en;
+  AppLanguage get currentLanguage => _currentLanguage;
+
+  Locale get locale {
+    switch (_currentLanguage) {
+      case AppLanguage.en:
+        return const Locale('en');
+      case AppLanguage.vi:
+        return const Locale('vi');
+    }
+  }
+
+  void changeLanguage(AppLanguage language) {
+    if (_currentLanguage != language) {
+      _currentLanguage = language;
+      notifyListeners();
+    }
+  }
+
   @override
   void notifyListeners() {
     super.notifyListeners();
   }
+}
+
+enum AppLanguage { en, vi }
+
+extension LocalizationContext on BuildContext {
+  AppLocalizations get localization => AppLocalizations.of(this)!;
 }
 
 class BottomNavigationBarToggleNotifier {
