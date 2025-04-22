@@ -2,7 +2,9 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:taste_tube/feature/store/data/shop_analytics.dart';
 import 'package:taste_tube/feature/store/view/tabs/analytic/shop_analytic_cubit.dart';
+import 'package:taste_tube/utils/currency.util.dart';
 
 class ShopAnalyticTab extends StatelessWidget {
   const ShopAnalyticTab({super.key});
@@ -29,8 +31,9 @@ class ShopAnalyticTab extends StatelessWidget {
                   children: [
                     _buildMetricCard(
                       title: 'Total Revenue',
-                      value:
-                          '\$${state.analytics.totalRevenue.toStringAsFixed(2)}',
+                      value: CurrencyUtil.amountWithCurrency(
+                          state.analytics.totalRevenue,
+                          state.analytics.currency),
                       icon: Icons.attach_money,
                       width: screenWidth * 0.29,
                     ),
@@ -214,8 +217,8 @@ class ShopAnalyticTab extends StatelessWidget {
                             cells: [
                               DataCell(Text(product.name)),
                               DataCell(Text(product.sales.toString())),
-                              DataCell(Text(
-                                  '\$${product.revenue.toStringAsFixed(2)}')),
+                              DataCell(Text(CurrencyUtil.amountWithCurrency(
+                                  product.revenue, state.analytics.currency))),
                               DataCell(Text('${product.rating}/5')),
                             ],
                           ),
@@ -323,7 +326,7 @@ class ShopAnalyticTab extends StatelessWidget {
     );
   }
 
-  FlTitlesData _buildLineChartTitles(AnalyticsData analytics) {
+  FlTitlesData _buildLineChartTitles(ShopAnalytics analytics) {
     final daysOfWeek = analytics.dailySales.keys.toList();
     return FlTitlesData(
       leftTitles: const AxisTitles(

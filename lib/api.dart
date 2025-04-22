@@ -73,6 +73,9 @@ class Api {
   static const discountValidateApi = '/discount/validate';
   static const singleDiscountApi = '/discount/:id';
 
+  // Analytics
+  static const analyticByShopApi = '/analytic/shop/:shopId';
+
   // User
   static const userApi = '/users/:userId';
   static const changePasswordApi = '/users/:userId/change_password';

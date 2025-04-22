@@ -91,7 +91,8 @@ class _StorePageState extends State<StorePage>
             ),
             BlocProvider(
               create: (context) =>
-                  ShopAnalyticCubit()..fetchAnalytics(UserDataUtil.getUserId()),
+                  ShopAnalyticCubit(shopId: UserDataUtil.getUserId())
+                    ..fetchAnalytics(),
             ),
           ],
           child: TabBarView(
