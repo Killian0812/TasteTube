@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:taste_tube/auth/view/oauth/oauth_cubit.dart';
 import 'package:taste_tube/feature/home/view/content_cubit.dart';
 import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
@@ -8,6 +9,13 @@ import 'package:taste_tube/global_bloc/getstream/getstream_cubit.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/core/injection.dart';
+
+Future<void> logApiCallEvent(String apiName) async {
+  await FirebaseAnalytics.instance.logEvent(
+    name: 'api_call',
+    parameters: {'api_name': apiName},
+  );
+}
 
 class TasteTubeProvider extends StatelessWidget {
   final Widget child;
