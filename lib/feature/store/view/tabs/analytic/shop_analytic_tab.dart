@@ -45,7 +45,8 @@ class ShopAnalyticTab extends StatelessWidget {
                     ),
                     _buildMetricCard(
                       title: 'Conversion',
-                      value: '${state.analytics.conversionRate}%',
+                      value:
+                          '${state.analytics.conversionRate.toStringAsFixed(2)}%',
                       icon: Icons.trending_up,
                       width: screenWidth * 0.29,
                     ),
@@ -143,55 +144,60 @@ class ShopAnalyticTab extends StatelessWidget {
                 SizedBox(height: screenHeight * 0.03),
 
                 // Review Sentiment Pie Chart with Satisfaction Score
-                _buildSectionTitle('Review Sentiment & Satisfaction'),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildChartContainer(
-                        height: screenHeight * 0.25,
-                        child: PieChart(
-                          PieChartData(
-                            sections: [
-                              PieChartSectionData(
-                                value:
-                                    state.analytics.positiveReviews.toDouble(),
-                                color: Colors.green,
-                                title:
-                                    'Positive\n${state.analytics.positiveReviews}',
-                                radius: 50,
-                                titleStyle: const TextStyle(
-                                    fontSize: 12, color: Colors.white),
-                              ),
-                              PieChartSectionData(
-                                value:
-                                    state.analytics.neutralReviews.toDouble(),
-                                color: Colors.yellow,
-                                title:
-                                    'Neutral\n${state.analytics.neutralReviews}',
-                                radius: 50,
-                                titleStyle: const TextStyle(
-                                    fontSize: 12, color: Colors.black),
-                              ),
-                              PieChartSectionData(
-                                value:
-                                    state.analytics.negativeReviews.toDouble(),
-                                color: Colors.red,
-                                title:
-                                    'Negative\n${state.analytics.negativeReviews}',
-                                radius: 50,
-                                titleStyle: const TextStyle(
-                                    fontSize: 12, color: Colors.white),
-                              ),
-                            ],
-                            sectionsSpace: 2,
-                            centerSpaceRadius: 40,
+                if (state.analytics.positiveReviews +
+                        state.analytics.neutralReviews +
+                        state.analytics.negativeReviews >
+                    0) ...[
+                  _buildSectionTitle('Review Sentiment & Satisfaction'),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildChartContainer(
+                          height: screenHeight * 0.25,
+                          child: PieChart(
+                            PieChartData(
+                              sections: [
+                                PieChartSectionData(
+                                  value: state.analytics.positiveReviews
+                                      .toDouble(),
+                                  color: Colors.green,
+                                  title:
+                                      'Positive\n${state.analytics.positiveReviews}',
+                                  radius: 50,
+                                  titleStyle: const TextStyle(
+                                      fontSize: 12, color: Colors.white),
+                                ),
+                                PieChartSectionData(
+                                  value:
+                                      state.analytics.neutralReviews.toDouble(),
+                                  color: Colors.yellow,
+                                  title:
+                                      'Neutral\n${state.analytics.neutralReviews}',
+                                  radius: 50,
+                                  titleStyle: const TextStyle(
+                                      fontSize: 12, color: Colors.black),
+                                ),
+                                PieChartSectionData(
+                                  value: state.analytics.negativeReviews
+                                      .toDouble(),
+                                  color: Colors.red,
+                                  title:
+                                      'Negative\n${state.analytics.negativeReviews}',
+                                  radius: 50,
+                                  titleStyle: const TextStyle(
+                                      fontSize: 12, color: Colors.white),
+                                ),
+                              ],
+                              sectionsSpace: 2,
+                              centerSpaceRadius: 40,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: screenHeight * 0.03),
+                    ],
+                  ),
+                  SizedBox(height: screenHeight * 0.03),
+                ],
 
                 // Top Products Table with Ratings
                 _buildSectionTitle('Top Selling Products'),
