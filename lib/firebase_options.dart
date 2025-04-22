@@ -25,15 +25,9 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -52,7 +46,9 @@ class DefaultFirebaseOptions {
     messagingSenderId: '885591194987',
     projectId: 'taste-tube',
     authDomain: 'taste-tube.firebaseapp.com',
+    databaseURL: 'https://taste-tube-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'taste-tube.appspot.com',
+    measurementId: 'G-0FCFRS81KZ',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
@@ -60,6 +56,7 @@ class DefaultFirebaseOptions {
     appId: '1:885591194987:android:5fed3c71f85631e091a02e',
     messagingSenderId: '885591194987',
     projectId: 'taste-tube',
+    databaseURL: 'https://taste-tube-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'taste-tube.appspot.com',
   );
 
@@ -68,7 +65,34 @@ class DefaultFirebaseOptions {
     appId: '1:885591194987:ios:6c96cada4373feaf91a02e',
     messagingSenderId: '885591194987',
     projectId: 'taste-tube',
+    databaseURL: 'https://taste-tube-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'taste-tube.appspot.com',
+    androidClientId: '885591194987-2dg97ho4pa226jqiq3gk5flebv4kgidd.apps.googleusercontent.com',
+    iosClientId: '885591194987-h2h2ulqop54v0lilfk618q3iun38et1n.apps.googleusercontent.com',
     iosBundleId: 'com.example.tasteTube',
   );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyBfJ1HyKeTGunco_uIiqR0KnAhLOxPFXX4',
+    appId: '1:885591194987:ios:6c96cada4373feaf91a02e',
+    messagingSenderId: '885591194987',
+    projectId: 'taste-tube',
+    databaseURL: 'https://taste-tube-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'taste-tube.appspot.com',
+    androidClientId: '885591194987-2dg97ho4pa226jqiq3gk5flebv4kgidd.apps.googleusercontent.com',
+    iosClientId: '885591194987-h2h2ulqop54v0lilfk618q3iun38et1n.apps.googleusercontent.com',
+    iosBundleId: 'com.example.tasteTube',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyDdIf20txQEAzmfkTCQtX3uJqqTClB2P4A',
+    appId: '1:885591194987:web:ed75b290137b1b5691a02e',
+    messagingSenderId: '885591194987',
+    projectId: 'taste-tube',
+    authDomain: 'taste-tube.firebaseapp.com',
+    databaseURL: 'https://taste-tube-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'taste-tube.appspot.com',
+    measurementId: 'G-WXMG93LDXC',
+  );
+
 }

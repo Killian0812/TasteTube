@@ -14,7 +14,9 @@
           "configurations": {
             "android": "1:885591194987:android:5fed3c71f85631e091a02e",
             "ios": "1:885591194987:ios:6c96cada4373feaf91a02e",
-            "web": "1:885591194987:web:7c557b8dc5a002ef91a02e"
+            "macos": "1:885591194987:ios:6c96cada4373feaf91a02e",
+            "web": "1:885591194987:web:7c557b8dc5a002ef91a02e",
+            "windows": "1:885591194987:web:ed75b290137b1b5691a02e"
           }
         }
       }
@@ -22,19 +24,8 @@
   },
   "hosting": {
     "source": ".",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
-    "frameworksBackend": {
-      "region": "asia-east1"
-    },
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
-    ]
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "frameworksBackend": { "region": "asia-east1" },
+    "rewrites": [{ "source": "**", "destination": "/index.html" }]
   }
 }
