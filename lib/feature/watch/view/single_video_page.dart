@@ -20,6 +20,8 @@ class _SingleVideoState extends State<SingleVideo>
   late VideoPlayerController _videoController;
   bool _isScrubbing = false;
   bool _isDescriptionExpanded = false;
+  bool _hasUserInteracted = false;
+  bool _showPlayOverlay = kIsWeb;
 
   bool get _descriptionExceededLimit =>
       widget.video.description != null &&
@@ -41,14 +43,41 @@ class _SingleVideoState extends State<SingleVideo>
     _videoController =
         VideoPlayerController.networkUrl(Uri.parse(widget.video.url))
           ..initialize().then((_) {
-            setState(() {});
             if (currentPlayingVideoId == videoId) {
-              _videoController.play();
-              _videoController.setLooping(true);
+              if (kIsWeb) {
+                // On web, wait for interaction to allow autoplay
+                _tryAutoPlay();
+              } else {
+                // On non-web platforms, play immediately
+                _videoController.play();
+                _videoController.setLooping(true);
+              }
             }
+            setState(() {});
+          }).catchError((e) {
+            getIt<Logger>().e("Error initializing video", error: e);
           });
 
     WatchPage.controllers[videoId] = _videoController;
+  }
+
+  void _tryAutoPlay() async {
+    if (_hasUserInteracted) {
+      await _videoController.initialize();
+      await _videoController.play();
+      await _videoController.setLooping(true);
+      setState(() {
+        _showPlayOverlay = false;
+      });
+    } else {
+      await _videoController.play();
+      await _videoController.setLooping(true);
+      if (_videoController.value.errorDescription == null) {
+        setState(() {
+          _showPlayOverlay = false;
+        });
+      }
+    }
   }
 
   @override
@@ -74,11 +103,41 @@ class _SingleVideoState extends State<SingleVideo>
     super.build(context);
     return BlocListener<SingleVideoCubit, SingleVideoState>(
       listener: _handleStateChanges,
-      child: Center(
-        child: _videoController.value.isInitialized
-            ? _buildVideoContent()
-            : const CircularProgressIndicator(color: Colors.white),
-      ),
+      child: _videoController.value.isInitialized
+          ? Center(child: _buildVideoContent())
+          : Center(
+              child: widget.video.thumbnail != null
+                  ? Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Image.memory(
+                          base64Decode(widget.video.thumbnail!),
+                          fit: BoxFit.contain,
+                          height: double.infinity,
+                        ),
+                        _showPlayOverlay
+                            ? GestureDetector(
+                                onTap: () {
+                                  _hasUserInteracted = true;
+                                  _tryAutoPlay();
+                                },
+                                child: Container(
+                                  color: Colors.black54,
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.play_arrow_rounded,
+                                      color: Color.fromRGBO(255, 255, 255, 0.8),
+                                      size: 100.0,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : const CircularProgressIndicator(
+                                color: Colors.white)
+                      ],
+                    )
+                  : CommonLoadingIndicator.regular,
+            ),
     );
   }
 
