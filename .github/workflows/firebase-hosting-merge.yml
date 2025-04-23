@@ -22,6 +22,7 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TASTE_TUBE }}
           channelId: live
           projectId: taste-tube
+          target: taste-tube
         env:
           FIREBASE_CLI_EXPERIMENTS: webframeworks
 
@@ -33,7 +34,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.29.2"
-      - run: flutter build web -t lib/admin_main.dart
+      - run: flutter build web -t lib/admin_main.dart --output build/web-admin
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
