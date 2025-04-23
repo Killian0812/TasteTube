@@ -9,7 +9,7 @@ final GoRouter _router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => const InitialPage(isAdmin: true),
+      builder: (context, state) => const InitialPage(),
     ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, shell) => Layout(
@@ -119,7 +119,7 @@ final GoRouter _router = GoRouter(
     ),
     GoRoute(
       path: '/version',
-      builder: (context, state) => const VersionPage(),
+      builder: (context, state) => const VersionPage(isAdmin: true),
     ),
   ],
   redirect: (context, state) {

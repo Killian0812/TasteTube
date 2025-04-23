@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:taste_tube/common/constant.dart';
-import 'package:taste_tube/common/text.dart';
 
 class SplashPage extends StatefulWidget {
-  final bool isAdmin;
-  const SplashPage({super.key, this.isAdmin = false});
+  const SplashPage({super.key});
 
   @override
   State<SplashPage> createState() => _SplashPageState();
@@ -45,12 +43,6 @@ class _SplashPageState extends State<SplashPage>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(AssetPath.tastetubeInverted),
-              const SizedBox(height: 20),
-              if (widget.isAdmin)
-                const Text(
-                  'TasteTube Admin',
-                  style: CommonTextStyle.bold,
-                ),
             ],
           ),
         ),

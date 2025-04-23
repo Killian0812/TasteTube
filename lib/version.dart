@@ -5,7 +5,8 @@ import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/text.dart';
 
 class VersionPage extends StatefulWidget {
-  const VersionPage({super.key});
+  final bool isAdmin;
+  const VersionPage({super.key, this.isAdmin = false});
 
   @override
   State<VersionPage> createState() => _VersionPageState();
@@ -45,6 +46,18 @@ class _VersionPageState extends State<VersionPage> {
                   ),
                   textAlign: TextAlign.center,
                 ),
+                if (widget.isAdmin) ...[
+                  const SizedBox(height: 15),
+                  Text(
+                    'TasteTube Admin',
+                    style: CommonTextStyle.bold.copyWith(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      fontStyle: FontStyle.italic,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
                 const SizedBox(height: 32),
                 ElevatedButton.icon(
                   onPressed: () {

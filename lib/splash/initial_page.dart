@@ -7,8 +7,7 @@ import 'package:taste_tube/splash/splash_page.dart';
 
 class InitialPage extends StatefulWidget {
   final String? redirect;
-  final bool isAdmin;
-  const InitialPage({super.key, this.redirect, this.isAdmin = false});
+  const InitialPage({super.key, this.redirect});
 
   @override
   State<InitialPage> createState() => _InitialPageState();
@@ -42,9 +41,7 @@ class _InitialPageState extends State<InitialPage> {
           }
         },
         builder: (context, state) {
-          return SplashPage(
-            isAdmin: widget.isAdmin,
-          );
+          return SplashPage();
         },
       ),
     );
