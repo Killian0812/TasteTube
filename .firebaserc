@@ -1,5 +1,18 @@
 {
   "projects": {
     "default": "taste-tube"
-  }
+  },
+  "targets": {
+    "taste-tube": {
+      "hosting": {
+        "admin-taste-tube": [
+          "admin-taste-tube"
+        ],
+        "taste-tube": [
+          "taste-tube"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }
