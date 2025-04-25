@@ -15,8 +15,7 @@ class UploadCubit extends Cubit<UploadState> {
   final UploadRepository uploadRepository;
   final ProductRepository productRepository;
   final Uint8List thumbnail;
-  final String filePath;
-  final XFile? xfile;
+  final XFile xfile;
   final bool recordedWithFrontCamera;
   final User? reviewTarget;
   String title = '';
@@ -28,9 +27,8 @@ class UploadCubit extends Cubit<UploadState> {
 
   UploadCubit({
     required this.thumbnail,
-    required this.filePath,
     required this.recordedWithFrontCamera,
-    this.xfile,
+    required this.xfile,
     this.reviewTarget,
   })  : uploadRepository = getIt(),
         productRepository = getIt(),
@@ -84,7 +82,6 @@ class UploadCubit extends Cubit<UploadState> {
     try {
       emit(UploadLoading());
       final result = await uploadRepository.upload(
-          filePath,
           xfile,
           UploadVideoRequest(
               title,

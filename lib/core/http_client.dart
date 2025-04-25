@@ -12,53 +12,49 @@ void _logDefaultAnalyticsEvent(
 ) {
   final analytics = FirebaseAnalytics.instance;
 
-  try {
-    if (url.contains(Api.addCartApi) && method == 'POST') {
-      analytics.logAddToCart(
-        items: [
-          AnalyticsEventItem(
-            itemId: data?['productId'],
-            quantity: data?['quantity'],
-          )
-        ],
-      );
-    } else if (url.contains(Api.cartApi) && method == 'GET') {
-      analytics.logViewCart();
-    } else if (url.contains(Api.videoApi) && method == 'GET') {
-      analytics.logViewItem(
-        items: [
-          AnalyticsEventItem(
-            itemId: url.split('/').last,
-            itemName: 'video',
-          )
-        ],
-      );
-    } else if (url.contains(Api.productApi) && method == 'GET') {
-      AnalyticsEventItem(
-        itemId: url.split('/').last,
-        itemName: 'product',
-      );
-    } else if (url.contains(Api.addCard)) {
-      analytics.logAddPaymentInfo(
-        paymentType: data?['type'],
-      );
-    } else if (url.contains(Api.getVnpayUrl)) {
-      analytics.logAddPaymentInfo(
-        paymentType: "DOMESTIC CARD",
-        currency: data?['currency'],
-        value: data?['amount'],
-      );
-    } else if (url.contains(Api.addressApi) && method == 'POST') {
-      analytics.logAddShippingInfo();
-    } else if (url.contains('/order-delivery/') && method == 'POST') {
-      analytics.logAddShippingInfo(
-        shippingTier: query['deliveryType'],
-      );
-    } else if (url.contains(Api.orderApi) && method == 'POST') {
-      analytics.logBeginCheckout(parameters: data?.cast<String, Object>());
-    }
-  } catch (e) {
-    getIt<Logger>().e("Unable to send firebase analytics", error: e);
+  if (url.contains(Api.addCartApi) && method == 'POST') {
+    analytics.logAddToCart(
+      items: [
+        AnalyticsEventItem(
+          itemId: data?['productId'],
+          quantity: data?['quantity'],
+        )
+      ],
+    );
+  } else if (url.contains(Api.cartApi) && method == 'GET') {
+    analytics.logViewCart();
+  } else if (url.contains(Api.videoApi) && method == 'GET') {
+    analytics.logViewItem(
+      items: [
+        AnalyticsEventItem(
+          itemId: url.split('/').last,
+          itemName: 'video',
+        )
+      ],
+    );
+  } else if (url.contains(Api.productApi) && method == 'GET') {
+    AnalyticsEventItem(
+      itemId: url.split('/').last,
+      itemName: 'product',
+    );
+  } else if (url.contains(Api.addCard)) {
+    analytics.logAddPaymentInfo(
+      paymentType: data?['type'],
+    );
+  } else if (url.contains(Api.getVnpayUrl)) {
+    analytics.logAddPaymentInfo(
+      paymentType: "DOMESTIC CARD",
+      currency: data?['currency'],
+      value: data?['amount'],
+    );
+  } else if (url.contains(Api.addressApi) && method == 'POST') {
+    analytics.logAddShippingInfo();
+  } else if (url.contains('/order-delivery/') && method == 'POST') {
+    analytics.logAddShippingInfo(
+      shippingTier: query['deliveryType'],
+    );
+  } else if (url.contains(Api.orderApi) && method == 'POST') {
+    analytics.logBeginCheckout(parameters: data?.cast<String, Object>());
   }
 }
 
@@ -82,12 +78,16 @@ Dio getHttpClient() {
         options.extra['startTime'] = DateTime.now();
 
         // Log default Firebase Analytics events
-        _logDefaultAnalyticsEvent(
-          options.uri.toString(),
-          options.method,
-          options.data,
-          options.queryParameters,
-        );
+        try {
+          _logDefaultAnalyticsEvent(
+            options.uri.toString(),
+            options.method,
+            (options.data is FormData) ? {} : options.data,
+            options.queryParameters,
+          );
+        } catch (e) {
+          getIt<Logger>().e("Unable to send firebase analytics", error: e);
+        }
 
         // Log a custom Firebase Analytics event
         FirebaseAnalytics.instance.logEvent(

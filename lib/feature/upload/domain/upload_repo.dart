@@ -12,16 +12,15 @@ class UploadRepository {
   UploadRepository({required this.http});
 
   Future<Either<ApiError, String>> upload(
-      String filePath, XFile? xfile, UploadVideoRequest request) async {
+      XFile xfile, UploadVideoRequest request) async {
     try {
       MultipartFile multipartFile;
       if (kIsWeb) {
-        final bytes = await xfile!.readAsBytes();
+        final bytes = await xfile.readAsBytes();
         multipartFile = MultipartFile.fromBytes(bytes,
-        filename: xfile.name,
-            contentType: DioMediaType.parse('video/mp4'));
+            filename: xfile.name, contentType: DioMediaType.parse('video/mp4'));
       } else {
-        multipartFile = await MultipartFile.fromFile(filePath,
+        multipartFile = await MultipartFile.fromFile(xfile.path,
             contentType: DioMediaType.parse('video/mp4'));
       }
 

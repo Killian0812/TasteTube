@@ -14,18 +14,16 @@ import 'package:taste_tube/feature/upload/view/upload_page.dart';
 import 'package:video_player/video_player.dart';
 
 class ReplayPage extends StatefulWidget {
-  final String filePath;
   final bool recordedWithFrontCamera;
   final User? reviewTarget;
-  final XFile? xfile;
+  final XFile xfile;
   final Uint8List? bytes;
 
   const ReplayPage({
     super.key,
-    required this.filePath,
     required this.recordedWithFrontCamera,
     this.reviewTarget,
-    this.xfile,
+    required this.xfile,
     this.bytes,
   });
 
@@ -40,9 +38,10 @@ class _ReplayPageState extends State<ReplayPage> {
   void initState() {
     super.initState();
     _videoPlayerController = kIsWeb
-        ? VideoPlayerController.networkUrl(
-            Uri.dataFromBytes(widget.bytes!, mimeType: 'video/mp4'))
-        : VideoPlayerController.file(File(widget.filePath));
+        ? VideoPlayerController.networkUrl(widget.bytes == null
+            ? Uri.parse(widget.xfile.path)
+            : Uri.dataFromBytes(widget.bytes!, mimeType: 'video/mp4'))
+        : VideoPlayerController.file(File(widget.xfile.path));
     _videoPlayerController.initialize().then((_) {
       setState(() {});
       _videoPlayerController.setLooping(true);
@@ -88,7 +87,6 @@ class _ReplayPageState extends State<ReplayPage> {
                     MaterialPageRoute(
                       builder: (context) => UploadPage.provider(
                         thumbnail,
-                        widget.filePath,
                         widget.recordedWithFrontCamera,
                         widget.reviewTarget,
                         widget.xfile,
@@ -154,7 +152,9 @@ class _ReplayPageState extends State<ReplayPage> {
     try {
       if (kIsWeb) {
         final xfile = await VideoThumbnail.thumbnailFile(
-          video: Uri.dataFromBytes(widget.bytes!, mimeType: 'video/mp4')
+          video: (widget.bytes == null
+                  ? Uri.parse(widget.xfile.path)
+                  : Uri.dataFromBytes(widget.bytes!, mimeType: 'video/mp4'))
               .toString(),
           imageFormat: ImageFormat.JPEG,
           maxWidth: 100,
@@ -164,7 +164,7 @@ class _ReplayPageState extends State<ReplayPage> {
         return xfile.readAsBytes();
       }
       return await VideoThumbnail.thumbnailData(
-          video: widget.filePath,
+          video: widget.xfile.path,
           imageFormat: ImageFormat.JPEG,
           maxWidth: 100,
           maxHeight: 200,

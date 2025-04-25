@@ -49,7 +49,7 @@ class CameraCubit extends Cubit<CameraState> {
     if (state is CameraRecording) {
       final file = await cameraController.stopVideoRecording();
       _stopTimer();
-      emit(CameraStopped(file.path));
+      emit(CameraStopped(file));
     } else {
       await cameraController.prepareForVideoRecording();
       await cameraController.startVideoRecording();
@@ -93,8 +93,8 @@ class CameraRecording extends CameraState {
 }
 
 class CameraStopped extends CameraState {
-  final String filePath;
-  CameraStopped(this.filePath);
+  final XFile xfile;
+  CameraStopped(this.xfile);
 }
 
 class CameraError extends CameraState {

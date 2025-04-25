@@ -18,15 +18,13 @@ class UploadPage extends StatelessWidget {
 
   static Widget provider(
     Uint8List thumbnail,
-    String filePath,
     bool recordedWithFrontCamera,
     User? reviewTarget,
-    XFile? xfile,
+    XFile xfile,
   ) =>
       BlocProvider(
         create: (context) => UploadCubit(
           thumbnail: thumbnail,
-          filePath: filePath,
           xfile: xfile,
           recordedWithFrontCamera: recordedWithFrontCamera,
           reviewTarget: reviewTarget,
