@@ -8,6 +8,7 @@ import 'package:taste_tube/common/button.dart';
 import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/common/toast.dart';
+import 'package:taste_tube/common/constant.dart';
 import 'package:taste_tube/global_data/user/user.dart';
 import 'package:taste_tube/feature/upload/view/upload_cubit.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
@@ -152,7 +153,7 @@ class UploadPage extends StatelessWidget {
                               const Spacer(),
                               BlocBuilder<UploadCubit, UploadState>(
                                 builder: (context, state) {
-                                  return Text(cubit.selectedVisibility);
+                                  return Text(cubit.selectedVisibility.name());
                                 },
                               ),
                               const SizedBox(width: 20),
@@ -217,12 +218,16 @@ class UploadPage extends StatelessWidget {
           height: CommonSize.screenSize.height * 0.3,
           child: ListView(
             padding: const EdgeInsets.only(top: 30),
-            children: ['PRIVATE', 'FOLLOWERS_ONLY', 'PUBLIC'].map((visibility) {
-              return ListTile(
-                title: Text(visibility),
-                onTap: () {
-                  cubit.setVisibility(visibility);
-                  Navigator.pop(context);
+            children: VideoVisibility.values.map((visibility) {
+              return CheckboxListTile(
+                title: Text(visibility.name()),
+                subtitle: Text(visibility.description()),
+                value: cubit.selectedVisibility == visibility,
+                onChanged: (value) {
+                  if (value == true) {
+                    cubit.setVisibility(visibility);
+                    Navigator.pop(context);
+                  }
                 },
               );
             }).toList(),

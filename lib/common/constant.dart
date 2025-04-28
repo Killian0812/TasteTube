@@ -11,38 +11,38 @@ extension AccountTypeExtension on AccountType {
   }
 }
 
-enum Visibility { private, followersOnly, public }
+enum VideoVisibility { private, followersOnly, public }
 
-extension VisibilityExtension on Visibility {
+extension VisibilityExtension on VideoVisibility {
   String value() {
     switch (this) {
-      case Visibility.private:
+      case VideoVisibility.private:
         return "PRIVATE";
-      case Visibility.followersOnly:
+      case VideoVisibility.followersOnly:
         return "FOLLOWERS_ONLY";
-      case Visibility.public:
+      case VideoVisibility.public:
         return "PUBLIC";
     }
   }
 
   String name() {
     switch (this) {
-      case Visibility.private:
+      case VideoVisibility.private:
         return "Private";
-      case Visibility.followersOnly:
+      case VideoVisibility.followersOnly:
         return "Followers only";
-      case Visibility.public:
+      case VideoVisibility.public:
         return "Public";
     }
   }
 
   String description() {
     switch (this) {
-      case Visibility.private:
+      case VideoVisibility.private:
         return "Only you can see this video.";
-      case Visibility.followersOnly:
+      case VideoVisibility.followersOnly:
         return "Only your & your followers can see this video.";
-      case Visibility.public:
+      case VideoVisibility.public:
         return "Everyone can see this video.";
     }
   }

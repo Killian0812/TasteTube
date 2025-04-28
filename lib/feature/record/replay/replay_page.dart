@@ -38,9 +38,7 @@ class _ReplayPageState extends State<ReplayPage> {
   void initState() {
     super.initState();
     _videoPlayerController = kIsWeb
-        ? VideoPlayerController.networkUrl(widget.bytes == null
-            ? Uri.parse(widget.xfile.path)
-            : Uri.dataFromBytes(widget.bytes!, mimeType: 'video/mp4'))
+        ? VideoPlayerController.networkUrl(Uri.parse(widget.xfile.path))
         : VideoPlayerController.file(File(widget.xfile.path));
     _videoPlayerController.initialize().then((_) {
       setState(() {});

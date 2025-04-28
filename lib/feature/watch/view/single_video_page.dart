@@ -16,7 +16,7 @@ class SingleVideo extends StatefulWidget {
 }
 
 class _SingleVideoState extends State<SingleVideo>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin, SingleTickerProviderStateMixin {
   late VideoPlayerController _videoController;
   bool _isScrubbing = false;
   bool _isDescriptionExpanded = false;
@@ -29,6 +29,9 @@ class _SingleVideoState extends State<SingleVideo>
 
   late FocusNode? _focusNode;
 
+  late AnimationController _jiggleController;
+  late Animation<double> _jiggleAnimation;
+
   String get videoId => widget.video.id;
   String get url => widget.video.manifestUrl == null
       ? widget.video.url
@@ -38,6 +41,17 @@ class _SingleVideoState extends State<SingleVideo>
   void initState() {
     super.initState();
     _focusNode = FocusNode();
+
+    _jiggleController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _jiggleAnimation = Tween<double>(begin: 0, end: 0.1).animate(
+      CurvedAnimation(
+        parent: _jiggleController,
+        curve: Curves.elasticIn,
+      ),
+    );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       currentPlayingVideoId = videoId;
@@ -182,6 +196,7 @@ class _SingleVideoState extends State<SingleVideo>
         _videoPauseButton(),
         _videoInfo(),
         _reviewTarget(),
+        _videoPlayspeed(),
         _videoScrubber(),
         if (_isScrubbing || !_videoController.value.isPlaying) _timeIndicator(),
       ],
@@ -630,6 +645,42 @@ class _SingleVideoState extends State<SingleVideo>
             )),
       );
 
+  static const List<double> _playbackRates = <double>[
+    0.25,
+    0.5,
+    1.0,
+    1.5,
+    2.0,
+    3.0,
+  ];
+
+  Widget _videoPlayspeed() => Align(
+        alignment: Alignment.topRight,
+        child: PopupMenuButton<double>(
+          initialValue: _videoController.value.playbackSpeed,
+          tooltip: 'Playback speed',
+          onSelected: (double speed) {
+            _videoController.setPlaybackSpeed(speed);
+          },
+          itemBuilder: (BuildContext context) {
+            return <PopupMenuItem<double>>[
+              for (final double speed in _playbackRates)
+                PopupMenuItem<double>(
+                  value: speed,
+                  child: Text('${speed}x'),
+                )
+            ];
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: 12,
+              horizontal: 16,
+            ),
+            child: Text('${_videoController.value.playbackSpeed}x'),
+          ),
+        ),
+      );
+
   Widget _videoScrubber() => GestureDetector(
         onHorizontalDragStart: (details) {
           setState(() {
@@ -686,15 +737,30 @@ class _SingleVideoState extends State<SingleVideo>
               } else {
                 await context.read<SingleVideoCubit>().likeVideo();
               }
+              if (state.interaction.userLiked && !loading) {
+                _jiggleController
+                    .forward()
+                    .then((_) => _jiggleController.reset());
+              }
             },
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  FontAwesomeIcons.solidHeart,
-                  color:
-                      state.interaction.userLiked ? Colors.red : Colors.white,
-                  size: 40,
+                AnimatedBuilder(
+                  animation: _jiggleAnimation,
+                  builder: (context, child) => Transform.rotate(
+                    angle: _jiggleAnimation.value,
+                    child: Transform.scale(
+                      scale: 1 + (_jiggleAnimation.value * 0.5),
+                      child: Icon(
+                        FontAwesomeIcons.solidHeart,
+                        color: state.interaction.userLiked
+                            ? Colors.red
+                            : Colors.white,
+                        size: 40,
+                      ),
+                    ),
+                  ),
                 ),
                 Text(
                   state.interaction.totalLikes.toString(),
@@ -707,34 +773,37 @@ class _SingleVideoState extends State<SingleVideo>
       ));
 
   Widget _videoComments() => Align(
-        alignment: const Alignment(0.9, 0.15),
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () async {
-            final cubit = context.read<SingleVideoCubit>();
-            await cubit.fetchComments();
-            if (mounted) _showCommentsBottomSheet(context, cubit);
-          },
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                FontAwesomeIcons.solidCommentDots,
-                color: Colors.white,
-                size: 40,
-              ),
-              BlocBuilder<SingleVideoCubit, SingleVideoState>(
-                builder: (context, state) {
-                  if (state is SingleVideoLoading) {
-                    return const SizedBox.shrink();
-                  }
-                  return Text(
-                    state.comments.length.toString(),
-                    style: const TextStyle(color: Colors.white),
-                  );
-                },
-              ),
-            ],
+        alignment: const Alignment(0.9, 0.0),
+        child: Container(
+          margin: const EdgeInsets.only(top: 150),
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () async {
+              final cubit = context.read<SingleVideoCubit>();
+              await cubit.fetchComments();
+              if (mounted) _showCommentsBottomSheet(context, cubit);
+            },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  FontAwesomeIcons.solidCommentDots,
+                  color: Colors.white,
+                  size: 40,
+                ),
+                BlocBuilder<SingleVideoCubit, SingleVideoState>(
+                  builder: (context, state) {
+                    if (state is SingleVideoLoading) {
+                      return const SizedBox.shrink();
+                    }
+                    return Text(
+                      state.comments.length.toString(),
+                      style: const TextStyle(color: Colors.white),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       );
@@ -1000,38 +1069,44 @@ class _SingleVideoState extends State<SingleVideo>
   }
 
   Widget _videoShare() => Align(
-        alignment: const Alignment(0.9, 0.27),
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () async {
-            final box = context.findRenderObject() as RenderBox?;
-            context.read<SingleVideoCubit>().shareVideo();
-            await Share.shareUri(
-              // TODO: Update to current video url
-              Uri.parse(Api.baseUrl),
-              sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
-            );
-          },
-          child: const Icon(
-            FontAwesomeIcons.share,
-            color: Colors.white,
-            size: 30,
+        alignment: const Alignment(0.9, 0.0),
+        child: Container(
+          margin: const EdgeInsets.only(top: 270),
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () async {
+              final box = context.findRenderObject() as RenderBox?;
+              context.read<SingleVideoCubit>().shareVideo();
+              await Share.shareUri(
+                // TODO: Update to current video url
+                Uri.parse(Api.baseUrl),
+                sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+              );
+            },
+            child: const Icon(
+              FontAwesomeIcons.share,
+              color: Colors.white,
+              size: 30,
+            ),
           ),
         ),
       );
 
   Widget _videoSettings() => Align(
-        alignment: const Alignment(0.9, 0.39),
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () {
-            final cubit = context.read<SingleVideoCubit>();
-            _showVideoOptions(context, cubit);
-          },
-          child: const Icon(
-            Icons.more_horiz,
-            color: Colors.white,
-            size: 30,
+        alignment: const Alignment(0.9, 0.0),
+        child: Container(
+          margin: const EdgeInsets.only(top: 350),
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              final cubit = context.read<SingleVideoCubit>();
+              _showVideoOptions(context, cubit);
+            },
+            child: const Icon(
+              Icons.more_horiz,
+              color: Colors.white,
+              size: 30,
+            ),
           ),
         ),
       );
@@ -1115,9 +1190,12 @@ class _SingleVideoState extends State<SingleVideo>
 
   String _formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final minutes = twoDigits(duration.inMinutes.remainder(60));
-    final seconds = twoDigits(duration.inSeconds.remainder(60));
-    return "$minutes:$seconds";
+    final hours = twoDigits(duration.isNegative ? 0 : duration.inHours);
+    final minutes =
+        twoDigits(duration.isNegative ? 0 : duration.inMinutes.remainder(60));
+    final seconds =
+        twoDigits(duration.isNegative ? 0 : duration.inSeconds.remainder(60));
+    return hours != "00" ? "$hours:$minutes:$seconds" : "$minutes:$seconds";
   }
 
   @override

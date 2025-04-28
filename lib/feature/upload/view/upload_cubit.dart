@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:taste_tube/common/constant.dart';
 import 'package:taste_tube/global_data/product/product.dart';
 import 'package:taste_tube/feature/store/domain/product_repo.dart';
 import 'package:taste_tube/global_data/user/user.dart';
@@ -20,7 +21,7 @@ class UploadCubit extends Cubit<UploadState> {
   final User? reviewTarget;
   String title = '';
   String description = '';
-  String selectedVisibility = 'PUBLIC';
+  VideoVisibility selectedVisibility = VideoVisibility.public;
   List<String> hashtags = [];
   Set<String> selectedProductIds = {};
   List<Product> availableProducts = [];
@@ -48,7 +49,7 @@ class UploadCubit extends Cubit<UploadState> {
     emit(UploadInitialized());
   }
 
-  void setVisibility(String visibility) {
+  void setVisibility(VideoVisibility visibility) {
     selectedVisibility = visibility;
     emit(UploadInitialized());
   }
@@ -90,7 +91,7 @@ class UploadCubit extends Cubit<UploadState> {
               recordedWithFrontCamera ? 'FRONT' : 'BACK',
               base64Encode(thumbnail),
               selectedProductIds.toList(),
-              selectedVisibility,
+              selectedVisibility.value(),
               reviewTarget?.id));
       result.fold(
         (error) =>
