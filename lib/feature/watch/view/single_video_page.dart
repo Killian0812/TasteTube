@@ -22,6 +22,7 @@ class _SingleVideoState extends State<SingleVideo>
   bool _isDescriptionExpanded = false;
   bool _hasUserInteracted = false;
   bool _showPlayOverlay = kIsWeb;
+  bool _useManifestUrl = true; // Track whether to use manifestUrl or url
 
   bool get _descriptionExceededLimit =>
       widget.video.description != null &&
@@ -33,9 +34,9 @@ class _SingleVideoState extends State<SingleVideo>
   late Animation<double> _jiggleAnimation;
 
   String get videoId => widget.video.id;
-  String get url => widget.video.manifestUrl == null
-      ? widget.video.url
-      : widget.video.manifestUrl!;
+  String? get manifestUrl => widget.video.manifestUrl;
+
+  String get url => widget.video.url;
 
   @override
   void initState() {
@@ -43,10 +44,10 @@ class _SingleVideoState extends State<SingleVideo>
     _focusNode = FocusNode();
 
     _jiggleController = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 500),
       vsync: this,
     );
-    _jiggleAnimation = Tween<double>(begin: 0, end: 0.1).animate(
+    _jiggleAnimation = Tween<double>(begin: 0, end: 0.3).animate(
       CurvedAnimation(
         parent: _jiggleController,
         curve: Curves.elasticIn,
@@ -57,7 +58,14 @@ class _SingleVideoState extends State<SingleVideo>
       currentPlayingVideoId = videoId;
     });
 
-    _videoController = VideoPlayerController.networkUrl(Uri.parse(url))
+    _initializeVideoController();
+  }
+
+  void _initializeVideoController() {
+    // Determine the URL to use
+    final videoUrl =
+        _useManifestUrl && manifestUrl != null ? manifestUrl! : url;
+    _videoController = VideoPlayerController.networkUrl(Uri.parse(videoUrl))
       ..initialize().then((_) {
         if (currentPlayingVideoId == videoId) {
           if (kIsWeb) {
@@ -72,6 +80,16 @@ class _SingleVideoState extends State<SingleVideo>
         setState(() {});
       }).catchError((e) {
         getIt<Logger>().e("Error initializing video", error: e);
+        // If using manifestUrl and it fails, try fallback to url
+        if (_useManifestUrl && manifestUrl != null) {
+          setState(() {
+            _useManifestUrl = false; // Switch to url
+          });
+          // Dispose of the old controller and reinitialize
+          _videoController.dispose().then((_) {
+            _initializeVideoController();
+          });
+        }
       });
 
     WatchPage.controllers[videoId] = _videoController;
@@ -101,6 +119,7 @@ class _SingleVideoState extends State<SingleVideo>
     WatchPage.controllers.remove(videoId);
     _videoController.dispose();
     _focusNode?.dispose();
+    _jiggleController.dispose();
     super.dispose();
   }
 
@@ -725,7 +744,18 @@ class _SingleVideoState extends State<SingleVideo>
 
   Widget _videoLikes() => Align(
       alignment: const Alignment(0.9, 0.0),
-      child: BlocBuilder<SingleVideoCubit, SingleVideoState>(
+      child: BlocConsumer<SingleVideoCubit, SingleVideoState>(
+        listener: (context, state) {
+          if (state.interaction.userLiked) {
+            _jiggleController.forward().then((_) => _jiggleController.reset());
+          }
+        },
+        listenWhen: (previous, current) {
+          if (previous.interaction.userLiked == current.interaction.userLiked) {
+            return false;
+          }
+          return true;
+        },
         builder: (context, state) {
           final loading = state is SingleVideoLoading;
           return GestureDetector(
@@ -736,11 +766,6 @@ class _SingleVideoState extends State<SingleVideo>
                 await context.read<SingleVideoCubit>().unlikeVideo();
               } else {
                 await context.read<SingleVideoCubit>().likeVideo();
-              }
-              if (state.interaction.userLiked && !loading) {
-                _jiggleController
-                    .forward()
-                    .then((_) => _jiggleController.reset());
               }
             },
             child: Column(
