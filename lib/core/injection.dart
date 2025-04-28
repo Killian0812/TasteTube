@@ -12,7 +12,7 @@ import 'package:taste_tube/feature/store/domain/analytic_repo.dart';
 import 'package:taste_tube/feature/store/domain/delivery_option_repo.dart';
 import 'package:taste_tube/feature/store/domain/payment_setting_repo.dart';
 import 'package:taste_tube/feature/store/domain/product_repo.dart';
-import 'package:taste_tube/feature/profile/domain/profile_repo.dart';
+import 'package:taste_tube/feature/profile/domain/user_repo.dart';
 import 'package:taste_tube/feature/search/domain/search_repo.dart';
 import 'package:taste_tube/feature/shop/domain/address_repo.dart';
 import 'package:taste_tube/feature/shop/domain/order_repo.dart';

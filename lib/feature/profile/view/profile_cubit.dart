@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:taste_tube/global_data/user/user.dart';
-import 'package:taste_tube/feature/profile/domain/profile_repo.dart';
+import 'package:taste_tube/feature/profile/domain/user_repo.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
 import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
 import 'package:taste_tube/core/injection.dart';
@@ -23,7 +23,7 @@ class ProfileCubit extends Cubit<ProfileState> {
         emit(ProfileFailure(state.user, apiError.message!));
       },
       (user) async {
-        final likedVideos = isOwner ? await getLikedVideos() : null;
+        final likedVideos = await getLikedVideos();
         final reviews = await getReviews();
         emit(ProfileSuccess(
           user,
@@ -35,6 +35,7 @@ class ProfileCubit extends Cubit<ProfileState> {
   }
 
   Future<List<Video>?> getLikedVideos() async {
+    if (!isOwner) return null;
     final either = await repository.getLikedVideos();
     return either.match(
       (apiError) => null,

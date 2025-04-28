@@ -30,6 +30,9 @@ class _SingleVideoState extends State<SingleVideo>
   late FocusNode? _focusNode;
 
   String get videoId => widget.video.id;
+  String get url => widget.video.manifestUrl == null
+      ? widget.video.url
+      : widget.video.manifestUrl!;
 
   @override
   void initState() {
@@ -40,23 +43,22 @@ class _SingleVideoState extends State<SingleVideo>
       currentPlayingVideoId = videoId;
     });
 
-    _videoController =
-        VideoPlayerController.networkUrl(Uri.parse(widget.video.url))
-          ..initialize().then((_) {
-            if (currentPlayingVideoId == videoId) {
-              if (kIsWeb) {
-                // On web, wait for interaction to allow autoplay
-                _tryAutoPlay();
-              } else {
-                // On non-web platforms, play immediately
-                _videoController.play();
-                _videoController.setLooping(true);
-              }
-            }
-            setState(() {});
-          }).catchError((e) {
-            getIt<Logger>().e("Error initializing video", error: e);
-          });
+    _videoController = VideoPlayerController.networkUrl(Uri.parse(url))
+      ..initialize().then((_) {
+        if (currentPlayingVideoId == videoId) {
+          if (kIsWeb) {
+            // On web, wait for interaction to allow autoplay
+            _tryAutoPlay();
+          } else {
+            // On non-web platforms, play immediately
+            _videoController.play();
+            _videoController.setLooping(true);
+          }
+        }
+        setState(() {});
+      }).catchError((e) {
+        getIt<Logger>().e("Error initializing video", error: e);
+      });
 
     WatchPage.controllers[videoId] = _videoController;
   }
@@ -91,7 +93,7 @@ class _SingleVideoState extends State<SingleVideo>
   @override
   void didUpdateWidget(covariant SingleVideo oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.video.id == currentPlayingVideoId) {
+    if (videoId == currentPlayingVideoId) {
       _videoController.play();
     } else {
       _videoController.pause();

@@ -6,6 +6,8 @@ class Video {
   String ownerUsername;
   String ownerImage;
   String url;
+  String? manifestUrl;
+  int views;
   String filename;
   String? direction;
   String? title;
@@ -27,6 +29,8 @@ class Video {
     required this.ownerImage,
     required this.url,
     required this.filename,
+    required this.views,
+    this.manifestUrl,
     this.direction,
     this.title,
     this.description,
@@ -48,6 +52,8 @@ class Video {
       ownerUsername: json['userId']['username'],
       ownerImage: json['userId']['image'],
       url: json['url'],
+      views: (json['views'] as num?)?.toInt() ?? 0,
+      manifestUrl: json['manifestUrl'] as String?,
       filename: json['filename'],
       direction: json['direction'],
       title: json['title'],
