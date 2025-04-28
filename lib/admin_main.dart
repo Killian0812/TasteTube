@@ -1,4 +1,3 @@
-import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -12,10 +11,7 @@ import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:taste_tube/api.dart';
-import 'package:taste_tube/auth/view/login_page.dart';
-import 'package:taste_tube/auth/view/register_page.dart';
 import 'package:taste_tube/auth/view/phone_or_email/login_phone_or_email_page.dart';
-import 'package:taste_tube/auth/view/phone_or_email/register_phone_or_email_page.dart';
 import 'package:taste_tube/core/build_config.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/error.dart';
@@ -25,15 +21,12 @@ import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/feature/home/view/content_cubit.dart';
 import 'package:taste_tube/feature/profile/view/owner_profile_page.dart';
 import 'package:taste_tube/feature/record/camera/camera_page.dart';
-import 'package:taste_tube/feature/shop/view/cart_page.dart';
-import 'package:taste_tube/feature/shop/view/shop_page.dart';
 import 'package:taste_tube/feature/watch/view/public_videos_page.dart';
 import 'package:taste_tube/core/fcm_service.dart';
 import 'package:taste_tube/global_bloc/download/download_dialog.dart';
 import 'package:taste_tube/feature/home/view/home_page.dart';
 import 'package:taste_tube/feature/inbox/view/chat_page.dart';
 import 'package:taste_tube/feature/profile/view/profile_page.dart';
-import 'package:taste_tube/feature/store/view/store_page.dart';
 import 'package:taste_tube/feature/shop/view/tabs/shopping/single_shop_page.dart';
 import 'package:taste_tube/firebase_options.dart';
 import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
@@ -107,7 +100,7 @@ class MyApp extends StatelessWidget {
       builder: (context, snapshot) {
         return MaterialApp.router(
           debugShowCheckedModeBanner: false,
-          title: 'TasteTube',
+          title: 'TasteTube Admin',
           builder: (context, child) => TasteTubeProvider(
             child: StreamChat(
               client: streamClient,
@@ -237,112 +230,91 @@ class Layout extends StatelessWidget {
         final isCustomer = state.data.role == "CUSTOMER";
         final fabHidden = currentIndex == 1 || currentIndex == 2;
 
+        final labels = isCustomer
+            ? ['Home', 'Shop', 'Chat', 'Profile']
+            : ['Home', 'Store', 'Chat', 'Profile'];
+        final icons = isCustomer
+            ? [
+                Icons.home,
+                Icons.shopping_basket_rounded,
+                Icons.inbox,
+                Icons.person
+              ]
+            : [Icons.home, Icons.store, Icons.inbox, Icons.person];
+
         return Stack(
           alignment: Alignment.center,
           children: [
-            Scaffold(
-              resizeToAvoidBottomInset: false,
-              body: shell,
-              extendBody: true,
-              extendBodyBehindAppBar: true,
-              bottomNavigationBar: ValueListenableBuilder<bool>(
-                valueListenable:
-                    getIt<BottomNavigationBarToggleNotifier>().isVisible,
-                builder: (context, isVisible, child) {
-                  if (!isVisible) return const SizedBox.shrink();
-                  return AnimatedBottomNavigationBar.builder(
-                    backgroundColor: Theme.of(context)
-                        .bottomNavigationBarTheme
-                        .backgroundColor,
-                    activeIndex: currentIndex,
-                    gapLocation:
-                        fabHidden ? GapLocation.none : GapLocation.center,
-                    notchSmoothness: NotchSmoothness.softEdge,
-                    onTap: (index) {
-                      if (index != 0) {
-                        getIt<ContentCubit>().pauseContent();
-                      } else {
-                        getIt<ContentCubit>().resumeContent();
-                      }
-                      if (index == 1 && isCustomer) {
-                        context.go('/shop');
-                        return;
-                      }
-                      shell.goBranch(index);
-                    },
-                    itemCount: 4,
-                    tabBuilder: (int index, bool isActive) {
-                      final labels = isCustomer
-                          ? ['Home', 'Shop', 'Chat', 'Profile']
-                          : ['Home', 'Store', 'Chat', 'Profile'];
-                      final icons = isCustomer
-                          ? [
-                              Icons.home,
-                              Icons.shopping_basket_rounded,
-                              Icons.inbox,
-                              Icons.person
-                            ]
-                          : [
-                              Icons.home,
-                              Icons.store,
-                              Icons.inbox,
-                              Icons.person
-                            ];
-
-                      return Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            icons[index],
-                            size: 24,
-                            color: isActive
-                                ? Theme.of(context)
-                                    .bottomNavigationBarTheme
-                                    .selectedItemColor
-                                : Theme.of(context)
-                                    .bottomNavigationBarTheme
-                                    .unselectedItemColor,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            labels[index],
-                            style: TextStyle(
-                              color: isActive
-                                  ? Theme.of(context)
-                                      .bottomNavigationBarTheme
-                                      .selectedItemColor
-                                  : Theme.of(context)
-                                      .bottomNavigationBarTheme
-                                      .unselectedItemColor,
-                              fontWeight: isActive
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-              ),
-              floatingActionButtonLocation:
-                  FloatingActionButtonLocation.centerDocked,
-              floatingActionButton: fabHidden
-                  ? null
-                  : FloatingActionButton(
-                      onPressed: () =>
-                          Navigator.of(context, rootNavigator: true).push(
-                        MaterialPageRoute(
-                          builder: (context) => CameraPage.provider(),
-                        ),
-                      ),
-                      mini: true,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0)),
-                      child: const Icon(Icons.add, color: Colors.white),
+            Row(
+              children: [
+                NavigationRail(
+                  selectedIndex: currentIndex,
+                  onDestinationSelected: (index) {
+                    if (index != 0) {
+                      getIt<ContentCubit>().pauseContent();
+                    } else {
+                      getIt<ContentCubit>().resumeContent();
+                    }
+                    if (index == 1 && isCustomer) {
+                      context.go('/shop');
+                      return;
+                    }
+                    shell.goBranch(index);
+                  },
+                  labelType: NavigationRailLabelType.all,
+                  destinations: List.generate(
+                    labels.length,
+                    (index) => NavigationRailDestination(
+                      icon: Icon(icons[index]),
+                      label: Text(labels[index]),
                     ),
+                  ),
+                  selectedIconTheme: IconThemeData(
+                    color: Theme.of(context)
+                        .bottomNavigationBarTheme
+                        .selectedItemColor,
+                  ),
+                  unselectedIconTheme: IconThemeData(
+                    color: Theme.of(context)
+                        .bottomNavigationBarTheme
+                        .unselectedItemColor,
+                  ),
+                  selectedLabelTextStyle: Theme.of(context)
+                      .bottomNavigationBarTheme
+                      .selectedLabelStyle,
+                  unselectedLabelTextStyle: Theme.of(context)
+                      .bottomNavigationBarTheme
+                      .unselectedLabelStyle,
+                  backgroundColor: Theme.of(context)
+                      .bottomNavigationBarTheme
+                      .backgroundColor,
+                ),
+                const VerticalDivider(thickness: 1, width: 1),
+                Expanded(
+                  child: Scaffold(
+                    resizeToAvoidBottomInset: false,
+                    body: shell,
+                    extendBody: true,
+                    extendBodyBehindAppBar: true,
+                    floatingActionButtonLocation:
+                        FloatingActionButtonLocation.endFloat,
+                    floatingActionButton: fabHidden
+                        ? null
+                        : FloatingActionButton(
+                            onPressed: () =>
+                                Navigator.of(context, rootNavigator: true).push(
+                              MaterialPageRoute(
+                                builder: (context) => CameraPage.provider(),
+                              ),
+                            ),
+                            mini: true,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0)),
+                            child: const Icon(Icons.add, color: Colors.white),
+                          ),
+                  ),
+                ),
+              ],
             ),
             DownloadDialog(),
           ],

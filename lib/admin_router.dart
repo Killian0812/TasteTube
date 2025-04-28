@@ -31,19 +31,6 @@ final GoRouter _router = GoRouter(
           preload: true,
           routes: [
             GoRoute(
-              path: '/store',
-              builder: (context, state) => const StorePage(),
-            ),
-            GoRoute(
-              path: '/shop',
-              builder: (context, state) => ShopPage.provider(),
-            ),
-          ],
-        ),
-        StatefulShellBranch(
-          preload: true,
-          routes: [
-            GoRoute(
               path: '/chat',
               builder: (context, state) => const ChatPage(),
             ),
@@ -77,10 +64,6 @@ final GoRouter _router = GoRouter(
           );
         }),
     GoRoute(
-      path: '/cart',
-      builder: (context, state) => const CartPage(),
-    ),
-    GoRoute(
       path: '/watch/:videoId',
       builder: (context, state) {
         final videoId = state.pathParameters['videoId']!;
@@ -100,23 +83,11 @@ final GoRouter _router = GoRouter(
 
     // Auth routes
     GoRoute(
-      path: '/login',
-      builder: (context, state) => const LoginPage(),
-    ),
-    GoRoute(
         path: '/login/phone_or_email',
         builder: (context, state) {
           final int initialIndex = state.extra as int? ?? 0;
           return LoginWithPhoneOrEmailPage(initialIndex: initialIndex);
         }),
-    GoRoute(
-      path: '/register',
-      builder: (context, state) => const RegisterPage(),
-    ),
-    GoRoute(
-      path: '/register/phone_or_email',
-      builder: (context, state) => const RegisterWithPhoneOrEmailPage(),
-    ),
     GoRoute(
       path: '/version',
       builder: (context, state) => const VersionPage(isAdmin: true),
@@ -135,7 +106,7 @@ final GoRouter _router = GoRouter(
     ];
 
     if (!isAuthenticated && protectedRoutes.contains(state.path)) {
-      return '/login';
+      return '/login/phone_or_email';
     }
 
     return null;
