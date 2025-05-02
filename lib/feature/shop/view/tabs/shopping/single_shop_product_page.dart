@@ -6,10 +6,15 @@ import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/feature/shop/view/cart_page.dart';
 import 'package:taste_tube/feature/shop/view/payment/payment_page.dart';
 import 'package:taste_tube/feature/shop/view/quantity_dialog.dart';
+import 'package:taste_tube/feature/shop/view/tabs/order/feedback_cubit.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_data/product/product.dart';
+import 'package:taste_tube/global_data/product/feedback.dart';
 import 'package:taste_tube/utils/currency.util.dart';
+import 'package:taste_tube/utils/datetime.util.dart';
 import 'package:taste_tube/utils/phone_call.util.dart';
+
+part 'single_shop_product_page.ext.dart';
 
 class SingleShopProductPage extends StatelessWidget {
   final Product product;
@@ -31,17 +36,20 @@ class SingleShopProductPage extends StatelessWidget {
             );
           }
         },
-        child: ResponsiveBuilder(
-          builder: (context, sizingInformation) {
-            final horizontalPadding =
-                sizingInformation.isDesktop ? 250.0 : 16.0;
-            return Padding(
-              padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-              child: sizingInformation.isDesktop
-                  ? _buildDesktopLayout(context, sizingInformation)
-                  : _buildMobileLayout(context, sizingInformation),
-            );
-          },
+        child: BlocProvider(
+          create: (context) => FeedbackCubit()..getProductFeedbacks(product.id),
+          child: ResponsiveBuilder(
+            builder: (context, sizingInformation) {
+              final horizontalPadding =
+                  sizingInformation.isDesktop ? 250.0 : 16.0;
+              return Padding(
+                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                child: sizingInformation.isDesktop
+                    ? _buildDesktopLayout(context, sizingInformation)
+                    : _buildMobileLayout(context, sizingInformation),
+              );
+            },
+          ),
         ),
       ),
     );
@@ -52,6 +60,7 @@ class SingleShopProductPage extends StatelessWidget {
     return Column(
       children: [
         Expanded(
+          flex: 7,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -66,14 +75,23 @@ class SingleShopProductPage extends StatelessWidget {
                 child: SingleChildScrollView(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: _buildProductDetails(context, sizingInformation),
+                    child: Column(
+                      children: [
+                        _buildProductDetails(context, sizingInformation),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ],
           ),
         ),
-        // Owner Info and Action Buttons
+        const SizedBox(height: 16),
+        Expanded(
+          flex: 6,
+          child: SingleChildScrollView(
+              child: _buildFeedbackSection(context, sizingInformation)),
+        ),
         _buildOwnerInfo(context, sizingInformation),
         const Divider(height: 1, color: Colors.grey),
         _buildActionButtons(context, sizingInformation),
@@ -89,7 +107,9 @@ class SingleShopProductPage extends StatelessWidget {
           child: ListView(
             children: [
               _ProductImages(images: product.images),
+              const SizedBox(height: 16),
               _buildProductDetails(context, sizingInformation),
+              _buildFeedbackSection(context, sizingInformation),
               _buildOwnerInfo(context, sizingInformation),
             ],
           ),
@@ -316,79 +336,102 @@ class SingleShopProductPage extends StatelessWidget {
       ),
     );
   }
-}
 
-class _ProductImages extends StatefulWidget {
-  final List<ImageData> images;
-  const _ProductImages({required this.images});
+  Widget _buildFeedbackSection(
+      BuildContext context, SizingInformation sizingInformation) {
+    final textScaleFactor = sizingInformation.isDesktop ? 1.2 : 1.0;
 
-  @override
-  State<_ProductImages> createState() => _ProductImagesState();
-}
-
-class _ProductImagesState extends State<_ProductImages> {
-  late PageController _pageController;
-  int _currentIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController();
-    _pageController.addListener(() {
-      setState(() {
-        _currentIndex = _pageController.page!.toInt();
-      });
-    });
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Customer Feedback',
+            style: TextStyle(
+              fontSize: 18 * textScaleFactor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          BlocBuilder<FeedbackCubit, FeedbackState>(
+            builder: (context, state) {
+              if (state is FeedbackLoading && state.feedbacks.isEmpty) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              return _buildFeedbackList(context, state, textScaleFactor);
+            },
+          ),
+        ],
+      ),
+    );
   }
 
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ResponsiveBuilder(
-      builder: (context, sizingInformation) {
-        final imageHeight = sizingInformation.isDesktop ? 450.0 : 350.0;
-        final textScaleFactor = sizingInformation.isDesktop ? 1.2 : 1.0;
-
-        return Stack(
-          alignment: Alignment.bottomRight,
-          children: [
-            SizedBox(
-              height: imageHeight,
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: widget.images.length,
-                itemBuilder: (context, index) {
-                  return Image.network(
-                    widget.images[index].url,
-                    fit: BoxFit.contain,
-                    width: double.infinity,
-                  );
-                },
-              ),
+  Widget _buildFeedbackList(
+      BuildContext context, FeedbackState state, double textScaleFactor) {
+    if (state.feedbacks.isEmpty) {
+      return Center(
+        child: Text(
+          'No feedback yet.',
+          style: TextStyle(
+            fontSize: 16 * textScaleFactor,
+            color: Colors.grey,
+          ),
+        ),
+      );
+    }
+    return Column(
+      children: [
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: state.feedbacks.length,
+          itemBuilder: (context, index) {
+            final feedback = state.feedbacks[index];
+            return _FeedbackItem(
+              feedback: feedback,
+              textScaleFactor: textScaleFactor,
+            );
+          },
+        ),
+        if (state.totalPages > 1)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(state.totalPages, (index) {
+                final page = index + 1;
+                final isCurrentPage = page == state.currentPage;
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  child: ElevatedButton(
+                    onPressed: isCurrentPage
+                        ? null
+                        : () {
+                            context
+                                .read<FeedbackCubit>()
+                                .loadSpecificPage(product.id, page);
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: isCurrentPage
+                          ? CommonColor.activeBgColor
+                          : Colors.grey[300],
+                      foregroundColor:
+                          isCurrentPage ? Colors.white : Colors.black,
+                      minimumSize:
+                          Size(40 * textScaleFactor, 40 * textScaleFactor),
+                      padding: const EdgeInsets.all(0),
+                    ),
+                    child: Text(
+                      page.toString(),
+                      style: TextStyle(fontSize: 16 * textScaleFactor),
+                    ),
+                  ),
+                );
+              }),
             ),
-            Container(
-              padding: const EdgeInsets.all(8),
-              margin: const EdgeInsets.only(bottom: 10, right: 10),
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(5)),
-                color: CommonColor.activeBgColor,
-              ),
-              child: Text(
-                '${(_currentIndex + 1).toString()}/${widget.images.length.toString()}',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14 * textScaleFactor,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
+          ),
+      ],
     );
   }
 }

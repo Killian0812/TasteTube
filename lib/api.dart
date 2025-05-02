@@ -49,6 +49,7 @@ class Api {
   // Feedback
   static const productRatingFeedback = '/feedback/rating';
   static const orderFeedbacks = '/feedback/order/:orderId';
+  static const productFeedbacks = '/feedback/product/:productId';
 
   // Address & Delivery
   static const addressApi = '/address';

@@ -7,8 +7,8 @@ class UserBasic {
 
   UserBasic({
     required this.id,
-    required this.phone,
-    required this.email,
+    this.phone,
+    this.email,
     required this.username,
     required this.image,
   });
