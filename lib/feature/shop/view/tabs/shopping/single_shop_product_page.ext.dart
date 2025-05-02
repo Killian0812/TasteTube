@@ -2,11 +2,9 @@ part of 'single_shop_product_page.dart';
 
 class _FeedbackItem extends StatelessWidget {
   final ProductFeedback feedback;
-  final double textScaleFactor;
 
   const _FeedbackItem({
     required this.feedback,
-    required this.textScaleFactor,
   });
 
   @override
@@ -22,14 +20,14 @@ class _FeedbackItem extends StatelessWidget {
               children: [
                 CircleAvatar(
                   backgroundImage: NetworkImage(feedback.user.image),
-                  radius: 20 * textScaleFactor,
+                  radius: 20,
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     feedback.user.username,
                     style: TextStyle(
-                      fontSize: 16 * textScaleFactor,
+                      fontSize: 15,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -39,7 +37,7 @@ class _FeedbackItem extends StatelessWidget {
                     return Icon(
                       index < feedback.rating ? Icons.star : Icons.star_border,
                       color: Colors.amber,
-                      size: 20 * textScaleFactor,
+                      size: 20,
                     );
                   }),
                 ),
@@ -50,7 +48,7 @@ class _FeedbackItem extends StatelessWidget {
               Text(
                 feedback.text!,
                 style: TextStyle(
-                  fontSize: 14 * textScaleFactor,
+                  fontSize: 14,
                   color: Colors.grey[700],
                 ),
               ),
@@ -58,7 +56,7 @@ class _FeedbackItem extends StatelessWidget {
             Text(
               DateTimeUtil.dateTimeddMMyyyy(feedback.createdAt),
               style: TextStyle(
-                fontSize: 12 * textScaleFactor,
+                fontSize: 12,
                 color: Colors.grey,
               ),
             ),

@@ -65,17 +65,18 @@ final GoRouter _router = GoRouter(
           ProfilePage.provider(state.pathParameters['userId'] ?? ''),
     ),
     GoRoute(
-        path: '/shop/:shopId',
-        name: 'single-shop',
-        builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>?;
-          return SingleShopPage.provider(
-            state.pathParameters['shopId'] ?? '',
-            extra?['shopImage'] ?? '',
-            extra?['shopName'] ?? '',
-            extra?['shopPhone'],
-          );
-        }),
+      path: '/shop/:shopId',
+      name: 'single-shop',
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        return SingleShopPage.provider(
+          state.pathParameters['shopId'] ?? '',
+          extra?['shopImage'] ?? '',
+          extra?['shopName'] ?? '',
+          extra?['shopPhone'],
+        );
+      },
+    ),
     GoRoute(
       path: '/cart',
       builder: (context, state) => const CartPage(),
@@ -104,11 +105,12 @@ final GoRouter _router = GoRouter(
       builder: (context, state) => const LoginPage(),
     ),
     GoRoute(
-        path: '/login/phone_or_email',
-        builder: (context, state) {
-          final int initialIndex = state.extra as int? ?? 0;
-          return LoginWithPhoneOrEmailPage(initialIndex: initialIndex);
-        }),
+      path: '/login/phone_or_email',
+      builder: (context, state) {
+        final int initialIndex = state.extra as int? ?? 0;
+        return LoginWithPhoneOrEmailPage(initialIndex: initialIndex);
+      },
+    ),
     GoRoute(
       path: '/register',
       builder: (context, state) => const RegisterPage(),

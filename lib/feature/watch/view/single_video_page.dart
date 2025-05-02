@@ -719,7 +719,7 @@ class _SingleVideoState extends State<SingleVideo>
         },
         child: VideoProgressIndicator(
           _videoController,
-          allowScrubbing: true,
+          allowScrubbing: false,
           padding: const EdgeInsets.only(bottom: 40),
           colors: const VideoProgressColors(playedColor: Colors.white),
         ),

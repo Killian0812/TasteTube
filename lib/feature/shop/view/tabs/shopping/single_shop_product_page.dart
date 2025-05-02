@@ -122,8 +122,6 @@ class SingleShopProductPage extends StatelessWidget {
 
   Widget _buildProductDetails(
       BuildContext context, SizingInformation sizingInformation) {
-    final textScaleFactor = sizingInformation.isDesktop ? 1.2 : 1.0;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -132,7 +130,7 @@ class SingleShopProductPage extends StatelessWidget {
             Text(
               product.name,
               style: TextStyle(
-                fontSize: 24 * textScaleFactor,
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -152,7 +150,7 @@ class SingleShopProductPage extends StatelessWidget {
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    fontSize: 15 * textScaleFactor,
+                    fontSize: 15,
                   ),
                 ),
               ),
@@ -176,7 +174,6 @@ class SingleShopProductPage extends StatelessWidget {
                 borderRadius: BorderRadius.all(Radius.circular(5)),
                 border: Border.fromBorderSide(
                     BorderSide(color: CommonColor.activeBgColor)),
-                color: Colors.white,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -186,7 +183,7 @@ class SingleShopProductPage extends StatelessWidget {
                     'Category: ',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 20 * textScaleFactor,
+                      fontSize: 15,
                       color: CommonColor.activeBgColor,
                     ),
                   ),
@@ -194,7 +191,7 @@ class SingleShopProductPage extends StatelessWidget {
                     product.categoryName ?? '',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 20 * textScaleFactor,
+                      fontSize: 15,
                       color: CommonColor.activeBgColor,
                     ),
                   ),
@@ -207,7 +204,7 @@ class SingleShopProductPage extends StatelessWidget {
           Text(
             product.description!,
             style: TextStyle(
-              fontSize: 16 * textScaleFactor,
+              fontSize: 15,
               color: Colors.grey,
             ),
           ),
@@ -216,7 +213,7 @@ class SingleShopProductPage extends StatelessWidget {
         Text(
           'Price: ${CurrencyUtil.amountWithCurrency(product.cost, product.currency)}',
           style: TextStyle(
-            fontSize: 18 * textScaleFactor,
+            fontSize: 18,
             fontWeight: FontWeight.bold,
             color: Colors.green,
           ),
@@ -227,7 +224,6 @@ class SingleShopProductPage extends StatelessWidget {
 
   Widget _buildOwnerInfo(
       BuildContext context, SizingInformation sizingInformation) {
-    final textScaleFactor = sizingInformation.isDesktop ? 1.2 : 1.0;
     final avatarRadius = sizingInformation.isDesktop ? 32.0 : 26.0;
 
     return Padding(
@@ -245,7 +241,7 @@ class SingleShopProductPage extends StatelessWidget {
           Text(
             product.username,
             style: TextStyle(
-              fontSize: 22 * textScaleFactor,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -258,7 +254,7 @@ class SingleShopProductPage extends StatelessWidget {
               child: Text(
                 'Hotline: ${product.userPhone}',
                 style: TextStyle(
-                  fontSize: 22 * textScaleFactor,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Colors.grey,
                 ),
@@ -275,7 +271,6 @@ class SingleShopProductPage extends StatelessWidget {
     if (!product.ship) {
       return const SizedBox.shrink();
     }
-    final textScaleFactor = sizingInformation.isDesktop ? 1.2 : 1.0;
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -294,13 +289,14 @@ class SingleShopProductPage extends StatelessWidget {
                 context.read<CartCubit>().addToCart(product, quantity);
               },
               style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 20),
                 side: const BorderSide(color: CommonColor.activeBgColor),
               ),
               child: Text(
                 'Add to Cart',
                 style: TextStyle(
                   color: CommonColor.activeBgColor,
-                  fontSize: 16 * textScaleFactor,
+                  fontSize: 16,
                 ),
               ),
             ),
@@ -321,13 +317,14 @@ class SingleShopProductPage extends StatelessWidget {
                     .addToCartAndPayImmediate(product, quantity);
               },
               style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 20),
                 backgroundColor: CommonColor.activeBgColor,
               ),
               child: Text(
                 'Buy Now',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 16 * textScaleFactor,
+                  fontSize: 16,
                 ),
               ),
             ),
@@ -339,8 +336,6 @@ class SingleShopProductPage extends StatelessWidget {
 
   Widget _buildFeedbackSection(
       BuildContext context, SizingInformation sizingInformation) {
-    final textScaleFactor = sizingInformation.isDesktop ? 1.2 : 1.0;
-
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: Column(
@@ -349,7 +344,7 @@ class SingleShopProductPage extends StatelessWidget {
           Text(
             'Customer Feedback',
             style: TextStyle(
-              fontSize: 18 * textScaleFactor,
+              fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -359,7 +354,7 @@ class SingleShopProductPage extends StatelessWidget {
               if (state is FeedbackLoading && state.feedbacks.isEmpty) {
                 return const Center(child: CircularProgressIndicator());
               }
-              return _buildFeedbackList(context, state, textScaleFactor);
+              return _buildFeedbackList(context, state);
             },
           ),
         ],
@@ -367,14 +362,13 @@ class SingleShopProductPage extends StatelessWidget {
     );
   }
 
-  Widget _buildFeedbackList(
-      BuildContext context, FeedbackState state, double textScaleFactor) {
+  Widget _buildFeedbackList(BuildContext context, FeedbackState state) {
     if (state.feedbacks.isEmpty) {
       return Center(
         child: Text(
           'No feedback yet.',
           style: TextStyle(
-            fontSize: 16 * textScaleFactor,
+            fontSize: 15,
             color: Colors.grey,
           ),
         ),
@@ -388,10 +382,7 @@ class SingleShopProductPage extends StatelessWidget {
           itemCount: state.feedbacks.length,
           itemBuilder: (context, index) {
             final feedback = state.feedbacks[index];
-            return _FeedbackItem(
-              feedback: feedback,
-              textScaleFactor: textScaleFactor,
-            );
+            return _FeedbackItem(feedback: feedback);
           },
         ),
         if (state.totalPages > 1)
@@ -418,13 +409,12 @@ class SingleShopProductPage extends StatelessWidget {
                           : Colors.grey[300],
                       foregroundColor:
                           isCurrentPage ? Colors.white : Colors.black,
-                      minimumSize:
-                          Size(40 * textScaleFactor, 40 * textScaleFactor),
+                      minimumSize: Size(40, 40),
                       padding: const EdgeInsets.all(0),
                     ),
                     child: Text(
                       page.toString(),
-                      style: TextStyle(fontSize: 16 * textScaleFactor),
+                      style: TextStyle(fontSize: 14),
                     ),
                   ),
                 );
