@@ -56,14 +56,23 @@ class TasteTubeProvider extends StatelessWidget {
 
 class AppSettings extends ChangeNotifier {
   ThemeMode _theme;
+  AppLanguage _currentLanguage;
 
-  AppSettings() : _theme = ThemeMode.dark {
-    _initializeTheme();
+  AppSettings()
+      : _theme = ThemeMode.dark,
+        _currentLanguage = AppLanguage.en {
+    _initialize();
   }
 
-  Future<void> _initializeTheme() async {
+  Future<void> _initialize() async {
     final themeValue = await getIt<LocalStorage>().getValue("THEME_MODE");
     _theme = themeValue == "dark" ? ThemeMode.dark : ThemeMode.light;
+    final languageValue = await getIt<LocalStorage>().getValue("LANGUAGE");
+    if (languageValue == "vi") {
+      _currentLanguage = AppLanguage.vi;
+    } else {
+      _currentLanguage = AppLanguage.en;
+    }
     notifyListeners();
   }
 
@@ -87,7 +96,6 @@ class AppSettings extends ChangeNotifier {
     notifyListeners();
   }
 
-  AppLanguage _currentLanguage = AppLanguage.en;
   AppLanguage get currentLanguage => _currentLanguage;
 
   Locale get locale {
@@ -102,6 +110,8 @@ class AppSettings extends ChangeNotifier {
   void changeLanguage(AppLanguage language) {
     if (_currentLanguage != language) {
       _currentLanguage = language;
+      getIt<LocalStorage>()
+          .setValue("LANGUAGE", language == AppLanguage.vi ? "vi" : "en");
       notifyListeners();
     }
   }
@@ -115,7 +125,7 @@ class AppSettings extends ChangeNotifier {
 enum AppLanguage { en, vi }
 
 extension LocalizationContext on BuildContext {
-  AppLocalizations get localization => AppLocalizations.of(this)!;
+  AppLocalizations get localizations => AppLocalizations.of(this)!;
 }
 
 class BottomNavigationBarToggleNotifier {

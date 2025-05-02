@@ -28,9 +28,9 @@ Future<void> _showEditProfileDialog(BuildContext context, User user) {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Edit Profile',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            Text(
+              context.localizations.edit_profile_title,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
             StatefulBuilder(builder: (context, snapshot) {
@@ -79,22 +79,26 @@ Future<void> _showEditProfileDialog(BuildContext context, User user) {
             const SizedBox(height: 20),
             TextField(
               controller: usernameController,
-              decoration: const InputDecoration(labelText: 'Username'),
+              decoration: InputDecoration(
+                  labelText: context.localizations.edit_profile_username),
             ),
             const SizedBox(height: 10),
             TextField(
               controller: emailController,
               readOnly: true,
-              decoration: const InputDecoration(labelText: 'Email address'),
+              decoration: InputDecoration(
+                  labelText: context.localizations.edit_profile_email),
             ),
             TextField(
               controller: phoneController,
-              decoration: const InputDecoration(labelText: 'Phone number'),
+              decoration: InputDecoration(
+                  labelText: context.localizations.edit_profile_phone),
             ),
             const SizedBox(height: 10),
             TextField(
               controller: bioController,
-              decoration: const InputDecoration(labelText: 'Bio'),
+              decoration: InputDecoration(
+                  labelText: context.localizations.edit_profile_bio),
               maxLines: 3,
             ),
             const SizedBox(height: 20),
@@ -118,9 +122,11 @@ Future<void> _showEditProfileDialog(BuildContext context, User user) {
                   );
                   if (context.mounted) Navigator.pop(context);
                 },
-                label: const Text('Save',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                label: Text(
+                  context.localizations.edit_profile_save,
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
+                ),
               ),
             )
           ],
@@ -162,9 +168,10 @@ void _showProfileOptions(BuildContext bcontext) {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-                leading: const Icon(Icons.password_outlined),
-                title: const Text('Change password'),
-                onTap: () => _showChangePasswordDialog(bcontext)),
+              leading: const Icon(Icons.password_outlined),
+              title: Text(context.localizations.change_password_title),
+              onTap: () => _showChangePasswordDialog(bcontext),
+            ),
           ],
         ),
       );

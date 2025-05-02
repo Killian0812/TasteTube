@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:country_flags/country_flags.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -50,7 +51,7 @@ class ProfilePage extends StatelessWidget {
             centerTitle: true,
             title: state is! ProfileLoading && state is! ProfileFailure
                 ? Text(state.user!.username)
-                : const Text('Profile'),
+                : Text(context.localizations.profile_title),
             actions: [
               if (isOwner &&
                   state is! ProfileLoading &&
@@ -64,27 +65,56 @@ class ProfilePage extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(appSettings.getTheme == ThemeMode.dark
+                            Icon(appSettings.getTheme == ThemeMode.light
                                 ? Icons.light_mode
                                 : Icons.dark_mode),
                             const SizedBox(width: 8),
-                            Text(appSettings.getTheme == ThemeMode.dark
-                                ? 'Light'
-                                : 'Dark'),
+                            Text(appSettings.getTheme == ThemeMode.light
+                                ? context.localizations.theme_light
+                                : context.localizations.theme_dark),
                           ],
                         ),
                         onTap: () {
                           appSettings.flipThemeMode();
                         },
                       ),
+                      PopupMenuItem(
+                        child: Row(
+                          children: [
+                            appSettings.currentLanguage == AppLanguage.en
+                                ? CountryFlag.fromCountryCode(
+                                    'USA',
+                                    height: 15,
+                                    width: 30,
+                                  )
+                                : CountryFlag.fromLanguageCode(
+                                    'vi',
+                                    height: 15,
+                                    width: 30,
+                                  ),
+                            const SizedBox(width: 8),
+                            Text(
+                              appSettings.currentLanguage == AppLanguage.en
+                                  ? context.localizations.english
+                                  : context.localizations.vietnamese,
+                            ),
+                          ],
+                        ),
+                        onTap: () {
+                          appSettings.changeLanguage(
+                            appSettings.currentLanguage == AppLanguage.vi
+                                ? AppLanguage.en
+                                : AppLanguage.vi,
+                          );
+                        },
+                      ),
                       PopupMenuItem<String>(
-                        value: 'Logout',
-                        child: const Text('Logout'),
+                        child: Text(context.localizations.popup_logout_label),
                         onTap: () async {
                           bool? confirmed = await showConfirmDialog(
                             context,
-                            title: "Confirm logout",
-                            body: 'Are you sure you want to logout?',
+                            title: context.localizations.confirm_logout_title,
+                            body: context.localizations.confirm_logout_body,
                           );
                           if (confirmed != true) {
                             return;
@@ -162,7 +192,9 @@ class ProfilePage extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                state.user!.email ?? state.user!.phone ?? 'No contact info',
+                state.user!.email ??
+                    state.user!.phone ??
+                    context.localizations.profile_no_contact,
                 style: const TextStyle(
                     color: Colors.grey,
                     fontSize: 18,
@@ -172,9 +204,13 @@ class ProfilePage extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildProfileStat('Following', state.user!.followings.length),
+                  _buildProfileStat(
+                      context.localizations.profile_stat_following,
+                      state.user!.followings.length),
                   const SizedBox(width: 20),
-                  _buildProfileStat('Followers', state.user!.followers.length),
+                  _buildProfileStat(
+                      context.localizations.profile_stat_followers,
+                      state.user!.followers.length),
                 ],
               ),
               const SizedBox(height: 20),
@@ -182,7 +218,7 @@ class ProfilePage extends StatelessWidget {
               if (!isOwner) _GuestProfileInteractions(cubit: cubit),
               const SizedBox(height: 10),
               (state.user!.bio == null || state.user!.bio!.isEmpty)
-                  ? const Text('No bio')
+                  ? Text(context.localizations.profile_no_bio)
                   : Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 30.0),
                       child: Text(

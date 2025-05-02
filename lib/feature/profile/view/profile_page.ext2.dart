@@ -17,7 +17,7 @@ class _OwnerProfileInteractions extends StatelessWidget {
                 _showEditProfileDialog(context, state.user!);
               },
               icon: const Icon(Icons.edit),
-              label: const Text('Edit profile'),
+              label: Text(context.localizations.edit_profile_title),
             ),
             const SizedBox(width: 5),
             ElevatedButton(
@@ -53,7 +53,7 @@ class _GuestProfileInteractions extends StatelessWidget {
                             .unfollowUser(state.user!, currentUserId);
                       },
                       icon: const Icon(Icons.person_remove_rounded),
-                      label: const Text('Unfollow'),
+                      label: Text(context.localizations.unfollow),
                     )
                   : ElevatedButton.icon(
                       onPressed: () async {
@@ -65,9 +65,9 @@ class _GuestProfileInteractions extends StatelessWidget {
                         Icons.person_add,
                         color: Colors.white,
                       ),
-                      label: const Text(
-                        'Follow',
-                        style: TextStyle(color: Colors.white),
+                      label: Text(
+                        context.localizations.follow,
+                        style: const TextStyle(color: Colors.white),
                       ),
                       style: TextButton.styleFrom(
                           backgroundColor: CommonColor.activeBgColor),
@@ -86,7 +86,7 @@ class _GuestProfileInteractions extends StatelessWidget {
                             .unfollowUser(state.user!, currentUserId);
                       },
                       icon: const Icon(Icons.person_remove_rounded),
-                      label: const Text('Unfollow'),
+                      label: Text(context.localizations.unfollow),
                     )
                   : ElevatedButton.icon(
                       onPressed: () async {
@@ -98,9 +98,9 @@ class _GuestProfileInteractions extends StatelessWidget {
                         Icons.add_business,
                         color: Colors.white,
                       ),
-                      label: const Text(
-                        'Follow',
-                        style: TextStyle(color: Colors.white),
+                      label: Text(
+                        context.localizations.follow,
+                        style: const TextStyle(color: Colors.white),
                       ),
                       style: TextButton.styleFrom(
                           backgroundColor: CommonColor.activeBgColor),
@@ -115,7 +115,7 @@ class _GuestProfileInteractions extends StatelessWidget {
                   ),
                 ),
                 icon: const Icon(Icons.reviews),
-                label: const Text('Send review'),
+                label: Text(context.localizations.send_review),
               ),
               const SizedBox(width: 5),
               ElevatedButton.icon(
@@ -129,7 +129,7 @@ class _GuestProfileInteractions extends StatelessWidget {
                   });
                 },
                 icon: const Icon(Icons.food_bank),
-                label: const Text('Products'),
+                label: Text(context.localizations.products),
               ),
             ],
           );
@@ -191,28 +191,33 @@ class __ChangePasswordBottomSheetState
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Change password',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            Text(
+              context.localizations.change_password_title,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
             TextField(
               controller: currentPasswordController,
               obscureText: true,
-              decoration: const InputDecoration(labelText: 'Current password'),
+              decoration: InputDecoration(
+                labelText: context.localizations.current_password,
+              ),
             ),
             const SizedBox(height: 10),
             TextField(
               controller: newPasswordController,
               obscureText: true,
-              decoration: const InputDecoration(labelText: 'New password'),
+              decoration: InputDecoration(
+                labelText: context.localizations.new_password,
+              ),
             ),
             const SizedBox(height: 10),
             TextField(
               controller: confirmPasswordController,
               obscureText: true,
-              decoration:
-                  const InputDecoration(labelText: 'Confirm new password'),
+              decoration: InputDecoration(
+                labelText: context.localizations.confirm_new_password,
+              ),
             ),
             const SizedBox(height: 20),
             Align(
@@ -231,11 +236,13 @@ class __ChangePasswordBottomSheetState
                         confirmPasswordController.text,
                       );
                 },
-                child: const Text('Change Password',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    )),
+                child: Text(
+                  context.localizations.change_password_button,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
           ],
