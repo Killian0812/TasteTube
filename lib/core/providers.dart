@@ -8,6 +8,7 @@ import 'package:taste_tube/global_bloc/download/download_cubit.dart';
 import 'package:taste_tube/global_bloc/getstream/getstream_cubit.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
+import 'package:taste_tube/core/storage.dart';
 import 'package:taste_tube/core/injection.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -54,11 +55,24 @@ class TasteTubeProvider extends StatelessWidget {
 }
 
 class AppSettings extends ChangeNotifier {
-  ThemeMode _theme = ThemeMode.dark;
+  ThemeMode _theme;
+
+  AppSettings() : _theme = ThemeMode.dark {
+    _initializeTheme();
+  }
+
+  Future<void> _initializeTheme() async {
+    final themeValue = await getIt<LocalStorage>().getValue("THEME_MODE");
+    _theme = themeValue == "dark" ? ThemeMode.dark : ThemeMode.light;
+    notifyListeners();
+  }
+
   ThemeMode get getTheme => _theme;
 
   void setTheme(ThemeMode theme) {
     _theme = theme;
+    getIt<LocalStorage>()
+        .setValue("THEME_MODE", theme == ThemeMode.dark ? "dark" : "light");
     notifyListeners();
   }
 
@@ -68,6 +82,8 @@ class AppSettings extends ChangeNotifier {
     } else {
       _theme = ThemeMode.light;
     }
+    getIt<LocalStorage>()
+        .setValue("THEME_MODE", _theme == ThemeMode.dark ? "dark" : "light");
     notifyListeners();
   }
 
