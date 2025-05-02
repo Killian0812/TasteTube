@@ -154,7 +154,7 @@ class OrderDetailTab extends StatelessWidget {
                   ),
                   children: [
                     Padding(
-                      padding: const EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                       child: ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),

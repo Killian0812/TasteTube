@@ -14,15 +14,6 @@ class _FeedbackDialogState extends State<_FeedbackDialog> {
   final Map<String, double?> _ratings = {};
 
   @override
-  void initState() {
-    super.initState();
-    // Initialize ratings map with null for each item
-    for (var item in widget.order.items) {
-      _ratings[item.product.id] = item.rating?.toDouble();
-    }
-  }
-
-  @override
   void dispose() {
     _feedbackController.dispose();
     super.dispose();

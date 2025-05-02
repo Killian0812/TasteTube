@@ -6,20 +6,16 @@ import 'package:taste_tube/global_data/user/user_basic.dart';
 class OrderProduct {
   final Product product;
   final int quantity;
-  final double? rating;
 
   const OrderProduct({
     required this.product,
     required this.quantity,
-    required this.rating,
   });
 
   factory OrderProduct.fromJson(Map<String, dynamic> json) {
     return OrderProduct(
       product: Product.fromJson(json['product']),
       quantity: json['quantity'],
-      rating:
-          json['rating'] != null ? (json['rating'] as num).toDouble() : null,
     );
   }
 }
@@ -41,7 +37,6 @@ class Order {
   final bool paid;
   final String status;
   final String? deliveryType;
-  final String? feedback;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -62,7 +57,6 @@ class Order {
     required this.paid,
     required this.status,
     required this.deliveryType,
-    required this.feedback,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -89,7 +83,6 @@ class Order {
       paid: json['paid'],
       status: json['status'],
       deliveryType: json['deliveryType'] as String?,
-      feedback: json['feedback'] as String?,
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
     );
