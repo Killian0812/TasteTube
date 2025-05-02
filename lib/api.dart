@@ -34,7 +34,6 @@ class Api {
   static const orderApi = '/order';
   static const singleOrderApi = '/order/:orderId';
   static const orderStatusApi = '/order/:orderId/status';
-  static const orderFeedbackApi = '/order/:orderId/feedback';
   static const customerOrderApi = '/order/customer';
   static const shopOrderApi = '/order/shop';
 
@@ -46,6 +45,10 @@ class Api {
   static const orderDeliveryQuoteApi = '/order-delivery/:orderId/quote';
   static const orderDeliveryRenewApi = '/order-delivery/:orderId/renew';
   static const orderDeliveryApi = '/order-delivery/:orderId';
+
+  // Feedback
+  static const productRatingFeedback = '/feedback/rating';
+  static const orderFeedbacks = '/feedback/order/:orderId';
 
   // Address & Delivery
   static const addressApi = '/address';

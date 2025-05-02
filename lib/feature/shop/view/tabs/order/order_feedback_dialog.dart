@@ -1,9 +1,10 @@
 part of 'customer_order_tab.dart';
 
 class _FeedbackDialog extends StatefulWidget {
-  final Order order;
+  final String orderId;
+  final Product product;
 
-  const _FeedbackDialog({required this.order});
+  const _FeedbackDialog({required this.product, required this.orderId});
 
   @override
   _FeedbackDialogState createState() => _FeedbackDialogState();
@@ -11,7 +12,7 @@ class _FeedbackDialog extends StatefulWidget {
 
 class _FeedbackDialogState extends State<_FeedbackDialog> {
   final TextEditingController _feedbackController = TextEditingController();
-  final Map<String, double?> _ratings = {};
+  int? _rating = 0;
 
   @override
   void dispose() {
@@ -27,34 +28,31 @@ class _FeedbackDialogState extends State<_FeedbackDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            const Text('Rate Product:'),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 8),
+                Text(widget.product.name),
+                _StarRating(
+                  rating: _rating,
+                  onRatingChanged: (rating) {
+                    setState(() {
+                      _rating = rating;
+                    });
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
             TextField(
               controller: _feedbackController,
               decoration: const InputDecoration(
-                labelText: 'Overall Feedback',
+                labelText: 'Feedback',
                 border: OutlineInputBorder(),
               ),
               maxLines: 3,
             ),
-            const SizedBox(height: 16),
-            const Text('Rate Products:'),
-            ...widget.order.items.map((item) {
-              final product = item.product;
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 8),
-                  Text(product.name),
-                  _StarRating(
-                    rating: _ratings[item.product.id],
-                    onRatingChanged: (rating) {
-                      setState(() {
-                        _ratings[item.product.id] = rating;
-                      });
-                    },
-                  ),
-                ],
-              );
-            }),
           ],
         ),
       ),
@@ -65,16 +63,27 @@ class _FeedbackDialogState extends State<_FeedbackDialog> {
         ),
         ElevatedButton(
           onPressed: () {
+            if (_rating == null) {
+              ToastService.showToast(
+                  context, 'Please select a rating', ToastType.error);
+              return;
+            }
             final feedback = _feedbackController.text.trim();
-            context.read<OrderCubit>().updateOrderFeedback(
-                  widget.order.id,
-                  feedback,
-                  _ratings,
+            context.read<FeedbackCubit>().updateProductFeedback(
+                  orderId: widget.orderId,
+                  productId: widget.product.id,
+                  rating: _rating!,
+                  feedback: feedback,
                 );
             Navigator.of(context).pop();
             ToastService.showToast(
                 context, 'Feedback submitted', ToastType.success);
           },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: (_rating == null)
+                ? Theme.of(context).disabledColor
+                : Theme.of(context).colorScheme.primary,
+          ),
           child: const Text('Submit'),
         ),
       ],
@@ -83,8 +92,8 @@ class _FeedbackDialogState extends State<_FeedbackDialog> {
 }
 
 class _StarRating extends StatefulWidget {
-  final double? rating;
-  final ValueChanged<double?> onRatingChanged;
+  final int? rating;
+  final ValueChanged<int?> onRatingChanged;
 
   const _StarRating({required this.rating, required this.onRatingChanged});
 
@@ -93,7 +102,7 @@ class _StarRating extends StatefulWidget {
 }
 
 class _StarRatingState extends State<_StarRating> {
-  double? _currentRating;
+  int? _currentRating;
 
   @override
   void initState() {
@@ -117,7 +126,7 @@ class _StarRatingState extends State<_StarRating> {
           ),
           onPressed: () {
             setState(() {
-              _currentRating = starValue.toDouble();
+              _currentRating = starValue;
               widget.onRatingChanged(_currentRating);
             });
           },

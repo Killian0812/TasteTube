@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/toast.dart';
+import 'package:taste_tube/feature/shop/view/tabs/order/feedback_cubit.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/utils/currency.util.dart';
 import 'package:taste_tube/utils/datetime.util.dart';
@@ -11,8 +12,14 @@ import 'package:taste_tube/utils/user_data.util.dart';
 
 class CustomerOrderDetailPage extends StatelessWidget {
   final String orderId;
-
   const CustomerOrderDetailPage({required this.orderId, super.key});
+
+  static Widget provider(String orderId) {
+    return BlocProvider(
+      create: (context) => FeedbackCubit()..getOrderFeedbacks(orderId),
+      child: CustomerOrderDetailPage(orderId: orderId),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
