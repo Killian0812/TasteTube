@@ -3,12 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/common/color.dart';
+import 'package:taste_tube/common/constant.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/shop/view/tabs/order/feedback_cubit.dart';
+import 'package:taste_tube/feature/shop/view/tabs/shopping/single_shop_product_page.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
+import 'package:taste_tube/global_data/product/product.dart';
 import 'package:taste_tube/utils/currency.util.dart';
 import 'package:taste_tube/utils/datetime.util.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
+
+part 'order_feedback_dialog.dart';
 
 class CustomerOrderDetailPage extends StatelessWidget {
   final String orderId;
@@ -39,14 +44,14 @@ class CustomerOrderDetailPage extends StatelessWidget {
             title: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('Order #${order.orderId}'),
+                Text('Order #${order.trackingId}'),
                 const SizedBox(width: 8),
                 IconButton(
                   icon: const Icon(Icons.copy),
                   onPressed: () {
                     Clipboard.setData(ClipboardData(text: order.orderId));
-                    ToastService.showToast(context,
-                        'Order ID copied to clipboard', ToastType.info);
+                    ToastService.showToast(
+                        context, 'ID copied to clipboard', ToastType.info);
                   },
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
@@ -86,18 +91,112 @@ class CustomerOrderDetailPage extends StatelessWidget {
                               itemBuilder: (context, index) {
                                 final item = order.items[index];
                                 final product = item.product;
-                                return ListTile(
-                                  leading: Image.network(
-                                    product.images[0].url,
-                                    width: 60,
-                                    height: 60,
-                                    fit: BoxFit.cover,
-                                  ),
-                                  title: Text(product.name),
-                                  trailing: Text(
-                                      CurrencyUtil.amountWithCurrency(
-                                          product.cost, product.currency)),
-                                  subtitle: Text('Quantity: ${item.quantity}'),
+                                return BlocBuilder<FeedbackCubit,
+                                    FeedbackState>(
+                                  builder: (context, state) {
+                                    final productFeedback = state.feedbacks
+                                        .firstWhereOrNull((f) =>
+                                            f.productId == product.id &&
+                                            f.orderId == order.id);
+                                    return Column(
+                                      children: [
+                                        ListTile(
+                                          leading: Image.network(
+                                            product.images[0].url,
+                                            width: 60,
+                                            height: 60,
+                                            fit: BoxFit.cover,
+                                          ),
+                                          title: Text(product.name),
+                                          trailing: Text(
+                                            CurrencyUtil.amountWithCurrency(
+                                              item.quantity * product.cost,
+                                              product.currency,
+                                            ),
+                                          ),
+                                          subtitle: Text(
+                                              'Quantity: ${item.quantity}'),
+                                          onTap: () {
+                                            Navigator.of(context,
+                                                    rootNavigator: true)
+                                                .push(MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        SingleShopProductPage(
+                                                            product: product)));
+                                          },
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            if (productFeedback != null) ...[
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Row(
+                                                    children: List.generate(
+                                                      5,
+                                                      (index) => Icon(
+                                                        index <
+                                                                productFeedback
+                                                                    .rating
+                                                            ? Icons.star
+                                                            : Icons.star_border,
+                                                        color: Colors.amber,
+                                                        size: 16,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 4),
+                                                  if (productFeedback.feedback
+                                                          ?.isNotEmpty ??
+                                                      false)
+                                                    Text(
+                                                      '“${productFeedback.feedback}”',
+                                                      style: TextStyle(
+                                                        fontStyle:
+                                                            FontStyle.italic,
+                                                      ),
+                                                    ),
+                                                ],
+                                              ),
+                                            ],
+                                            if (order.status ==
+                                                OrderStatus.COMPLETED.name)
+                                              TextButton.icon(
+                                                icon: Icon(
+                                                    productFeedback == null
+                                                        ? Icons.rate_review
+                                                        : Icons.edit),
+                                                label: Text(
+                                                    productFeedback == null
+                                                        ? 'Leave Feedback'
+                                                        : 'Edit Feedback'),
+                                                onPressed: () async {
+                                                  final cubit = context
+                                                      .read<FeedbackCubit>();
+                                                  await showDialog(
+                                                      context: context,
+                                                      builder: (context) =>
+                                                          BlocProvider.value(
+                                                            value: cubit,
+                                                            child:
+                                                                _FeedbackDialog(
+                                                              product: product,
+                                                              orderId: orderId,
+                                                            ),
+                                                          ));
+                                                },
+                                              ),
+                                          ],
+                                        ),
+                                        const Divider(),
+                                      ],
+                                    );
+                                  },
                                 );
                               },
                             ),

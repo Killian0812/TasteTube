@@ -81,8 +81,12 @@ class FeedbackCubit extends Cubit<FeedbackState> {
         (updatedFeedback) {
           final index =
               state.feedbacks.indexWhere((f) => f.productId == productId);
-          state.feedbacks[index] = updatedFeedback;
-          emit(FeedbackLoaded(state.feedbacks));
+          if (index == -1) {
+            state.feedbacks.add(updatedFeedback);
+          } else {
+            state.feedbacks[index] = updatedFeedback;
+          }
+          emit(FeedbackSuccess(state.feedbacks, 'Feedback submitted'));
         },
       );
     } catch (e) {

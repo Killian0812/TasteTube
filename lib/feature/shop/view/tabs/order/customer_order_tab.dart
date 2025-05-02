@@ -4,15 +4,11 @@ import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/constant.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/shop/view/tabs/order/customer_order_detail_page.dart';
-import 'package:taste_tube/feature/shop/view/tabs/order/feedback_cubit.dart';
 import 'package:taste_tube/feature/shop/view/tabs/shopping/single_shop_product_page.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/order.dart';
-import 'package:taste_tube/global_data/product/product.dart';
 import 'package:taste_tube/utils/currency.util.dart';
 import 'package:taste_tube/utils/datetime.util.dart';
-
-part 'order_feedback_dialog.dart';
 
 class CustomerOrderTab extends StatelessWidget {
   const CustomerOrderTab({super.key});

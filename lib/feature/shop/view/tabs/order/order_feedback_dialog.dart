@@ -1,4 +1,4 @@
-part of 'customer_order_tab.dart';
+part of 'customer_order_detail_page.dart';
 
 class _FeedbackDialog extends StatefulWidget {
   final String orderId;
@@ -22,71 +22,76 @@ class _FeedbackDialogState extends State<_FeedbackDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Rate Your Order'),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Rate Product:'),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return BlocConsumer<FeedbackCubit, FeedbackState>(
+      listener: (context, state) {
+        if (state is FeedbackSuccess) {
+          ToastService.showToast(context, state.success, ToastType.success);
+          Navigator.of(context).pop();
+        } else if (state is FeedbackError) {
+          ToastService.showToast(context, state.error, ToastType.warning);
+        }
+      },
+      builder: (context, state) {
+        return AlertDialog(
+          title: const Text('Rate Your Order'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                const SizedBox(height: 8),
-                Text(widget.product.name),
-                _StarRating(
-                  rating: _rating,
-                  onRatingChanged: (rating) {
-                    setState(() {
-                      _rating = rating;
-                    });
-                  },
+                ListTile(
+                  leading: Image.network(
+                    widget.product.images[0].url,
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.cover,
+                  ),
+                  title: Text(widget.product.name),
+                  subtitle: _StarRating(
+                    rating: _rating,
+                    onRatingChanged: (rating) {
+                      setState(() {
+                        _rating = rating;
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _feedbackController,
+                  decoration: const InputDecoration(
+                    labelText: 'Feedback',
+                    border: OutlineInputBorder(),
+                  ),
+                  maxLines: 3,
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _feedbackController,
-              decoration: const InputDecoration(
-                labelText: 'Feedback',
-                border: OutlineInputBorder(),
-              ),
-              maxLines: 3,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (_rating == null || _rating == 0) {
+                  ToastService.showToast(
+                      context, 'Please select a rating', ToastType.error);
+                  return;
+                }
+                final feedback = _feedbackController.text.trim();
+                context.read<FeedbackCubit>().updateProductFeedback(
+                      orderId: widget.orderId,
+                      productId: widget.product.id,
+                      rating: _rating!,
+                      feedback: feedback,
+                    );
+              },
+              child: const Text('Submit'),
             ),
           ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            if (_rating == null) {
-              ToastService.showToast(
-                  context, 'Please select a rating', ToastType.error);
-              return;
-            }
-            final feedback = _feedbackController.text.trim();
-            context.read<FeedbackCubit>().updateProductFeedback(
-                  orderId: widget.orderId,
-                  productId: widget.product.id,
-                  rating: _rating!,
-                  feedback: feedback,
-                );
-            Navigator.of(context).pop();
-            ToastService.showToast(
-                context, 'Feedback submitted', ToastType.success);
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: (_rating == null)
-                ? Theme.of(context).disabledColor
-                : Theme.of(context).colorScheme.primary,
-          ),
-          child: const Text('Submit'),
-        ),
-      ],
+        );
+      },
     );
   }
 }
