@@ -14,7 +14,7 @@ class OrderRepository {
   Future<fpdart.Either<ApiError, List<Order>>> getOrders() async {
     try {
       final String endpoint =
-          UserDataUtil.getUserRole() == AccountType.restaurant.value()
+          UserDataUtil.getUserRole() == AccountType.RESTAURANT.value
               ? Api.shopOrderApi
               : Api.customerOrderApi;
       final response = await http.get(endpoint);

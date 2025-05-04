@@ -153,7 +153,7 @@ class UploadPage extends StatelessWidget {
                               const Spacer(),
                               BlocBuilder<UploadCubit, UploadState>(
                                 builder: (context, state) {
-                                  return Text(cubit.selectedVisibility.name());
+                                  return Text(cubit.selectedVisibility.name);
                                 },
                               ),
                               const SizedBox(width: 20),
@@ -220,8 +220,8 @@ class UploadPage extends StatelessWidget {
             padding: const EdgeInsets.only(top: 30),
             children: VideoVisibility.values.map((visibility) {
               return CheckboxListTile(
-                title: Text(visibility.name()),
-                subtitle: Text(visibility.description()),
+                title: Text(visibility.name),
+                subtitle: Text(visibility.description),
                 value: cubit.selectedVisibility == visibility,
                 onChanged: (value) {
                   if (value == true) {

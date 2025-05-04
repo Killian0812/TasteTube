@@ -1,12 +1,14 @@
-enum AccountType { restaurant, customer }
+enum AccountType { RESTAURANT, CUSTOMER, ADMIN }
 
 extension AccountTypeExtension on AccountType {
-  String value() {
+  String get value {
     switch (this) {
-      case AccountType.restaurant:
+      case AccountType.RESTAURANT:
         return "RESTAURANT";
-      case AccountType.customer:
+      case AccountType.CUSTOMER:
         return "CUSTOMER";
+      case AccountType.ADMIN:
+        return "ADMIN";
     }
   }
 }
@@ -14,7 +16,7 @@ extension AccountTypeExtension on AccountType {
 enum VideoVisibility { private, followersOnly, public }
 
 extension VisibilityExtension on VideoVisibility {
-  String value() {
+  String get value {
     switch (this) {
       case VideoVisibility.private:
         return "PRIVATE";
@@ -25,7 +27,7 @@ extension VisibilityExtension on VideoVisibility {
     }
   }
 
-  String name() {
+  String get name {
     switch (this) {
       case VideoVisibility.private:
         return "Private";
@@ -36,7 +38,7 @@ extension VisibilityExtension on VideoVisibility {
     }
   }
 
-  String description() {
+  String get description {
     switch (this) {
       case VideoVisibility.private:
         return "Only you can see this video.";

@@ -12,20 +12,17 @@ import 'package:go_router/go_router.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/auth/view/phone_or_email/login_phone_or_email_page.dart';
+import 'package:taste_tube/auth/view/phone_or_email/register_phone_or_email_page.dart';
 import 'package:taste_tube/core/build_config.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/error.dart';
 import 'package:taste_tube/common/fallback.dart';
 import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/text.dart';
-import 'package:taste_tube/feature/home/view/content_cubit.dart';
-import 'package:taste_tube/feature/profile/view/owner_profile_page.dart';
-import 'package:taste_tube/feature/record/camera/camera_page.dart';
+import 'package:taste_tube/feature/admin/dashboard/admin_dashboard_page.dart';
 import 'package:taste_tube/feature/watch/view/public_videos_page.dart';
 import 'package:taste_tube/core/fcm_service.dart';
 import 'package:taste_tube/global_bloc/download/download_dialog.dart';
-import 'package:taste_tube/feature/home/view/home_page.dart';
-import 'package:taste_tube/feature/inbox/view/chat_page.dart';
 import 'package:taste_tube/feature/profile/view/profile_page.dart';
 import 'package:taste_tube/feature/shop/view/tabs/shopping/single_shop_page.dart';
 import 'package:taste_tube/firebase_options.dart';
@@ -136,10 +133,6 @@ class MyApp extends StatelessWidget {
               shadowColor: Colors.transparent,
               iconTheme: IconThemeData(color: Colors.black),
             ),
-            floatingActionButtonTheme: const FloatingActionButtonThemeData(
-              backgroundColor: CommonColor.activeBgColor,
-              foregroundColor: Colors.white,
-            ),
           ),
           darkTheme: ThemeData.dark().copyWith(
             primaryColor: Colors.white,
@@ -167,10 +160,6 @@ class MyApp extends StatelessWidget {
               backgroundColor: Colors.transparent,
               shadowColor: Colors.transparent,
               iconTheme: IconThemeData(color: Colors.white),
-            ),
-            floatingActionButtonTheme: const FloatingActionButtonThemeData(
-              backgroundColor: CommonColor.activeBgColor,
-              foregroundColor: Colors.white,
             ),
           ),
           themeMode: getIt<AppSettings>().getTheme,
@@ -227,20 +216,9 @@ class Layout extends StatelessWidget {
           final currentRoute = goRouterState.matchedLocation;
           return InitialPage(redirect: currentRoute);
         }
-        final isCustomer = state.data.role == "CUSTOMER";
-        final fabHidden = currentIndex == 1 || currentIndex == 2;
+        final labels = ['Dashboard', 'Users', 'Chat', 'Ticket'];
 
-        final labels = isCustomer
-            ? ['Home', 'Shop', 'Chat', 'Profile']
-            : ['Home', 'Store', 'Chat', 'Profile'];
-        final icons = isCustomer
-            ? [
-                Icons.home,
-                Icons.shopping_basket_rounded,
-                Icons.inbox,
-                Icons.person
-              ]
-            : [Icons.home, Icons.store, Icons.inbox, Icons.person];
+        final icons = [Icons.dashboard, Icons.face, Icons.inbox, Icons.tab];
 
         return Stack(
           alignment: Alignment.center,
@@ -250,15 +228,6 @@ class Layout extends StatelessWidget {
                 NavigationRail(
                   selectedIndex: currentIndex,
                   onDestinationSelected: (index) {
-                    if (index != 0) {
-                      getIt<ContentCubit>().pauseContent();
-                    } else {
-                      getIt<ContentCubit>().resumeContent();
-                    }
-                    if (index == 1 && isCustomer) {
-                      context.go('/shop');
-                      return;
-                    }
                     shell.goBranch(index);
                   },
                   labelType: NavigationRailLabelType.all,
@@ -269,22 +238,6 @@ class Layout extends StatelessWidget {
                       label: Text(labels[index]),
                     ),
                   ),
-                  selectedIconTheme: IconThemeData(
-                    color: Theme.of(context)
-                        .bottomNavigationBarTheme
-                        .selectedItemColor,
-                  ),
-                  unselectedIconTheme: IconThemeData(
-                    color: Theme.of(context)
-                        .bottomNavigationBarTheme
-                        .unselectedItemColor,
-                  ),
-                  selectedLabelTextStyle: Theme.of(context)
-                      .bottomNavigationBarTheme
-                      .selectedLabelStyle,
-                  unselectedLabelTextStyle: Theme.of(context)
-                      .bottomNavigationBarTheme
-                      .unselectedLabelStyle,
                   backgroundColor: Theme.of(context)
                       .bottomNavigationBarTheme
                       .backgroundColor,
@@ -296,22 +249,6 @@ class Layout extends StatelessWidget {
                     body: shell,
                     extendBody: true,
                     extendBodyBehindAppBar: true,
-                    floatingActionButtonLocation:
-                        FloatingActionButtonLocation.endFloat,
-                    floatingActionButton: fabHidden
-                        ? null
-                        : FloatingActionButton(
-                            onPressed: () =>
-                                Navigator.of(context, rootNavigator: true).push(
-                              MaterialPageRoute(
-                                builder: (context) => CameraPage.provider(),
-                              ),
-                            ),
-                            mini: true,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0)),
-                            child: const Icon(Icons.add, color: Colors.white),
-                          ),
                   ),
                 ),
               ],

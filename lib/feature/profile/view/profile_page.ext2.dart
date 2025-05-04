@@ -43,7 +43,7 @@ class _GuestProfileInteractions extends StatelessWidget {
         builder: (context, state) {
           final followed = state.user!.followers.contains(currentUserId);
 
-          if (state.user!.role == AccountType.customer.value()) {
+          if (state.user!.role == AccountType.CUSTOMER.value) {
             return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               followed == true
                   ? ElevatedButton.icon(

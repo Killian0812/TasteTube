@@ -35,6 +35,32 @@
                 "--web-port",
                 "5555"
             ]
-        }
+        },
+        {
+            "name": "taste_tube vercel (admin)",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "-t",
+                "lib/admin_main.dart",
+                "--dart-define",
+                "ENVIRONMENT=vercel",
+                "--web-port",
+                "5555"
+            ]
+        },
+        {
+            "name": "taste_tube localhost (admin)",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "-t",
+                "lib/admin_main.dart",
+                "--dart-define",
+                "ENVIRONMENT=localhost",
+                "--web-port",
+                "5555"
+            ]
+        },
     ]
 }

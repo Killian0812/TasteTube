@@ -22,25 +22,8 @@ final GoRouter _router = GoRouter(
           preload: true,
           routes: [
             GoRoute(
-              path: '/home',
-              builder: (context, state) => const HomePage(),
-            ),
-          ],
-        ),
-        StatefulShellBranch(
-          preload: true,
-          routes: [
-            GoRoute(
-              path: '/chat',
-              builder: (context, state) => const ChatPage(),
-            ),
-          ],
-        ),
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: '/profile',
-              builder: (context, state) => const OwnerProfilePage(),
+              path: '/dashboard',
+              builder: (context, state) => const AdminDashboardPage(),
             ),
           ],
         ),
@@ -83,11 +66,15 @@ final GoRouter _router = GoRouter(
 
     // Auth routes
     GoRoute(
-        path: '/login/phone_or_email',
+        path: '/login',
         builder: (context, state) {
           final int initialIndex = state.extra as int? ?? 0;
           return LoginWithPhoneOrEmailPage(initialIndex: initialIndex);
         }),
+    GoRoute(
+      path: '/register',
+      builder: (context, state) => const RegisterWithPhoneOrEmailPage(),
+    ),
     GoRoute(
       path: '/version',
       builder: (context, state) => const VersionPage(isAdmin: true),
@@ -98,15 +85,10 @@ final GoRouter _router = GoRouter(
 
     final isAuthenticated = authBloc.state is Authenticated;
 
-    final protectedRoutes = [
-      '/home',
-      '/profile',
-      '/store',
-      '/chat',
-    ];
+    final protectedRoutes = [];
 
     if (!isAuthenticated && protectedRoutes.contains(state.path)) {
-      return '/login/phone_or_email';
+      return '/login';
     }
 
     return null;

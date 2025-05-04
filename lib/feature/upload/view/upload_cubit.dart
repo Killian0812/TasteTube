@@ -91,7 +91,7 @@ class UploadCubit extends Cubit<UploadState> {
               recordedWithFrontCamera ? 'FRONT' : 'BACK',
               base64Encode(thumbnail),
               selectedProductIds.toList(),
-              selectedVisibility.value(),
+              selectedVisibility.value,
               reviewTarget?.id));
       result.fold(
         (error) =>

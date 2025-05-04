@@ -165,7 +165,7 @@ class ProfilePage extends StatelessWidget {
       );
     }
 
-    final isRestaurant = state.user!.role == AccountType.restaurant.value();
+    final isRestaurant = state.user!.role == AccountType.RESTAURANT.value;
 
     return RefreshIndicator(
       onRefresh: () async {
