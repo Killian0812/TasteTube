@@ -4,7 +4,6 @@ import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:taste_tube/core/fcm_service.dart';
 import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
 import 'package:taste_tube/core/injection.dart';
-import 'package:taste_tube/core/storage.dart';
 
 final streamClient = StreamChatClient(
   'cd5kkff8cewb',
@@ -21,7 +20,7 @@ class GetstreamCubit extends Cubit<GetstreamState> {
 
     try {
       final currentUser = streamClient.state.currentUser;
-      if (currentUser?.id == userData.userId) {
+      if (currentUser?.id == userData.userId && userData.role != "ADMIN") {
         logger.i(
             'Stream User already connected: ${streamClient.state.currentUser}');
         emit(GetstreamSuccess());
@@ -47,8 +46,6 @@ class GetstreamCubit extends Cubit<GetstreamState> {
               ),
         userData.streamToken,
       );
-      getIt<LocalStorage>().setValue("STREAM_USERID", userData.userId);
-      getIt<LocalStorage>().setValue("STREAM_TOKEN", userData.streamToken);
 
       FCMService.updateStreamFcmToken();
 

@@ -429,8 +429,8 @@ class _ChannelPageState extends State<ChannelPage> {
                   },
                   child: defaultWidget.copyWith(
                     showThreadReplyMessage: false,
-                    showEditMessage: true,
-                    showDeleteMessage: true,
+                    showEditMessage: isMyMessage,
+                    showDeleteMessage: isMyMessage,
                     onReplyTap: reply,
                     showReactionPicker: true,
                   ),
