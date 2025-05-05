@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
+import 'package:dio/dio.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,6 +9,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
+import 'package:taste_tube/api.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/loading.dart';
 import 'package:taste_tube/common/text.dart';
@@ -286,6 +288,7 @@ class _ChannelPageState extends State<ChannelPage> {
   final focusNode = FocusNode();
   bool _showEmojiPicker = false;
   Channel get channel => widget.channel;
+  bool _refreshing = false;
 
   @override
   Widget build(BuildContext context) {
@@ -306,6 +309,24 @@ class _ChannelPageState extends State<ChannelPage> {
         leading: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
+            const SizedBox(width: 10),
+            IconButton(
+              onPressed: () async {
+                if (_refreshing) return;
+                setState(() {
+                  _refreshing = true;
+                });
+                final dio = Dio();
+                await dio.get('${Api.baseUrl}/version');
+                setState(() {
+                  _refreshing = false;
+                });
+              },
+              icon: _refreshing
+                  ? SizedBox(
+                      height: 15, width: 15, child: CircularProgressIndicator())
+                  : Icon(Icons.refresh),
+            ),
             const SizedBox(width: 10),
             BlocBuilder<ChatChannelCubit, ChatChannelState>(
               builder: (context, state) {

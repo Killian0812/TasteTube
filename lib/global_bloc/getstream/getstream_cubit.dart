@@ -35,7 +35,7 @@ class GetstreamCubit extends Cubit<GetstreamState> {
         userData.role == "ADMIN"
             ? User(
                 id: "TasteTube_Admin",
-                name: "TasteTube Admin",
+                name: "TasteTube Assistant",
                 image:
                     "https://firebasestorage.googleapis.com/v0/b/taste-tube.appspot.com/o/tastetube_v2.png?alt=media&token=b77dce85-185a-4c0c-bfa9-965fe8e4aa78",
               )
