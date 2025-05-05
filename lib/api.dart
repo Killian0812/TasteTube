@@ -60,6 +60,9 @@ class Api {
   static const searchApi = '/content/search';
   static const feedApi = '/content/feeds';
 
+  // Chat
+  static const channelSettings = '/chat/channel/:channelId';
+
   // Payment
   static const getVnpayUrl = '/payment/vnpay/getUrl';
 

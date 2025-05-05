@@ -1,13 +1,17 @@
 import 'dart:math' as math;
 
+import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
+import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/loading.dart';
 import 'package:taste_tube/common/text.dart';
+import 'package:taste_tube/feature/inbox/view/chat_channel_cubit.dart';
 import 'package:taste_tube/global_bloc/getstream/getstream_cubit.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
 
@@ -51,7 +55,10 @@ class ResponsiveChat extends StatelessWidget {
                 client: streamClient,
                 child: StreamChannel(
                   channel: c,
-                  child: ChannelPage(channel: c),
+                  child: BlocProvider(
+                    create: (context) => ChatChannelCubit(c.id!)..getSettings(),
+                    child: ChannelPage(channel: c),
+                  ),
                 ),
               ),
             ),
@@ -95,9 +102,13 @@ class _SplitViewState extends State<SplitView> {
                 ? StreamChannel(
                     key: ValueKey(selectedChannel!.cid),
                     channel: selectedChannel!,
-                    child: ChannelPage(
-                      showBackButton: false,
-                      channel: selectedChannel!,
+                    child: BlocProvider(
+                      create: (context) =>
+                          ChatChannelCubit(selectedChannel!.id!)..getSettings(),
+                      child: ChannelPage(
+                        showBackButton: false,
+                        channel: selectedChannel!,
+                      ),
                     ),
                   )
                 : Center(
@@ -292,6 +303,63 @@ class _ChannelPageState extends State<ChannelPage> {
         onBackPressed: () => context.pop(),
         showBackButton: widget.showBackButton,
         centerTitle: true,
+        leading: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(width: 10),
+            BlocBuilder<ChatChannelCubit, ChatChannelState>(
+              builder: (context, state) {
+                if (UserDataUtil.getUserRole() != "ADMIN") {
+                  return const SizedBox.shrink();
+                }
+                if (state is ChatChannelLoading) {
+                  return CircularProgressIndicator(
+                    constraints: BoxConstraints(maxHeight: 30),
+                  );
+                }
+                return AnimatedToggleSwitch<bool>.dual(
+                  indicatorSize: const Size.fromWidth(30.0),
+                  height: 30,
+                  current: state.settings.autoResponse,
+                  first: false,
+                  second: true,
+                  onChanged: (bool value) => context
+                      .read<ChatChannelCubit>()
+                      .updateSettings(autoResponse: value),
+                  iconBuilder: (value) => value
+                      ? const Icon(
+                          FontAwesomeIcons.robot,
+                          size: 14,
+                          color: CommonColor.activeBgColor,
+                        )
+                      : const Icon(
+                          Icons.person,
+                          size: 14,
+                          color: Colors.white,
+                        ),
+                  styleBuilder: (value) => value
+                      ? const ToggleStyle(
+                          backgroundColor: CommonColor.activeBgColor,
+                          indicatorColor: Colors.white,
+                          borderColor: CommonColor.activeBgColor,
+                        )
+                      : const ToggleStyle(
+                          backgroundColor: Colors.transparent,
+                          indicatorColor: CommonColor.activeBgColor,
+                          borderColor: CommonColor.activeBgColor,
+                        ),
+                  textBuilder: (value) => value
+                      ? const Center(
+                          child: Text(
+                          'Auto',
+                          style: TextStyle(color: Colors.white),
+                        ))
+                      : const Center(child: Text('Manual')),
+                );
+              },
+            ),
+          ],
+        ),
       ),
       body: Column(
         children: <Widget>[

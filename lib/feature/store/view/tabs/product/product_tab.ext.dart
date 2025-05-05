@@ -152,15 +152,25 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
                     borderWidth: 3.0,
                     onChanged: (bool value) => setState(() => ship = value),
                     iconBuilder: (value) => value
-                        ? const Icon(Icons.local_shipping,
-                            color: CommonColor.activeBgColor)
-                        : const Icon(Icons.not_interested, color: Colors.grey),
+                        ? const Icon(
+                            Icons.local_shipping,
+                            color: CommonColor.activeBgColor,
+                          )
+                        : const Icon(
+                            Icons.not_interested,
+                            color: Colors.white,
+                          ),
                     styleBuilder: (value) => value
                         ? const ToggleStyle(
                             backgroundColor: CommonColor.activeBgColor,
-                            indicatorColor: Colors.white)
+                            indicatorColor: Colors.white,
+                            borderColor: CommonColor.activeBgColor,
+                          )
                         : const ToggleStyle(
-                            backgroundColor: CommonColor.greyOutBgColor),
+                            backgroundColor: Colors.transparent,
+                            indicatorColor: CommonColor.activeBgColor,
+                            borderColor: CommonColor.activeBgColor,
+                          ),
                     textBuilder: (value) => value
                         ? const Center(
                             child: Text(
