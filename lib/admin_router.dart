@@ -27,6 +27,24 @@ final GoRouter _router = GoRouter(
             ),
           ],
         ),
+        StatefulShellBranch(
+          preload: true,
+          routes: [
+            GoRoute(
+              path: '/chat',
+              builder: (context, state) => const ChatPage(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          preload: true,
+          routes: [
+            GoRoute(
+              path: '/chat',
+              builder: (context, state) => const ChatPage(),
+            ),
+          ],
+        ),
       ],
     ),
     GoRoute(

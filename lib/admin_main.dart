@@ -20,6 +20,7 @@ import 'package:taste_tube/common/fallback.dart';
 import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/feature/admin/dashboard/admin_dashboard_page.dart';
+import 'package:taste_tube/feature/inbox/view/chat_page.dart';
 import 'package:taste_tube/feature/watch/view/public_videos_page.dart';
 import 'package:taste_tube/core/fcm_service.dart';
 import 'package:taste_tube/global_bloc/download/download_dialog.dart';
@@ -216,9 +217,9 @@ class Layout extends StatelessWidget {
           final currentRoute = goRouterState.matchedLocation;
           return InitialPage(redirect: currentRoute);
         }
-        final labels = ['Dashboard', 'Users', 'Chat', 'Ticket'];
+        final labels = ['Dashboard', 'Chat', 'Users', 'Ticket'];
 
-        final icons = [Icons.dashboard, Icons.face, Icons.inbox, Icons.tab];
+        final icons = [Icons.dashboard, Icons.inbox, Icons.face, Icons.tab];
 
         return Stack(
           alignment: Alignment.center,
