@@ -33,8 +33,14 @@ class _InitialPageState extends State<InitialPage> {
               context.go(widget.redirect!);
               return;
             }
-            String redirect =
-                state.data.role == 'RESTAURANT' ? '/store' : '/home';
+            String redirect;
+            if (state.data.role == 'ADMIN') {
+              redirect = '/dashboard';
+            } else if (state.data.role == 'RESTAURANT') {
+              redirect = '/store';
+            } else {
+              redirect = '/home';
+            }
             context.go(redirect);
           } else if (state is Unauthenticated) {
             context.go('/login');
