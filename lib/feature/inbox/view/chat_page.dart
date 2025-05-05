@@ -195,6 +195,7 @@ class _ChannelListPageState extends State<ChannelListPage> {
       'messaging',
       extraData: {
         'members': [client.state.currentUser!.id, user.id],
+        if (user.id == "TasteTube_Admin") 'admin_chat': true,
       },
     );
 
@@ -297,7 +298,7 @@ class _ChannelPageState extends State<ChannelPage> {
     return Scaffold(
       appBar: StreamChannelHeader(
         onImageTap: () {
-          if (channel.isGroup) return;
+          if (channel.isGroup || channel.extraData['admin_chat'] == true) return;
           final otherUser = channel.state!.members.firstWhere(
             (member) => member.userId != channel.client.state.currentUser!.id,
           );
@@ -310,28 +311,28 @@ class _ChannelPageState extends State<ChannelPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(width: 10),
-            IconButton(
-              onPressed: () async {
-                if (_refreshing) return;
-                setState(() {
-                  _refreshing = true;
-                });
-                final dio = Dio();
-                await dio.get('${Api.baseUrl}/version');
-                setState(() {
-                  _refreshing = false;
-                });
-              },
-              icon: _refreshing
-                  ? SizedBox(
-                      height: 15, width: 15, child: CircularProgressIndicator())
-                  : Icon(Icons.refresh),
-            ),
-            const SizedBox(width: 10),
             BlocBuilder<ChatChannelCubit, ChatChannelState>(
               builder: (context, state) {
                 if (UserDataUtil.getUserRole() != "ADMIN") {
-                  return const SizedBox.shrink();
+                  return IconButton(
+                    onPressed: () async {
+                      if (_refreshing) return;
+                      setState(() {
+                        _refreshing = true;
+                      });
+                      final dio = Dio();
+                      await dio.get('${Api.baseUrl}/version');
+                      setState(() {
+                        _refreshing = false;
+                      });
+                    },
+                    icon: _refreshing
+                        ? SizedBox(
+                            height: 15,
+                            width: 15,
+                            child: CircularProgressIndicator())
+                        : Icon(Icons.refresh),
+                  );
                 }
                 if (state is ChatChannelLoading) {
                   return CircularProgressIndicator(

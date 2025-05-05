@@ -270,9 +270,24 @@ class ShopAnalyticTab extends StatelessWidget {
             ),
           );
         } else if (state is ShopAnalyticError) {
-          return Center(child: Text('Error: ${state.message}'));
+          return RefreshIndicator(
+              onRefresh: () =>
+                  context.read<ShopAnalyticCubit>().fetchAnalytics(),
+              child: ListView(
+                children: [
+                  const SizedBox(height: 50),
+                  Center(child: Text('Error: ${state.message}')),
+                ],
+              ));
         }
-        return const Center(child: Text('No data available'));
+        return RefreshIndicator(
+            onRefresh: () => context.read<ShopAnalyticCubit>().fetchAnalytics(),
+            child: ListView(
+              children: [
+                const SizedBox(height: 50),
+                Center(child: Text('No data available')),
+              ],
+            ));
       },
     );
   }

@@ -43,15 +43,20 @@ class ShopAnalytics {
       'Saturday',
       'Sunday'
     ];
-    final dailySales = Map<String, double>.from(json['dailySales']);
+
+    final dailySales = <String, double>{};
+    final rawDailySales = json['dailySales'] as Map<String, dynamic>? ?? {};
     for (var day in weekdays) {
-      dailySales.putIfAbsent(day, () => 0.0);
+      final value = rawDailySales[day];
+      dailySales[day] = (value is int)
+          ? value.toDouble()
+          : (value as num?)?.toDouble() ?? 0.0;
     }
 
     return ShopAnalytics(
-      totalRevenue: json['totalRevenue'],
+      totalRevenue: (json['totalRevenue'] as num).toDouble(),
       orderCount: json['orderCount'],
-      averageOrderValue: json['averageOrderValue'],
+      averageOrderValue: (json['averageOrderValue'] as num).toDouble(),
       dailySales: dailySales,
       videoViews: json['videoViews'],
       positiveReviews: json['positiveReviews'],
@@ -91,8 +96,8 @@ class ProductSales {
     return ProductSales(
       name: json['name'],
       sales: json['sales'],
-      revenue: json['revenue'],
-      rating: json['rating'],
+      revenue: (json['revenue'] as num).toDouble(),
+      rating: (json['rating'] as num).toDouble(),
     );
   }
 }
@@ -114,8 +119,8 @@ class CategorySales {
     return CategorySales(
       name: json['name'],
       sales: json['sales'],
-      revenue: json['revenue'],
-      growth: json['growth'],
+      revenue: (json['revenue'] as num).toDouble(),
+      growth: (json['growth'] as num).toDouble(),
     );
   }
 }
@@ -137,8 +142,8 @@ class CustomerDemo {
     return CustomerDemo(
       group: json['group'],
       count: json['count'],
-      percentage: json['percentage'],
-      avgSpend: json['avgSpend'],
+      percentage: (json['percentage'] as num).toDouble(),
+      avgSpend: (json['avgSpend'] as num).toDouble(),
     );
   }
 }
@@ -158,7 +163,7 @@ class PaymentMethod {
     return PaymentMethod(
       name: json['name'],
       count: json['count'],
-      percentage: json['percentage'],
+      percentage: (json['percentage'] as num).toDouble(),
     );
   }
 }
