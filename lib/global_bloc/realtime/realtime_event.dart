@@ -10,6 +10,10 @@ class BasicRealtimeEvent extends RealtimeEvent {
   const BasicRealtimeEvent(super.name);
 }
 
+class UserBannedRealtimeEvent extends RealtimeEvent {
+  const UserBannedRealtimeEvent() : super("banned");
+}
+
 class PaymentRealtimeEvent extends RealtimeEvent {
   final String? status;
   final String? pid;

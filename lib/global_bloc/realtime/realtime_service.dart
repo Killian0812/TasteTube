@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
 import 'package:taste_tube/global_bloc/realtime/realtime_provider.dart';
 import 'package:taste_tube/core/injection.dart';
 
@@ -26,5 +27,17 @@ mixin PaymentRealtimeService on ChangeNotifier {
     if (_paymentEvents.length > 100) {
       _paymentEvents.clear();
     }
+  }
+}
+
+mixin UserBannedRealtimeService on ChangeNotifier {
+  void handleUserBan(
+      Map<String, String> data, Function(RealtimeEvent) setEvent) {
+    final createdAt = DateTime.parse(data['createdAt'] as String);
+    if (DateTime.now().difference(createdAt) >= const Duration(minutes: 1)) {
+      return;
+    }
+    logger.i('User banned socket event received: $data');
+    getIt<AuthBloc>().add(LogoutEvent());
   }
 }

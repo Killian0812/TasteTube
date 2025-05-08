@@ -10,7 +10,8 @@ import 'package:taste_tube/core/injection.dart';
 
 part 'realtime_event.dart';
 
-class RealtimeProvider extends ChangeNotifier with PaymentRealtimeService {
+class RealtimeProvider extends ChangeNotifier
+    with PaymentRealtimeService, UserBannedRealtimeService {
   Socket? _socket;
   final Logger logger = getIt<Logger>();
   RealtimeEvent event = BasicRealtimeEvent('init');
@@ -21,6 +22,7 @@ class RealtimeProvider extends ChangeNotifier with PaymentRealtimeService {
       databaseURL:
           "https://taste-tube-default-rtdb.asia-southeast1.firebasedatabase.app");
   DatabaseReference? _paymentRef;
+  DatabaseReference? _statusRef;
 
   bool get isConnected => _socket != null && _socket!.connected;
 
@@ -91,17 +93,18 @@ class RealtimeProvider extends ChangeNotifier with PaymentRealtimeService {
     }
   }
 
-  // Firebase initialization
+  // Separate flags for each listener
+  bool isFirstFetchPayments = true;
+  bool isFirstFetchStatus = true;
   void _initFirebase(String userId) {
     try {
       _paymentRef = rtdb.ref().child('users').child(userId).child('payments');
-
-      bool isFirstFetch = true;
+      _statusRef = rtdb.ref().child('users').child(userId).child('status');
 
       _paymentRef!.onValue.listen((event) {
         final snapshot = event.snapshot;
-        if (isFirstFetch) {
-          isFirstFetch = false;
+        if (isFirstFetchPayments) {
+          isFirstFetchPayments = false;
           return;
         }
         if (snapshot.exists) {
@@ -111,6 +114,22 @@ class RealtimeProvider extends ChangeNotifier with PaymentRealtimeService {
               handlePaymentEvent(value, setEvent);
             }
           });
+        }
+      }, onError: (error) {
+        logger.e('Firebase error: $error');
+        event = BasicRealtimeEvent('error');
+        notifyListeners();
+      });
+
+      _statusRef!.onValue.listen((event) {
+        final snapshot = event.snapshot;
+        if (isFirstFetchStatus) {
+          isFirstFetchStatus = false;
+          return;
+        }
+        if (snapshot.exists) {
+          final data = snapshot.value as Map<String, String>;
+          handleUserBan(data, setEvent);
         }
       }, onError: (error) {
         logger.e('Firebase error: $error');
