@@ -84,10 +84,12 @@ class Api {
   static const analyticByShopApi = '/analytic/shop/:shopId';
 
   // User
+  static const usersApi = '/users';
   static const userApi = '/users/:userId';
   static const changePasswordApi = '/users/:userId/change_password';
   static const followUserApi = '/users/:userId/follow';
   static const unfollowUserApi = '/users/:userId/unfollow';
+  static const userStatusApi = '/users/:userId/status';
 
   factory Api(String environment) {
     switch (environment) {

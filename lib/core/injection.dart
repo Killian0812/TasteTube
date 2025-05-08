@@ -4,6 +4,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
 import 'package:taste_tube/auth/view/oauth/oauth_cubit.dart';
 import 'package:taste_tube/core/http_client.dart';
+import 'package:taste_tube/feature/admin/user_management/user_management_cubit.dart';
 import 'package:taste_tube/feature/home/domain/content_repo.dart';
 import 'package:taste_tube/feature/home/view/content_cubit.dart';
 import 'package:taste_tube/feature/inbox/domain/chat_channel_repo.dart';
@@ -102,4 +103,5 @@ void injectDependencies() {
   getIt.registerSingleton<ContentCubit>(ContentCubit());
   getIt.registerSingleton<DownloadCubit>(DownloadCubit());
   getIt.registerSingleton<GetstreamCubit>(GetstreamCubit());
+  getIt.registerSingleton<UserManagementCubit>(UserManagementCubit());
 }

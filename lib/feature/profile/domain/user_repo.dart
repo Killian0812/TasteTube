@@ -163,4 +163,47 @@ class UserRepository {
       return false;
     }
   }
+
+  Future<Either<ApiError, PaginatedUserResponse>> getUsers({
+    int page = 1,
+    int limit = 10,
+    String? role,
+    String? status,
+    String? search,
+  }) async {
+    try {
+      final response = await http.get(
+        Api.usersApi,
+        queryParameters: {
+          'page': page,
+          'limit': limit,
+          if (role != null) 'role': role,
+          if (status != null) 'status': status,
+          if (search != null) 'search': search,
+        },
+      );
+      final paginatedResponse = PaginatedUserResponse.fromJson(response.data);
+      return Right(paginatedResponse);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
+
+  Future<Either<ApiError, User>> updateUserStatus(
+      String userId, String status) async {
+    try {
+      final response = await http.put(
+        Api.userStatusApi.replaceFirst(':userId', userId),
+        data: {'status': status},
+      );
+      final userResponse = User.fromJson(response.data);
+      return Right(userResponse);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
 }

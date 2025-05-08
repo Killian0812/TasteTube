@@ -40,8 +40,8 @@ final GoRouter _router = GoRouter(
           preload: true,
           routes: [
             GoRoute(
-              path: '/chat',
-              builder: (context, state) => const ChatPage(),
+              path: '/users',
+              builder: (context, state) => const UserManagementPage(),
             ),
           ],
         ),

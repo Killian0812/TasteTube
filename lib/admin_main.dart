@@ -20,6 +20,7 @@ import 'package:taste_tube/common/fallback.dart';
 import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/feature/admin/dashboard/admin_dashboard_page.dart';
+import 'package:taste_tube/feature/admin/user_management/user_management_page.dart';
 import 'package:taste_tube/feature/inbox/view/chat_page.dart';
 import 'package:taste_tube/feature/watch/view/public_videos_page.dart';
 import 'package:taste_tube/core/fcm_service.dart';
@@ -100,6 +101,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'TasteTube Admin',
           builder: (context, child) => TasteTubeProvider(
+            isAdmin: true,
             child: StreamChat(
               client: streamClient,
               child: child ?? SizedBox.shrink(),
