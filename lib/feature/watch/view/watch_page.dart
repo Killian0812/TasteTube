@@ -1,34 +1,18 @@
-import 'dart:convert';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:taste_tube/api.dart';
-import 'package:taste_tube/common/color.dart';
-import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/common/loading.dart';
-import 'package:taste_tube/common/size.dart';
-import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/home/view/content_cubit.dart';
-import 'package:taste_tube/feature/shop/view/payment/payment_page.dart';
-import 'package:taste_tube/feature/shop/view/quantity_dialog.dart';
 import 'package:taste_tube/feature/watch/view/video_detail_cubit.dart';
-import 'package:taste_tube/global_bloc/download/download_cubit.dart';
-import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
-import 'package:taste_tube/global_data/product/product.dart';
-import 'package:taste_tube/global_data/watch/comment.dart';
+import 'package:taste_tube/feature/watch/view/video_display.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
 import 'package:taste_tube/feature/watch/view/single_video_cubit.dart';
 import 'package:taste_tube/core/injection.dart';
-import 'package:taste_tube/utils/currency.util.dart';
-import 'package:taste_tube/utils/user_data.util.dart';
 import 'package:video_player/video_player.dart';
-import 'package:timeago/timeago.dart' as timeago;
 
 part 'single_video_page.dart';
 
