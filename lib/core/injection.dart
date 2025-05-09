@@ -21,7 +21,7 @@ import 'package:taste_tube/feature/shop/domain/address_repo.dart';
 import 'package:taste_tube/feature/shop/domain/order_repo.dart';
 import 'package:taste_tube/feature/shop/domain/shop_repo.dart';
 import 'package:taste_tube/feature/store/domain/discount_repo.dart';
-import 'package:taste_tube/feature/upload/domain/upload_repo.dart';
+import 'package:taste_tube/feature/upload_video/domain/upload_repo.dart';
 import 'package:taste_tube/feature/watch/domain/single_video_repo.dart';
 import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
 import 'package:taste_tube/global_bloc/download/download_cubit.dart';

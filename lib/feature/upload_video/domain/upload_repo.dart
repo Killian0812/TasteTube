@@ -4,7 +4,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/common/error.dart';
-import 'package:taste_tube/feature/upload/data/upload_video_request.dart';
+import 'package:taste_tube/feature/upload_video/data/upload_video_request.dart';
 
 class UploadRepository {
   final Dio http;

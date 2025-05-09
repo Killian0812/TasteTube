@@ -10,7 +10,7 @@ import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/common/constant.dart';
 import 'package:taste_tube/global_data/user/user.dart';
-import 'package:taste_tube/feature/upload/view/upload_cubit.dart';
+import 'package:taste_tube/feature/upload_video/view/upload_cubit.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
 
 class UploadPage extends StatelessWidget {
