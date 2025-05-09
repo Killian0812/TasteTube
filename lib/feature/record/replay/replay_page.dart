@@ -10,7 +10,7 @@ import 'package:taste_tube/common/fallback.dart';
 import 'package:taste_tube/common/loading.dart';
 import 'package:taste_tube/common/theme.dart';
 import 'package:taste_tube/global_data/user/user.dart';
-import 'package:taste_tube/feature/upload/view/upload_page.dart';
+import 'package:taste_tube/feature/upload_video/view/upload_page.dart';
 import 'package:video_player/video_player.dart';
 
 class ReplayPage extends StatefulWidget {
