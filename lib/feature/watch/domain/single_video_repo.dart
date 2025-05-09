@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/common/error.dart';
+import 'package:taste_tube/feature/update_video/data/update_video_request.dart';
 import 'package:taste_tube/global_data/watch/interaction.dart';
 import 'package:taste_tube/global_data/watch/comment.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
@@ -26,10 +27,29 @@ class SingleVideoRepository {
     }
   }
 
-  Future<Either<ApiError, Interaction>> getVideoInteraction(String videoId) async {
+  Future<Either<ApiError, Video>> updateVideo(
+    String videoId,
+    UpdateVideoRequest request,
+  ) async {
     try {
-      final response =
-          await http.get(Api.videoInteractionApi.replaceFirst(':videoId', videoId));
+      final response = await http.put(
+        Api.singleVideoApi.replaceFirst(':videoId', videoId),
+        data: request.toJson(),
+      );
+      final video = Video.fromJson(response.data['video']);
+      return Right(video);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
+
+  Future<Either<ApiError, Interaction>> getVideoInteraction(
+      String videoId) async {
+    try {
+      final response = await http
+          .get(Api.videoInteractionApi.replaceFirst(':videoId', videoId));
       final interaction = Interaction.fromJson(response.data);
       return Right(interaction);
     } on DioException catch (e) {

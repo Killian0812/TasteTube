@@ -11,7 +11,11 @@ class SingleVideoPage extends StatelessWidget {
           return Center(child: Text(state.message));
         }
         if (state is VideoDetailLoaded) {
-          return SingleVideo(video: state.video);
+          return BlocProvider(
+              create: (context) => SingleVideoCubit(state.video)
+                ..fetchDependency()
+                ..fetchComments(),
+              child: SingleVideo(video: state.video));
         }
         return Center(child: CommonLoadingIndicator.regular);
       },
@@ -143,41 +147,43 @@ class _SingleVideoState extends State<SingleVideo>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return BlocListener<SingleVideoCubit, SingleVideoState>(
-      listener: (context, state) {
-        if (state is DeleteVideoSuccess) {
-          Navigator.of(context).pop();
-        } else if (state is DeleteVideoError) {
-          ToastService.showToast(context, state.message, ToastType.error);
-        }
-      },
-      child: _videoController.value.isInitialized
-          ? VideoContent(
-              video: widget.video,
-              videoController: _videoController,
-              isScrubbing: _isScrubbing,
-              onScrubbingChanged: (value) =>
-                  setState(() => _isScrubbing = value),
-              jiggleAnimation: _jiggleAnimation,
-              jiggleController: _jiggleController,
-              showPlayOverlay: _showPlayOverlay,
-              onUserInteracted: () {
-                setState(() {
-                  _hasUserInteracted = true;
-                  _tryAutoPlay();
-                });
-              },
-            )
-          : VideoThumbnail(
-              thumbnail: widget.video.thumbnail,
-              showPlayOverlay: _showPlayOverlay,
-              onPlayTapped: () {
-                setState(() {
-                  _hasUserInteracted = true;
-                  _tryAutoPlay();
-                });
-              },
-            ),
+    return Material(
+      child: BlocListener<SingleVideoCubit, SingleVideoState>(
+        listener: (context, state) {
+          if (state is DeleteVideoSuccess) {
+            Navigator.of(context).pop();
+          } else if (state is DeleteVideoError) {
+            ToastService.showToast(context, state.message, ToastType.error);
+          }
+        },
+        child: _videoController.value.isInitialized
+            ? VideoContent(
+                video: widget.video,
+                videoController: _videoController,
+                isScrubbing: _isScrubbing,
+                onScrubbingChanged: (value) =>
+                    setState(() => _isScrubbing = value),
+                jiggleAnimation: _jiggleAnimation,
+                jiggleController: _jiggleController,
+                showPlayOverlay: _showPlayOverlay,
+                onUserInteracted: () {
+                  setState(() {
+                    _hasUserInteracted = true;
+                    _tryAutoPlay();
+                  });
+                },
+              )
+            : VideoThumbnail(
+                thumbnail: widget.video.thumbnail,
+                showPlayOverlay: _showPlayOverlay,
+                onPlayTapped: () {
+                  setState(() {
+                    _hasUserInteracted = true;
+                    _tryAutoPlay();
+                  });
+                },
+              ),
+      ),
     );
   }
 

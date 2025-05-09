@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/core/injection.dart';
+import 'package:taste_tube/feature/update_video/view/update_video_page.dart';
 import 'package:taste_tube/feature/watch/view/single_video_cubit.dart';
 import 'package:taste_tube/global_bloc/download/download_cubit.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
@@ -31,7 +32,10 @@ void showVideoOptionsSheet(
                   style: TextStyle(color: Colors.white),
                 ),
                 onTap: () {
-                  Navigator.pop(context);
+                  Navigator.of(context, rootNavigator: true).push(
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              UpdateVideoPage.provider(video)));
                 },
               ),
               const Divider(color: Colors.white30),
