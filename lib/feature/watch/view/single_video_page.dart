@@ -213,10 +213,24 @@ class _SingleVideoState extends State<SingleVideo>
       children: [
         _buildVideoDisplay(),
         SafeArea(child: _buildVideoControls()),
-        _videoLikes(),
-        _videoComments(),
-        _videoShare(),
-        _videoSettings(),
+        Padding(
+          padding: const EdgeInsets.only(right: 15.0),
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _videoLikes(),
+                const SizedBox(height: 20),
+                _videoComments(),
+                const SizedBox(height: 20),
+                _videoShare(),
+                const SizedBox(height: 10),
+                _videoSettings(),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -765,9 +779,7 @@ class _SingleVideoState extends State<SingleVideo>
         ),
       );
 
-  Widget _videoLikes() => Align(
-      alignment: const Alignment(0.9, 0.0),
-      child: BlocConsumer<SingleVideoCubit, SingleVideoState>(
+  Widget _videoLikes() => BlocConsumer<SingleVideoCubit, SingleVideoState>(
         listener: (context, state) {
           if (state.interaction.userLiked) {
             _jiggleController.forward().then((_) => _jiggleController.reset());
@@ -818,41 +830,35 @@ class _SingleVideoState extends State<SingleVideo>
             ),
           );
         },
-      ));
+      );
 
-  Widget _videoComments() => Align(
-        alignment: const Alignment(0.9, 0.0),
-        child: Container(
-          margin: const EdgeInsets.only(top: 150),
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () async {
-              final cubit = context.read<SingleVideoCubit>();
-              await cubit.fetchComments();
-              if (mounted) _showCommentsBottomSheet(context, cubit);
-            },
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(
-                  FontAwesomeIcons.solidCommentDots,
-                  color: Colors.white,
-                  size: 40,
-                ),
-                BlocBuilder<SingleVideoCubit, SingleVideoState>(
-                  builder: (context, state) {
-                    if (state is SingleVideoLoading) {
-                      return const SizedBox.shrink();
-                    }
-                    return Text(
-                      state.comments.length.toString(),
-                      style: const TextStyle(color: Colors.white),
-                    );
-                  },
-                ),
-              ],
+  Widget _videoComments() => GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () async {
+          final cubit = context.read<SingleVideoCubit>();
+          await cubit.fetchComments();
+          if (mounted) _showCommentsBottomSheet(context, cubit);
+        },
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              FontAwesomeIcons.solidCommentDots,
+              color: Colors.white,
+              size: 40,
             ),
-          ),
+            BlocBuilder<SingleVideoCubit, SingleVideoState>(
+              builder: (context, state) {
+                if (state is SingleVideoLoading) {
+                  return const SizedBox.shrink();
+                }
+                return Text(
+                  state.comments.length.toString(),
+                  style: const TextStyle(color: Colors.white),
+                );
+              },
+            ),
+          ],
         ),
       );
 
@@ -1116,46 +1122,34 @@ class _SingleVideoState extends State<SingleVideo>
     );
   }
 
-  Widget _videoShare() => Align(
-        alignment: const Alignment(0.9, 0.0),
-        child: Container(
-          margin: const EdgeInsets.only(top: 270),
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () async {
-              final box = context.findRenderObject() as RenderBox?;
-              context.read<SingleVideoCubit>().shareVideo();
-              await Share.shareUri(
-                // TODO: Update to current video url
-                Uri.parse(Api.baseUrl),
-                sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
-              );
-            },
-            child: const Icon(
-              FontAwesomeIcons.share,
-              color: Colors.white,
-              size: 30,
-            ),
-          ),
+  Widget _videoShare() => GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () async {
+          final box = context.findRenderObject() as RenderBox?;
+          context.read<SingleVideoCubit>().shareVideo();
+          await Share.shareUri(
+            // TODO: Update to current video url
+            Uri.parse(Api.baseUrl),
+            sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+          );
+        },
+        child: const Icon(
+          FontAwesomeIcons.share,
+          color: Colors.white,
+          size: 30,
         ),
       );
 
-  Widget _videoSettings() => Align(
-        alignment: const Alignment(0.9, 0.0),
-        child: Container(
-          margin: const EdgeInsets.only(top: 350),
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () {
-              final cubit = context.read<SingleVideoCubit>();
-              _showVideoOptions(context, cubit);
-            },
-            child: const Icon(
-              Icons.more_horiz,
-              color: Colors.white,
-              size: 30,
-            ),
-          ),
+  Widget _videoSettings() => GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          final cubit = context.read<SingleVideoCubit>();
+          _showVideoOptions(context, cubit);
+        },
+        child: const Icon(
+          Icons.more_horiz,
+          color: Colors.white,
+          size: 30,
         ),
       );
 
