@@ -100,7 +100,7 @@ class SingleVideoCubit extends Cubit<SingleVideoState> {
 
   Future<void> fetchDependency() async {
     try {
-      final result = await singleVideoRepo.getVideoInfo(video.id);
+      final result = await singleVideoRepo.getVideoInteraction(video.id);
       result.fold(
         (error) => emit(SingleVideoError(state.comments, state.interaction,
             error.message ?? 'Error fetching video')),

@@ -17,6 +17,7 @@ import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/home/view/content_cubit.dart';
 import 'package:taste_tube/feature/shop/view/payment/payment_page.dart';
 import 'package:taste_tube/feature/shop/view/quantity_dialog.dart';
+import 'package:taste_tube/feature/watch/view/video_detail_cubit.dart';
 import 'package:taste_tube/global_bloc/download/download_cubit.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_data/product/product.dart';
@@ -128,7 +129,7 @@ class _WatchPageState extends State<WatchPage> {
                 valueListenable: getIt<ContentCubit>().currentPlayingVideoId,
                 builder: (context, currentPlayingIndex, _) {
                   final video = state.videos[index];
-                  return SingleVideo.provider(video);
+                  return SingleVideo.withPrefetch(video);
                 },
               );
             },

@@ -15,6 +15,7 @@ class Api {
   static const likedVideoApi = '/videos/liked';
   static const reviewVideoApi = '/videos/review';
   static const singleVideoApi = '/videos/:videoId';
+  static const videoInteractionApi = '/videos/:videoId/interaction';
   static const videoLikeApi = '/videos/:videoId/like';
   static const videoUnlikeApi = '/videos/:videoId/unlike';
   static const videoCommentApi = '/videos/:videoId/comment';

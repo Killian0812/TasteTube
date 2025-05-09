@@ -1,10 +1,33 @@
 part of 'watch_page.dart';
 
+class SingleVideoPage extends StatelessWidget {
+  const SingleVideoPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<VideoDetailCubit, VideoDetailState>(
+      builder: (context, state) {
+        if (state is VideoDetailError) {
+          return Center(child: Text(state.message));
+        }
+        if (state is VideoDetailLoaded) {
+          return SingleVideo(video: state.video);
+        }
+        return Center(child: CommonLoadingIndicator.regular);
+      },
+    );
+  }
+}
+
 class SingleVideo extends StatefulWidget {
   final Video video;
   const SingleVideo({super.key, required this.video});
 
-  static Widget provider(Video video) => BlocProvider(
+  static Widget provider(String videoId) => BlocProvider(
+      create: (context) => VideoDetailCubit(videoId)..fetchDependency(),
+      child: SingleVideoPage());
+
+  static Widget withPrefetch(Video video) => BlocProvider(
         create: (context) => SingleVideoCubit(video)
           ..fetchDependency()
           ..fetchComments(),
