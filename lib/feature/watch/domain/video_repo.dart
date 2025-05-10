@@ -9,10 +9,10 @@ import 'package:taste_tube/global_data/watch/interaction.dart';
 import 'package:taste_tube/global_data/watch/comment.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
 
-class SingleVideoRepository {
+class VideoRepository {
   final Dio http;
 
-  SingleVideoRepository({required this.http});
+  VideoRepository({required this.http});
 
   Future<Either<ApiError, Video>> getVideo(String videoId) async {
     try {
@@ -146,6 +146,51 @@ class SingleVideoRepository {
     try {
       await http.post(Api.videoShareApi.replaceFirst(':videoId', videoId));
       return const Right(true);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
+
+  Future<Either<ApiError, VideoResponse>> getVideos({
+    required int page,
+    required int limit,
+    String? visibility,
+    String? status,
+    String? search,
+  }) async {
+    try {
+      final queryParameters = {
+        'page': page.toString(),
+        'limit': limit.toString(),
+        if (visibility != null) 'visibility': visibility,
+        if (status != null) 'status': status,
+        if (search != null) 'search': search,
+      };
+
+      final response =
+          await http.get(Api.videoApi, queryParameters: queryParameters);
+
+      final videoResponse = VideoResponse.fromJson(response.data);
+      return Right(videoResponse);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
+
+  Future<Either<ApiError, Video>> updateVideoStatus(
+      String videoId, String status) async {
+    try {
+      final response = await http.put(
+        Api.videoStatusApi.replaceFirst(':videoId', videoId),
+        data: {'status': status},
+      );
+
+      final updatedVideo = Video.fromJson(response.data['video']);
+      return Right(updatedVideo);
     } on DioException catch (e) {
       return Left(ApiError.fromDioException(e));
     } catch (e) {

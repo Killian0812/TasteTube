@@ -19,6 +19,7 @@ class Video {
   String? targetUserId;
   String? targetUsername;
   String? targetUserImage;
+  String status;
   DateTime createdAt;
   DateTime updatedAt;
 
@@ -41,6 +42,7 @@ class Video {
     this.targetUserId,
     this.targetUsername,
     this.targetUserImage,
+    required this.status,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -68,8 +70,49 @@ class Video {
       targetUserId: json['targetUserId']?['_id'] as String?,
       targetUsername: json['targetUserId']?['username'] as String?,
       targetUserImage: json['targetUserId']?['image'] as String?,
+      status: json['status'],
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
+    );
+  }
+}
+
+class VideoResponse {
+  final List<Video> videos;
+  final int totalDocs;
+  final int limit;
+  final bool hasPrevPage;
+  final bool hasNextPage;
+  final int page;
+  final int totalPages;
+  final int? prevPage;
+  final int? nextPage;
+
+  const VideoResponse({
+    required this.videos,
+    required this.totalDocs,
+    required this.limit,
+    required this.hasPrevPage,
+    required this.hasNextPage,
+    required this.page,
+    required this.totalPages,
+    this.prevPage,
+    this.nextPage,
+  });
+
+  factory VideoResponse.fromJson(Map<String, dynamic> json) {
+    return VideoResponse(
+      videos: (json['videos'] as List<dynamic>)
+          .map((videoJson) => Video.fromJson(videoJson as Map<String, dynamic>))
+          .toList(),
+      totalDocs: json['totalDocs'] as int,
+      limit: json['limit'] as int,
+      hasPrevPage: json['hasPrevPage'] as bool,
+      hasNextPage: json['hasNextPage'] as bool,
+      page: json['page'] as int,
+      totalPages: json['totalPages'] as int,
+      prevPage: json['prevPage'] as int?,
+      nextPage: json['nextPage'] as int?,
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
-import 'package:taste_tube/feature/watch/domain/single_video_repo.dart';
+import 'package:taste_tube/feature/watch/domain/video_repo.dart';
 import 'package:taste_tube/core/injection.dart';
 
 abstract class VideoDetailState {
@@ -23,10 +23,10 @@ class VideoDetailError extends VideoDetailState {
 
 class VideoDetailCubit extends Cubit<VideoDetailState> {
   final String videoId;
-  final SingleVideoRepository repository;
+  final VideoRepository repository;
 
   VideoDetailCubit(this.videoId)
-      : repository = getIt<SingleVideoRepository>(),
+      : repository = getIt<VideoRepository>(),
         super(VideoDetailLoading());
 
   Future<void> fetchDependency() async {

@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/global_data/watch/comment.dart';
 import 'package:taste_tube/global_data/watch/interaction.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
-import 'package:taste_tube/feature/watch/domain/single_video_repo.dart';
+import 'package:taste_tube/feature/watch/domain/video_repo.dart';
 import 'package:taste_tube/core/injection.dart';
 
 abstract class SingleVideoState {
@@ -83,10 +83,10 @@ class DeleteVideoError extends SingleVideoState {
 
 class SingleVideoCubit extends Cubit<SingleVideoState> {
   final Video video;
-  final SingleVideoRepository singleVideoRepo;
+  final VideoRepository singleVideoRepo;
 
   SingleVideoCubit(this.video)
-      : singleVideoRepo = getIt<SingleVideoRepository>(),
+      : singleVideoRepo = getIt<VideoRepository>(),
         super(SingleVideoLoading(
             [],
             Interaction(

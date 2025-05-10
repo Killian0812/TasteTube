@@ -21,9 +21,11 @@ import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/feature/admin/dashboard/admin_dashboard_page.dart';
 import 'package:taste_tube/feature/admin/user_management/user_management_page.dart';
+import 'package:taste_tube/feature/admin/video_management/video_management_page.dart';
 import 'package:taste_tube/feature/inbox/view/chat_page.dart';
 import 'package:taste_tube/feature/watch/view/public_videos_page.dart';
 import 'package:taste_tube/core/fcm_service.dart';
+import 'package:taste_tube/feature/watch/view/watch_page.dart';
 import 'package:taste_tube/global_bloc/download/download_dialog.dart';
 import 'package:taste_tube/feature/profile/view/profile_page.dart';
 import 'package:taste_tube/feature/shop/view/tabs/shopping/single_shop_page.dart';
@@ -219,9 +221,14 @@ class Layout extends StatelessWidget {
           final currentRoute = goRouterState.matchedLocation;
           return InitialPage(redirect: currentRoute);
         }
-        final labels = ['Dashboard', 'Chat', 'Users', 'Ticket'];
+        final labels = ['Dashboard', 'Chat', 'Users', 'Videos'];
 
-        final icons = [Icons.dashboard, Icons.inbox, Icons.face, Icons.tab];
+        final icons = [
+          Icons.dashboard,
+          Icons.inbox,
+          Icons.face,
+          Icons.video_camera_front
+        ];
 
         return Stack(
           alignment: Alignment.center,

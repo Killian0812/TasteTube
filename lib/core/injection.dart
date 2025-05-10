@@ -5,6 +5,7 @@ import 'package:logger/logger.dart';
 import 'package:taste_tube/auth/view/oauth/oauth_cubit.dart';
 import 'package:taste_tube/core/http_client.dart';
 import 'package:taste_tube/feature/admin/user_management/user_management_cubit.dart';
+import 'package:taste_tube/feature/admin/video_management/video_management_cubit.dart';
 import 'package:taste_tube/feature/home/domain/content_repo.dart';
 import 'package:taste_tube/feature/home/view/content_cubit.dart';
 import 'package:taste_tube/feature/inbox/domain/chat_channel_repo.dart';
@@ -22,7 +23,7 @@ import 'package:taste_tube/feature/shop/domain/order_repo.dart';
 import 'package:taste_tube/feature/shop/domain/shop_repo.dart';
 import 'package:taste_tube/feature/store/domain/discount_repo.dart';
 import 'package:taste_tube/feature/upload_video/domain/upload_repo.dart';
-import 'package:taste_tube/feature/watch/domain/single_video_repo.dart';
+import 'package:taste_tube/feature/watch/domain/video_repo.dart';
 import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
 import 'package:taste_tube/global_bloc/download/download_cubit.dart';
 import 'package:taste_tube/global_bloc/getstream/getstream_cubit.dart';
@@ -63,8 +64,8 @@ void injectDependencies() {
       () => UserRepository(http: getIt()));
   getIt.registerLazySingleton<ProductRepository>(
       () => ProductRepository(http: getIt()));
-  getIt.registerLazySingleton<SingleVideoRepository>(
-      () => SingleVideoRepository(http: getIt()));
+  getIt.registerLazySingleton<VideoRepository>(
+      () => VideoRepository(http: getIt()));
   getIt.registerLazySingleton<SearchRepository>(
       () => SearchRepository(http: getIt()));
   getIt.registerLazySingleton<AddressRepository>(
@@ -104,4 +105,5 @@ void injectDependencies() {
   getIt.registerSingleton<DownloadCubit>(DownloadCubit());
   getIt.registerSingleton<GetstreamCubit>(GetstreamCubit());
   getIt.registerSingleton<UserManagementCubit>(UserManagementCubit());
+  getIt.registerSingleton<VideoManagementCubit>(VideoManagementCubit());
 }

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:taste_tube/auth/view/oauth/oauth_cubit.dart';
 import 'package:taste_tube/feature/admin/user_management/user_management_cubit.dart';
+import 'package:taste_tube/feature/admin/video_management/video_management_cubit.dart';
 import 'package:taste_tube/feature/home/view/content_cubit.dart';
 import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
 import 'package:taste_tube/global_bloc/download/download_cubit.dart';
@@ -54,6 +55,9 @@ class TasteTubeProvider extends StatelessWidget {
         if (isAdmin) ...[
           BlocProvider.value(
             value: getIt<UserManagementCubit>(),
+          ),
+          BlocProvider.value(
+            value: getIt<VideoManagementCubit>(),
           ),
         ]
       ],

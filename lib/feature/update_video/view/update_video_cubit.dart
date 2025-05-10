@@ -1,12 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:taste_tube/feature/watch/domain/single_video_repo.dart';
+import 'package:taste_tube/feature/watch/domain/video_repo.dart';
 import 'package:taste_tube/global_data/product/product.dart';
 import 'package:taste_tube/feature/store/domain/product_repo.dart';
 import 'package:taste_tube/feature/update_video/data/update_video_request.dart';
 import 'package:taste_tube/core/injection.dart';
 
 class UpdateVideoCubit extends Cubit<UpdateVideoState> {
-  final SingleVideoRepository videoRepository;
+  final VideoRepository videoRepository;
   final ProductRepository productRepository;
 
   UpdateVideoCubit()

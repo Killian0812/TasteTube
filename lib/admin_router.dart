@@ -45,6 +45,15 @@ final GoRouter _router = GoRouter(
             ),
           ],
         ),
+        StatefulShellBranch(
+          preload: true,
+          routes: [
+            GoRoute(
+              path: '/videos',
+              builder: (context, state) => const VideoManagementPage(),
+            ),
+          ],
+        ),
       ],
     ),
     GoRoute(
@@ -72,7 +81,7 @@ final GoRouter _router = GoRouter(
         final initialIndex = videos?.indexWhere((e) => e.id == videoId);
 
         if (videos == null || initialIndex == null) {
-          return const InitialPage();
+          return SingleVideo.provider(videoId);
         }
 
         return PublicVideosPage(

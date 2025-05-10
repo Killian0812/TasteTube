@@ -5,7 +5,7 @@ import 'package:taste_tube/feature/profile/domain/user_repo.dart';
 
 class UserManagementCubit extends Cubit<UserManagementState> {
   final UserRepository userRepository = getIt<UserRepository>();
-  static const int _limit = 2;
+  static const int _limit = 10;
 
   UserManagementCubit() : super(UserManagementInitial());
 
