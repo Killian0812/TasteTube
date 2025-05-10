@@ -5,7 +5,7 @@ import 'package:taste_tube/feature/watch/domain/video_repo.dart';
 
 class VideoManagementCubit extends Cubit<VideoManagementState> {
   final VideoRepository videoRepository = getIt<VideoRepository>();
-  static const int _limit = 2;
+  static const int _limit = 10;
 
   VideoManagementCubit() : super(VideoManagementInitial());
 
@@ -13,6 +13,7 @@ class VideoManagementCubit extends Cubit<VideoManagementState> {
     String? searchQuery,
     String? visibilityFilter,
     String? statusFilter,
+    String? userIdFilter,
     int page = 1,
   }) async {
     emit(VideoManagementLoading(isFirstFetch: page == 1));
@@ -23,6 +24,7 @@ class VideoManagementCubit extends Cubit<VideoManagementState> {
       visibility: visibilityFilter,
       status: statusFilter,
       search: searchQuery,
+      userId: userIdFilter,
     );
 
     result.fold(

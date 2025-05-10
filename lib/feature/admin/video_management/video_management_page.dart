@@ -14,6 +14,7 @@ class VideoManagementPage extends StatefulWidget {
 
 class _VideoManagementPageState extends State<VideoManagementPage> {
   final TextEditingController _searchController = TextEditingController();
+  final TextEditingController _userIdController = TextEditingController();
   String? _visibilityFilter;
   String? _statusFilter;
 
@@ -26,6 +27,7 @@ class _VideoManagementPageState extends State<VideoManagementPage> {
   @override
   void dispose() {
     _searchController.dispose();
+    _userIdController.dispose();
     super.dispose();
   }
 
@@ -35,6 +37,8 @@ class _VideoManagementPageState extends State<VideoManagementPage> {
               _searchController.text.isEmpty ? null : _searchController.text,
           visibilityFilter: _visibilityFilter,
           statusFilter: _statusFilter,
+          userIdFilter:
+              _userIdController.text.isEmpty ? null : _userIdController.text,
         );
   }
 
@@ -48,6 +52,8 @@ class _VideoManagementPageState extends State<VideoManagementPage> {
               _searchController.text.isEmpty ? null : _searchController.text,
           visibilityFilter: _visibilityFilter,
           statusFilter: _statusFilter,
+          userIdFilter:
+              _userIdController.text.isEmpty ? null : _userIdController.text,
         );
   }
 
@@ -58,6 +64,8 @@ class _VideoManagementPageState extends State<VideoManagementPage> {
               _searchController.text.isEmpty ? null : _searchController.text,
           visibilityFilter: _visibilityFilter,
           statusFilter: _statusFilter,
+          userIdFilter:
+              _userIdController.text.isEmpty ? null : _userIdController.text,
           page: page,
         );
   }
@@ -72,6 +80,7 @@ class _VideoManagementPageState extends State<VideoManagementPage> {
             icon: const Icon(Icons.refresh),
             onPressed: () {
               _searchController.clear();
+              _userIdController.clear();
               setState(() {
                 _visibilityFilter = null;
                 _statusFilter = null;
@@ -93,6 +102,18 @@ class _VideoManagementPageState extends State<VideoManagementPage> {
                     controller: _searchController,
                     decoration: const InputDecoration(
                       labelText: 'Search by title or description',
+                      border: OutlineInputBorder(),
+                    ),
+                    onChanged: (value) => _onSearchChanged(),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                SizedBox(
+                  width: 150,
+                  child: TextField(
+                    controller: _userIdController,
+                    decoration: const InputDecoration(
+                      labelText: 'User ID',
                       border: OutlineInputBorder(),
                     ),
                     onChanged: (value) => _onSearchChanged(),

@@ -159,6 +159,7 @@ class VideoRepository {
     String? visibility,
     String? status,
     String? search,
+    String? userId,
   }) async {
     try {
       final queryParameters = {
@@ -166,6 +167,7 @@ class VideoRepository {
         'limit': limit.toString(),
         if (visibility != null) 'visibility': visibility,
         if (status != null) 'status': status,
+        if (userId != null) 'userId': userId,
         if (search != null) 'search': search,
       };
 
@@ -189,7 +191,7 @@ class VideoRepository {
         data: {'status': status},
       );
 
-      final updatedVideo = Video.fromJson(response.data['video']);
+      final updatedVideo = Video.fromJson(response.data);
       return Right(updatedVideo);
     } on DioException catch (e) {
       return Left(ApiError.fromDioException(e));

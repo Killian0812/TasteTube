@@ -25,6 +25,7 @@ class VideoManagementLoaded extends VideoManagementState {
   final String? searchQuery;
   final String? visibilityFilter;
   final String? statusFilter;
+  final String? userIdFilter;
 
   const VideoManagementLoaded({
     required this.videos,
@@ -39,6 +40,7 @@ class VideoManagementLoaded extends VideoManagementState {
     this.searchQuery,
     this.visibilityFilter,
     this.statusFilter,
+    this.userIdFilter,
   });
 
   VideoManagementLoaded copyWith({
@@ -54,6 +56,7 @@ class VideoManagementLoaded extends VideoManagementState {
     String? searchQuery,
     String? visibilityFilter,
     String? statusFilter,
+    String? userIdFilter,
   }) {
     return VideoManagementLoaded(
       videos: videos ?? this.videos,
@@ -68,6 +71,7 @@ class VideoManagementLoaded extends VideoManagementState {
       searchQuery: searchQuery ?? this.searchQuery,
       visibilityFilter: visibilityFilter ?? this.visibilityFilter,
       statusFilter: statusFilter ?? this.statusFilter,
+      userIdFilter: userIdFilter ?? this.userIdFilter,
     );
   }
 }
