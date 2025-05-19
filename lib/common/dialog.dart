@@ -15,7 +15,7 @@ Future<bool?> showConfirmDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+        contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
         title: title != null ? Text(title) : null,
         content: body != null ? Text(body) : null,
         actions: <Widget>[

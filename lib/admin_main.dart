@@ -13,6 +13,8 @@ import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/auth/view/phone_or_email/login_phone_or_email_page.dart';
 import 'package:taste_tube/auth/view/phone_or_email/register_phone_or_email_page.dart';
+import 'package:taste_tube/common/button.dart';
+import 'package:taste_tube/common/constant.dart';
 import 'package:taste_tube/core/build_config.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/error.dart';
@@ -251,6 +253,11 @@ class Layout extends StatelessWidget {
                   backgroundColor: Theme.of(context)
                       .bottomNavigationBarTheme
                       .backgroundColor,
+                  leading: Padding(
+                    padding: const EdgeInsets.only(top: 10, bottom: 15),
+                    child: Image.asset(AssetPath.tastetubeInverted, height: 50),
+                  ),
+                  trailing: LogoutButton(),
                 ),
                 const VerticalDivider(thickness: 1, width: 1),
                 Expanded(

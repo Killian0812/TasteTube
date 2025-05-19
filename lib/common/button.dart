@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:taste_tube/common/color.dart';
+import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/common/text.dart';
+import 'package:taste_tube/core/injection.dart';
+import 'package:taste_tube/core/providers.dart';
+import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
 
 class CommonButton extends StatelessWidget {
   final String text;
@@ -30,7 +34,8 @@ class CommonButton extends StatelessWidget {
             child: ElevatedButton(
               onPressed: (isLoading || isDisabled) ? null : onPressed,
               style: ElevatedButton.styleFrom(
-                backgroundColor: isDisabled ? CommonColor.greyOutBgColor : color,
+                backgroundColor:
+                    isDisabled ? CommonColor.greyOutBgColor : color,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4.0),
                 ),
@@ -61,6 +66,39 @@ class CommonButton extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class LogoutButton extends StatelessWidget {
+  const LogoutButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: IconButton(
+            onPressed: () async {
+              bool? confirmed = await showConfirmDialog(
+                context,
+                title: context.localizations.confirm_logout_title,
+                body: context.localizations.confirm_logout_body,
+              );
+              if (confirmed != true) {
+                return;
+              }
+              if (context.mounted) {
+                final authBloc = getIt<AuthBloc>();
+                authBloc.add(LogoutEvent());
+              }
+            },
+            icon: Icon(Icons.logout),
+          ),
+        ),
       ),
     );
   }
