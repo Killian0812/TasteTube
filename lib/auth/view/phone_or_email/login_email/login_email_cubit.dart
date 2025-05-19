@@ -3,18 +3,15 @@ import 'package:logger/logger.dart';
 import 'package:taste_tube/auth/domain/auth_repo.dart';
 import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
 import 'package:taste_tube/core/injection.dart';
-import 'package:taste_tube/core/storage.dart';
 
 import '../../../data/login_request.dart';
 
 class LoginEmailCubit extends Cubit<LoginEmailState> {
   final AuthRepository repository;
   final Logger logger;
-  final SecureStorage secureStorage;
 
   LoginEmailCubit()
       : repository = getIt<AuthRepository>(),
-        secureStorage = getIt<SecureStorage>(),
         logger = getIt<Logger>(),
         super(LoginEmailInitial());
 

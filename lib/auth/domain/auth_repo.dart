@@ -8,6 +8,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/auth/data/login_request.dart';
+import 'package:taste_tube/auth/data/phone_otp_request.dart';
+import 'package:taste_tube/auth/data/phone_otp_response.dart';
 import 'package:taste_tube/auth/data/register_request.dart';
 import 'package:taste_tube/auth/data/register_response.dart';
 import 'package:taste_tube/common/error.dart';
@@ -67,6 +69,46 @@ class AuthRepository {
       });
       FirebaseAnalytics.instance.logLogin(
         loginMethod: "Email",
+      );
+      return Right(authData);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
+
+  Future<Either<ApiError, PhoneOtpResponse>> otpRequest(
+      PhoneOtpRequest request) async {
+    try {
+      final response = await http.post(
+        Api.phoneAuthApi,
+        data: request.toJson(),
+      );
+      final phoneOtpResponse = PhoneOtpResponse.fromJson(response.data);
+      return Right(phoneOtpResponse);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
+
+  Future<Either<ApiError, AuthData>> continueWithOtp(
+      ContinueWithOtpRequest request) async {
+    try {
+      final response = await http.post(
+        Api.otpVerifyApi,
+        data: request.toJson(),
+      );
+      final authData = AuthData.fromJson({
+        ...(response.data as Map<String, dynamic>),
+        "refreshToken": jwtFromHeader(response.headers) ??
+            response.data['refreshToken'] ??
+            ''
+      });
+      FirebaseAnalytics.instance.logLogin(
+        loginMethod: "Phone",
       );
       return Right(authData);
     } on DioException catch (e) {
