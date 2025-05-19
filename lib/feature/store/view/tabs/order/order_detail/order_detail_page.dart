@@ -34,7 +34,12 @@ class _OrderDetailPageState extends State<OrderDetailPage>
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<OrderCubit, OrderState>(
+    return BlocConsumer<OrderCubit, OrderState>(
+      listener: (context, state) {
+        if (state is OrderError) {
+          ToastService.showToast(context, state.error, ToastType.warning);
+        }
+      },
       builder: (context, state) {
         final order =
             state.orders.firstWhereOrNull((e) => e.id == widget.orderId);

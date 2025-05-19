@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/constant.dart';
+import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/order.dart';
 import 'package:taste_tube/utils/currency.util.dart';
@@ -66,10 +67,18 @@ class OrderDetailTab extends StatelessWidget {
                                 ),
                               );
                             }).toList(),
-                            onChanged: (newStatus) {
-                              context
-                                  .read<OrderCubit>()
-                                  .updateOrderStatus(order.id, newStatus);
+                            onChanged: (newStatus) async {
+                              final confirmed = await showConfirmDialog(
+                                context,
+                                title: 'Change Order Status',
+                                body:
+                                    'Are you sure you want to change order status to $newStatus?',
+                              );
+                              if (confirmed == true && context.mounted) {
+                                context
+                                    .read<OrderCubit>()
+                                    .updateOrderStatus(order.id, newStatus);
+                              }
                             },
                           ),
                         ],

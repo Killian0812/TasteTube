@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/constant.dart';
+import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/payment/data/payment_data.dart';
 import 'package:taste_tube/feature/store/view/tabs/order/order_detail/order_detail_page.dart';
@@ -472,10 +473,18 @@ class _OrderCardState extends State<_OrderCard> {
                       ),
                     );
                   }).toList(),
-                  onChanged: (newStatus) {
-                    context
-                        .read<OrderCubit>()
-                        .updateOrderStatus(order.id, newStatus);
+                  onChanged: (newStatus) async {
+                    final confirmed = await showConfirmDialog(
+                      context,
+                      title: 'Change Order Status',
+                      body:
+                          'Are you sure you want to change order status to $newStatus?',
+                    );
+                    if (confirmed == true && context.mounted) {
+                      context
+                          .read<OrderCubit>()
+                          .updateOrderStatus(order.id, newStatus);
+                    }
                   },
                 ),
               ],
