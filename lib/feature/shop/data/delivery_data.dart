@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class DeliveryQuote {
   final double amount;
   final Map<String, DateTime>? estimatedTimeline;
@@ -75,6 +77,17 @@ extension DeliveryStatusExtension on DeliveryStatus {
         return DeliveryStatus.RETURNED;
       default:
         return null;
+    }
+  }
+
+  Color get finalStatusColor {
+    switch (this) {
+      case DeliveryStatus.FAILED:
+        return Colors.red;
+      case DeliveryStatus.RETURNED:
+        return Colors.yellow;
+      default:
+        return Colors.green;
     }
   }
 }

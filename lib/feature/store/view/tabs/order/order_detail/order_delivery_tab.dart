@@ -490,9 +490,7 @@ class _TimelineTile extends StatelessWidget {
                   height: 20,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isCompleted
-                        ? _getFinalStatusColor(status)
-                        : Colors.grey,
+                    color: isCompleted ? status.finalStatusColor : Colors.grey,
                   ),
                 ),
                 if (showLine)
@@ -524,11 +522,5 @@ class _TimelineTile extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Color _getFinalStatusColor(DeliveryStatus status) {
-    if (status == DeliveryStatus.FAILED) return Colors.red;
-    if (status == DeliveryStatus.RETURNED) return Colors.yellow;
-    return Colors.green;
   }
 }

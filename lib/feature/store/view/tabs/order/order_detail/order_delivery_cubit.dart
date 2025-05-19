@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/feature/shop/data/delivery_data.dart';
 import 'package:taste_tube/feature/shop/domain/order_delivery_repo.dart';
 import 'package:taste_tube/core/injection.dart';
+import 'package:taste_tube/utils/user_data.util.dart';
 
 abstract class OrderDeliveryState {
   final String orderId;
@@ -87,7 +88,8 @@ class OrderDeliveryCubit extends Cubit<OrderDeliveryState> {
           destination: state.destination,
         )),
         (data) {
-          if (data.deliveryType == DeliveryType.NONE) {
+          if (data.deliveryType == DeliveryType.NONE &&
+              UserDataUtil.getUserRole() == "RESTAURANT") {
             fetchDeliveryQuotes();
             return;
           }
