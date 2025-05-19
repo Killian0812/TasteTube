@@ -60,11 +60,13 @@ class OrderRepository {
   Future<fpdart.Either<ApiError, Order>> updateOrderStatus({
     required String id,
     required String? newStatus,
+    String? cancelReason,
   }) async {
     try {
       final response = await http
           .put(Api.orderStatusApi.replaceFirst(':orderId', id), data: {
         'newStatus': newStatus,
+        if (cancelReason != null) 'cancelReason': cancelReason,
       });
       return fpdart.Right(Order.fromJson(response.data));
     } on DioException catch (e) {

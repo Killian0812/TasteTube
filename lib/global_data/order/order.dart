@@ -37,6 +37,8 @@ class Order {
   final bool paid;
   final String status;
   final String? deliveryType;
+  final String? cancelBy;
+  final String? cancelReason;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -56,7 +58,9 @@ class Order {
     required this.paymentMethod,
     required this.paid,
     required this.status,
-    required this.deliveryType,
+    this.deliveryType,
+    this.cancelBy,
+    this.cancelReason,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -83,6 +87,8 @@ class Order {
       paid: json['paid'],
       status: json['status'],
       deliveryType: json['deliveryType'] as String?,
+      cancelBy: json['cancelBy'] as String?,
+      cancelReason: json['cancelReason'] as String?,
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
     );

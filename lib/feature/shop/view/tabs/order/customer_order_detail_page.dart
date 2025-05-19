@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/constant.dart';
+import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/core/injection.dart';
 import 'package:taste_tube/core/providers.dart';
@@ -84,7 +85,6 @@ class CustomerOrderDetailPage extends StatelessWidget {
                   children: [
                     Card(
                       child: ExpansionTile(
-                        initiallyExpanded: true,
                         title: const Text(
                           'Delivery Information',
                           style: TextStyle(
@@ -278,6 +278,21 @@ class CustomerOrderDetailPage extends StatelessWidget {
                                 ],
                               ),
                             ),
+                            if (order.cancelReason != null) ...[
+                              const SizedBox(height: 8),
+                              Text.rich(
+                                TextSpan(
+                                  children: [
+                                    const TextSpan(text: 'Cancel Reason: '),
+                                    TextSpan(
+                                      text: order.cancelReason!,
+                                      style: const TextStyle(
+                                          fontStyle: FontStyle.italic),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                             const SizedBox(height: 8),
                             RichText(
                               text: TextSpan(
@@ -344,6 +359,36 @@ class CustomerOrderDetailPage extends StatelessWidget {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 15),
+
+                    // Customer early cancel button
+                    if (order.status == OrderStatus.PENDING.name)
+                      Align(
+                        alignment: Alignment.bottomRight,
+                        child: ElevatedButton.icon(
+                          onPressed: () async {
+                            final reason = await showOrderCancelDialog(context,
+                                byCustomer: true);
+                            if (reason == null) return;
+                            if (context.mounted) {
+                              context.read<OrderCubit>().updateOrderStatus(
+                                    order.id,
+                                    OrderStatus.CANCELED.name,
+                                    reason: reason,
+                                  );
+                            }
+                          },
+                          icon: const Icon(
+                            Icons.cancel_outlined,
+                            color: Colors.white,
+                          ),
+                          label: const Text('Cancel Order'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                            foregroundColor: Colors.white,
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),

@@ -68,6 +68,19 @@ class OrderDetailTab extends StatelessWidget {
                               );
                             }).toList(),
                             onChanged: (newStatus) async {
+                              if (newStatus == "CANCELED") {
+                                final reason =
+                                    await showOrderCancelDialog(context);
+                                if (reason == null) return;
+                                if (context.mounted) {
+                                  context.read<OrderCubit>().updateOrderStatus(
+                                        order.id,
+                                        newStatus,
+                                        reason: reason,
+                                      );
+                                }
+                                return;
+                              }
                               final confirmed = await showConfirmDialog(
                                 context,
                                 title: 'Change Order Status',
@@ -83,6 +96,30 @@ class OrderDetailTab extends StatelessWidget {
                           ),
                         ],
                       ),
+                      const SizedBox(width: 8),
+                      if (order.cancelBy != null || order.cancelReason != null)
+                        Text.rich(
+                          TextSpan(
+                            children: [
+                              if (order.cancelBy != null) ...[
+                                const TextSpan(text: 'Canceled by: '),
+                                TextSpan(
+                                  text: order.cancelBy,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                              if (order.cancelReason != null) ...[
+                                const TextSpan(text: ' - Reason: '),
+                                TextSpan(
+                                  text: order.cancelReason,
+                                  style: const TextStyle(
+                                      fontStyle: FontStyle.italic),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
                       const SizedBox(height: 16),
                       RichText(
                         text: TextSpan(

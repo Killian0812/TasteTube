@@ -474,6 +474,18 @@ class _OrderCardState extends State<_OrderCard> {
                     );
                   }).toList(),
                   onChanged: (newStatus) async {
+                    if (newStatus == "CANCELED") {
+                      final reason = await showOrderCancelDialog(context);
+                      if (reason == null) return;
+                      if (context.mounted) {
+                        context.read<OrderCubit>().updateOrderStatus(
+                              order.id,
+                              newStatus,
+                              reason: reason,
+                            );
+                      }
+                      return;
+                    }
                     final confirmed = await showConfirmDialog(
                       context,
                       title: 'Change Order Status',

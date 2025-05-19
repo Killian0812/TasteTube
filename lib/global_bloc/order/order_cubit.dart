@@ -97,12 +97,13 @@ class OrderCubit extends Cubit<OrderState> {
 
   Future<void> updateOrderStatus(
     String id,
-    String? newStatus,
-  ) async {
+    String? newStatus, {
+    String? reason,
+  }) async {
     if (newStatus == null) return;
     try {
       final result =
-          await repository.updateOrderStatus(id: id, newStatus: newStatus);
+          await repository.updateOrderStatus(id: id, newStatus: newStatus, cancelReason: reason);
       result.fold(
         (error) => emit(OrderError(
           state.orders,
