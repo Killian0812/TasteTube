@@ -44,9 +44,14 @@ class RegisterEmailCubit extends Cubit<RegisterEmailState> {
   }
 
   Future<void> send(BuildContext context) async {
+    emit(state.copyWith(sending: true));
+
     final request = RegisterRequest(state.email, state.password);
 
     final result = await repository.register(request);
+
+    emit(state.copyWith(sending: false));
+
     result.match((apiError) {
       ToastService.showToast(context, apiError.message!,
           apiError.statusCode < 500 ? ToastType.warning : ToastType.error,
@@ -127,6 +132,7 @@ class RegisterEmailState {
   final String password;
   final String confirmPassword;
   final bool isPasswordVisible;
+  final bool sending;
   final bool succeed;
 
   RegisterEmailState({
@@ -135,6 +141,7 @@ class RegisterEmailState {
     required this.confirmPassword,
     required this.isPasswordVisible,
     this.succeed = false,
+    this.sending = false,
   });
 
   RegisterEmailState copyWith({
@@ -143,6 +150,7 @@ class RegisterEmailState {
     String? confirmPassword,
     bool? isPasswordVisible,
     bool? succeed,
+    bool? sending,
   }) {
     return RegisterEmailState(
       email: email ?? this.email,
@@ -150,6 +158,7 @@ class RegisterEmailState {
       confirmPassword: confirmPassword ?? this.confirmPassword,
       isPasswordVisible: isPasswordVisible ?? this.isPasswordVisible,
       succeed: succeed ?? this.succeed,
+      sending: sending ?? this.sending,
     );
   }
 }

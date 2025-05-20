@@ -201,6 +201,7 @@ class _RegisterEmailTabState extends State<RegisterEmailTab> {
       final passwordValidation = cubit.validatePassword(state.password);
       return CommonButton(
         text: "Register",
+        isLoading: state.sending,
         isDisabled: (state.confirmPassword != state.password) ||
             state.email.isEmpty ||
             state.password.isEmpty ||
