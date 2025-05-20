@@ -1,4 +1,3 @@
-
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,17 +6,17 @@ import 'package:logger/logger.dart';
 import 'package:taste_tube/common/loading.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/home/view/content_cubit.dart';
-import 'package:taste_tube/feature/watch/view/video_detail_cubit.dart';
-import 'package:taste_tube/feature/watch/view/video_display.dart';
+import 'package:taste_tube/feature/watch/view/widget/video_detail_cubit.dart';
+import 'package:taste_tube/feature/watch/view/widget/video_display.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
 import 'package:taste_tube/feature/watch/view/single_video_cubit.dart';
 import 'package:taste_tube/core/injection.dart';
 import 'package:video_player/video_player.dart';
 
-part 'single_video_page.dart';
+part 'single_content_page.dart';
 
-class WatchPage extends StatefulWidget {
-  const WatchPage({super.key});
+class ContentPage extends StatefulWidget {
+  const ContentPage({super.key});
 
   static final Map<String, VideoPlayerController> controllers = {};
 
@@ -28,10 +27,10 @@ class WatchPage extends StatefulWidget {
   }
 
   @override
-  State<WatchPage> createState() => _WatchPageState();
+  State<ContentPage> createState() => _ContentPageState();
 }
 
-class _WatchPageState extends State<WatchPage> {
+class _ContentPageState extends State<ContentPage> {
   late PageController _pageController;
 
   @override
@@ -101,7 +100,7 @@ class _WatchPageState extends State<WatchPage> {
             itemCount: state.videos.length,
             onPageChanged: (int index) {
               if (currentPlayingVideoId != "none") {
-                WatchPage.pauseVideo(currentPlayingVideoId);
+                ContentPage.pauseVideo(currentPlayingVideoId);
               }
               // Update the currently playing video index
               WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -113,7 +112,7 @@ class _WatchPageState extends State<WatchPage> {
                 valueListenable: getIt<ContentCubit>().currentPlayingVideoId,
                 builder: (context, currentPlayingIndex, _) {
                   final video = state.videos[index];
-                  return SingleVideo.withPrefetch(video);
+                  return SingleContent.withPrefetch(video);
                 },
               );
             },

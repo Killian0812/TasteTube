@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taste_tube/feature/home/view/content_cubit.dart';
-import 'package:taste_tube/feature/watch/view/watch_page.dart';
+import 'package:taste_tube/feature/watch/view/content/content_page.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
 
 // TODO: Not working properly, accepted for now
@@ -70,7 +70,7 @@ class _PublicVideosPageState extends State<PublicVideosPage> {
         },
         itemBuilder: (context, index) {
           final video = widget.videos[index];
-          return SingleVideo.withPrefetch(video);
+          return SingleContent.withPrefetch(video);
         },
       ),
     );

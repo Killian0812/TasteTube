@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:taste_tube/common/color.dart';
-import 'package:taste_tube/feature/home/content/content_page.dart';
-import 'package:taste_tube/feature/home/reviews/reviews_page.dart';
+import 'package:taste_tube/feature/watch/view/review_page.dart';
 import 'package:taste_tube/feature/search/view/search_page.dart';
+import 'package:taste_tube/feature/watch/view/content/content_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -69,8 +69,8 @@ class _HomePageState extends State<HomePage>
       body: TabBarView(
         controller: _tabController,
         children: const [
-          ContentTab(),
-          ReviewsPage(),
+          ContentPage(),
+          ReviewPage(),
         ],
       ),
     );

@@ -1,7 +1,7 @@
-part of 'watch_page.dart';
+part of 'content_page.dart';
 
-class SingleVideoPage extends StatelessWidget {
-  const SingleVideoPage({super.key});
+class SingleContentPage extends StatelessWidget {
+  const SingleContentPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class SingleVideoPage extends StatelessWidget {
               create: (context) => SingleVideoCubit(state.video)
                 ..fetchDependency()
                 ..fetchComments(),
-              child: SingleVideo(video: state.video));
+              child: SingleContent(video: state.video));
         }
         return Center(child: CommonLoadingIndicator.regular);
       },
@@ -23,27 +23,27 @@ class SingleVideoPage extends StatelessWidget {
   }
 }
 
-class SingleVideo extends StatefulWidget {
+class SingleContent extends StatefulWidget {
   final Video video;
-  const SingleVideo({super.key, required this.video});
+  const SingleContent({super.key, required this.video});
 
   static Widget provider(String videoId) => BlocProvider(
         create: (context) => VideoDetailCubit(videoId)..fetchDependency(),
-        child: const SingleVideoPage(),
+        child: const SingleContentPage(),
       );
 
   static Widget withPrefetch(Video video) => BlocProvider(
         create: (context) => SingleVideoCubit(video)
           ..fetchDependency()
           ..fetchComments(),
-        child: SingleVideo(video: video),
+        child: SingleContent(video: video),
       );
 
   @override
-  State<SingleVideo> createState() => _SingleVideoState();
+  State<SingleContent> createState() => _SingleVideoState();
 }
 
-class _SingleVideoState extends State<SingleVideo>
+class _SingleVideoState extends State<SingleContent>
     with AutomaticKeepAliveClientMixin, SingleTickerProviderStateMixin {
   late VideoPlayerController _videoController;
   late AnimationController _jiggleController;
@@ -104,7 +104,7 @@ class _SingleVideoState extends State<SingleVideo>
         }
       });
 
-    WatchPage.controllers[videoId] = _videoController;
+    ContentPage.controllers[videoId] = _videoController;
   }
 
   void _tryAutoPlay() async {
@@ -128,14 +128,14 @@ class _SingleVideoState extends State<SingleVideo>
 
   @override
   void dispose() {
-    WatchPage.controllers.remove(videoId);
+    ContentPage.controllers.remove(videoId);
     _videoController.dispose();
     _jiggleController.dispose();
     super.dispose();
   }
 
   @override
-  void didUpdateWidget(covariant SingleVideo oldWidget) {
+  void didUpdateWidget(covariant SingleContent oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (videoId == currentPlayingVideoId) {
       _videoController.play();

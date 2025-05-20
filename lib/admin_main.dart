@@ -27,7 +27,7 @@ import 'package:taste_tube/feature/admin/video_management/video_management_page.
 import 'package:taste_tube/feature/inbox/view/chat_page.dart';
 import 'package:taste_tube/feature/watch/view/public_videos_page.dart';
 import 'package:taste_tube/core/fcm_service.dart';
-import 'package:taste_tube/feature/watch/view/watch_page.dart';
+import 'package:taste_tube/feature/watch/view/content/content_page.dart';
 import 'package:taste_tube/global_bloc/download/download_dialog.dart';
 import 'package:taste_tube/feature/profile/view/profile_page.dart';
 import 'package:taste_tube/feature/shop/view/tabs/shopping/single_shop_page.dart';

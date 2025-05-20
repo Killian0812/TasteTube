@@ -4,7 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/feature/watch/view/single_video_cubit.dart';
-import 'package:taste_tube/feature/watch/view/video_comments.dart';
+import 'package:taste_tube/feature/watch/view/widget/video_comments.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
 import 'video_options_sheet.dart';
 
