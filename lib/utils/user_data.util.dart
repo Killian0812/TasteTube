@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:taste_tube/feature/home/view/content_cubit.dart';
-import 'package:taste_tube/feature/home/view/review_cubit.dart';
+import 'package:taste_tube/feature/home/view/following_content_cubit.dart';
 import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
@@ -27,7 +27,7 @@ class UserDataUtil {
   static FutureOr<void> refreshData() async {
     getIt<CartCubit>().getCart();
     getIt<ContentCubit>().getFeeds();
-    getIt<ReviewCubit>().getReviewFeeds();
+    getIt<FollowingContentCubit>().getFollowingContentFeeds();
     getIt<OrderCubit>().getOrders();
   }
 }

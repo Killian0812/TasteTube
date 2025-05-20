@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:taste_tube/common/color.dart';
-import 'package:taste_tube/feature/watch/view/review/review_page.dart';
+import 'package:taste_tube/feature/watch/view/following_content/following_content_page.dart';
 import 'package:taste_tube/feature/search/view/search_page.dart';
 import 'package:taste_tube/feature/watch/view/content/content_page.dart';
 
@@ -48,7 +48,7 @@ class _HomePageState extends State<HomePage>
                 dividerColor: Colors.transparent,
                 tabs: const [
                   Tab(text: 'Explore'),
-                  Tab(text: 'Reviews'),
+                  Tab(text: 'Following'),
                 ],
               ),
               IconButton(
@@ -70,7 +70,7 @@ class _HomePageState extends State<HomePage>
         controller: _tabController,
         children: const [
           ContentPage(),
-          ReviewPage(),
+          FollowingContentPage(),
         ],
       ),
     );

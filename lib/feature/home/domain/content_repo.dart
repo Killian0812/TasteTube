@@ -25,9 +25,9 @@ class ContentRepository {
     }
   }
 
-  Future<Either<ApiError, List<Video>>> getReviewFeeds() async {
+  Future<Either<ApiError, List<Video>>> getFollowingFeeds() async {
     try {
-      final response = await http.get(Api.reviewFeedApi);
+      final response = await http.get(Api.followingFeedApi);
       final videos = (response.data['feeds'] as List<dynamic>)
           .map((videoJson) => Video.fromJson(videoJson as Map<String, dynamic>))
           .toList();

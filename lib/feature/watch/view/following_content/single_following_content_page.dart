@@ -1,7 +1,7 @@
-part of 'review_page.dart';
+part of 'following_content_page.dart';
 
-class SingleReviewPage extends StatelessWidget {
-  const SingleReviewPage({super.key});
+class SingleFollowingContentPage extends StatelessWidget {
+  const SingleFollowingContentPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class SingleReviewPage extends StatelessWidget {
               create: (context) => SingleVideoCubit(state.video)
                 ..fetchDependency()
                 ..fetchComments(),
-              child: SingleReview(video: state.video));
+              child: SingleFollowingContent(video: state.video));
         }
         return Center(child: CommonLoadingIndicator.regular);
       },
@@ -23,27 +23,27 @@ class SingleReviewPage extends StatelessWidget {
   }
 }
 
-class SingleReview extends StatefulWidget {
+class SingleFollowingContent extends StatefulWidget {
   final Video video;
-  const SingleReview({super.key, required this.video});
+  const SingleFollowingContent({super.key, required this.video});
 
   static Widget provider(String videoId) => BlocProvider(
         create: (context) => VideoDetailCubit(videoId)..fetchDependency(),
-        child: const SingleReviewPage(),
+        child: const SingleFollowingContentPage(),
       );
 
   static Widget withPrefetch(Video video) => BlocProvider(
         create: (context) => SingleVideoCubit(video)
           ..fetchDependency()
           ..fetchComments(),
-        child: SingleReview(video: video),
+        child: SingleFollowingContent(video: video),
       );
 
   @override
-  State<SingleReview> createState() => _SingleVideoState();
+  State<SingleFollowingContent> createState() => _SingleVideoState();
 }
 
-class _SingleVideoState extends State<SingleReview>
+class _SingleVideoState extends State<SingleFollowingContent>
     with AutomaticKeepAliveClientMixin, SingleTickerProviderStateMixin {
   late VideoPlayerController _videoController;
   late AnimationController _jiggleController;
@@ -104,7 +104,7 @@ class _SingleVideoState extends State<SingleReview>
         }
       });
 
-    ReviewPage.controllers[videoId] = _videoController;
+    FollowingContentPage.controllers[videoId] = _videoController;
   }
 
   void _tryAutoPlay() async {
@@ -128,14 +128,14 @@ class _SingleVideoState extends State<SingleReview>
 
   @override
   void dispose() {
-    ReviewPage.controllers.remove(videoId);
+    FollowingContentPage.controllers.remove(videoId);
     _videoController.dispose();
     _jiggleController.dispose();
     super.dispose();
   }
 
   @override
-  void didUpdateWidget(covariant SingleReview oldWidget) {
+  void didUpdateWidget(covariant SingleFollowingContent oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (videoId == currentPlayingVideoId) {
       _videoController.play();

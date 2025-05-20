@@ -4,46 +4,46 @@ import 'package:taste_tube/feature/home/domain/content_repo.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
 import 'package:taste_tube/core/injection.dart';
 
-abstract class ReviewState {
+abstract class FollowingContentState {
   final List<Video> videos;
 
-  const ReviewState(this.videos);
+  const FollowingContentState(this.videos);
 }
 
-class ReviewLoading extends ReviewState {
-  ReviewLoading() : super([]);
+class FollowingContentLoading extends FollowingContentState {
+  FollowingContentLoading() : super([]);
 }
 
-class ReviewLoaded extends ReviewState {
-  const ReviewLoaded(super.videos);
+class FollowingContentLoaded extends FollowingContentState {
+  const FollowingContentLoaded(super.videos);
 }
 
-class ReviewError extends ReviewState {
+class FollowingContentError extends FollowingContentState {
   final String message;
 
-  const ReviewError(super.videos, this.message);
+  const FollowingContentError(super.videos, this.message);
 }
 
 String get currentPlayingVideoId =>
-    getIt<ReviewCubit>().currentPlayingVideoId.value;
+    getIt<FollowingContentCubit>().currentPlayingVideoId.value;
 set currentPlayingVideoId(String id) =>
-    getIt<ReviewCubit>().currentPlayingVideoId.value = id;
+    getIt<FollowingContentCubit>().currentPlayingVideoId.value = id;
 
 String? tempVideoId;
 
-class ReviewCubit extends Cubit<ReviewState> {
+class FollowingContentCubit extends Cubit<FollowingContentState> {
   final ValueNotifier<String> currentPlayingVideoId =
       ValueNotifier<String>("none");
   final ContentRepository repository = getIt<ContentRepository>();
 
-  ReviewCubit() : super(ReviewLoading());
+  FollowingContentCubit() : super(FollowingContentLoading());
 
-  void pauseReview() {
+  void pauseContent() {
     tempVideoId = currentPlayingVideoId.value;
     currentPlayingVideoId.value = "none";
   }
 
-  void resumeReview() {
+  void resumeContent() {
     if (tempVideoId == null) return;
     currentPlayingVideoId.value = tempVideoId!;
     tempVideoId = null;
@@ -56,23 +56,23 @@ class ReviewCubit extends Cubit<ReviewState> {
   }
 
   // TODO: Add paginate fetch on WatchPage page change
-  Future<void> getReviewFeeds() async {
+  Future<void> getFollowingContentFeeds() async {
     try {
-      final result = await repository.getReviewFeeds();
+      final result = await repository.getFollowingFeeds();
       result.fold(
-        (error) => emit(ReviewError(
+        (error) => emit(FollowingContentError(
           [],
           error.message ?? 'Error fetching videos',
         )),
         (videos) {
           videos.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
           emit(
-            ReviewLoaded(videos),
+            FollowingContentLoaded(videos),
           );
         },
       );
     } catch (e) {
-      emit(ReviewError([], e.toString()));
+      emit(FollowingContentError([], e.toString()));
     }
   }
 }

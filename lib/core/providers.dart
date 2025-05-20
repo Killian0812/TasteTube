@@ -5,7 +5,7 @@ import 'package:taste_tube/auth/view/oauth/oauth_cubit.dart';
 import 'package:taste_tube/feature/admin/user_management/user_management_cubit.dart';
 import 'package:taste_tube/feature/admin/video_management/video_management_cubit.dart';
 import 'package:taste_tube/feature/home/view/content_cubit.dart';
-import 'package:taste_tube/feature/home/view/review_cubit.dart';
+import 'package:taste_tube/feature/home/view/following_content_cubit.dart';
 import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
 import 'package:taste_tube/global_bloc/download/download_cubit.dart';
 import 'package:taste_tube/global_bloc/getstream/getstream_cubit.dart';
@@ -48,7 +48,7 @@ class TasteTubeProvider extends StatelessWidget {
           value: getIt<ContentCubit>(),
         ),
         BlocProvider.value(
-          value: getIt<ReviewCubit>(),
+          value: getIt<FollowingContentCubit>(),
         ),
         BlocProvider.value(
           value: getIt<DownloadCubit>(),

@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
 import 'package:taste_tube/common/loading.dart';
 import 'package:taste_tube/common/toast.dart';
-import 'package:taste_tube/feature/home/view/review_cubit.dart';
+import 'package:taste_tube/feature/home/view/following_content_cubit.dart';
 import 'package:taste_tube/feature/watch/view/widget/video_detail_cubit.dart';
 import 'package:taste_tube/feature/watch/view/widget/video_display.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
@@ -13,10 +13,10 @@ import 'package:taste_tube/feature/watch/view/single_video_cubit.dart';
 import 'package:taste_tube/core/injection.dart';
 import 'package:video_player/video_player.dart';
 
-part 'single_review_page.dart';
+part 'single_following_content_page.dart';
 
-class ReviewPage extends StatefulWidget {
-  const ReviewPage({super.key});
+class FollowingContentPage extends StatefulWidget {
+  const FollowingContentPage({super.key});
 
   static final Map<String, VideoPlayerController> controllers = {};
 
@@ -27,10 +27,10 @@ class ReviewPage extends StatefulWidget {
   }
 
   @override
-  State<ReviewPage> createState() => ReviewPageState();
+  State<FollowingContentPage> createState() => FollowingContentPageState();
 }
 
-class ReviewPageState extends State<ReviewPage> {
+class FollowingContentPageState extends State<FollowingContentPage> {
   late PageController _pageController;
 
   @override
@@ -47,21 +47,23 @@ class ReviewPageState extends State<ReviewPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<ReviewCubit, ReviewState>(
+    return BlocConsumer<FollowingContentCubit, FollowingContentState>(
       listener: (context, state) {
-        if (state is ReviewError) {
+        if (state is FollowingContentError) {
           ToastService.showToast(context, state.message, ToastType.warning);
         }
       },
       builder: (context, state) {
-        if (state is ReviewLoading) {
+        if (state is FollowingContentLoading) {
           return const Center(child: CommonLoadingIndicator.regular);
         }
-        if (state is ReviewError || state.videos.isEmpty) {
+        if (state is FollowingContentError || state.videos.isEmpty) {
           return Scaffold(
             body: RefreshIndicator(
               onRefresh: () async {
-                await context.read<ReviewCubit>().getReviewFeeds();
+                await context
+                    .read<FollowingContentCubit>()
+                    .getFollowingContentFeeds();
               },
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -100,7 +102,7 @@ class ReviewPageState extends State<ReviewPage> {
             itemCount: state.videos.length,
             onPageChanged: (int index) {
               if (currentPlayingVideoId != "none") {
-                ReviewPage.pauseVideo(currentPlayingVideoId);
+                FollowingContentPage.pauseVideo(currentPlayingVideoId);
               }
               // Update the currently playing video index
               WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -109,10 +111,11 @@ class ReviewPageState extends State<ReviewPage> {
             },
             itemBuilder: (context, index) {
               return ValueListenableBuilder<String>(
-                valueListenable: getIt<ReviewCubit>().currentPlayingVideoId,
+                valueListenable:
+                    getIt<FollowingContentCubit>().currentPlayingVideoId,
                 builder: (context, currentPlayingIndex, _) {
                   final video = state.videos[index];
-                  return SingleReview.withPrefetch(video);
+                  return SingleFollowingContent.withPrefetch(video);
                 },
               );
             },

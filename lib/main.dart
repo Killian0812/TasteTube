@@ -23,7 +23,7 @@ import 'package:taste_tube/common/fallback.dart';
 import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/feature/home/view/content_cubit.dart';
-import 'package:taste_tube/feature/home/view/review_cubit.dart';
+import 'package:taste_tube/feature/home/view/following_content_cubit.dart';
 import 'package:taste_tube/feature/profile/view/owner_profile_page.dart';
 import 'package:taste_tube/feature/record/camera/camera_page.dart';
 import 'package:taste_tube/feature/shop/view/cart_page.dart';
@@ -263,10 +263,10 @@ class Layout extends StatelessWidget {
                     onTap: (index) {
                       if (index != 0) {
                         getIt<ContentCubit>().pauseContent();
-                        getIt<ReviewCubit>().pauseReview();
+                        getIt<FollowingContentCubit>().pauseContent();
                       } else {
                         getIt<ContentCubit>().resumeContent();
-                        getIt<ReviewCubit>().resumeReview();
+                        getIt<FollowingContentCubit>().resumeContent();
                       }
                       if (index == 1 && isCustomer) {
                         context.go('/shop');
