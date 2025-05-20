@@ -63,6 +63,7 @@ class Api {
   // Content
   static const searchApi = '/content/search';
   static const feedApi = '/content/feeds';
+  static const reviewFeedApi = '/content/reviews';
 
   // Chat
   static const channelSettings = '/chat/channel/:channelId';

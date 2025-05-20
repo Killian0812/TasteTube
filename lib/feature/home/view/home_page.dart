@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:taste_tube/common/color.dart';
-import 'package:taste_tube/feature/watch/view/review_page.dart';
+import 'package:taste_tube/feature/watch/view/review/review_page.dart';
 import 'package:taste_tube/feature/search/view/search_page.dart';
 import 'package:taste_tube/feature/watch/view/content/content_page.dart';
 

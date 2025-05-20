@@ -8,6 +8,7 @@ import 'package:taste_tube/feature/admin/user_management/user_management_cubit.d
 import 'package:taste_tube/feature/admin/video_management/video_management_cubit.dart';
 import 'package:taste_tube/feature/home/domain/content_repo.dart';
 import 'package:taste_tube/feature/home/view/content_cubit.dart';
+import 'package:taste_tube/feature/home/view/review_cubit.dart';
 import 'package:taste_tube/feature/inbox/domain/chat_channel_repo.dart';
 import 'package:taste_tube/feature/payment/domain/payment_repo.dart';
 import 'package:taste_tube/feature/shop/domain/feedback_repo.dart';
@@ -102,6 +103,7 @@ void injectDependencies() {
   getIt.registerSingleton<CartCubit>(CartCubit());
   getIt.registerSingleton<OrderCubit>(OrderCubit());
   getIt.registerSingleton<ContentCubit>(ContentCubit());
+  getIt.registerSingleton<ReviewCubit>(ReviewCubit());
   getIt.registerSingleton<DownloadCubit>(DownloadCubit());
   getIt.registerSingleton<GetstreamCubit>(GetstreamCubit());
   getIt.registerSingleton<UserManagementCubit>(UserManagementCubit());
