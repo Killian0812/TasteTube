@@ -172,6 +172,7 @@ class CameraPage extends StatelessWidget {
                           recordedWithFrontCamera: false,
                           xfile: result.xFiles.single,
                           bytes: result.files.single.bytes,
+                          reviewTarget: reviewTarget,
                         ),
                       ),
                     );

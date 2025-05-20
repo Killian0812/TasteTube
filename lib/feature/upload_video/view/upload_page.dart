@@ -58,10 +58,7 @@ class UploadPage extends StatelessWidget {
                 : Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                     const Text(
                       "Reviewing:    ",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 22,
-                      ),
+                      style: TextStyle(fontSize: 22),
                     ),
                     const SizedBox(width: 10),
                     CircleAvatar(
@@ -71,10 +68,7 @@ class UploadPage extends StatelessWidget {
                     const SizedBox(width: 10),
                     Text(
                       reviewTarget!.username,
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 22,
-                      ),
+                      style: const TextStyle(fontSize: 22),
                     ),
                   ]),
           ),
@@ -163,30 +157,40 @@ class UploadPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      GestureDetector(
-                        onTap: () => _showProductSelection(context, cubit),
-                        child: Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text('Attached products: '),
-                              const Spacer(),
-                              BlocBuilder<UploadCubit, UploadState>(
-                                builder: (context, state) {
-                                  return Text(cubit.selectedProductIds.length
-                                      .toString());
-                                },
+                      BlocBuilder<UploadCubit, UploadState>(
+                        bloc: cubit,
+                        builder: (context, state) {
+                          if (cubit.availableProducts.isEmpty) {
+                            return const SizedBox.shrink();
+                          }
+                          return GestureDetector(
+                            onTap: () => _showProductSelection(context, cubit),
+                            child: Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                              const SizedBox(width: 20),
-                              const Icon(Icons.keyboard_arrow_right),
-                            ],
-                          ),
-                        ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text('Attached products: '),
+                                  const Spacer(),
+                                  BlocBuilder<UploadCubit, UploadState>(
+                                    builder: (context, state) {
+                                      return Text(cubit
+                                          .selectedProductIds.length
+                                          .toString());
+                                    },
+                                  ),
+                                  const SizedBox(width: 20),
+                                  const Icon(Icons.keyboard_arrow_right),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
