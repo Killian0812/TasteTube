@@ -451,6 +451,28 @@ class ProfilePage extends StatelessWidget {
                         width: double.infinity,
                         height: double.infinity,
                       ),
+                      Positioned(
+                        bottom: 5,
+                        left: 5,
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.visibility,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 5),
+                            Text(
+                              state.likedVideos[index].views.toString(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 );
