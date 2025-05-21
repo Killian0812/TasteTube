@@ -3,7 +3,10 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:logger/logger.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/core/injection.dart';
+import 'package:taste_tube/core/storage.dart';
+import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
 
+// Log Firebase Analytics events
 void _logDefaultAnalyticsEvent(
   String url,
   String method,
@@ -33,9 +36,13 @@ void _logDefaultAnalyticsEvent(
       ],
     );
   } else if (url.contains(Api.productApi) && method == 'GET') {
-    AnalyticsEventItem(
-      itemId: url.split('/').last,
-      itemName: 'product',
+    analytics.logViewItem(
+      items: [
+        AnalyticsEventItem(
+          itemId: url.split('/').last,
+          itemName: 'product',
+        )
+      ],
     );
   } else if (url.contains(Api.addCard)) {
     analytics.logAddPaymentInfo(
@@ -116,7 +123,7 @@ Dio getHttpClient() {
         }
         handler.next(response);
       },
-      onError: (error, handler) {
+      onError: (error, handler) async {
         // Calculate response time for errors
         final startTime = error.requestOptions.extra['startTime'] as DateTime?;
         if (startTime != null) {
@@ -129,6 +136,54 @@ Dio getHttpClient() {
               'time': responseTime,
             },
           );
+        }
+
+        // Handle 401 Unauthorized errors
+        if (error.response?.statusCode == 401) {
+          final secureStorage = getIt<SecureStorage>();
+          final refreshToken = await secureStorage.getRefreshToken();
+
+          // If no refresh token, reject the request
+          if (refreshToken == null) {
+            getIt<Logger>().e("No refresh token available");
+            return handler.reject(error);
+          }
+
+          try {
+            // Refresh token
+            final response = await dio.post(
+              Api.refreshApi,
+              data: {'refreshToken': refreshToken},
+            );
+
+            final authData = AuthData.fromJson(response.data);
+            await secureStorage.setRefreshToken(authData.refreshToken);
+            dio.options.headers['Authorization'] =
+                'Bearer ${authData.accessToken}';
+
+            // Retry current request
+            final request = error.requestOptions;
+            request.headers['Authorization'] = 'Bearer ${authData.accessToken}';
+            try {
+              final retryResponse = await dio.request(
+                request.path,
+                data: request.data,
+                queryParameters: request.queryParameters,
+                options: Options(
+                  method: request.method,
+                  headers: request.headers,
+                  extra: request.extra,
+                ),
+              );
+              handler.resolve(retryResponse);
+            } catch (retryError) {
+              handler.reject(retryError as DioException);
+            }
+          } catch (refreshError) {
+            getIt<Logger>().e("Failed to refresh token", error: refreshError);
+            handler.reject(refreshError as DioException);
+          }
+          return;
         }
         handler.next(error);
       },
