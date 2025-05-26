@@ -463,7 +463,7 @@ class ProfilePage extends StatelessWidget {
                             ),
                             const SizedBox(width: 5),
                             Text(
-                              state.likedVideos[index].views.toString(),
+                              state.reviews[index].views.toString(),
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 14,

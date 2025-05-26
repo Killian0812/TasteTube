@@ -78,6 +78,7 @@ class SingleShopProductPage extends StatelessWidget {
                     child: Column(
                       children: [
                         _buildProductDetails(context, sizingInformation),
+                        _buildOwnerInfo(context, sizingInformation),
                       ],
                     ),
                   ),
@@ -89,10 +90,29 @@ class SingleShopProductPage extends StatelessWidget {
         const SizedBox(height: 16),
         Expanded(
           flex: 6,
-          child: SingleChildScrollView(
-              child: _buildFeedbackSection(context, sizingInformation)),
+          child: DefaultTabController(
+            length: 2,
+            child: Column(
+              children: [
+                TabBar(
+                  isScrollable: true,
+                  tabs: [
+                    Tab(text: "Order Feedback"),
+                    Tab(text: "Customer Reviews"),
+                  ],
+                ),
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      _buildFeedbackSection(context, sizingInformation),
+                      // _buildCustomerReviewsSection(context, sizingInformation),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
-        _buildOwnerInfo(context, sizingInformation),
         const Divider(height: 1, color: Colors.grey),
         _buildActionButtons(context, sizingInformation),
       ],
@@ -104,14 +124,38 @@ class SingleShopProductPage extends StatelessWidget {
     return Column(
       children: [
         Expanded(
-          child: ListView(
-            children: [
-              _ProductImages(images: product.images),
-              const SizedBox(height: 16),
-              _buildProductDetails(context, sizingInformation),
-              _buildFeedbackSection(context, sizingInformation),
-              _buildOwnerInfo(context, sizingInformation),
-            ],
+          child: DefaultTabController(
+            length: 2,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _ProductImages(images: product.images),
+                  const SizedBox(height: 16),
+                  _buildProductDetails(context, sizingInformation),
+                  _buildOwnerInfo(context, sizingInformation),
+                  TabBar(
+                    tabAlignment: TabAlignment.start,
+                    isScrollable: true,
+                    tabs: const [
+                      Tab(text: "Order Feedback"),
+                      Tab(text: "Customer Reviews"),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 400,
+                    child: TabBarView(
+                      children: [
+                        _buildFeedbackSection(context, sizingInformation),
+                        // _buildCustomerReviewsSection(
+                        //     context, sizingInformation),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+              ),
+            ),
           ),
         ),
         const Divider(height: 1, color: Colors.grey),
@@ -215,7 +259,6 @@ class SingleShopProductPage extends StatelessWidget {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Colors.green,
           ),
         ),
       ],
@@ -224,10 +267,8 @@ class SingleShopProductPage extends StatelessWidget {
 
   Widget _buildOwnerInfo(
       BuildContext context, SizingInformation sizingInformation) {
-    final avatarRadius = sizingInformation.isDesktop ? 32.0 : 26.0;
-
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: GestureDetector(
         onTap: () {
           context.push('/user/${product.userId}');
@@ -235,7 +276,7 @@ class SingleShopProductPage extends StatelessWidget {
         child: Row(children: [
           CircleAvatar(
             backgroundImage: NetworkImage(product.userImage),
-            radius: avatarRadius,
+            radius: 24,
           ),
           const SizedBox(width: 8),
           Text(
@@ -336,28 +377,17 @@ class SingleShopProductPage extends StatelessWidget {
 
   Widget _buildFeedbackSection(
       BuildContext context, SizingInformation sizingInformation) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Customer Feedback',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 8),
-          BlocBuilder<FeedbackCubit, FeedbackState>(
-            builder: (context, state) {
-              if (state is FeedbackLoading && state.feedbacks.isEmpty) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              return _buildFeedbackList(context, state);
-            },
-          ),
-        ],
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16.0),
+        child: BlocBuilder<FeedbackCubit, FeedbackState>(
+          builder: (context, state) {
+            if (state is FeedbackLoading && state.feedbacks.isEmpty) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            return _buildFeedbackList(context, state);
+          },
+        ),
       ),
     );
   }

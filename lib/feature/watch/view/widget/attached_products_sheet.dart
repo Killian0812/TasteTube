@@ -5,6 +5,7 @@ import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/shop/view/payment/payment_page.dart';
 import 'package:taste_tube/feature/shop/view/quantity_dialog.dart';
+import 'package:taste_tube/feature/shop/view/tabs/shopping/single_shop_product_page.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_data/product/product.dart';
 import 'package:taste_tube/utils/currency.util.dart';
@@ -129,10 +130,16 @@ class ProductItem extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
-        Text(
-          product.name,
-          style: const TextStyle(
-              color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+        GestureDetector(
+          onTap: () => Navigator.of(context, rootNavigator: true).push(
+              MaterialPageRoute(
+                  builder: (context) =>
+                      SingleShopProductPage(product: product))),
+          child: Text(
+            product.name,
+            style: const TextStyle(
+                color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+          ),
         ),
         if (product.description != null && product.description!.isNotEmpty)
           Text(
