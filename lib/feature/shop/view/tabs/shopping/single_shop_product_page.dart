@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:taste_tube/common/color.dart';
+import 'package:taste_tube/feature/profile/view/profile_cubit.dart';
 import 'package:taste_tube/feature/shop/view/cart_page.dart';
 import 'package:taste_tube/feature/shop/view/payment/payment_page.dart';
 import 'package:taste_tube/feature/shop/view/quantity_dialog.dart';
@@ -36,8 +39,16 @@ class SingleShopProductPage extends StatelessWidget {
             );
           }
         },
-        child: BlocProvider(
-          create: (context) => FeedbackCubit()..getProductFeedbacks(product.id),
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) =>
+                  FeedbackCubit()..getProductFeedbacks(product.id),
+            ),
+            BlocProvider(
+              create: (context) => ProfileCubit(product.userId)..init(),
+            ),
+          ],
           child: ResponsiveBuilder(
             builder: (context, sizingInformation) {
               final horizontalPadding =
@@ -105,7 +116,7 @@ class SingleShopProductPage extends StatelessWidget {
                   child: TabBarView(
                     children: [
                       _buildFeedbackSection(context, sizingInformation),
-                      // _buildCustomerReviewsSection(context, sizingInformation),
+                      _buildReviewSection(context, sizingInformation),
                     ],
                   ),
                 ),
@@ -147,8 +158,7 @@ class SingleShopProductPage extends StatelessWidget {
                     child: TabBarView(
                       children: [
                         _buildFeedbackSection(context, sizingInformation),
-                        // _buildCustomerReviewsSection(
-                        //     context, sizingInformation),
+                        _buildReviewSection(context, sizingInformation),
                       ],
                     ),
                   ),
@@ -382,10 +392,27 @@ class SingleShopProductPage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 16.0),
         child: BlocBuilder<FeedbackCubit, FeedbackState>(
           builder: (context, state) {
-            if (state is FeedbackLoading && state.feedbacks.isEmpty) {
+            if (state is FeedbackLoading) {
               return const Center(child: CircularProgressIndicator());
             }
             return _buildFeedbackList(context, state);
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildReviewSection(
+      BuildContext context, SizingInformation sizingInformation) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16.0),
+        child: BlocBuilder<ProfileCubit, ProfileState>(
+          builder: (context, state) {
+            if (state is ProfileLoading && state.reviews.isEmpty) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            return _buildReviewGrid(context, state);
           },
         ),
       ),
@@ -452,6 +479,70 @@ class SingleShopProductPage extends StatelessWidget {
             ),
           ),
       ],
+    );
+  }
+
+  Widget _buildReviewGrid(BuildContext context, ProfileState state) {
+    if (state.reviews.isEmpty) {
+      return Center(
+        child: Text(
+          'No reviews yet.',
+          style: TextStyle(
+            fontSize: 15,
+            color: Colors.grey,
+          ),
+        ),
+      );
+    }
+    return GridView.builder(
+      shrinkWrap: true,
+      padding: const EdgeInsets.all(8.0),
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 250,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+      ),
+      itemCount: state.reviews.length,
+      itemBuilder: (context, index) {
+        final video = state.reviews[index];
+        return GestureDetector(
+          onTap: () {
+            context.push('/watch/${video.id}', extra: state.reviews);
+          },
+          child: Stack(
+            children: [
+              Image.memory(
+                base64Decode(video.thumbnail ?? ''),
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity,
+              ),
+              Positioned(
+                bottom: 5,
+                left: 5,
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.visibility,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      state.reviews[index].views.toString(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

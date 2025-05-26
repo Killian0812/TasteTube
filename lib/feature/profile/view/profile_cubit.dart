@@ -15,7 +15,7 @@ class ProfileCubit extends Cubit<ProfileState> {
       : repository = getIt<UserRepository>(),
         super(ProfileLoading(null));
 
-  Future<void> init() async {
+  Future<void> init({String? productId}) async {
     isOwner = (getIt<AuthBloc>().state.data?.userId == userId);
     final either = await repository.getInfo(userId);
     either.match(
@@ -24,7 +24,7 @@ class ProfileCubit extends Cubit<ProfileState> {
       },
       (user) async {
         final likedVideos = await getLikedVideos();
-        final reviews = await getReviews();
+        final reviews = await getReviews(productId: productId);
         emit(ProfileSuccess(
           user,
           likedVideos: likedVideos ?? [],
@@ -43,8 +43,8 @@ class ProfileCubit extends Cubit<ProfileState> {
     );
   }
 
-  Future<List<Video>?> getReviews() async {
-    final either = await repository.getReviews(userId);
+  Future<List<Video>?> getReviews({String? productId}) async {
+    final either = await repository.getReviews(userId, productId: productId);
     return either.match(
       (apiError) => null,
       (videos) => videos,

@@ -41,10 +41,13 @@ class UserRepository {
     }
   }
 
-  Future<Either<ApiError, List<Video>>> getReviews(String targetUserId) async {
+  Future<Either<ApiError, List<Video>>> getReviews(String targetUserId,
+      {String? productId}) async {
     try {
-      final response = await http.get(Api.reviewVideoApi,
-          queryParameters: {'targetUserId': targetUserId});
+      final response = await http.get(Api.reviewVideoApi, queryParameters: {
+        'targetUserId': targetUserId,
+        if (productId != null) 'productId': productId
+      });
       final json = response.data as Map<String, dynamic>;
       final videos = (json['videos'] as List<dynamic>)
           .map((videoJson) => Video.fromJson(videoJson as Map<String, dynamic>))
