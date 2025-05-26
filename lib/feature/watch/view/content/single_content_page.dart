@@ -27,16 +27,9 @@ class SingleContent extends StatefulWidget {
   final Video video;
   const SingleContent({super.key, required this.video});
 
-  static Widget provider(String videoId) => BlocProvider(
-        create: (context) => VideoDetailCubit(videoId)..fetchDependency(),
+  static Widget provider(String videoId, {Video? video}) => BlocProvider(
+        create: (context) => VideoDetailCubit(videoId)..fetchDependency(video),
         child: const SingleContentPage(),
-      );
-
-  static Widget withPrefetch(Video video) => BlocProvider(
-        create: (context) => SingleVideoCubit(video)
-          ..fetchDependency()
-          ..fetchComments(),
-        child: SingleContent(video: video),
       );
 
   @override

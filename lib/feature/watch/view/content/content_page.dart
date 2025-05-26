@@ -112,7 +112,10 @@ class _ContentPageState extends State<ContentPage> {
                 valueListenable: getIt<ContentCubit>().currentPlayingVideoId,
                 builder: (context, currentPlayingIndex, _) {
                   final video = state.videos[index];
-                  return SingleContent.withPrefetch(video);
+                  return SingleContent.provider(
+                    video.id,
+                    video: video,
+                  );
                 },
               );
             },

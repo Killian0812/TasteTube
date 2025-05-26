@@ -29,8 +29,13 @@ class VideoDetailCubit extends Cubit<VideoDetailState> {
       : repository = getIt<VideoRepository>(),
         super(VideoDetailLoading());
 
-  Future<void> fetchDependency() async {
+  Future<void> fetchDependency(Video? video) async {
     try {
+      if (video != null) {
+        repository.getVideo(videoId);
+        emit(VideoDetailLoaded(video));
+        return;
+      }
       final result = await repository.getVideo(videoId);
       result.fold(
         (error) =>

@@ -115,7 +115,10 @@ class FollowingContentPageState extends State<FollowingContentPage> {
                     getIt<FollowingContentCubit>().currentPlayingVideoId,
                 builder: (context, currentPlayingIndex, _) {
                   final video = state.videos[index];
-                  return SingleFollowingContent.withPrefetch(video);
+                  return SingleFollowingContent.provider(
+                    video.id,
+                    video: video,
+                  );
                 },
               );
             },

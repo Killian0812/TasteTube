@@ -70,7 +70,10 @@ class _PublicVideosPageState extends State<PublicVideosPage> {
         },
         itemBuilder: (context, index) {
           final video = widget.videos[index];
-          return SingleContent.withPrefetch(video);
+          return SingleContent.provider(
+            video.id,
+            video: video,
+          );
         },
       ),
     );
