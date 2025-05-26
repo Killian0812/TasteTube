@@ -46,7 +46,8 @@ class SingleShopProductPage extends StatelessWidget {
                   FeedbackCubit()..getProductFeedbacks(product.id),
             ),
             BlocProvider(
-              create: (context) => ProfileCubit(product.userId)..init(),
+              create: (context) =>
+                  ProfileCubit(product.userId)..init(productId: product.id),
             ),
           ],
           child: ResponsiveBuilder(
