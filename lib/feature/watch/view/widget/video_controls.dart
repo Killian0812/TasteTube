@@ -30,12 +30,6 @@ class VideoControls extends StatefulWidget {
 }
 
 class _VideoControlsState extends State<VideoControls> {
-  bool _isDescriptionExpanded = false;
-
-  bool get _descriptionExceededLimit =>
-      widget.video.description != null &&
-      widget.video.description!.length > 100;
-
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -45,16 +39,7 @@ class _VideoControlsState extends State<VideoControls> {
           videoController: widget.videoController,
           isScrubbing: widget.isScrubbing,
         ),
-        VideoInfo(
-          video: widget.video,
-          isDescriptionExpanded: _isDescriptionExpanded,
-          onDescriptionToggled: () {
-            setState(() {
-              _isDescriptionExpanded = !_isDescriptionExpanded;
-            });
-          },
-          descriptionExceededLimit: _descriptionExceededLimit,
-        ),
+        VideoInfo(video: widget.video),
         ReviewTarget(video: widget.video),
         VideoScrubber(
           videoController: widget.videoController,
@@ -121,26 +106,50 @@ class VideoPauseButton extends StatelessWidget {
   }
 }
 
-class VideoInfo extends StatelessWidget {
+class VideoInfo extends StatefulWidget {
   final Video video;
-  final bool isDescriptionExpanded;
-  final VoidCallback onDescriptionToggled;
-  final bool descriptionExceededLimit;
 
   const VideoInfo({
     super.key,
     required this.video,
-    required this.isDescriptionExpanded,
-    required this.onDescriptionToggled,
-    required this.descriptionExceededLimit,
   });
 
   @override
+  State<VideoInfo> createState() => _VideoInfoState();
+}
+
+class _VideoInfoState extends State<VideoInfo> {
+  bool isDescriptionExpanded = false;
+
+  bool get descriptionExceededLimit {
+    final width = MediaQuery.of(context).size.width;
+    int limit;
+    if (width < 350) {
+      limit = 100;
+    } else if (width < 500) {
+      limit = 150;
+    } else {
+      limit = 200;
+    }
+    return widget.video.description != null &&
+        widget.video.description!.length > limit;
+  }
+
+  void onDescriptionToggled() {
+    if (descriptionExceededLimit) {
+      setState(() {
+        isDescriptionExpanded = !isDescriptionExpanded;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final video = widget.video;
     return Align(
       alignment: Alignment.bottomLeft,
       child: Container(
-        padding: const EdgeInsets.only(right: 30),
+        padding: const EdgeInsets.only(right: 60),
         margin:
             EdgeInsets.only(left: 30, bottom: isDescriptionExpanded ? 100 : 70),
         child: Column(
@@ -221,33 +230,61 @@ class VideoInfo extends StatelessWidget {
             if (video.description != null)
               Padding(
                 padding: const EdgeInsets.only(top: 5),
-                child: GestureDetector(
-                  onTap: onDescriptionToggled,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        video.description!,
-                        maxLines: isDescriptionExpanded ? null : 2,
-                        overflow: isDescriptionExpanded
-                            ? TextOverflow.visible
-                            : TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                        ),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final span = TextSpan(
+                      text: video.description!,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
                       ),
-                      const SizedBox(height: 5),
-                      if (descriptionExceededLimit)
-                        Text(
-                          isDescriptionExpanded ? "See less" : "See more",
-                          style: const TextStyle(
-                              color: Color.fromARGB(136, 255, 255, 255),
-                              fontSize: 16,
-                              fontStyle: FontStyle.italic),
-                        ),
-                    ],
-                  ),
+                    );
+
+                    final tp = TextPainter(
+                      text: span,
+                      maxLines: 2,
+                      textDirection: TextDirection.ltr,
+                    );
+
+                    tp.layout(maxWidth: constraints.maxWidth);
+                    final isOverflowing = tp.didExceedMaxLines;
+
+                    return GestureDetector(
+                      onTap: () {
+                        if (isOverflowing) {
+                          setState(() {
+                            isDescriptionExpanded = !isDescriptionExpanded;
+                          });
+                        }
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            video.description!,
+                            maxLines: isDescriptionExpanded ? null : 2,
+                            overflow: isDescriptionExpanded
+                                ? TextOverflow.visible
+                                : TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          if (isOverflowing)
+                            Text(
+                              isDescriptionExpanded ? "See less" : "See more",
+                              style: const TextStyle(
+                                color: Color.fromARGB(136, 255, 255, 255),
+                                fontSize: 16,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
               ),
           ],
@@ -257,53 +294,84 @@ class VideoInfo extends StatelessWidget {
   }
 }
 
-class ReviewTarget extends StatelessWidget {
+class ReviewTarget extends StatefulWidget {
   final Video video;
 
   const ReviewTarget({super.key, required this.video});
 
   @override
+  State<ReviewTarget> createState() => _ReviewTargetState();
+}
+
+class _ReviewTargetState extends State<ReviewTarget> {
+  bool _expanded = false;
+
+  @override
   Widget build(BuildContext context) {
+    if (widget.video.targetUserId == null) return const SizedBox.shrink();
+
+    final collapsedWidth = 56.0;
+    final expandedWidth = 250.0;
+
     return Align(
       alignment: Alignment.bottomRight,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeInOut,
+        width: _expanded ? expandedWidth : collapsedWidth,
         margin: const EdgeInsets.only(right: 25, bottom: 50),
-        child: video.targetUserId == null
-            ? const SizedBox.shrink()
-            : GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () {
-                  context.push('/user/${video.targetUserId!}');
-                },
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 15),
-                  padding: const EdgeInsets.all(10),
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                    color: Colors.black54,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            setState(() {
+              _expanded = !_expanded;
+            });
+          },
+          onLongPress: () {
+            context.push('/user/${widget.video.targetUserId!}');
+          },
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: const BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+              color: Colors.black54,
+            ),
+            child: _expanded
+                ? RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Reviewing:     ',
+                          style: CommonTextStyle.bold.copyWith(
+                            fontStyle: FontStyle.italic,
+                            color: Colors.white,
+                          ),
+                        ),
+                        WidgetSpan(
+                          alignment: PlaceholderAlignment.middle,
+                          child: CircleAvatar(
+                            radius: 12,
+                            foregroundImage:
+                                NetworkImage(widget.video.targetUserImage!),
+                          ),
+                        ),
+                        const WidgetSpan(child: SizedBox(width: 10)),
+                        TextSpan(
+                          text: widget.video.targetUsername!,
+                          style: CommonTextStyle.bold
+                              .copyWith(color: Colors.white),
+                        ),
+                      ],
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  )
+                : CircleAvatar(
+                    radius: 12,
+                    foregroundImage:
+                        NetworkImage(widget.video.targetUserImage!),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Reviewing:     ',
-                        style: CommonTextStyle.bold.copyWith(
-                            fontStyle: FontStyle.italic, color: Colors.white),
-                      ),
-                      CircleAvatar(
-                        radius: 12,
-                        foregroundImage: NetworkImage(video.targetUserImage!),
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        video.targetUsername!,
-                        style:
-                            CommonTextStyle.bold.copyWith(color: Colors.white),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+          ),
+        ),
       ),
     );
   }
