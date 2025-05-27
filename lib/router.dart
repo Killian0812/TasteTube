@@ -63,7 +63,9 @@ final GoRouter _router = GoRouter(
     GoRoute(
       path: '/shop/:shopId',
       builder: (context, state) {
-        return SingleShopPage.provider(state.pathParameters['shopId'] ?? '');
+        return AuthRequired(
+          child: SingleShopPage.provider(state.pathParameters['shopId'] ?? ''),
+        );
       },
     ),
     GoRoute(

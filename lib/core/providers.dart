@@ -23,9 +23,9 @@ Future<void> logApiCallEvent(String apiName) async {
   );
 }
 
-class AuthConsumer extends StatelessWidget {
+class AuthRequired extends StatelessWidget {
   final Widget child;
-  const AuthConsumer({super.key, required this.child});
+  const AuthRequired({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
