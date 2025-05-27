@@ -42,8 +42,10 @@ class ContentRepository {
 
   Future<Either<ApiError, List<User>>> searchForUser(String keyword) async {
     try {
-      final response =
-          await http.get(Api.searchApi, queryParameters: {'keyword': keyword});
+      final response = await http.get(Api.searchApi, queryParameters: {
+        'keyword': keyword,
+        'type': 'user',
+      });
       final users = (response.data as List<dynamic>)
           .map((userJson) => User.fromJson(userJson as Map<String, dynamic>))
           .toList();
