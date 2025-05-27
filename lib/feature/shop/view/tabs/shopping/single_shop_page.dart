@@ -10,32 +10,15 @@ import 'package:taste_tube/utils/phone_call.util.dart';
 
 class SingleShopPage extends StatefulWidget {
   final String shopId;
-  final String shopImage;
-  final String shopName;
-  final String? shopPhone;
 
-  static Widget provider(
-    String shopId,
-    String shopImage,
-    String shopName,
-    String? shopPhone,
-  ) =>
-      BlocProvider(
-        create: (context) => SingleShopCubit(shopId),
-        child: SingleShopPage(
-          shopId: shopId,
-          shopImage: shopImage,
-          shopName: shopName,
-          shopPhone: shopPhone,
-        ),
+  static Widget provider(String shopId) => BlocProvider(
+        create: (context) => SingleShopCubit(shopId)..getProducts(),
+        child: SingleShopPage(shopId: shopId),
       );
 
   const SingleShopPage({
     super.key,
     required this.shopId,
-    required this.shopImage,
-    required this.shopName,
-    this.shopPhone,
   });
 
   @override
@@ -44,12 +27,6 @@ class SingleShopPage extends StatefulWidget {
 
 class _SingleShopPageState extends State<SingleShopPage> {
   final TextEditingController _searchController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    context.read<SingleShopCubit>().getProducts();
-  }
 
   @override
   void dispose() {
@@ -61,36 +38,42 @@ class _SingleShopPageState extends State<SingleShopPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Row(
-            children: [
-              CircleAvatar(
-                radius: 20,
-                foregroundImage: NetworkImage(widget.shopImage),
-              ),
-              const SizedBox(width: 10),
-              Text(
-                widget.shopName,
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              if (widget.shopPhone != null && widget.shopPhone!.isNotEmpty) ...[
-                const SizedBox(width: 30),
-                GestureDetector(
-                  onTap: () async {
-                    await makePhoneCall(widget.shopPhone!);
-                  },
-                  child: Text(
-                    'Hotline: ${widget.shopPhone}',
-                    style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey),
+          title: BlocBuilder<SingleShopCubit, SingleShopState>(
+            builder: (context, state) {
+              return Row(
+                children: [
+                  CircleAvatar(
+                    radius: 20,
+                    foregroundImage: NetworkImage(state.shopImage),
                   ),
-                ),
-              ]
-            ],
+                  const SizedBox(width: 10),
+                  Text(
+                    state.shopName,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (state.shopPhone != null &&
+                      state.shopPhone!.isNotEmpty) ...[
+                    const SizedBox(width: 30),
+                    GestureDetector(
+                      onTap: () async {
+                        await makePhoneCall(state.shopPhone!);
+                      },
+                      child: Text(
+                        'Hotline: ${state.shopPhone}',
+                        style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ]
+                ],
+              );
+            },
           ),
           actions: const [CartButton()],
         ),

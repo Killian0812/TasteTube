@@ -25,6 +25,13 @@ abstract class SingleShopState {
   final String? message;
 
   const SingleShopState(this.products, {this.message});
+
+  String get shopImage =>
+      products.values.isNotEmpty ? products.values.first.first.userImage : '';
+  String get shopName =>
+      products.values.isNotEmpty ? products.values.first.first.username : '';
+  String? get shopPhone =>
+      products.values.isNotEmpty ? products.values.first.first.userPhone : null;
 }
 
 class SingleShopInitial extends SingleShopState {

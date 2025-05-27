@@ -214,13 +214,7 @@ class SingleShopProductPage extends StatelessWidget {
         if (product.categoryId != null)
           GestureDetector(
             onTap: () {
-              context.pushNamed('single-shop', pathParameters: {
-                'shopId': product.userId,
-              }, extra: {
-                'shopImage': product.userImage,
-                'shopName': product.username,
-                'shopPhone': product.userPhone,
-              });
+              context.push("/shop/${product.userId}");
             },
             child: Container(
               margin: const EdgeInsets.symmetric(vertical: 10),

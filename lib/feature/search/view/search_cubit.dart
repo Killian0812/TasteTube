@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taste_tube/feature/home/domain/content_repo.dart';
 import 'package:taste_tube/global_data/user/user.dart';
-import 'package:taste_tube/feature/search/domain/search_repo.dart';
 import 'package:taste_tube/core/injection.dart';
 
 abstract class SearchState {
@@ -34,16 +34,16 @@ class SearchError extends SearchState {
 }
 
 class SearchCubit extends Cubit<SearchState> {
-  final SearchRepository searchRepo;
+  final ContentRepository repository;
 
   SearchCubit()
-      : searchRepo = getIt<SearchRepository>(),
+      : repository = getIt<ContentRepository>(),
         super(SearchInitial([]));
 
   Future<void> searchForUser(String keyword) async {
     try {
       emit(SearchLoading(state.users));
-      final result = await searchRepo.searchForUser(keyword);
+      final result = await repository.searchForUser(keyword);
       result.fold(
         (error) => emit(
             SearchError(state.users, error.message ?? 'Error fetching users')),

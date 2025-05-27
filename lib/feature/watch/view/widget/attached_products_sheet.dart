@@ -156,13 +156,7 @@ class ProductItem extends StatelessWidget {
         const SizedBox(height: 10),
         GestureDetector(
           onTap: () {
-            context.pushNamed('single-shop', pathParameters: {
-              'shopId': product.userId,
-            }, extra: {
-              'shopImage': product.userImage,
-              'shopName': product.username,
-              'shopPhone': product.userPhone,
-            });
+            context.push("/shop/${product.userId}");
           },
           child: Row(
             mainAxisSize: MainAxisSize.min,
