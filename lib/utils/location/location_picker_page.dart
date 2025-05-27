@@ -86,7 +86,7 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
                 tooltip: "Locate me",
                 mini: true,
                 left: 10,
-                right: CommonSize.screenSize.width - 60,
+                right: screenSize.width - 60,
               ),
               enableNearbyPlaces: false,
               showSearchInput: true,

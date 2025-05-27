@@ -94,7 +94,7 @@ void injectDependencies() {
       () => ChatChannelRepository(http: getIt()));
 
   // Global blocs / cubits
-  getIt.registerSingleton<AuthBloc>(AuthBloc());
+  getIt.registerSingleton<AuthBloc>(AuthBloc()..add(CheckAuthEvent()));
   getIt.registerSingleton<OAuthCubit>(OAuthCubit());
   getIt.registerSingleton<RealtimeProvider>(RealtimeProvider());
   getIt.registerSingleton<CartCubit>(CartCubit());

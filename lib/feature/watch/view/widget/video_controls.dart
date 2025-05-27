@@ -79,8 +79,8 @@ class VideoPauseButton extends StatelessWidget {
           await context.read<SingleVideoCubit>().likeVideo();
         },
         child: SizedBox(
-          height: CommonSize.screenSize.height / 2,
-          width: CommonSize.screenSize.width,
+          height: screenSize.height / 2,
+          width: screenSize.width,
           child: Align(
             alignment: Alignment.center,
             child: ValueListenableBuilder<VideoPlayerValue>(
@@ -397,7 +397,7 @@ class VideoScrubber extends StatelessWidget {
       },
       onHorizontalDragUpdate: (details) {
         final newPosition = videoController.value.duration *
-            (details.localPosition.dx / CommonSize.screenSize.width);
+            (details.localPosition.dx / screenSize.width);
         videoController.seekTo(newPosition);
       },
       onHorizontalDragEnd: (details) {

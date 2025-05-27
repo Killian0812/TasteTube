@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taste_tube/auth/view/oauth/oauth_cubit.dart';
+import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/feature/admin/user_management/user_management_cubit.dart';
 import 'package:taste_tube/feature/admin/video_management/video_management_cubit.dart';
 import 'package:taste_tube/feature/home/view/content_cubit.dart';
@@ -57,10 +58,12 @@ class TasteTubeProvider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    screenSize = MediaQuery.of(context).size;
+
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(
-          value: getIt<AuthBloc>()..add(CheckAuthEvent()),
+          value: getIt<AuthBloc>(),
         ),
         BlocProvider.value(
           value: getIt<OAuthCubit>(),

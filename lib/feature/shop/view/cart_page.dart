@@ -192,7 +192,7 @@ class CartPage extends StatelessWidget {
                               const Divider(),
                               ConstrainedBox(
                                 constraints: BoxConstraints(
-                                  maxHeight: CommonSize.screenSize.height * 0.6,
+                                  maxHeight: screenSize.height * 0.6,
                                 ),
                                 child: ListView.builder(
                                   shrinkWrap: true,

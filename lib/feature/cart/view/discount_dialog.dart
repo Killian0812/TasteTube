@@ -96,8 +96,7 @@ class _DiscountDialogState extends State<DiscountDialog> {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
               ConstrainedBox(
-                constraints: BoxConstraints(
-                    maxHeight: CommonSize.screenSize.height * 0.3),
+                constraints: BoxConstraints(maxHeight: screenSize.height * 0.3),
                 child: Column(
                   children: [
                     ...discounts.map((discount) {

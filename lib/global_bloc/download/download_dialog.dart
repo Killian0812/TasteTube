@@ -19,7 +19,7 @@ class DownloadDialog extends StatelessWidget {
             child: Container(
               margin: const EdgeInsets.only(top: 20),
               padding: const EdgeInsets.all(10.0),
-              width: CommonSize.screenSize.width / 3,
+              width: screenSize.width / 3,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: const Color.fromRGBO(0, 0, 0, 0.5),

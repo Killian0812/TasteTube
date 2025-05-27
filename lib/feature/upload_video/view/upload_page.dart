@@ -219,7 +219,7 @@ class UploadPage extends StatelessWidget {
       useRootNavigator: true,
       builder: (context) {
         return SizedBox(
-          height: CommonSize.screenSize.height * 0.3,
+          height: screenSize.height * 0.3,
           child: ListView(
             padding: const EdgeInsets.only(top: 30),
             children: VideoVisibility.values.map((visibility) {
@@ -246,7 +246,7 @@ class UploadPage extends StatelessWidget {
       context: context,
       builder: (context) {
         return SizedBox(
-          height: CommonSize.screenSize.height * 0.4,
+          height: screenSize.height * 0.4,
           child: BlocProvider.value(
             value: cubit,
             child: ListView(

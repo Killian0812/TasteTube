@@ -314,7 +314,7 @@ class _DiscountFormState extends State<DiscountForm> {
       isScrollControlled: true,
       builder: (context) {
         return SizedBox(
-          height: CommonSize.screenSize.height * 0.4,
+          height: screenSize.height * 0.4,
           child: StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
               return Column(

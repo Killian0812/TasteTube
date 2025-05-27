@@ -170,10 +170,7 @@ class ProfilePage extends StatelessWidget {
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         child: SizedBox(
-          height: CommonSize.screenSize.height -
-              CommonSize.appBarHeight -
-              CommonSize.bottomNavBarHeight -
-              30,
+          height: screenSize.height - appBarHeight - bottomNavBarHeight - 30,
           child: Column(
             children: [
               const SizedBox(height: 20),

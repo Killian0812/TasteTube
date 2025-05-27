@@ -247,7 +247,7 @@ class UpdateVideoPageState extends State<UpdateVideoPage> {
       useRootNavigator: true,
       builder: (context) {
         return SizedBox(
-          height: CommonSize.screenSize.height * 0.3,
+          height: screenSize.height * 0.3,
           child: ListView(
             padding: const EdgeInsets.only(top: 30),
             children: VideoVisibility.values.map((visibility) {
@@ -279,7 +279,7 @@ class UpdateVideoPageState extends State<UpdateVideoPage> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setModalState) {
             return SizedBox(
-              height: CommonSize.screenSize.height * 0.4,
+              height: screenSize.height * 0.4,
               child: ListView(
                 padding: const EdgeInsets.only(top: 30),
                 children: availableProducts.map((product) {

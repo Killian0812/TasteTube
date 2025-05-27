@@ -19,7 +19,6 @@ import 'package:taste_tube/core/build_config.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/error.dart';
 import 'package:taste_tube/common/fallback.dart';
-import 'package:taste_tube/common/size.dart';
 import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/feature/admin/dashboard/admin_dashboard_page.dart';
 import 'package:taste_tube/feature/admin/user_management/user_management_page.dart';
@@ -96,8 +95,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    CommonSize.initScreenSize(context);
-
     return TasteTubeProvider(
       child: AnimatedBuilder(
         animation: getIt<AppSettings>(),
