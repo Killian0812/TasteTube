@@ -128,16 +128,6 @@ class _SingleVideoState extends State<SingleContent>
   }
 
   @override
-  void didUpdateWidget(covariant SingleContent oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (videoId == currentPlayingVideoId) {
-      _videoController.play();
-    } else {
-      _videoController.pause();
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     super.build(context);
     return Material(
