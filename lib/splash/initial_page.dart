@@ -39,7 +39,7 @@ class _InitialPageState extends State<InitialPage> {
             } else if (state.data.role == 'RESTAURANT') {
               redirect = '/store';
             } else {
-              redirect = '/home';
+              redirect = '/';
             }
             context.go(redirect);
           } else if (state is Unauthenticated) {

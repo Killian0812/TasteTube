@@ -7,10 +7,6 @@ final GoRouter _router = GoRouter(
   initialLocation: '/',
   observers: [CommonNavigatorObserver()],
   routes: [
-    GoRoute(
-      path: '/',
-      builder: (context, state) => const InitialPage(),
-    ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, shell) => Layout(
         currentIndex: shell.currentIndex,
@@ -22,7 +18,7 @@ final GoRouter _router = GoRouter(
           preload: true,
           routes: [
             GoRoute(
-              path: '/dashboard',
+              path: '/',
               builder: (context, state) => const AdminDashboardPage(),
             ),
           ],

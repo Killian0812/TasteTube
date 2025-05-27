@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:go_router/go_router.dart';
 import 'package:taste_tube/auth/view/oauth/oauth_cubit.dart';
 import 'package:taste_tube/feature/admin/user_management/user_management_cubit.dart';
 import 'package:taste_tube/feature/admin/video_management/video_management_cubit.dart';
@@ -20,6 +21,32 @@ Future<void> logApiCallEvent(String apiName) async {
     name: 'api_call',
     parameters: {'api_name': apiName},
   );
+}
+
+class AuthConsumer extends StatelessWidget {
+  final Widget child;
+  const AuthConsumer({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<AuthBloc, AuthState>(
+      bloc: getIt<AuthBloc>(),
+      listener: (context, state) {
+        if (state is Unauthenticated) {
+          context.go('/login');
+        }
+      },
+      buildWhen: (previous, current) =>
+          previous is Authenticated && current is! Authenticated ||
+          previous is! Authenticated && current is Authenticated,
+      builder: (context, state) {
+        if (state is! Authenticated) {
+          return SizedBox.shrink();
+        }
+        return child;
+      },
+    );
+  }
 }
 
 class TasteTubeProvider extends StatelessWidget {

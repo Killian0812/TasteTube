@@ -62,7 +62,7 @@ class _LoginPhoneTabState extends State<LoginPhoneTab> {
               } else if (authData.role == 'RESTAURANT') {
                 context.go('/store');
               } else {
-                context.go('/home');
+                context.go('/');
               }
             } else {
               Navigator.push(

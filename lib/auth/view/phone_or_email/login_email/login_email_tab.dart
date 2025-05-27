@@ -98,7 +98,7 @@ class LoginEmailTab extends StatelessWidget {
             } else if (response.role == 'RESTAURANT') {
               context.go('/store');
             } else {
-              context.go('/home');
+              context.go('/');
             }
           } else {
             Navigator.push(

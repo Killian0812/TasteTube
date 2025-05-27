@@ -1,6 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fpdart/fpdart.dart';
-import 'package:taste_tube/common/error.dart';
 import 'package:taste_tube/global_data/product/product.dart';
 import 'package:taste_tube/feature/shop/domain/shop_repo.dart';
 import 'package:taste_tube/core/injection.dart';
@@ -40,12 +38,11 @@ class ShopCubit extends Cubit<ShopState> {
   Future<void> getRecommendedProducts() async {
     emit(const ShopLoading([]));
     try {
-      final Either<ApiError, List<Product>> result =
-          await shopRepository.getRecommendedProducts();
+      final result = await shopRepository.getRecommendedProducts();
       result.fold(
         (error) => emit(ShopError(
           state.products,
-          error.message ?? 'Error fetching recommeded products',
+          error.message ?? 'Error fetching recommended products',
         )),
         (products) => emit(ShopLoaded(products)),
       );
@@ -57,8 +54,7 @@ class ShopCubit extends Cubit<ShopState> {
   Future<void> searchProducts(String keyword) async {
     emit(ShopLoading(state.products));
     try {
-      final Either<ApiError, List<Product>> result =
-          await shopRepository.searchProducts(keyword);
+      final result = await shopRepository.searchProducts(keyword);
       result.fold(
         (error) => emit(ShopError(
           state.products,

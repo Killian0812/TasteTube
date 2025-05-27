@@ -32,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
               if (response.role == 'RESTAURANT') {
                 context.go('/store');
               } else {
-                context.go('/home');
+                context.go('/');
               }
             } else {
               Navigator.push(

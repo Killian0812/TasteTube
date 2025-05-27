@@ -83,7 +83,7 @@ class FollowingContentPageState extends State<FollowingContentPage> {
           backgroundColor: Colors.black,
           appBar: AppBar(
             backgroundColor: Colors.transparent,
-            leading: GoRouterState.of(context).path != '/home'
+            leading: GoRouterState.of(context).path != '/'
                 ? IconButton(
                     icon: const Icon(
                       Icons.arrow_back,

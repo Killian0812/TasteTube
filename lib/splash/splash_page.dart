@@ -36,21 +36,19 @@ class _SplashPageState extends State<SplashPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: ScaleTransition(
-          scale: _animation,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(AssetPath.tastetubeInverted),
-              if (widget.isAdmin)
-                const Padding(
-                  padding: EdgeInsets.only(top: 16.0),
-                  child: Text('TasteTube Admin'),
-                ),
-            ],
-          ),
+    return Center(
+      child: ScaleTransition(
+        scale: _animation,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(AssetPath.tastetubeInverted),
+            if (widget.isAdmin)
+              const Padding(
+                padding: EdgeInsets.only(top: 16.0),
+                child: Text('TasteTube Admin'),
+              ),
+          ],
         ),
       ),
     );
