@@ -98,99 +98,98 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     CommonSize.initScreenSize(context);
 
-    return AnimatedBuilder(
-      animation: getIt<AppSettings>(),
-      builder: (context, snapshot) {
-        return MaterialApp.router(
-          debugShowCheckedModeBanner: false,
-          title: 'TasteTube Admin',
-          builder: (context, child) => TasteTubeProvider(
-            isAdmin: true,
-            child: StreamChat(
+    return TasteTubeProvider(
+      child: AnimatedBuilder(
+        animation: getIt<AppSettings>(),
+        builder: (context, snapshot) {
+          return MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            title: 'TasteTube Admin',
+            builder: (context, child) => StreamChat(
               client: streamClient,
-              child: child ?? SizedBox.shrink(),
+              child: child,
             ),
-          ),
-          routerConfig: _router,
-          theme: ThemeData.light().copyWith(
-            primaryColor: Colors.black,
-            hintColor: Colors.amber[300],
-            textTheme: lightTextTheme,
-            primaryTextTheme: lightTextTheme,
-            scaffoldBackgroundColor: Colors.white,
-            textSelectionTheme:
-                const TextSelectionThemeData(cursorColor: Colors.black),
-            tabBarTheme: const TabBarTheme(
-              labelColor: Colors.black,
-              unselectedLabelColor: CommonColor.greyOutTextColor,
-              labelStyle: CommonTextStyle.bold,
-              unselectedLabelStyle: CommonTextStyle.boldItalic,
+            routerConfig: _router,
+            theme: ThemeData.light().copyWith(
+              primaryColor: Colors.black,
+              hintColor: Colors.amber[300],
+              textTheme: lightTextTheme,
+              primaryTextTheme: lightTextTheme,
+              scaffoldBackgroundColor: Colors.white,
+              textSelectionTheme:
+                  const TextSelectionThemeData(cursorColor: Colors.black),
+              tabBarTheme: const TabBarTheme(
+                labelColor: Colors.black,
+                unselectedLabelColor: CommonColor.greyOutTextColor,
+                labelStyle: CommonTextStyle.bold,
+                unselectedLabelStyle: CommonTextStyle.boldItalic,
+              ),
+              bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+                backgroundColor: CommonColor.lightGrey,
+                unselectedItemColor: Colors.black,
+                selectedItemColor: CommonColor.activeBgColor,
+                selectedLabelStyle: CommonTextStyle.bold,
+                unselectedLabelStyle: CommonTextStyle.regular,
+                showUnselectedLabels: true,
+                type: BottomNavigationBarType.fixed,
+              ),
+              appBarTheme: const AppBarTheme(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                iconTheme: IconThemeData(color: Colors.black),
+              ),
             ),
-            bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-              backgroundColor: CommonColor.lightGrey,
-              unselectedItemColor: Colors.black,
-              selectedItemColor: CommonColor.activeBgColor,
-              selectedLabelStyle: CommonTextStyle.bold,
-              unselectedLabelStyle: CommonTextStyle.regular,
-              showUnselectedLabels: true,
-              type: BottomNavigationBarType.fixed,
+            darkTheme: ThemeData.dark().copyWith(
+              primaryColor: Colors.white,
+              textTheme: darkTextTheme,
+              primaryTextTheme: darkTextTheme,
+              scaffoldBackgroundColor: Colors.black,
+              textSelectionTheme:
+                  const TextSelectionThemeData(cursorColor: Colors.white),
+              tabBarTheme: const TabBarTheme(
+                labelColor: Colors.white,
+                unselectedLabelColor: CommonColor.greyOutTextColor,
+                labelStyle: CommonTextStyle.bold,
+                unselectedLabelStyle: CommonTextStyle.boldItalic,
+              ),
+              bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+                backgroundColor: CommonColor.darkGrey,
+                unselectedItemColor: Colors.white,
+                selectedItemColor: CommonColor.activeBgColor,
+                selectedLabelStyle: CommonTextStyle.bold,
+                unselectedLabelStyle: CommonTextStyle.regular,
+                showUnselectedLabels: true,
+                type: BottomNavigationBarType.fixed,
+              ),
+              appBarTheme: const AppBarTheme(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                iconTheme: IconThemeData(color: Colors.white),
+              ),
             ),
-            appBarTheme: const AppBarTheme(
-              backgroundColor: Colors.transparent,
-              shadowColor: Colors.transparent,
-              iconTheme: IconThemeData(color: Colors.black),
+            themeMode: getIt<AppSettings>().getTheme,
+            locale: getIt<AppSettings>().locale,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en'),
+              Locale('vi'),
+            ],
+            scrollBehavior: const MaterialScrollBehavior().copyWith(
+              dragDevices: {
+                PointerDeviceKind.mouse,
+                PointerDeviceKind.touch,
+                PointerDeviceKind.stylus,
+                PointerDeviceKind.unknown,
+              },
             ),
-          ),
-          darkTheme: ThemeData.dark().copyWith(
-            primaryColor: Colors.white,
-            textTheme: darkTextTheme,
-            primaryTextTheme: darkTextTheme,
-            scaffoldBackgroundColor: Colors.black,
-            textSelectionTheme:
-                const TextSelectionThemeData(cursorColor: Colors.white),
-            tabBarTheme: const TabBarTheme(
-              labelColor: Colors.white,
-              unselectedLabelColor: CommonColor.greyOutTextColor,
-              labelStyle: CommonTextStyle.bold,
-              unselectedLabelStyle: CommonTextStyle.boldItalic,
-            ),
-            bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-              backgroundColor: CommonColor.darkGrey,
-              unselectedItemColor: Colors.white,
-              selectedItemColor: CommonColor.activeBgColor,
-              selectedLabelStyle: CommonTextStyle.bold,
-              unselectedLabelStyle: CommonTextStyle.regular,
-              showUnselectedLabels: true,
-              type: BottomNavigationBarType.fixed,
-            ),
-            appBarTheme: const AppBarTheme(
-              backgroundColor: Colors.transparent,
-              shadowColor: Colors.transparent,
-              iconTheme: IconThemeData(color: Colors.white),
-            ),
-          ),
-          themeMode: getIt<AppSettings>().getTheme,
-          locale: getIt<AppSettings>().locale,
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [
-            Locale('en'),
-            Locale('vi'),
-          ],
-          scrollBehavior: const MaterialScrollBehavior().copyWith(
-            dragDevices: {
-              PointerDeviceKind.mouse,
-              PointerDeviceKind.touch,
-              PointerDeviceKind.stylus,
-              PointerDeviceKind.unknown,
-            },
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

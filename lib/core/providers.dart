@@ -82,14 +82,22 @@ class AppSettings extends ChangeNotifier {
 
   Future<void> _initialize() async {
     final themeValue = await getIt<LocalStorage>().getValue("THEME_MODE");
-    _theme = themeValue == "light" ? ThemeMode.light : ThemeMode.dark;
+    final newTheme = themeValue == "light" ? ThemeMode.light : ThemeMode.dark;
     final languageValue = await getIt<LocalStorage>().getValue("LANGUAGE");
-    if (languageValue == "vi") {
-      _currentLanguage = AppLanguage.vi;
-    } else {
-      _currentLanguage = AppLanguage.en;
+    final newLanguage = languageValue == "vi" ? AppLanguage.vi : AppLanguage.en;
+
+    bool changed = false;
+    if (_theme != newTheme) {
+      _theme = newTheme;
+      changed = true;
     }
-    notifyListeners();
+    if (_currentLanguage != newLanguage) {
+      _currentLanguage = newLanguage;
+      changed = true;
+    }
+    if (changed) {
+      notifyListeners();
+    }
   }
 
   ThemeMode get getTheme => _theme;

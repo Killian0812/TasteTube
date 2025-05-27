@@ -28,13 +28,9 @@ part 'profile_page.ext2.dart';
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
-  static Widget provider(String userId) => MultiBlocProvider(
+  static Widget provider(String userId) => BlocProvider(
         key: ValueKey(userId),
-        providers: [
-          BlocProvider(
-            create: (context) => ProfileCubit(userId)..init(),
-          ),
-        ],
+        create: (context) => ProfileCubit(userId)..init(),
         child: const ProfilePage(),
       );
 
