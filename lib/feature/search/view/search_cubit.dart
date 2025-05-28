@@ -49,7 +49,9 @@ class SearchCubit extends Cubit<SearchState> {
           emit(SearchLoaded(users, state.videos));
         },
       );
-      searchForVideo(keyword, showLoading: false);
+      if (showLoading) {
+        searchForVideo(keyword, showLoading: false);
+      }
     } catch (e) {
       emit(SearchError(state.users, state.videos, e.toString()));
     }
@@ -68,7 +70,9 @@ class SearchCubit extends Cubit<SearchState> {
           emit(SearchLoaded(state.users, videos));
         },
       );
-      searchForUser(keyword, showLoading: false);
+      if (showLoading) {
+        searchForUser(keyword, showLoading: false);
+      }
     } catch (e) {
       emit(SearchError(state.users, state.videos, e.toString()));
     }

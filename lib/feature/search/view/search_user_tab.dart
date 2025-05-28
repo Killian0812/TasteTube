@@ -20,7 +20,7 @@ class SearchUserTab extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
         if (state is SearchInitial) {
-          return const Center(child: Text('Type a name to search for users'));
+          return const Center(child: Text('Type to search for users'));
         }
         final users = state.users;
 

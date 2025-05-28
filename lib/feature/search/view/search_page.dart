@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/feature/search/view/search_cubit.dart';
 import 'package:taste_tube/feature/search/view/search_user_tab.dart';
+import 'package:taste_tube/feature/search/view/search_video_tab.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -62,6 +63,7 @@ class _SearchPageState extends State<SearchPage> {
             Expanded(
               child: TabBarView(children: [
                 SearchUserTab(),
+                SearchVideoTab(),
               ]),
             ),
           ],
