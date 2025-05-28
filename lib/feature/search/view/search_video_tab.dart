@@ -34,7 +34,7 @@ class SearchVideoTab extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
               maxCrossAxisExtent: 250,
-              childAspectRatio: 3 / 4,
+              childAspectRatio: 1 / 2,
               crossAxisSpacing: 8,
               mainAxisSpacing: 8,
             ),
