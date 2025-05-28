@@ -5,7 +5,10 @@
 
     <meta charset="UTF-8" />
     <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
-    <meta name="description" content="Your way to delicious culinary content." />
+    <meta
+      name="description"
+      content="Your way to delicious culinary content."
+    />
 
     <!-- iOS meta tags & icons -->
     <meta name="mobile-web-app-capable" content="yes" />
@@ -34,82 +37,25 @@
         min-height: 100%;
         background-color: #000000;
         background-size: 100% 100%;
-      }
-
-      .center {
-        margin: 0;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        -ms-transform: translate(-50%, -50%);
-        transform: translate(-50%, -50%);
-      }
-
-      .contain {
-        display: block;
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-      }
-
-      .stretch {
-        display: block;
-        width: 100%;
-        height: 100%;
-      }
-
-      .cover {
-        display: block;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-
-      .bottom {
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        -ms-transform: translate(-50%, 0);
-        transform: translate(-50%, 0);
-      }
-
-      .bottomLeft {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-      }
-
-      .bottomRight {
-        position: absolute;
-        bottom: 0;
-        right: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
     </style>
     <script id="splash-screen-script">
       function removeSplashFromWeb() {
         document.getElementById("splash")?.remove();
-        document.getElementById("splash-branding")?.remove();
         document.body.style.background = "transparent";
       }
     </script>
   </head>
   <body oncontextmenu="return false;">
-    <picture id="splash">
-      <source
-        srcset="splash/img/light-4x.png 1x"
-        media="(prefers-color-scheme: light)"
-      />
-      <source
-        srcset="splash/img/dark-4x.png 1x"
-        media="(prefers-color-scheme: dark)"
-      />
-      <img
-        class="center"
-        aria-hidden="true"
-        src="splash/img/dark-4x.png"
-        alt=""
-      />
-    </picture>
+    <img
+      class="splash"
+      aria-hidden="true"
+      src="splash/gif/loading.gif"
+      alt="Loading..."
+    />
     <script
       src="https://cdn.jsdelivr.net/npm/hls.js@latest"
       type="application/javascript"
