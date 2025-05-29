@@ -18,12 +18,13 @@ class AddressTab extends StatelessWidget {
           }
         },
         builder: (context, state) {
+          final cubit = context.read<AddressCubit>();
           if (state is AddressLoading) {
             return const Center(child: CircularProgressIndicator());
           }
           return RefreshIndicator(
             onRefresh: () async {
-              context.read<AddressCubit>().fetchAddresses();
+              cubit.fetchAddresses();
             },
             child: ListView.builder(
               itemCount: state.addresses.length,
@@ -35,6 +36,19 @@ class AddressTab extends StatelessWidget {
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      IconButton(
+                        icon: address.isDefault
+                            ? const Icon(Icons.check_circle)
+                            : const Icon(Icons.circle_outlined),
+                        onPressed: () {
+                          if (!address.isDefault) {
+                            cubit.setDefaultAddress(address);
+                          }
+                        },
+                        tooltip: address.isDefault
+                            ? "Using as default"
+                            : "Set as Default",
+                      ),
                       IconButton(
                         icon: const Icon(Icons.edit),
                         onPressed: () {

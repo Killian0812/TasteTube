@@ -29,6 +29,7 @@ class AddressRepository {
     String value,
     double latitude,
     double longitude,
+    bool isDefault,
   ) async {
     try {
       final response = await http.post(Api.addressApi, data: {
@@ -37,6 +38,7 @@ class AddressRepository {
         'value': value,
         'latitude': latitude,
         'longitude': longitude,
+        'isDefault': isDefault,
       }, queryParameters: {
         "addressId": id,
       });
@@ -53,6 +55,19 @@ class AddressRepository {
     try {
       await http.delete(Api.singleAddressApi.replaceFirst(':addressId', id));
       return const Right(null);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
+
+  Future<Either<ApiError, Address>> setDefaultAddress(String id) async {
+    try {
+      final response =
+          await http.put(Api.singleAddressApi.replaceFirst(':addressId', id));
+      final address = Address.fromJson(response.data);
+      return Right(address);
     } on DioException catch (e) {
       return Left(ApiError.fromDioException(e));
     } catch (e) {

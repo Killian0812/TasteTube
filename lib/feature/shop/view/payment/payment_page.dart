@@ -134,7 +134,9 @@ class _PaymentPageState extends State<PaymentPage> {
         }
         if (state is AddressLoaded) {
           setState(() {
-            selectedAddress = state.addresses.firstOrNull;
+            selectedAddress =
+                state.addresses.firstWhereOrNull((a) => a.isDefault) ??
+                    state.addresses.firstOrNull;
             cartCubit.updateOrderAddressOrDiscount(address: selectedAddress);
           });
         }

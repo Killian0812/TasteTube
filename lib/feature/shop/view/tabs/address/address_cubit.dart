@@ -76,6 +76,34 @@ class AddressCubit extends Cubit<AddressState> {
     }
   }
 
+  Future<void> setDefaultAddress(Address address) async {
+    emit(AddressLoading(state.addresses));
+    try {
+      final result = await repository.setDefaultAddress(address.id!);
+      result.fold(
+        (error) => emit(AddressError(
+          state.addresses,
+          error.message ?? 'Failed to set address as default',
+        )),
+        (updatedAddress) {
+          final updatedAddresses = state.addresses
+              .map(
+                (e) => Address.fromJson({...e.toJson(), 'isDefault': false}),
+              )
+              .toList();
+          final index =
+              updatedAddresses.indexWhere((e) => e.id == updatedAddress.id);
+          if (index != -1) {
+            updatedAddresses[index] = updatedAddress;
+          }
+          emit(AddressLoaded(updatedAddresses));
+        },
+      );
+    } catch (e) {
+      emit(AddressError(state.addresses, e.toString()));
+    }
+  }
+
   Future<void> addOrUpdateAddress({
     String? id,
     required String name,
@@ -83,11 +111,12 @@ class AddressCubit extends Cubit<AddressState> {
     required String value,
     required double latitude,
     required double longitude,
+    required bool isDefault,
   }) async {
     emit(AddressLoading(state.addresses));
     try {
       final result = await repository.upsertAddress(
-          id, name, phone, value, latitude, longitude);
+          id, name, phone, value, latitude, longitude, isDefault);
 
       result.fold(
         (error) => emit(AddressError(
@@ -95,7 +124,14 @@ class AddressCubit extends Cubit<AddressState> {
           error.message ?? 'Failed to ${id == null ? 'add' : 'update'} address',
         )),
         (newAddress) {
-          List<Address> updatedAddresses = [...state.addresses];
+          final updatedAddresses = state.addresses
+              .map(
+                (e) => Address.fromJson({
+                  ...e.toJson(),
+                  if (newAddress.isDefault) 'isDefault': false,
+                }),
+              )
+              .toList();
           if (id == null) {
             updatedAddresses.add(newAddress);
             emit(AddressAdded(updatedAddresses));

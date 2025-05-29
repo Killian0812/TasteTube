@@ -45,6 +45,7 @@ void pickLocationThenShowAddressForm(BuildContext context) {
           value: location.formattedAddress!,
           latitude: location.latLng!.latitude,
           longitude: location.latLng!.longitude,
+          isDefault: false,
         ),
       );
     }
@@ -56,6 +57,7 @@ void showAddressForm(BuildContext context, Address address) {
   final cubit = context.read<AddressCubit>();
   final nameController = TextEditingController(text: address.name);
   final phoneController = TextEditingController(text: address.phone);
+  bool isDefault = address.isDefault;
 
   showDialog(
     context: context,
@@ -87,6 +89,20 @@ void showAddressForm(BuildContext context, Address address) {
                 keyboardType: TextInputType.streetAddress,
                 decoration: const InputDecoration(labelText: 'Address'),
               ),
+              StatefulBuilder(
+                builder: (context, snapshot) {
+                  return CheckboxListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Set as default address'),
+                    value: isDefault,
+                    onChanged: (bool? value) {
+                      isDefault = value ?? false;
+                      snapshot(() {});
+                    },
+                    controlAffinity: ListTileControlAffinity.leading,
+                  );
+                },
+              )
             ],
           ),
         ),
@@ -105,6 +121,7 @@ void showAddressForm(BuildContext context, Address address) {
                   value: address.value,
                   latitude: address.latitude,
                   longitude: address.longitude,
+                  isDefault: isDefault,
                 );
                 Navigator.of(context).pop();
               }

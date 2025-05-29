@@ -6,6 +6,7 @@ class Address {
   final String value;
   final double latitude;
   final double longitude;
+  final bool isDefault;
 
   Address({
     this.id,
@@ -15,6 +16,7 @@ class Address {
     required this.value,
     required this.latitude,
     required this.longitude,
+    required this.isDefault,
   });
 
   factory Address.fromJson(Map<String, dynamic> json) {
@@ -26,17 +28,20 @@ class Address {
       value: json['value'],
       latitude: (json['latitude'] as num).toDouble(),
       longitude: (json['longitude'] as num).toDouble(),
+      isDefault: json['isDefault'] as bool? ?? false,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      '_id': id,
       'userId': userId,
       'name': name,
       'phone': phone,
       'value': value,
       'latitude': latitude,
       'longitude': longitude,
+      'isDefault': isDefault,
     };
   }
 }
