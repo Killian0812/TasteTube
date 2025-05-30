@@ -6,6 +6,7 @@ import 'package:taste_tube/global_data/product/category.dart';
 import 'package:taste_tube/feature/shop/view/cart_page.dart';
 import 'package:taste_tube/feature/shop/view/tabs/shopping/single_shop_cubit.dart';
 import 'package:taste_tube/feature/shop/view/tabs/shopping/single_shop_product_page.dart';
+import 'package:taste_tube/utils/currency.util.dart';
 import 'package:taste_tube/utils/phone_call.util.dart';
 
 class SingleShopPage extends StatefulWidget {
@@ -211,16 +212,51 @@ class _SingleShopPageState extends State<SingleShopPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        product.name,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            product.name,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            CurrencyUtil.amountWithCurrency(
+                                product.cost, product.currency),
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${product.currency} ${product.cost.toStringAsFixed(2)}',
-                        style: const TextStyle(fontSize: 14),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: product.prepTime != null
+                                ? [
+                                    Icon(Icons.access_time_outlined,
+                                        color: Colors.grey, size: 15),
+                                    Text(
+                                      ' ${product.prepTime != null ? "${product.prepTime} min" : "N/A"}',
+                                      style: const TextStyle(
+                                          fontSize: 12, color: Colors.grey),
+                                    ),
+                                  ]
+                                : [const SizedBox.shrink()],
+                          ),
+                          Text(
+                            product.distance != null
+                                ? "${product.distance!.toStringAsFixed(2)} km"
+                                : "",
+                            style: const TextStyle(
+                                fontSize: 12, color: Colors.grey),
+                          ),
+                        ],
                       ),
                     ],
                   ),

@@ -16,6 +16,7 @@ class Product {
   final DateTime createdAt;
   final DateTime updatedAt;
   final int? prepTime;
+  final double? distance;
 
   Product({
     required this.id,
@@ -35,6 +36,7 @@ class Product {
     required this.createdAt,
     required this.updatedAt,
     this.prepTime,
+    this.distance,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -58,6 +60,7 @@ class Product {
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
       prepTime: json['prepTime'] as int?,
+      distance: (json['distance'] as num?)?.toDouble(),
     );
   }
 }
