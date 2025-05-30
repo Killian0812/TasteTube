@@ -94,15 +94,18 @@ void injectDependencies() {
       () => ChatChannelRepository(http: getIt()));
 
   // Global blocs / cubits
-  getIt.registerSingleton<AuthBloc>(AuthBloc()..add(CheckAuthEvent()));
-  getIt.registerSingleton<OAuthCubit>(OAuthCubit());
-  getIt.registerSingleton<RealtimeProvider>(RealtimeProvider());
-  getIt.registerSingleton<CartCubit>(CartCubit());
-  getIt.registerSingleton<OrderCubit>(OrderCubit());
-  getIt.registerSingleton<ContentCubit>(ContentCubit());
-  getIt.registerSingleton<FollowingContentCubit>(FollowingContentCubit());
-  getIt.registerSingleton<DownloadCubit>(DownloadCubit());
-  getIt.registerSingleton<GetstreamCubit>(GetstreamCubit());
-  getIt.registerSingleton<UserManagementCubit>(UserManagementCubit());
-  getIt.registerSingleton<VideoManagementCubit>(VideoManagementCubit());
+  getIt
+      .registerLazySingleton<AuthBloc>(() => AuthBloc()..add(CheckAuthEvent()));
+  getIt.registerLazySingleton<OAuthCubit>(() => OAuthCubit());
+  getIt.registerLazySingleton<RealtimeProvider>(() => RealtimeProvider());
+  getIt.registerLazySingleton<CartCubit>(() => CartCubit());
+  getIt.registerLazySingleton<OrderCubit>(() => OrderCubit());
+  getIt.registerLazySingleton<ContentCubit>(() => ContentCubit());
+  getIt.registerLazySingleton<FollowingContentCubit>(
+      () => FollowingContentCubit());
+  getIt.registerLazySingleton<DownloadCubit>(() => DownloadCubit());
+  getIt.registerLazySingleton<GetstreamCubit>(() => GetstreamCubit());
+  getIt.registerLazySingleton<UserManagementCubit>(() => UserManagementCubit());
+  getIt.registerLazySingleton<VideoManagementCubit>(
+      () => VideoManagementCubit());
 }
