@@ -3,6 +3,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/common/error.dart';
 import 'package:taste_tube/feature/shop/data/shop_response.dart';
+import 'package:taste_tube/feature/shop/data/single_shop_response.dart';
 import 'package:taste_tube/global_data/product/product.dart';
 
 class ShopRepository {
@@ -54,14 +55,13 @@ class ShopRepository {
     }
   }
 
-  Future<Either<ApiError, List<Product>>> getSingleShopProducts(
+  Future<Either<ApiError, SingleShopResponse>> getSingleShopProducts(
       String shopId) async {
     try {
       final response =
           await http.get(Api.singleShopApi.replaceFirst(':shopId', shopId));
-      final List<dynamic> data = response.data;
-      final products = data.map((json) => Product.fromJson(json)).toList();
-      return Right(products);
+      final data = response.data as Map<String, dynamic>;
+      return Right(SingleShopResponse.fromJson(data));
     } on DioException catch (e) {
       return Left(ApiError.fromDioException(e));
     } catch (e) {

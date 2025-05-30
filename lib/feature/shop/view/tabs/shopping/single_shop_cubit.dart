@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taste_tube/global_data/order/address.dart';
 import 'package:taste_tube/global_data/product/category.dart';
 import 'package:taste_tube/global_data/product/product.dart';
 import 'package:taste_tube/feature/shop/domain/shop_repo.dart';
@@ -21,8 +22,9 @@ Map<Category, List<Product>> _categorizeProducts(List<Product> products) {
 abstract class SingleShopState {
   final Map<Category, List<Product>> products;
   final String? message;
+  final Address? shopAddress;
 
-  const SingleShopState(this.products, {this.message});
+  const SingleShopState(this.products, {this.shopAddress, this.message});
 
   String get shopImage =>
       products.values.isNotEmpty ? products.values.first.first.userImage : '';
@@ -37,17 +39,17 @@ class SingleShopInitial extends SingleShopState {
 }
 
 class SingleShopLoading extends SingleShopState {
-  const SingleShopLoading(super.products);
+  const SingleShopLoading(super.products, {super.shopAddress});
 }
 
 class SingleShopLoaded extends SingleShopState {
-  const SingleShopLoaded(super.products);
+  const SingleShopLoaded(super.products, {super.shopAddress});
 }
 
 class SingleShopError extends SingleShopState {
   final String error;
 
-  const SingleShopError(super.products, this.error) : super(message: error);
+  const SingleShopError(super.products, this.error, {super.shopAddress});
 }
 
 class SingleShopCubit extends Cubit<SingleShopState> {
@@ -65,29 +67,45 @@ class SingleShopCubit extends Cubit<SingleShopState> {
       result.fold(
         (error) => emit(SingleShopError(
           state.products,
+          shopAddress: state.shopAddress,
           error.message ?? 'Error fetching recommended products',
         )),
-        (products) => emit(SingleShopLoaded(_categorizeProducts(products))),
+        (response) => emit(SingleShopLoaded(
+          _categorizeProducts(response.products),
+          shopAddress: response.shopAddress,
+        )),
       );
     } catch (e) {
-      emit(SingleShopError(state.products, e.toString()));
+      emit(SingleShopError(
+        state.products,
+        shopAddress: state.shopAddress,
+        e.toString(),
+      ));
     }
   }
 
   Future<void> searchProducts(String keyword) async {
-    emit(SingleShopLoading(state.products));
+    emit(SingleShopLoading(state.products, shopAddress: state.shopAddress));
     try {
       final result =
           await shopRepository.searchSingleShopProducts(shopId, keyword);
       result.fold(
         (error) => emit(SingleShopError(
           state.products,
+          shopAddress: state.shopAddress,
           error.message ?? 'Error searching products',
         )),
-        (products) => emit(SingleShopLoaded(_categorizeProducts(products))),
+        (products) => emit(SingleShopLoaded(
+          _categorizeProducts(products),
+          shopAddress: state.shopAddress,
+        )),
       );
     } catch (e) {
-      emit(SingleShopError(state.products, e.toString()));
+      emit(SingleShopError(
+        state.products,
+        shopAddress: state.shopAddress,
+        e.toString(),
+      ));
     }
   }
 }

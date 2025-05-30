@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:maps_launcher/maps_launcher.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/global_data/product/product.dart';
 import 'package:taste_tube/global_data/product/category.dart';
@@ -44,39 +45,70 @@ class _SingleShopPageState extends State<SingleShopPage> {
               return Row(
                 children: [
                   CircleAvatar(
-                    radius: 20,
+                    radius: 18,
                     foregroundImage: NetworkImage(state.shopImage),
                   ),
-                  const SizedBox(width: 10),
-                  Text(
-                    state.shopName,
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  if (state.shopPhone != null &&
-                      state.shopPhone!.isNotEmpty) ...[
-                    const SizedBox(width: 30),
-                    GestureDetector(
-                      onTap: () async {
-                        await makePhoneCall(state.shopPhone!);
-                      },
-                      child: Text(
-                        'Hotline: ${state.shopPhone}',
-                        style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey),
-                        overflow: TextOverflow.ellipsis,
+                  const SizedBox(width: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            state.shopName,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          if (state.shopPhone != null &&
+                              state.shopPhone!.isNotEmpty)
+                            Text(
+                              'Hotline: ${state.shopPhone}',
+                              style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                        ],
                       ),
-                    ),
-                  ]
+                      const SizedBox(height: 4),
+                      if (state.shopAddress != null)
+                        Text(
+                          state.shopAddress!.value,
+                          style:
+                              const TextStyle(fontSize: 14, color: Colors.grey),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () async {
+                          await makePhoneCall(state.shopPhone!);
+                        },
+                        icon: Icon(Icons.phone),
+                      ),
+                      const SizedBox(width: 4),
+                      IconButton(
+                        onPressed: () async {
+                          await MapsLauncher.launchQuery(
+                              state.shopAddress!.value);
+                        },
+                        icon: Icon(Icons.location_pin),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(width: 4),
                 ],
               );
             },
           ),
-          actions: const [CartButton()],
+          actions: [CartButton()],
         ),
         body: BlocListener<SingleShopCubit, SingleShopState>(
             listenWhen: (previous, current) => current is SingleShopError,
