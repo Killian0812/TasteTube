@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:maps_launcher/maps_launcher.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/feature/profile/view/profile_cubit.dart';
@@ -278,36 +279,78 @@ class SingleShopProductPage extends StatelessWidget {
         onTap: () {
           context.push('/user/${product.userId}');
         },
-        child: Row(children: [
-          CircleAvatar(
-            backgroundImage: NetworkImage(product.userImage),
-            radius: 24,
-          ),
-          const SizedBox(width: 8),
-          Text(
-            product.username,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          if (product.userPhone != null && product.userPhone!.isNotEmpty) ...[
-            const SizedBox(width: 30),
-            GestureDetector(
-              onTap: () async {
-                await makePhoneCall(product.userPhone!);
-              },
-              child: Text(
-                'Hotline: ${product.userPhone}',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  backgroundImage: NetworkImage(product.userImage),
+                  radius: 24,
                 ),
-              ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        product.username,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          if (product.userPhone != null &&
+                              product.userPhone!.isNotEmpty) ...[
+                            GestureDetector(
+                              onTap: () async {
+                                await makePhoneCall(product.userPhone!);
+                              },
+                              child: Text(
+                                'Hotline: ${product.userPhone}',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                          ],
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
+            if (product.shopAddress != null)
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: () async {
+                      await MapsLauncher.launchQuery(
+                          product.shopAddress!.value);
+                    },
+                    icon: Icon(Icons.location_pin, size: 25),
+                  ),
+                  Expanded(
+                    child: Text(
+                      product.shopAddress!.value,
+                      style: const TextStyle(
+                        fontSize: 16,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
           ],
-        ]),
+        ),
       ),
     );
   }

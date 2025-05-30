@@ -186,6 +186,22 @@ class _ShopTabState extends State<ShopTab> {
                                     ),
                                   ],
                                 ),
+                                if (product.shopAddress != null)
+                                  Row(
+                                    children: [
+                                      Icon(Icons.location_pin,
+                                          color: Colors.grey, size: 15),
+                                      Expanded(
+                                        child: Text(
+                                          " ${product.shopAddress!.value}",
+                                          style: const TextStyle(
+                                              fontSize: 12, color: Colors.grey),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
