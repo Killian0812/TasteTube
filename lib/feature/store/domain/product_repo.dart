@@ -102,6 +102,7 @@ class ProductRepository {
     int quantity,
     String categoryId,
     List<XFile> images,
+    int? prepTime,
   ) async {
     try {
       final List<MultipartFile> files = [];
@@ -127,6 +128,7 @@ class ProductRepository {
         'quantity': quantity,
         'category': categoryId,
         'images': files,
+        'prepTime': prepTime,
       });
 
       final response = await http.post(Api.productApi, data: formData);
@@ -149,6 +151,7 @@ class ProductRepository {
     int? quantity,
     String? categoryId,
     List<XFile>? newImages,
+    int? prepTime,
   ) async {
     try {
       FormData formData = FormData.fromMap({
@@ -159,6 +162,7 @@ class ProductRepository {
         'description': description,
         'quantity': quantity,
         'category': categoryId,
+        'prepTime': prepTime,
         if (newImages != null)
           'images': newImages
               .map((image) => MultipartFile.fromFileSync(image.path))

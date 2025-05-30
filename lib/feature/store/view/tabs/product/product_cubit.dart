@@ -1,4 +1,3 @@
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:image_picker/image_picker.dart';
@@ -92,15 +91,16 @@ class ProductCubit extends Cubit<ProductState> {
     String categoryId,
     List<XFile> images,
     Product? product,
+    int? prepTime,
   ) async {
     try {
       emit(ProductLoading(state.categorizedProducts));
       bool isNew = product == null;
       final Either<ApiError, Product> result = isNew
           ? await productRepository.addProduct(name, cost, currency, ship,
-              description, quantity, categoryId, images)
+              description, quantity, categoryId, images, prepTime)
           : await productRepository.updateProduct(product, name, cost, currency,
-              ship, description, quantity, categoryId, images);
+              ship, description, quantity, categoryId, images, prepTime);
       bool success = false;
       result.fold(
         (error) => emit(CreateProductError(state.categorizedProducts,

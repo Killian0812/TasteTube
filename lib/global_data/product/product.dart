@@ -15,6 +15,7 @@ class Product {
   final List<ImageData> images;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final int? prepTime;
 
   Product({
     required this.id,
@@ -33,6 +34,7 @@ class Product {
     required this.images,
     required this.createdAt,
     required this.updatedAt,
+    this.prepTime,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -55,6 +57,7 @@ class Product {
           .toList(),
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
+      prepTime: json['prepTime'] as int?,
     );
   }
 }

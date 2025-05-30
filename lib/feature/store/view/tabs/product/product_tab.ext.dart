@@ -4,11 +4,12 @@ class CreateOrEditProductPage extends StatefulWidget {
   final ProductCubit productCubit;
   final CategoryCubit categoryCubit;
   final Product? product;
-  const CreateOrEditProductPage(
-      {super.key,
-      required this.categoryCubit,
-      required this.productCubit,
-      this.product});
+  const CreateOrEditProductPage({
+    super.key,
+    required this.categoryCubit,
+    required this.productCubit,
+    this.product,
+  });
 
   @override
   State<CreateOrEditProductPage> createState() =>
@@ -22,6 +23,7 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
   late TextEditingController costController;
   late TextEditingController descriptionController;
   late TextEditingController quantityController;
+  late TextEditingController prepTimeController;
   late String selectedCurrency;
   late String? selectedCategory;
   List<XFile> selectedImages = [];
@@ -34,10 +36,22 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
     descriptionController = TextEditingController(text: product?.description);
     quantityController =
         TextEditingController(text: product?.quantity.toString() ?? '0');
+    prepTimeController =
+        TextEditingController(text: product?.prepTime?.toString());
     selectedCurrency = product?.currency ?? "VND";
     selectedCategory = product?.categoryId;
     ship = product?.ship ?? true;
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    costController.dispose();
+    descriptionController.dispose();
+    quantityController.dispose();
+    prepTimeController.dispose(); // Dispose new controller
+    super.dispose();
   }
 
   @override
@@ -111,7 +125,9 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
                 keyboardType:
                     const TextInputType.numberWithOptions(decimal: true),
                 decoration: InputDecoration(
-                    labelText: 'Cost', suffixText: UserDataUtil.getCurrency()),
+                  labelText: 'Cost',
+                  suffixText: UserDataUtil.getCurrency(),
+                ),
               ),
               const SizedBox(height: 10),
               TextField(
@@ -123,6 +139,15 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
                 controller: quantityController,
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(labelText: 'Quantity'),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: prepTimeController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Preparation Time (minutes)',
+                  hintText: 'Optional',
+                ),
               ),
               const SizedBox(height: 20),
               DropdownButton<String>(
@@ -174,9 +199,10 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
                     textBuilder: (value) => value
                         ? const Center(
                             child: Text(
-                            'Yes',
-                            style: TextStyle(color: Colors.white),
-                          ))
+                              'Yes',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          )
                         : const Center(child: Text('No')),
                   ),
                 ],
@@ -196,6 +222,8 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
                           descriptionController.text.trim();
                       final int quantity =
                           int.tryParse(quantityController.text) ?? 0;
+                      final int? prepTime =
+                          int.tryParse(prepTimeController.text);
 
                       if (name.isNotEmpty &&
                           cost > 0 &&
@@ -211,6 +239,7 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
                           selectedCategory!,
                           selectedImages,
                           product,
+                          prepTime,
                         );
                         if (success && context.mounted) {
                           Navigator.of(context).pop();
@@ -225,7 +254,7 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
                     },
                   );
                 },
-              )
+              ),
             ],
           ),
         ),
@@ -281,7 +310,9 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
                           return;
                         }
                         bool isDeleted = await cubit.deleteSingleProductImage(
-                            product!.id, product!.images[index].filename);
+                          product!.id,
+                          product!.images[index].filename,
+                        );
                         if (isDeleted) {
                           setState(() {
                             product!.images.removeAt(index);
@@ -334,20 +365,21 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
                 key: ValueKey(selectedImages[index]),
                 children: [
                   Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: kIsWeb
-                          ? Image.network(
-                              selectedImages[index].path,
-                              width: 100,
-                              height: 100,
-                              fit: BoxFit.cover,
-                            )
-                          : Image.file(
-                              File(selectedImages[index].path),
-                              width: 100,
-                              height: 100,
-                              fit: BoxFit.cover,
-                            )),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: kIsWeb
+                        ? Image.network(
+                            selectedImages[index].path,
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.file(
+                            File(selectedImages[index].path),
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                          ),
+                  ),
                   Positioned(
                     right: 0,
                     top: 0,
