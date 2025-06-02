@@ -57,9 +57,7 @@ class _LoginPhoneTabState extends State<LoginPhoneTab> {
 
             final authData = state.authData;
             if (authData.role.isNotEmpty) {
-              if (authData.role == 'ADMIN') {
-                context.go('/dashboard');
-              } else if (authData.role == 'RESTAURANT') {
+              if (authData.role == 'RESTAURANT') {
                 context.go('/store');
               } else {
                 context.go('/');

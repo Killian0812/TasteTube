@@ -26,7 +26,7 @@ class _AdminInitialPageState extends State<AdminInitialPage> {
               context.go(widget.redirect!);
               return;
             }
-            context.go('/dashboard');
+            context.go('/');
           } else if (state is Unauthenticated) {
             context.go('/login');
           }

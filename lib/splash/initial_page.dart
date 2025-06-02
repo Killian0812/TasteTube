@@ -34,9 +34,7 @@ class _InitialPageState extends State<InitialPage> {
               return;
             }
             String redirect;
-            if (state.data.role == 'ADMIN') {
-              redirect = '/dashboard';
-            } else if (state.data.role == 'RESTAURANT') {
+            if (state.data.role == 'RESTAURANT') {
               redirect = '/store';
             } else {
               redirect = '/';

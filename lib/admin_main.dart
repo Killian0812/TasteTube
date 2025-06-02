@@ -96,6 +96,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TasteTubeProvider(
+      isAdmin: true,
       child: AnimatedBuilder(
         animation: getIt<AppSettings>(),
         builder: (context, snapshot) {

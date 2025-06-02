@@ -93,9 +93,7 @@ class LoginEmailTab extends StatelessWidget {
 
           final response = state.response!;
           if (response.role.isNotEmpty) {
-            if (response.role == 'ADMIN') {
-              context.go('/dashboard');
-            } else if (response.role == 'RESTAURANT') {
+            if (response.role == 'RESTAURANT') {
               context.go('/store');
             } else {
               context.go('/');
