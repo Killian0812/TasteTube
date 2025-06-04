@@ -53,6 +53,7 @@ class PaymentSettingTab extends StatelessWidget {
                                   value: state.selectedCurrency,
                                   items: ['USD', 'VND'].map((value) {
                                     return DropdownMenuItem<String>(
+                                      key: Key(value),
                                       value: value,
                                       child: Text(value),
                                     );
