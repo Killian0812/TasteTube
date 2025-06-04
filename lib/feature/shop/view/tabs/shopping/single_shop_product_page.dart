@@ -500,8 +500,8 @@ class SingleShopProductPage extends StatelessWidget {
                           },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: isCurrentPage
-                          ? CommonColor.activeBgColor
-                          : Colors.grey[300],
+                          ? Colors.grey[300]
+                          : CommonColor.activeBgColor,
                       foregroundColor:
                           isCurrentPage ? Colors.white : Colors.black,
                       minimumSize: Size(40, 40),
