@@ -169,8 +169,9 @@ class ProductRepository {
         'quantity': quantity,
         'category': categoryId,
         'prepTime': prepTime,
-        if (sizes != null) 'sizes': sizes.map((e) => e.toJson()),
-        if (toppings != null) 'toppings': toppings.map((e) => e.toJson()),
+        if (sizes != null) 'sizes': sizes.map((e) => e.toJson()).toList(),
+        if (toppings != null)
+          'toppings': toppings.map((e) => e.toJson()).toList(),
         if (newImages != null)
           'images': newImages
               .map((image) => MultipartFile.fromFileSync(image.path))

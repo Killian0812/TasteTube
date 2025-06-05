@@ -126,12 +126,12 @@ class SizeOption {
 class ToppingOption {
   final String name;
   final double extraCost;
-  final bool isAvailable;
+  final bool? isAvailable;
 
   ToppingOption({
     required this.name,
     required this.extraCost,
-    required this.isAvailable,
+    this.isAvailable,
   });
 
   factory ToppingOption.fromJson(Map<String, dynamic> json) {
@@ -146,7 +146,7 @@ class ToppingOption {
     return {
       'name': name,
       'extraCost': extraCost,
-      'isAvailable': isAvailable,
+      'isAvailable': isAvailable ?? true,
     };
   }
 }

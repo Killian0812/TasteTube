@@ -37,10 +37,22 @@ class ProductError extends ProductState {
   ProductError(super.categorizedProducts, this.message);
 }
 
-class CreateProductError extends ProductState {
+class ProductDeleted extends ProductState {
   final String message;
 
-  CreateProductError(super.categorizedProducts, this.message);
+  ProductDeleted(super.categorizedProducts, this.message);
+}
+
+class CreateOrUpdateProductError extends ProductState {
+  final String message;
+
+  CreateOrUpdateProductError(super.categorizedProducts, this.message);
+}
+
+class CreateOrUpdateProductSuccess extends ProductState {
+  final String message;
+
+  CreateOrUpdateProductSuccess(super.categorizedProducts, this.message);
 }
 
 Map<Category, List<Product>> _categorizeProducts(List<Product> products) {
@@ -81,7 +93,7 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
-  Future<bool> addOrEditProduct({
+  Future<void> addOrEditProduct({
     required String name,
     required double cost,
     required String currency,
@@ -128,12 +140,10 @@ class ProductCubit extends Cubit<ProductState> {
               toppings: toppings,
             );
 
-      bool success = false;
       result.fold(
-        (error) => emit(CreateProductError(state.categorizedProducts,
+        (error) => emit(CreateOrUpdateProductError(state.categorizedProducts,
             error.message ?? 'Error creating or updating product')),
         (newProduct) {
-          success = true;
           final updatedProducts = [
             ...state.categorizedProducts.values.expand((list) => list),
           ];
@@ -147,40 +157,34 @@ class ProductCubit extends Cubit<ProductState> {
             }
           }
           final categorized = _categorizeProducts(updatedProducts);
-          emit(ProductSuccess(
+          emit(CreateOrUpdateProductSuccess(
               categorized, isNew ? "New product added" : "Product updated"));
         },
       );
-      return success;
     } catch (e) {
-      emit(CreateProductError(state.categorizedProducts, e.toString()));
-      return false;
+      emit(CreateOrUpdateProductError(state.categorizedProducts, e.toString()));
     }
   }
 
-  Future<bool> deleteProduct(Product deleteProduct) async {
+  Future<void> deleteProduct(Product deleteProduct) async {
     try {
       final Either<ApiError, void> result =
           await productRepository.deleteProduct(deleteProduct.id);
-      bool isDeleted = false;
       result.fold(
         (error) => emit(ProductError(state.categorizedProducts,
             error.message ?? 'Error deleting product')),
         (_) {
-          isDeleted = true;
           final updatedProducts = state.categorizedProducts.values
               .expand((list) => list)
               .where((product) => product.id != deleteProduct.id)
               .toList();
           final categorized = _categorizeProducts(updatedProducts);
-          emit(ProductSuccess(
+          emit(ProductDeleted(
               categorized, 'Deleted product ${deleteProduct.name}'));
         },
       );
-      return isDeleted;
     } catch (e) {
       emit(ProductError(state.categorizedProducts, e.toString()));
-      return false;
     }
   }
 

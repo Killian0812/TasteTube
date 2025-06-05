@@ -24,9 +24,15 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
   late TextEditingController descriptionController;
   late TextEditingController quantityController;
   late TextEditingController prepTimeController;
+  late TextEditingController sizeNameController;
+  late TextEditingController sizePriceController;
+  late TextEditingController toppingNameController;
+  late TextEditingController toppingPriceController;
   late String selectedCurrency;
   late String? selectedCategory;
   List<XFile> selectedImages = [];
+  List<SizeOption> sizes = [];
+  List<ToppingOption> toppings = [];
   late bool ship;
 
   @override
@@ -38,9 +44,15 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
         TextEditingController(text: product?.quantity.toString() ?? '0');
     prepTimeController =
         TextEditingController(text: product?.prepTime?.toString());
+    sizeNameController = TextEditingController();
+    sizePriceController = TextEditingController();
+    toppingNameController = TextEditingController();
+    toppingPriceController = TextEditingController();
     selectedCurrency = product?.currency ?? "VND";
     selectedCategory = product?.categoryId;
     ship = product?.ship ?? true;
+    sizes = product?.sizes ?? [];
+    toppings = product?.toppings ?? [];
     super.initState();
   }
 
@@ -50,7 +62,11 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
     costController.dispose();
     descriptionController.dispose();
     quantityController.dispose();
-    prepTimeController.dispose(); // Dispose new controller
+    prepTimeController.dispose();
+    sizeNameController.dispose();
+    sizePriceController.dispose();
+    toppingNameController.dispose();
+    toppingPriceController.dispose();
     super.dispose();
   }
 
@@ -82,27 +98,76 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
                   if (confirmed != true) {
                     return;
                   }
-                  bool isDeleted =
-                      await widget.productCubit.deleteProduct(product!);
-                  if (isDeleted && context.mounted) {
-                    Navigator.of(context).pop();
-                  }
+                  widget.productCubit.deleteProduct(product!);
                 },
               ),
             ),
         ],
       ),
+      bottomNavigationBar: Container(
+        margin: const EdgeInsets.only(bottom: bottomNavBarHeight + 10),
+        child: BlocBuilder<ProductCubit, ProductState>(
+          bloc: widget.productCubit,
+          builder: (context, state) {
+            return CommonButton(
+              text: isEditing ? 'Update' : 'Create',
+              isLoading: (state is ProductLoading),
+              onPressed: () async {
+                final String name = nameController.text.trim();
+                final double cost = double.tryParse(costController.text) ?? 0;
+                final String description = descriptionController.text.trim();
+                final int quantity = int.tryParse(quantityController.text) ?? 0;
+                final int? prepTime = int.tryParse(prepTimeController.text);
+
+                if (name.isNotEmpty && cost > 0 && selectedCategory != null) {
+                  widget.productCubit.addOrEditProduct(
+                    name: name,
+                    cost: cost,
+                    currency: selectedCurrency,
+                    ship: ship,
+                    description: description,
+                    quantity: quantity,
+                    categoryId: selectedCategory!,
+                    images: selectedImages,
+                    prepTime: prepTime,
+                    sizes: sizes,
+                    toppings: toppings,
+                    product: product,
+                  );
+                } else {
+                  ToastService.showToast(
+                    context,
+                    'The product name, cost, and category are required',
+                    ToastType.warning,
+                  );
+                }
+              },
+            );
+          },
+        ),
+      ),
       body: BlocListener<ProductCubit, ProductState>(
         bloc: widget.productCubit,
         listener: (context, state) {
-          if (state is CreateProductError) {
+          if (state is CreateOrUpdateProductError) {
             ToastService.showToast(context, state.message, ToastType.warning);
+            return;
+          }
+          if (state is ProductDeleted) {
+            ToastService.showToast(context, state.message, ToastType.success);
+            Navigator.of(context).pop();
+            return;
+          }
+          if (state is CreateOrUpdateProductSuccess) {
+            ToastService.showToast(context, state.message, ToastType.success);
+            Navigator.of(context).pop();
             return;
           }
         },
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.fromLTRB(16, 16, 16, appBarHeight + 16),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextField(
                 controller: nameController,
@@ -208,53 +273,166 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
                 ],
               ),
               const SizedBox(height: 20),
-              BlocBuilder<ProductCubit, ProductState>(
-                bloc: widget.productCubit,
-                builder: (context, state) {
-                  return CommonButton(
-                    text: isEditing ? 'Update' : 'Create',
-                    isLoading: (state is ProductLoading),
-                    onPressed: () async {
-                      final String name = nameController.text.trim();
-                      final double cost =
-                          double.tryParse(costController.text) ?? 0;
-                      final String description =
-                          descriptionController.text.trim();
-                      final int quantity =
-                          int.tryParse(quantityController.text) ?? 0;
-                      final int? prepTime =
-                          int.tryParse(prepTimeController.text);
 
-                      if (name.isNotEmpty &&
-                          cost > 0 &&
-                          selectedCategory != null) {
-                        bool success =
-                            await widget.productCubit.addOrEditProduct(
-                          name: name,
-                          cost: cost,
-                          currency: selectedCurrency,
-                          ship: ship,
-                          description: description,
-                          quantity: quantity,
-                          categoryId: selectedCategory!,
-                          images: selectedImages,
-                          prepTime: prepTime,
-                          product: product,
-                        );
-                        if (success && context.mounted) {
-                          Navigator.of(context).pop();
-                        }
+              // Size Options Section
+              const Text(
+                'Size Options',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: sizeNameController,
+                      decoration: const InputDecoration(labelText: 'Size Name'),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Tooltip(
+                      message:
+                          'Price can be negative (e.g., -10000 VND for smaller sizes)',
+                      child: TextField(
+                        controller: sizePriceController,
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true, signed: true),
+                        decoration: InputDecoration(
+                          labelText: 'Extra Cost',
+                          hintText: 'Can be negative (e.g., -10000)',
+                          suffixText: UserDataUtil.getCurrency(),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      final name = sizeNameController.text.trim();
+                      final price =
+                          double.tryParse(sizePriceController.text) ?? 0;
+                      if (name.isNotEmpty) {
+                        setState(() {
+                          sizes.add(SizeOption(name: name, extraCost: price));
+                          sizeNameController.clear();
+                          sizePriceController.clear();
+                        });
                       } else {
                         ToastService.showToast(
                           context,
-                          'The product name, cost, and category are required',
+                          'Size name and valid price are required',
                           ToastType.warning,
                         );
                       }
                     },
-                  );
-                },
+                    child: const Text('Add Size'),
+                  ),
+                ],
               ),
+              const SizedBox(height: 10),
+              if (sizes.isNotEmpty)
+                SizedBox(
+                  height: 60,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: sizes.length,
+                    itemBuilder: (context, index) {
+                      final size = sizes[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        child: Chip(
+                          label: Text('${size.name}: ${size.extraCost}'),
+                          deleteIcon: const Icon(Icons.close, size: 18),
+                          onDeleted: () {
+                            setState(() {
+                              sizes.removeAt(index);
+                            });
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              const SizedBox(height: 20),
+
+              // Topping Options Section
+              const Text(
+                'Topping Options',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: toppingNameController,
+                      decoration:
+                          const InputDecoration(labelText: 'Topping Name'),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: TextField(
+                      controller: toppingPriceController,
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      decoration: InputDecoration(
+                        labelText: 'Extra Cost',
+                        suffixText: UserDataUtil.getCurrency(),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      final name = toppingNameController.text.trim();
+                      final price =
+                          double.tryParse(toppingPriceController.text) ?? 0;
+                      if (name.isNotEmpty && price >= 0) {
+                        setState(() {
+                          toppings
+                              .add(ToppingOption(name: name, extraCost: price));
+                          toppingNameController.clear();
+                          toppingPriceController.clear();
+                        });
+                      } else {
+                        ToastService.showToast(
+                          context,
+                          'Topping name and valid price are required',
+                          ToastType.warning,
+                        );
+                      }
+                    },
+                    child: const Text('Add Topping'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              if (toppings.isNotEmpty)
+                SizedBox(
+                  height: 60,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: toppings.length,
+                    itemBuilder: (context, index) {
+                      final topping = toppings[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        child: Chip(
+                          label: Text('${topping.name}: ${topping.extraCost}'),
+                          deleteIcon: const Icon(Icons.close, size: 18),
+                          onDeleted: () {
+                            setState(() {
+                              toppings.removeAt(index);
+                            });
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+              const SizedBox(height: 20),
             ],
           ),
         ),
