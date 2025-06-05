@@ -81,30 +81,57 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
-  Future<bool> addOrEditProduct(
-    String name,
-    double cost,
-    String currency,
-    bool ship,
-    String description,
-    int quantity,
-    String categoryId,
-    List<XFile> images,
+  Future<bool> addOrEditProduct({
+    required String name,
+    required double cost,
+    required String currency,
+    required bool ship,
+    required String description,
+    required int quantity,
+    required String categoryId,
+    required List<XFile> images,
+    required int? prepTime,
+    List<SizeOption> sizes = const [],
+    List<ToppingOption> toppings = const [],
     Product? product,
-    int? prepTime,
-  ) async {
+  }) async {
     try {
       emit(ProductLoading(state.categorizedProducts));
       bool isNew = product == null;
+
       final Either<ApiError, Product> result = isNew
-          ? await productRepository.addProduct(name, cost, currency, ship,
-              description, quantity, categoryId, images, prepTime)
-          : await productRepository.updateProduct(product, name, cost, currency,
-              ship, description, quantity, categoryId, images, prepTime);
+          ? await productRepository.addProduct(
+              name: name,
+              cost: cost,
+              currency: currency,
+              ship: ship,
+              description: description,
+              quantity: quantity,
+              categoryId: categoryId,
+              images: images,
+              prepTime: prepTime,
+              sizes: sizes,
+              toppings: toppings,
+            )
+          : await productRepository.updateProduct(
+              product,
+              name: name,
+              cost: cost,
+              currency: currency,
+              ship: ship,
+              description: description,
+              quantity: quantity,
+              categoryId: categoryId,
+              newImages: images,
+              prepTime: prepTime,
+              sizes: sizes,
+              toppings: toppings,
+            );
+
       bool success = false;
       result.fold(
         (error) => emit(CreateProductError(state.categorizedProducts,
-            error.message ?? 'Error creating new product')),
+            error.message ?? 'Error creating or updating product')),
         (newProduct) {
           success = true;
           final updatedProducts = [

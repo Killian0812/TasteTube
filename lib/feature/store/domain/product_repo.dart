@@ -93,17 +93,19 @@ class ProductRepository {
     }
   }
 
-  Future<Either<ApiError, Product>> addProduct(
-    String name,
-    double cost,
-    String currency,
-    bool ship,
-    String description,
-    int quantity,
-    String categoryId,
-    List<XFile> images,
+  Future<Either<ApiError, Product>> addProduct({
+    required String name,
+    required double cost,
+    required String currency,
+    required bool ship,
+    required String description,
+    required int quantity,
+    required String categoryId,
+    required List<XFile> images,
     int? prepTime,
-  ) async {
+    List<SizeOption> sizes = const [],
+    List<ToppingOption> toppings = const [],
+  }) async {
     try {
       final List<MultipartFile> files = [];
       for (var image in images) {
@@ -129,6 +131,8 @@ class ProductRepository {
         'category': categoryId,
         'images': files,
         'prepTime': prepTime,
+        'sizes': sizes.map((e) => e.toJson()),
+        'toppings': toppings.map((e) => e.toJson()),
       });
 
       final response = await http.post(Api.productApi, data: formData);
@@ -142,7 +146,7 @@ class ProductRepository {
   }
 
   Future<Either<ApiError, Product>> updateProduct(
-    Product product,
+    Product product, {
     String? name,
     double? cost,
     String? currency,
@@ -152,7 +156,9 @@ class ProductRepository {
     String? categoryId,
     List<XFile>? newImages,
     int? prepTime,
-  ) async {
+    List<SizeOption>? sizes,
+    List<ToppingOption>? toppings,
+  }) async {
     try {
       FormData formData = FormData.fromMap({
         'name': name,
@@ -163,6 +169,8 @@ class ProductRepository {
         'quantity': quantity,
         'category': categoryId,
         'prepTime': prepTime,
+        if (sizes != null) 'sizes': sizes.map((e) => e.toJson()),
+        if (toppings != null) 'toppings': toppings.map((e) => e.toJson()),
         if (newImages != null)
           'images': newImages
               .map((image) => MultipartFile.fromFileSync(image.path))

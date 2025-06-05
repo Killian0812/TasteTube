@@ -230,16 +230,16 @@ class _CreateOrEditProductPageState extends State<CreateOrEditProductPage> {
                           selectedCategory != null) {
                         bool success =
                             await widget.productCubit.addOrEditProduct(
-                          name,
-                          cost,
-                          selectedCurrency,
-                          ship,
-                          description,
-                          quantity,
-                          selectedCategory!,
-                          selectedImages,
-                          product,
-                          prepTime,
+                          name: name,
+                          cost: cost,
+                          currency: selectedCurrency,
+                          ship: ship,
+                          description: description,
+                          quantity: quantity,
+                          categoryId: selectedCategory!,
+                          images: selectedImages,
+                          prepTime: prepTime,
+                          product: product,
                         );
                         if (success && context.mounted) {
                           Navigator.of(context).pop();
