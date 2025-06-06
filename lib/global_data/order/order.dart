@@ -6,16 +6,27 @@ import 'package:taste_tube/global_data/user/user_basic.dart';
 class OrderProduct {
   final Product product;
   final int quantity;
+  final String? size;
+  final List<ToppingOption> toppings;
+  final double? cost;
 
   const OrderProduct({
     required this.product,
     required this.quantity,
+    this.size,
+    required this.toppings,
+    this.cost,
   });
 
   factory OrderProduct.fromJson(Map<String, dynamic> json) {
     return OrderProduct(
       product: Product.fromJson(json['product']),
       quantity: json['quantity'],
+      size: json['size'] as String?,
+      toppings: (json['toppings'] as List<dynamic>? ?? [])
+          .map((e) => ToppingOption.fromJson(e))
+          .toList(),
+      cost: (json['cost'] as num?)?.toDouble(),
     );
   }
 }

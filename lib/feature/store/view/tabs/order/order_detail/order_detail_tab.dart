@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -6,6 +7,7 @@ import 'package:taste_tube/common/constant.dart';
 import 'package:taste_tube/common/dialog.dart';
 import 'package:taste_tube/global_bloc/order/order_cubit.dart';
 import 'package:taste_tube/global_data/order/order.dart';
+import 'package:taste_tube/global_data/product/product.dart';
 import 'package:taste_tube/utils/currency.util.dart';
 import 'package:taste_tube/utils/datetime.util.dart';
 import 'package:taste_tube/utils/user_data.util.dart';
@@ -216,8 +218,21 @@ class OrderDetailTab extends StatelessWidget {
                               fit: BoxFit.cover,
                             ),
                             title: Text(product.name),
-                            trailing: Text(CurrencyUtil.amountWithCurrency(
-                                product.cost, product.currency)),
+                            trailing: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (item.size != null)
+                                  Text(
+                                      'Size: ${item.size!} - ${CurrencyUtil.amountWithCurrency(item.product.getSizeCostWithBaseIncluded(item.size!), product.currency)}'),
+                                if (item.toppings.isNotEmpty)
+                                  Text(
+                                    'Topping: ${item.toppings.map((e) => e.name).join(', ')} - ${CurrencyUtil.amountWithCurrency(item.toppings.map((e) => e.extraCost).sum, product.currency)}',
+                                  ),
+                                Text(
+                                    'Subtotal: ${CurrencyUtil.amountWithCurrency(item.cost ?? product.cost, product.currency)}')
+                              ],
+                            ),
                             subtitle: Text('Quantity: ${item.quantity}'),
                           );
                         },

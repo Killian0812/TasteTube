@@ -149,11 +149,21 @@ class CustomerOrderDetailPage extends StatelessWidget {
                                             fit: BoxFit.cover,
                                           ),
                                           title: Text(product.name),
-                                          trailing: Text(
-                                            CurrencyUtil.amountWithCurrency(
-                                              item.quantity * product.cost,
-                                              product.currency,
-                                            ),
+                                          trailing: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.end,
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              if (item.size != null)
+                                                Text(
+                                                    'Size: ${item.size!} - ${CurrencyUtil.amountWithCurrency(item.product.getSizeCostWithBaseIncluded(item.size!), product.currency)}'),
+                                              if (item.toppings.isNotEmpty)
+                                                Text(
+                                                  'Topping: ${item.toppings.map((e) => e.name).join(', ')} - ${CurrencyUtil.amountWithCurrency(item.toppings.map((e) => e.extraCost).sum, product.currency)}',
+                                                ),
+                                              Text(
+                                                  'Subtotal: ${CurrencyUtil.amountWithCurrency(item.cost ?? product.cost, product.currency)}')
+                                            ],
                                           ),
                                           subtitle: Text(
                                               'Quantity: ${item.quantity}'),
