@@ -9,6 +9,7 @@ import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/shop/view/payment/payment_page.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_data/order/cart.dart';
+import 'package:taste_tube/global_data/product/product.dart';
 import 'package:taste_tube/utils/currency.util.dart';
 
 part 'cart_page.ext.dart';

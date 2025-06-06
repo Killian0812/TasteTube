@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:collection/collection.dart';
 import 'package:taste_tube/global_data/order/address.dart';
 
 class Product {
@@ -148,5 +151,12 @@ class ToppingOption {
       'extraCost': extraCost,
       'isAvailable': isAvailable ?? true,
     };
+  }
+}
+
+extension ProductExt on Product {
+  double getSizeCostWithBaseIncluded(String name) {
+    final size = sizes.firstWhereOrNull((e) => e.name == name);
+    return size != null ? max(0.0, cost + size.extraCost) : cost;
   }
 }

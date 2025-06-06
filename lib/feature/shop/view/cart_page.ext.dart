@@ -80,14 +80,31 @@ class CartItemTile extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    CurrencyUtil.amountWithCurrency(
-                        item.product.cost, item.currency),
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
+                  if (item.size == null)
+                    Text(
+                      CurrencyUtil.amountWithCurrency(
+                          item.product.cost, item.currency),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
+                    )
+                  else
+                    Text(
+                      'Size: ${item.size!} - ${CurrencyUtil.amountWithCurrency(item.product.getSizeCostWithBaseIncluded(item.size!), item.currency)}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
                     ),
-                  ),
+                  if (item.toppings.isNotEmpty)
+                    Text(
+                      'Topping: ${item.toppings.map((e) => e.name).join(', ')} - ${CurrencyUtil.amountWithCurrency(item.toppings.map((e) => e.extraCost).sum, item.currency)}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
+                    ),
                 ],
               ),
             ),
