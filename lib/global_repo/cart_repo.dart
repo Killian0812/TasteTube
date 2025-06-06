@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/common/error.dart';
+import 'package:taste_tube/feature/shop/data/product_options.dart';
 import 'package:taste_tube/global_data/discount/discount.dart';
 import 'package:taste_tube/global_data/order/address.dart';
 import 'package:taste_tube/global_data/order/cart.dart';
@@ -26,11 +27,11 @@ class CartRepository {
   }
 
   Future<Either<ApiError, CartItem>> addToCart(
-      Product product, int quantity) async {
+      Product product, ProductOptions options) async {
     try {
       final response = await http.post(Api.addCartApi, data: {
         'productId': product.id,
-        'quantity': quantity,
+        ...options.toJson(),
       });
       final cartItem = CartItem.fromJson(response.data['cartItem']);
       return Right(cartItem);

@@ -42,6 +42,8 @@ class Cart {
 class CartItem {
   String id;
   Product product;
+  String? size;
+  List<ToppingOption> toppings;
   int quantity;
   double cost;
   String currency;
@@ -49,6 +51,8 @@ class CartItem {
   CartItem({
     required this.id,
     required this.product,
+    this.size,
+    required this.toppings,
     required this.quantity,
     required this.cost,
     required this.currency,
@@ -58,6 +62,10 @@ class CartItem {
     return CartItem(
       id: json['_id'],
       product: Product.fromJson(json['product'] as Map<String, dynamic>),
+      size: json['size'] as String?,
+      toppings: (json['toppings'] as List<dynamic>? ?? [])
+          .map((e) => ToppingOption.fromJson(e))
+          .toList(),
       quantity: json['quantity'] as int,
       cost: (json['cost'] as num).toDouble(),
       currency: json['currency'],

@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taste_tube/feature/shop/data/product_options.dart';
 import 'package:taste_tube/global_data/discount/discount.dart';
 import 'package:taste_tube/global_data/order/address.dart';
 import 'package:taste_tube/global_data/order/cart.dart';
@@ -244,11 +245,11 @@ class CartCubit extends Cubit<CartState> {
     );
   }
 
-  Future<void> addToCart(Product product, int quantity) async {
+  Future<void> addToCart(Product product, ProductOptions options) async {
     emit(CartLoading(state.cart, state.selectedItems, state.orderSummary,
         state.appliedDiscounts, state.address));
     try {
-      final result = await repository.addToCart(product, quantity);
+      final result = await repository.addToCart(product, options);
       result.fold(
         (error) => emit(CartError(
           state.cart,
@@ -395,7 +396,8 @@ class CartCubit extends Cubit<CartState> {
         state.appliedDiscounts, state.address));
   }
 
-  Future<void> addToCartAndPayImmediate(Product product, int quantity) async {
+  Future<void> addToCartAndPayImmediate(
+      Product product, ProductOptions options) async {
     emit(CartLoading(
       state.cart,
       state.selectedItems,
@@ -404,7 +406,7 @@ class CartCubit extends Cubit<CartState> {
       state.address,
     ));
     try {
-      final result = await repository.addToCart(product, quantity);
+      final result = await repository.addToCart(product, options);
       result.fold(
         (error) => emit(CartError(
           state.cart,

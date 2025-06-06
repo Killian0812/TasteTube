@@ -3,8 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/toast.dart';
+import 'package:taste_tube/feature/shop/data/product_options.dart';
 import 'package:taste_tube/feature/shop/view/payment/payment_page.dart';
-import 'package:taste_tube/feature/shop/view/quantity_dialog.dart';
+import 'package:taste_tube/feature/shop/view/product_options_dialog.dart';
 import 'package:taste_tube/feature/shop/view/tabs/shopping/single_shop_product_page.dart';
 import 'package:taste_tube/global_bloc/order/cart_cubit.dart';
 import 'package:taste_tube/global_data/product/product.dart';
@@ -184,14 +185,17 @@ class ProductItem extends StatelessWidget {
               Expanded(
                 child: ElevatedButton(
                   onPressed: () async {
-                    int? quantity = await showDialog<int>(
+                    ProductOptions? options = await showDialog<ProductOptions>(
                       context: context,
-                      builder: (context) => const QuantityInputDialog(),
+                      builder: (context) =>
+                          ProductOptionsDialog(product: product),
                     );
-
-                    if (context.mounted && quantity != null) {
-                      context.read<CartCubit>().addToCart(product, quantity);
+                    if (!context.mounted ||
+                        options == null ||
+                        options.quantity <= 0) {
+                      return;
                     }
+                    context.read<CartCubit>().addToCart(product, options);
                   },
                   style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: CommonColor.activeBgColor)),
@@ -205,16 +209,20 @@ class ProductItem extends StatelessWidget {
               Expanded(
                 child: ElevatedButton(
                   onPressed: () async {
-                    int? quantity = await showDialog<int>(
+                    ProductOptions? options = await showDialog<ProductOptions>(
                       context: context,
-                      builder: (context) => const QuantityInputDialog(),
+                      builder: (context) => ProductOptionsDialog(
+                        product: product,
+                      ),
                     );
-                    if (!context.mounted || quantity == null || quantity < 1) {
+                    if (!context.mounted ||
+                        options == null ||
+                        options.quantity <= 0) {
                       return;
                     }
                     context
                         .read<CartCubit>()
-                        .addToCartAndPayImmediate(product, quantity);
+                        .addToCartAndPayImmediate(product, options);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: CommonColor.activeBgColor,
