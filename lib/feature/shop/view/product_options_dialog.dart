@@ -1,6 +1,7 @@
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/shop/data/product_options.dart';
 import 'package:taste_tube/global_data/product/product.dart';
@@ -78,27 +79,27 @@ class _ProductOptionsDialogState extends State<ProductOptionsDialog> {
               const Text("Choose size",
                   style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-              AnimatedToggleSwitch.size(
-                current: selectedSize,
-                values: product.sizes.map((s) => s.name).toList(),
-                iconBuilder: (value) => Text(value!),
-                onChanged: (val) {
-                  final selected =
-                      product.sizes.firstWhere((s) => s.name == val);
-                  setState(() {
-                    selectedSize = val;
-                    sizeExtraCost = selected.extraCost;
-                  });
-                },
-                style: ToggleStyle(
-                  borderColor: Colors.grey,
-                  backgroundColor: Colors.grey.shade300,
-                  indicatorColor: Theme.of(context).primaryColor,
-                  indicatorBorderRadius: BorderRadius.circular(8),
+              SizedBox(
+                width: product.sizes.length * 60,
+                child: AnimatedToggleSwitch.size(
+                  current: selectedSize,
+                  values: product.sizes.map((s) => s.name).toList(),
+                  iconBuilder: (value) => Text(value!),
+                  onChanged: (val) {
+                    final selected =
+                        product.sizes.firstWhere((s) => s.name == val);
+                    setState(() {
+                      selectedSize = val;
+                      sizeExtraCost = selected.extraCost;
+                    });
+                  },
+                  style: ToggleStyle(
+                    borderRadius: BorderRadius.circular(8),
+                    borderColor: CommonColor.activeBgColor,
+                    indicatorColor: CommonColor.activeBgColor,
+                  ),
+                  animationDuration: const Duration(milliseconds: 200),
                 ),
-                height: 48,
-                spacing: 4,
-                animationDuration: const Duration(milliseconds: 200),
               ),
             ],
 
