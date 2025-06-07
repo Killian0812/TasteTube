@@ -16,7 +16,6 @@ import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/record/camera/camera_page.dart';
 import 'package:taste_tube/global_data/user/user.dart';
 import 'package:taste_tube/feature/profile/view/profile_cubit.dart';
-import 'package:taste_tube/global_data/watch/video.dart';
 import 'package:taste_tube/global_bloc/auth/auth_bloc.dart';
 import 'package:taste_tube/core/injection.dart';
 import 'package:taste_tube/core/providers.dart';
@@ -243,18 +242,12 @@ class ProfilePage extends StatelessWidget {
                         child: TabBarView(
                           children: isRestaurant
                               ? [
-                                  _buildVideosTab(
-                                    state.user!.videos.reversed.toList(),
-                                    isOwner,
-                                  ),
+                                  _buildVideosTab(isOwner),
                                   _buildReviewsTab(),
                                   if (isOwner) _buildLikedVideosTab(),
                                 ]
                               : [
-                                  _buildVideosTab(
-                                    state.user!.videos.reversed.toList(),
-                                    isOwner,
-                                  ),
+                                  _buildVideosTab(isOwner),
                                   if (isOwner) _buildLikedVideosTab(),
                                 ],
                         ),
@@ -283,58 +276,63 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildVideosTab(List<Video> videos, bool isOwner) {
-    return GridView.builder(
-      padding: const EdgeInsets.all(8.0),
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 250,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
-      ),
-      itemCount: videos.length,
-      itemBuilder: (context, index) {
-        return GestureDetector(
-          onTap: () {
-            context.push('/watch/${videos[index].id}', extra: videos);
-          },
-          child: Stack(
-            children: [
-              Image.memory(
-                base64Decode(videos[index].thumbnail ?? ''),
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: double.infinity,
-              ),
-              Positioned(
-                bottom: 5,
-                left: 5,
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.visibility,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 5),
-                    Text(
-                      videos[index].views.toString(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (isOwner)
-                Positioned(
-                  bottom: 5,
-                  right: 5,
-                  child: _buildVisibilityIcon(videos[index].visibility),
-                ),
-            ],
+  Widget _buildVideosTab(bool isOwner) {
+    return BlocBuilder<ProfileCubit, ProfileState>(
+      builder: (context, state) {
+        final videos = state.videos;
+        return GridView.builder(
+          padding: const EdgeInsets.all(8.0),
+          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: 250,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
           ),
+          itemCount: videos.length,
+          itemBuilder: (context, index) {
+            return GestureDetector(
+              onTap: () {
+                context.push('/watch/${videos[index].id}', extra: videos);
+              },
+              child: Stack(
+                children: [
+                  Image.memory(
+                    base64Decode(videos[index].thumbnail ?? ''),
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: double.infinity,
+                  ),
+                  Positioned(
+                    bottom: 5,
+                    left: 5,
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.visibility,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 5),
+                        Text(
+                          videos[index].views.toString(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (isOwner)
+                    Positioned(
+                      bottom: 5,
+                      right: 5,
+                      child: _buildVisibilityIcon(videos[index].visibility),
+                    ),
+                ],
+              ),
+            );
+          },
         );
       },
     );

@@ -23,14 +23,38 @@ class ProfileCubit extends Cubit<ProfileState> {
         emit(ProfileFailure(state.user, apiError.message!));
       },
       (user) async {
-        final likedVideos = await getLikedVideos();
-        final reviews = await getReviews(productId: productId);
         emit(ProfileSuccess(
           user,
-          likedVideos: likedVideos ?? [],
-          reviews: reviews ?? [],
+          videos: state.videos,
+          likedVideos: state.likedVideos,
+          reviews: state.reviews,
+        ));
+
+        final futures = await Future.wait([
+          getOwnedVideos(userId),
+          getLikedVideos(),
+          getReviews(productId: productId),
+        ]);
+
+        final videos = futures[0];
+        final likedVideos = futures[1];
+        final reviews = futures[2];
+
+        emit(ProfileSuccess(
+          user,
+          videos: videos ?? state.videos,
+          likedVideos: likedVideos ?? state.likedVideos,
+          reviews: reviews ?? state.reviews,
         ));
       },
+    );
+  }
+
+  Future<List<Video>?> getOwnedVideos(String userId) async {
+    final either = await repository.getOwnedVideos(userId);
+    return either.match(
+      (apiError) => null,
+      (videos) => videos,
     );
   }
 
@@ -95,27 +119,31 @@ class ProfileCubit extends Cubit<ProfileState> {
 
 abstract class ProfileState {
   final User? user;
+  final List<Video> videos;
   final List<Video> likedVideos;
   final List<Video> reviews;
+
   ProfileState(
     this.user, {
+    this.videos = const [],
     this.likedVideos = const [],
     this.reviews = const [],
   });
 }
 
 class ProfileLoading extends ProfileState {
-  ProfileLoading(super.user, {super.likedVideos, super.reviews});
+  ProfileLoading(super.user, {super.videos, super.likedVideos, super.reviews});
 }
 
 class ProfileSuccess extends ProfileState {
-  ProfileSuccess(super.user, {super.likedVideos, super.reviews});
+  ProfileSuccess(super.user, {super.videos, super.likedVideos, super.reviews});
 }
 
 class ProfileFailure extends ProfileState {
   final String message;
 
-  ProfileFailure(super.user, this.message, {super.likedVideos, super.reviews});
+  ProfileFailure(super.user, this.message,
+      {super.videos, super.likedVideos, super.reviews});
 }
 
 class PasswordCubit extends Cubit<PasswordState> {

@@ -14,6 +14,7 @@ class Api {
   // Features
   // Video
   static const videoApi = '/videos';
+  static const ownedVideoApi = '/videos/owned';
   static const likedVideoApi = '/videos/liked';
   static const reviewVideoApi = '/videos/review';
   static const singleVideoApi = '/videos/:videoId';

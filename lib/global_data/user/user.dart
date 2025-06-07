@@ -1,5 +1,3 @@
-import 'package:taste_tube/global_data/watch/video.dart';
-
 class User {
   final String id;
   final String? phone;
@@ -12,7 +10,6 @@ class User {
   final List<String> followings;
   final String? role;
   final String status;
-  final List<Video> videos; // TODO: Separate Videos from User
 
   User({
     required this.id,
@@ -26,7 +23,6 @@ class User {
     required this.followings,
     this.role,
     required this.status,
-    required this.videos,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -46,9 +42,6 @@ class User {
           .toList(),
       role: json['role'] as String?,
       status: (json['status'] as String?) ?? "ACTIVE",
-      videos: (json['videos'] as List<dynamic>)
-          .map((videoJson) => Video.fromJson(videoJson as Map<String, dynamic>))
-          .toList(),
     );
   }
 
@@ -67,7 +60,6 @@ class User {
       followings: followings,
       role: role,
       status: status,
-      videos: videos,
     );
   }
 }
