@@ -97,38 +97,40 @@ class _DiscountDialogState extends State<DiscountDialog> {
               ),
               ConstrainedBox(
                 constraints: BoxConstraints(maxHeight: screenSize.height * 0.3),
-                child: Column(
-                  children: [
-                    ...discounts.map((discount) {
-                      final applied = discountSelection[discount.id] ?? false;
-                      return CheckboxListTile(
-                        title: Text(
-                          discount.name,
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            discount.valueType == 'percentage'
-                                ? Text(
-                                    "Discount: ${discount.value.toString()}%")
-                                : Text(
-                                    "Discount: ${CurrencyUtil.amountWithCurrency(discount.value, UserDataUtil.getCurrency())}"),
-                            if (discount.minOrderAmount != null)
-                              Text(
-                                  "Min order amount: ${CurrencyUtil.amountWithCurrency(discount.minOrderAmount!, UserDataUtil.getCurrency())}"),
-                          ],
-                        ),
-                        value: applied,
-                        onChanged: (value) {
-                          setState(() {
-                            discountSelection[discount.id] = value ?? false;
-                          });
-                        },
-                      );
-                    }),
-                  ],
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      ...discounts.map((discount) {
+                        final applied = discountSelection[discount.id] ?? false;
+                        return CheckboxListTile(
+                          title: Text(
+                            discount.name,
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              discount.valueType == 'percentage'
+                                  ? Text(
+                                      "Discount: ${discount.value.toString()}%")
+                                  : Text(
+                                      "Discount: ${CurrencyUtil.amountWithCurrency(discount.value, UserDataUtil.getCurrency())}"),
+                              if (discount.minOrderAmount != null)
+                                Text(
+                                    "Min order amount: ${CurrencyUtil.amountWithCurrency(discount.minOrderAmount!, UserDataUtil.getCurrency())}"),
+                            ],
+                          ),
+                          value: applied,
+                          onChanged: (value) {
+                            setState(() {
+                              discountSelection[discount.id] = value ?? false;
+                            });
+                          },
+                        );
+                      }),
+                    ],
+                  ),
                 ),
               ),
             ],

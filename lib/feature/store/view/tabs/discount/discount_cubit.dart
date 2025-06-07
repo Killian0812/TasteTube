@@ -111,7 +111,14 @@ class DiscountCubit extends Cubit<DiscountState> {
     result.fold(
       (error) => emit(DiscountError(
           state.discounts, error.message ?? 'Error loading discounts')),
-      (discount) => emit(DiscountLoaded([...state.discounts, discount])),
+      (discount) {
+        final exists = state.discounts.any((d) => d.id == discount.id);
+        if (!exists) {
+          emit(DiscountLoaded([...state.discounts, discount]));
+        } else {
+          emit(DiscountLoaded(state.discounts));
+        }
+      },
     );
   }
 }
