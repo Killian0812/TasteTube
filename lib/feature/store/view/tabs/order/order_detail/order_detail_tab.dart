@@ -218,8 +218,8 @@ class OrderDetailTab extends StatelessWidget {
                               fit: BoxFit.cover,
                             ),
                             title: Text(product.name),
-                            trailing: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 if (item.size != null)
@@ -233,7 +233,7 @@ class OrderDetailTab extends StatelessWidget {
                                     'Subtotal: ${CurrencyUtil.amountWithCurrency(item.cost ?? product.cost, product.currency)}')
                               ],
                             ),
-                            subtitle: Text('Quantity: ${item.quantity}'),
+                            trailing: Text('x${item.quantity}'),
                           );
                         },
                       ),

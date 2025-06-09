@@ -587,8 +587,8 @@ class _OrderCardState extends State<_OrderCard> {
                           fit: BoxFit.cover,
                         ),
                         title: Text(product.name),
-                        trailing: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             if (item.size != null)
@@ -602,7 +602,7 @@ class _OrderCardState extends State<_OrderCard> {
                                 'Subtotal: ${CurrencyUtil.amountWithCurrency(item.cost ?? product.cost, product.currency)}')
                           ],
                         ),
-                        subtitle: Text('Quantity: ${item.quantity}'),
+                        trailing: Text('x${item.quantity}'),
                       );
                     },
                   ),
