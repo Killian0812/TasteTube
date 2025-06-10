@@ -83,7 +83,7 @@ class OrderDeliveryTab extends StatelessWidget {
             (currentStatus == DeliveryStatus.ALLOCATING ||
                 currentStatus == DeliveryStatus.PENDING_PICKUP ||
                 currentStatus == DeliveryStatus.PICKING_UP));
-    final renewable = currentStatus == DeliveryStatus.FAILED ||
+    final canCreateNewDelivery = currentStatus == DeliveryStatus.FAILED ||
         currentStatus == DeliveryStatus.RETURNED;
 
     return Card(
@@ -236,8 +236,8 @@ class OrderDeliveryTab extends StatelessWidget {
                 ),
               ),
 
-            // Renew Delivery Button
-            if (renewable)
+            // Re-Delivery Button
+            if (canCreateNewDelivery)
               Align(
                 alignment: Alignment.bottomRight,
                 child: ElevatedButton.icon(
