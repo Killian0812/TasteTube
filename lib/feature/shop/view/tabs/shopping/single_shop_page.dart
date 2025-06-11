@@ -319,6 +319,39 @@ class _SingleShopPageState extends State<SingleShopPage> {
                 ),
               ),
             ),
+          if (product.avgRating != null && product.avgRating! > 0.0)
+            Positioned(
+              top: 15,
+              left: 15,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8.0,
+                  vertical: 4.0,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.star,
+                      color: Colors.amber,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      product.avgRating!.toStringAsFixed(1),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
         ],
       ),
     );

@@ -81,7 +81,10 @@ class SingleShopProductPage extends StatelessWidget {
               // Product Images (Left)
               Expanded(
                 flex: 1,
-                child: _ProductImages(images: product.images),
+                child: _ProductImages(
+                  images: product.images,
+                  ship: product.ship,
+                ),
               ),
               // Product Details (Right)
               Expanded(
@@ -144,7 +147,10 @@ class SingleShopProductPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _ProductImages(images: product.images),
+                  _ProductImages(
+                    images: product.images,
+                    ship: product.ship,
+                  ),
                   const SizedBox(height: 16),
                   _buildProductDetails(context, sizingInformation),
                   _buildOwnerInfo(context, sizingInformation),
@@ -191,25 +197,25 @@ class SingleShopProductPage extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            if (product.ship)
-              Container(
-                margin: const EdgeInsets.only(left: 20),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8.0,
-                  vertical: 4.0,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  'Ship',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
+            if (product.avgRating != null && product.avgRating! > 0.0)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(width: 15),
+                  const Icon(
+                    Icons.star,
+                    color: Colors.amber,
+                    size: 20,
                   ),
-                ),
+                  const SizedBox(width: 4),
+                  Text(
+                    product.avgRating!.toStringAsFixed(1),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                ],
               ),
           ],
         ),

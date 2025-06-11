@@ -69,7 +69,8 @@ class _FeedbackItem extends StatelessWidget {
 
 class _ProductImages extends StatefulWidget {
   final List<ImageData> images;
-  const _ProductImages({required this.images});
+  final bool ship;
+  const _ProductImages({required this.images, required this.ship});
 
   @override
   State<_ProductImages> createState() => _ProductImagesState();
@@ -135,6 +136,29 @@ class _ProductImagesState extends State<_ProductImages> {
                 ),
               ),
             ),
+            if (widget.ship)
+              Positioned(
+                top: 15,
+                right: 15,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: const Text(
+                    'Ship',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+              ),
           ],
         );
       },

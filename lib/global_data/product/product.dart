@@ -25,6 +25,7 @@ class Product {
   final Address? shopAddress;
   final List<SizeOption> sizes;
   final List<ToppingOption> toppings;
+  final double? avgRating;
 
   Product({
     required this.id,
@@ -48,6 +49,7 @@ class Product {
     this.shopAddress,
     required this.sizes,
     required this.toppings,
+    this.avgRating,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -81,6 +83,7 @@ class Product {
       toppings: (json['toppings'] as List<dynamic>? ?? [])
           .map((e) => ToppingOption.fromJson(e))
           .toList(),
+      avgRating: (json['avgRating'] as num?)?.toDouble(),
     );
   }
 }
