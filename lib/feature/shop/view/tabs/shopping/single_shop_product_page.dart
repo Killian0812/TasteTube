@@ -55,7 +55,9 @@ class SingleShopProductPage extends StatelessWidget {
           child: ResponsiveBuilder(
             builder: (context, sizingInformation) {
               final horizontalPadding =
-                  sizingInformation.isDesktop ? 250.0 : 16.0;
+                  sizingInformation.screenSize.width <= 500
+                      ? 16.0
+                      : sizingInformation.screenSize.width / 10;
               return Padding(
                 padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
                 child: sizingInformation.isDesktop
