@@ -16,7 +16,6 @@ void showAttachedProductsSheet(BuildContext context, List<Product> products) {
     context: context,
     useRootNavigator: true,
     isScrollControlled: true,
-    backgroundColor: const Color.fromRGBO(31, 31, 31, 1),
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
@@ -49,43 +48,34 @@ void showAttachedProductsSheet(BuildContext context, List<Product> products) {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          IconButton(
-                            icon: Icon(
-                              Icons.arrow_back_ios,
-                              color: currentIndex > 0
-                                  ? Colors.white
-                                  : Colors.transparent,
-                            ),
-                            onPressed: () {
-                              if (currentIndex > 0) {
+                          if (currentIndex > 0)
+                            IconButton(
+                              icon: Icon(Icons.arrow_back_ios),
+                              onPressed: () {
                                 snapshot(() {
                                   currentIndex--;
                                 });
-                              }
-                            },
-                          ),
+                              },
+                            )
+                          else
+                            const SizedBox(width: 30),
                           Text(
                             'Product ${currentIndex + 1} of ${products.length}',
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
                             ),
                           ),
-                          IconButton(
-                            icon: Icon(
-                              Icons.arrow_forward_ios,
-                              color: currentIndex < products.length - 1
-                                  ? Colors.white
-                                  : Colors.transparent,
-                            ),
-                            onPressed: () {
-                              if (currentIndex < products.length - 1) {
+                          if (currentIndex < products.length - 1)
+                            IconButton(
+                              icon: Icon(Icons.arrow_forward_ios),
+                              onPressed: () {
                                 snapshot(() {
                                   currentIndex++;
                                 });
-                              }
-                            },
-                          ),
+                              },
+                            )
+                          else
+                            const SizedBox(width: 30)
                         ],
                       ),
                     Expanded(
@@ -131,24 +121,45 @@ class ProductItem extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
-        GestureDetector(
-          onTap: () => Navigator.of(context, rootNavigator: true).push(
-              MaterialPageRoute(
-                  builder: (context) =>
-                      SingleShopProductPage(product: product))),
-          child: Text(
-            product.name,
-            style: const TextStyle(
-                color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-          ),
+        Row(
+          children: [
+            GestureDetector(
+              onTap: () => Navigator.of(context, rootNavigator: true).push(
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          SingleShopProductPage(product: product))),
+              child: Text(
+                product.name,
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ),
+            if (product.avgRating != null && product.avgRating! > 0.0)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(width: 15),
+                  const Icon(
+                    Icons.star,
+                    color: Colors.amber,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    product.avgRating!.toStringAsFixed(1),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                ],
+              ),
+          ],
         ),
         if (product.description != null && product.description!.isNotEmpty)
           Text(
             product.description!,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-            ),
+            style: const TextStyle(fontSize: 18),
           ),
         Text(
           CurrencyUtil.amountWithCurrency(product.cost, product.currency),
@@ -170,7 +181,6 @@ class ProductItem extends StatelessWidget {
               Text(
                 product.username,
                 style: const TextStyle(
-                  color: Colors.white,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),

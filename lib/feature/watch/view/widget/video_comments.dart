@@ -13,7 +13,6 @@ void showCommentsBottomSheet(BuildContext context, SingleVideoCubit cubit) {
     context: context,
     useRootNavigator: true,
     isScrollControlled: true,
-    backgroundColor: const Color.fromRGBO(31, 31, 31, 1),
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
@@ -34,7 +33,6 @@ void showCommentsBottomSheet(BuildContext context, SingleVideoCubit cubit) {
                     child: Text(
                       "Comments",
                       style: TextStyle(
-                        color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -53,8 +51,7 @@ void showCommentsBottomSheet(BuildContext context, SingleVideoCubit cubit) {
                             padding: EdgeInsets.all(20.0),
                             child: Text(
                               "Be the first to comment!",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 18),
+                              style: TextStyle(fontSize: 18),
                             ),
                           ),
                         );
@@ -117,16 +114,12 @@ class CommentTile extends StatelessWidget {
         ),
         title: Text(
           comment.username,
-          style:
-              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              comment.text,
-              style: const TextStyle(color: Colors.white),
-            ),
+            Text(comment.text),
             const SizedBox(height: 5),
             Row(
               children: [
@@ -159,7 +152,6 @@ class CommentTile extends StatelessWidget {
                     'Reply',
                     style: TextStyle(
                       color: Colors.grey[400],
-                      fontWeight: FontWeight.bold,
                       fontSize: 15,
                     ),
                   ),
@@ -209,16 +201,12 @@ class ReplyTile extends StatelessWidget {
         ),
         title: Text(
           reply.username,
-          style:
-              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              reply.text,
-              style: const TextStyle(color: Colors.white),
-            ),
+            Text(reply.text),
             const SizedBox(height: 5),
             Text(
               relativeTime,
