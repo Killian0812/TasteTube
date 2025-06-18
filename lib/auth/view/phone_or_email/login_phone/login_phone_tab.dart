@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:taste_tube/auth/view/phone_or_email/login_phone/login_phone_cubit.dart';
 import 'package:taste_tube/auth/view/register_page.ext.dart';
 import 'package:taste_tube/common/button.dart';
+import 'package:taste_tube/common/otp_textfield.dart';
 import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/common/toast.dart';
 
@@ -114,25 +114,10 @@ class _LoginPhoneTabState extends State<LoginPhoneTab> {
                       child: OtpTextField(
                         numberOfFields: 6,
                         borderColor: Theme.of(context).primaryColor,
-                        showFieldAsBox: true,
-                        textStyle: CommonTextStyle.regular,
                         enabled: state is! VerifyingOtpState,
-                        keyboardType: TextInputType.number,
                         onSubmit: (String verificationCode) {
                           setState(() {
                             otpCode = verificationCode;
-                          });
-                        },
-                        handleControllers: (controllers) {
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            for (int i = 0; i < controllers.length; i++) {
-                              if (controllers[i]?.text.isEmpty ?? true) {
-                                setState(() {
-                                  otpCode = '';
-                                });
-                                return;
-                              }
-                            }
                           });
                         },
                       ),
