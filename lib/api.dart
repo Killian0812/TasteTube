@@ -71,6 +71,8 @@ class Api {
 
   // Payment
   static const getVnpayUrl = '/payment/vnpay/getUrl';
+  static const createCardPayment = '/payment/card';
+  static const confirmPayment = '/payment/confirm';
 
   // Payment options
   static const changeCurrency = '/payment-option/change-currency';

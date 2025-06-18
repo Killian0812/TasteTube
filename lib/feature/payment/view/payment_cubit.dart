@@ -24,10 +24,14 @@ class PaymentUrlReady extends PaymentState {
   PaymentUrlReady(super.pid, this.url);
 }
 
-class PaymentUrlError extends PaymentState {
+class PaymentError extends PaymentState {
   final String error;
 
-  PaymentUrlError(this.error) : super('');
+  PaymentError(this.error) : super('');
+}
+
+class WaitingCardConfirm extends PaymentState {
+  WaitingCardConfirm(super.pid);
 }
 
 class PaymentFailed extends PaymentState {
@@ -54,22 +58,47 @@ class PaymentCubit extends Cubit<PaymentState> {
     String currency,
   ) async {
     emit(PaymentLoading());
-    if (paymentMethod == PaymentMethod.COD ||
-        paymentMethod == PaymentMethod.CARD) {
+    if (paymentMethod == PaymentMethod.COD) {
       emit(PaymentSuccess(''));
+      return;
+    }
+    if (paymentMethod == PaymentMethod.CARD) {
+      final result = await repository.createCardPayment(amount, currency);
+      result.fold(
+        (error) =>
+            emit(PaymentError(error.message ?? 'Error creating payment')),
+        (payment) {
+          emit(WaitingCardConfirm(''));
+        },
+      );
       return;
     }
     try {
       final result = await repository.getPaymentUrl(amount, currency);
       result.fold(
         (error) =>
-            emit(PaymentUrlError(error.message ?? 'Error creating new order')),
+            emit(PaymentError(error.message ?? 'Error creating payment')),
         (payment) {
           emit(PaymentUrlReady(payment.pid, payment.url));
         },
       );
     } catch (e) {
-      emit(PaymentUrlError(e.toString()));
+      emit(PaymentError(e.toString()));
+    }
+  }
+
+  Future<void> confirmPayment(String otp) async {
+    try {
+      final result = await repository.confirmCardPayment(otp);
+      result.fold(
+        (error) =>
+            emit(PaymentError(error.message ?? 'Error confirming payment')),
+        (payment) {
+          emit(PaymentSuccess(''));
+        },
+      );
+    } catch (e) {
+      emit(PaymentError(e.toString()));
     }
   }
 

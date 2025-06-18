@@ -24,6 +24,9 @@ abstract class CartState {
     this.address,
     this.message,
   });
+
+  double get grandTotal => orderSummary.fold(
+      0.0, (sum, summary) => sum + (summary.totalAmount ?? 0.0));
 }
 
 class CartInitial extends CartState {

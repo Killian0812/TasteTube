@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taste_tube/common/button.dart';
 import 'package:taste_tube/common/constant.dart';
+import 'package:taste_tube/common/otp_dialog.dart';
 import 'package:taste_tube/common/text.dart';
 import 'package:taste_tube/common/toast.dart';
 import 'package:taste_tube/feature/cart/view/discount_dialog.dart';
@@ -57,8 +58,10 @@ class _PaymentPageState extends State<PaymentPage> {
         ),
         body: BlocListener<PaymentCubit, PaymentState>(
           listener: (context, state) async {
+            final cartCubit = context.read<CartCubit>();
+            final paymentCubit = context.read<PaymentCubit>();
             if (state is PaymentSuccess) {
-              final cartState = context.read<CartCubit>().state;
+              final cartState = cartCubit.state;
               final selectedItems = cartState.cart.items
                   .where((item) => cartState.selectedItems.contains(item.id))
                   .toList();
@@ -73,8 +76,12 @@ class _PaymentPageState extends State<PaymentPage> {
                     state.pid,
                     cartState.orderSummary,
                     selectedDiscounts,
-                    context.read<CartCubit>().appliedDiscountDetails,
+                    cartCubit.appliedDiscountDetails,
                   );
+
+              if (_selectedPaymentMethod == PaymentMethod.CARD) {
+                Navigator.of(context).pop();
+              }
             }
             if (state is PaymentUrlReady) {
               final url = state.url;
@@ -83,10 +90,32 @@ class _PaymentPageState extends State<PaymentPage> {
                     mode: LaunchMode.externalApplication);
                 return;
               }
-              final cubit = context.read<PaymentCubit>();
               Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) =>
-                      OnlinePaymentPage(cubit: cubit, url: url)));
+                      OnlinePaymentPage(cubit: paymentCubit, url: url)));
+            }
+            if (state is PaymentError) {
+              ToastService.showToast(context, state.error, ToastType.warning);
+            }
+            if (state is WaitingCardConfirm) {
+              // Show otp confirm dialog
+              await showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (bcontext) => BlocBuilder<CartCubit, CartState>(
+                  bloc: cartCubit,
+                  builder: (context, state) {
+                    return OtpConfirmDialog(
+                      resendAfterSeconds: 15,
+                      onResend: () => paymentCubit.createPayment(
+                          _selectedPaymentMethod, state.grandTotal, currency),
+                      onSubmit: (otp) {
+                        paymentCubit.confirmPayment(otp);
+                      },
+                    );
+                  },
+                ),
+              );
             }
           },
           child: BlocListener<OrderCubit, OrderState>(
@@ -310,8 +339,6 @@ class _PaymentPageState extends State<PaymentPage> {
   Widget _buildBottomOrderSection() {
     return BlocBuilder<CartCubit, CartState>(
       builder: (context, cartState) {
-        final grandTotal = cartState.orderSummary
-            .fold(0.0, (sum, summary) => sum + (summary.totalAmount ?? 0.0));
         return Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -325,7 +352,7 @@ class _PaymentPageState extends State<PaymentPage> {
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   Text(
-                    'Total: ${CurrencyUtil.amountWithCurrency(grandTotal, currency)}',
+                    'Total: ${CurrencyUtil.amountWithCurrency(cartState.grandTotal, currency)}',
                     style: const TextStyle(
                       fontSize: 19,
                       fontWeight: FontWeight.bold,
@@ -345,7 +372,9 @@ class _PaymentPageState extends State<PaymentPage> {
                     isLoading: state is OrderLoading,
                     onPressed: () {
                       context.read<PaymentCubit>().createPayment(
-                          _selectedPaymentMethod, grandTotal, currency);
+                          _selectedPaymentMethod,
+                          cartState.grandTotal,
+                          currency);
                       return;
                     },
                     text: 'Order',
