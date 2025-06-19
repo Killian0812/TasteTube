@@ -282,8 +282,8 @@ class _SingleShopPageState extends State<SingleShopPage> {
                                 : [const SizedBox.shrink()],
                           ),
                           Text(
-                            product.distance != null
-                                ? "${product.distance!.toStringAsFixed(2)} km"
+                            product.distanceInKm != null
+                                ? "${product.distanceInKm!.toStringAsFixed(2)} km"
                                 : "",
                             style: const TextStyle(
                                 fontSize: 12, color: Colors.grey),

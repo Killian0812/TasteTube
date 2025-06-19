@@ -27,6 +27,8 @@ class Product {
   final List<ToppingOption> toppings;
   final double? avgRating;
 
+  double? get distanceInKm => distance != null ? distance! / 1000 : null;
+
   Product({
     required this.id,
     required this.userId,
