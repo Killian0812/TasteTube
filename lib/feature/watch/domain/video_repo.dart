@@ -131,6 +131,23 @@ class VideoRepository {
     }
   }
 
+  Future<Either<ApiError, bool>> watchedVideo(
+    String videoId,
+    int watchTime,
+  ) async {
+    try {
+      await http.post(
+        Api.videoWatchedApi.replaceFirst(':videoId', videoId),
+        data: {'watchTime': watchTime},
+      );
+      return const Right(true);
+    } on DioException catch (e) {
+      return Left(ApiError.fromDioException(e));
+    } catch (e) {
+      return Left(ApiError(500, e.toString()));
+    }
+  }
+
   Future<Either<ApiError, bool>> unlikeVideo(String videoId) async {
     try {
       await http.delete(Api.videoUnlikeApi.replaceFirst(':videoId', videoId));

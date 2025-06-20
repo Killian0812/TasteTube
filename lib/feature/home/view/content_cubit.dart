@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logger/logger.dart';
 import 'package:taste_tube/feature/home/domain/content_repo.dart';
+import 'package:taste_tube/feature/watch/domain/video_repo.dart';
 import 'package:taste_tube/global_data/watch/video.dart';
 import 'package:taste_tube/core/injection.dart';
 
@@ -34,7 +36,8 @@ String? tempVideoId;
 class ContentCubit extends Cubit<ContentState> {
   final ValueNotifier<String> currentPlayingVideoId =
       ValueNotifier<String>("none");
-  final ContentRepository repository = getIt<ContentRepository>();
+  final ContentRepository contentRepository = getIt<ContentRepository>();
+  final VideoRepository videoRepository = getIt<VideoRepository>();
 
   ContentCubit() : super(ContentLoading());
 
@@ -58,7 +61,7 @@ class ContentCubit extends Cubit<ContentState> {
   // TODO: Add paginate fetch on WatchPage page change
   Future<void> getFeeds() async {
     try {
-      final result = await repository.getFeeds();
+      final result = await contentRepository.getFeeds();
       result.fold(
         (error) => emit(ContentError(
           [],
@@ -73,6 +76,20 @@ class ContentCubit extends Cubit<ContentState> {
       );
     } catch (e) {
       emit(ContentError([], e.toString()));
+    }
+  }
+
+  Future<void> watchedVideo(String videoId, int duration) async {
+    try {
+      final result = await videoRepository.watchedVideo(videoId, duration);
+      result.fold(
+        (error) {
+          getIt<Logger>().e(error);
+        },
+        (_) {},
+      );
+    } catch (e) {
+      getIt<Logger>().e(e);
     }
   }
 }

@@ -44,10 +44,12 @@ class ContentPage extends StatefulWidget {
 
 class _ContentPageState extends State<ContentPage> {
   late PageController _pageController;
+  DateTime? _watchStartTime;
 
   @override
   void initState() {
     super.initState();
+    _watchStartTime = DateTime.now();
     _pageController = PageController();
   }
 
@@ -122,21 +124,28 @@ class _ContentPageState extends State<ContentPage> {
               itemCount: state.videos.length,
               onPageChanged: (int index) {
                 ContentPage.pauseAllVideos();
-                // Update the currently playing video index
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  ContentPage.playCurrentVideo(videoId: state.videos[index].id);
-                });
+                ContentPage.playCurrentVideo(videoId: state.videos[index].id);
               },
               itemBuilder: (context, index) {
-                return ValueListenableBuilder<String>(
-                  valueListenable: getIt<ContentCubit>().currentPlayingVideoId,
-                  builder: (context, currentPlayingIndex, _) {
-                    final video = state.videos[index];
-                    return SingleContent.provider(
-                      video.id,
-                      video: video,
-                    );
+                final video = state.videos[index];
+                return VisibilityDetector(
+                  key: ValueKey(video.id),
+                  onVisibilityChanged: (info) {
+                    if (info.visibleBounds == Rect.zero) {
+                      if (_watchStartTime != null) {
+                        final watchDuration = DateTime.now()
+                            .difference(_watchStartTime!)
+                            .inSeconds;
+                        getIt<ContentCubit>()
+                            .watchedVideo(video.id, watchDuration);
+                      }
+                      _watchStartTime = DateTime.now();
+                    }
                   },
+                  child: SingleContent.provider(
+                    video.id,
+                    video: video,
+                  ),
                 );
               },
             ),
