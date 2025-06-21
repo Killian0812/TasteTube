@@ -58,20 +58,22 @@ class ContentCubit extends Cubit<ContentState> {
     super.close();
   }
 
-  // TODO: Add paginate fetch on WatchPage page change
   Future<void> getFeeds() async {
     try {
-      final result = await contentRepository.getFeeds();
+      final result =
+          await contentRepository.getFeeds(skip: state.videos.length);
       result.fold(
         (error) => emit(ContentError(
           [],
           error.message ?? 'Error fetching videos',
         )),
         (videos) {
-          videos.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
-          emit(
-            ContentLoaded(videos),
-          );
+          final currentVideos = state.videos;
+          final newVideos = videos
+              .where((v) => !currentVideos.any((cv) => cv.id == v.id))
+              .toList();
+          final allVideos = [...currentVideos, ...newVideos];
+          emit(ContentLoaded(allVideos));
         },
       );
     } catch (e) {

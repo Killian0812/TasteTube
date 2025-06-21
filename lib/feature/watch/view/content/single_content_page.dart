@@ -64,6 +64,12 @@ class _SingleVideoState extends State<SingleContent>
       ),
     );
 
+    // If the video is the second last video in the list, fetch more feeds
+    final videos = context.read<ContentCubit>().state.videos;
+    if (videos.length >= 2 && videoId == videos[videos.length - 2].id) {
+      getIt<ContentCubit>().getFeeds();
+    }
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       currentPlayingVideoId = videoId;
     });

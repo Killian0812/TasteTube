@@ -66,7 +66,7 @@ class Product {
       currency: json['currency'] as String,
       ship: json['ship'] as bool,
       description: json['description'] as String?,
-      quantity: json['quantity'] as int,
+      quantity: (json['quantity'] as int?) ?? 0,
       categoryName: json['category']?['name'] as String?,
       categoryId: json['category']?['_id'] as String?,
       images: (json['images'] as List<dynamic>)
