@@ -165,26 +165,20 @@ class _ShopTabState extends State<ShopTab> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      product.name,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      CurrencyUtil.amountWithCurrency(
-                                          product.cost, product.currency),
-                                      style: const TextStyle(fontSize: 14),
-                                    ),
-                                  ],
+                                Text(
+                                  product.name,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                Text(
+                                  CurrencyUtil.amountWithCurrency(
+                                      product.cost, product.currency),
+                                  style: TextStyle(
+                                      fontSize: 14, color: Colors.green[700]),
                                 ),
                                 if (product.shopAddress != null)
                                   Row(
