@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart'
     show PlatformDispatcher, kDebugMode, kIsWeb;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:go_router/go_router.dart';
@@ -13,13 +12,12 @@ import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:taste_tube/api.dart';
 import 'package:taste_tube/auth/view/phone_or_email/login_phone_or_email_page.dart';
 import 'package:taste_tube/auth/view/phone_or_email/register_phone_or_email_page.dart';
-import 'package:taste_tube/common/button.dart';
-import 'package:taste_tube/common/constant.dart';
 import 'package:taste_tube/core/build_config.dart';
 import 'package:taste_tube/common/color.dart';
 import 'package:taste_tube/common/error.dart';
 import 'package:taste_tube/common/fallback.dart';
 import 'package:taste_tube/common/text.dart';
+import 'package:taste_tube/core/layout/admin_layout.dart';
 import 'package:taste_tube/feature/admin/dashboard/admin_dashboard_page.dart';
 import 'package:taste_tube/feature/admin/user_management/user_management_page.dart';
 import 'package:taste_tube/feature/admin/video_management/video_management_page.dart';
@@ -27,7 +25,6 @@ import 'package:taste_tube/feature/inbox/view/chat_page.dart';
 import 'package:taste_tube/feature/watch/view/public_videos_page.dart';
 import 'package:taste_tube/core/fcm_service.dart';
 import 'package:taste_tube/feature/watch/view/content/content_page.dart';
-import 'package:taste_tube/global_bloc/download/download_dialog.dart';
 import 'package:taste_tube/feature/profile/view/profile_page.dart';
 import 'package:taste_tube/feature/shop/view/tabs/shopping/single_shop_page.dart';
 import 'package:taste_tube/firebase_options.dart';
@@ -37,7 +34,6 @@ import 'package:taste_tube/global_data/watch/video.dart';
 import 'package:taste_tube/core/injection.dart';
 import 'package:taste_tube/core/local_notification.dart';
 import 'package:taste_tube/core/providers.dart';
-import 'package:taste_tube/splash/initial_page.dart';
 import 'package:taste_tube/version.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -192,85 +188,3 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class Layout extends StatelessWidget {
-  final int currentIndex;
-  final StatefulNavigationShell shell;
-  final GoRouterState goRouterState;
-
-  const Layout({
-    super.key,
-    required this.currentIndex,
-    required this.shell,
-    required this.goRouterState,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocConsumer<AuthBloc, AuthState>(
-      listener: (context, state) {
-        if (state is Unauthenticated) {
-          context.go('/login');
-        }
-      },
-      buildWhen: (previous, current) =>
-          previous is Authenticated && current is! Authenticated ||
-          previous is! Authenticated && current is Authenticated,
-      builder: (context, state) {
-        if (state is! Authenticated) {
-          final currentRoute = goRouterState.matchedLocation;
-          return InitialPage(redirect: currentRoute);
-        }
-        final labels = ['Dashboard', 'Chat', 'Users', 'Videos'];
-
-        final icons = [
-          Icons.dashboard,
-          Icons.inbox,
-          Icons.face,
-          Icons.video_camera_front
-        ];
-
-        return Stack(
-          alignment: Alignment.center,
-          children: [
-            Row(
-              children: [
-                NavigationRail(
-                  selectedIndex: currentIndex,
-                  onDestinationSelected: (index) {
-                    shell.goBranch(index);
-                  },
-                  labelType: NavigationRailLabelType.all,
-                  destinations: List.generate(
-                    labels.length,
-                    (index) => NavigationRailDestination(
-                      icon: Icon(icons[index]),
-                      label: Text(labels[index]),
-                    ),
-                  ),
-                  backgroundColor: Theme.of(context)
-                      .bottomNavigationBarTheme
-                      .backgroundColor,
-                  leading: Padding(
-                    padding: const EdgeInsets.only(top: 10, bottom: 15),
-                    child: Image.asset(AssetPath.tastetubeInverted, height: 50),
-                  ),
-                  trailing: LogoutButton(),
-                ),
-                const VerticalDivider(thickness: 1, width: 1),
-                Expanded(
-                  child: Scaffold(
-                    resizeToAvoidBottomInset: false,
-                    body: shell,
-                    extendBody: true,
-                    extendBodyBehindAppBar: true,
-                  ),
-                ),
-              ],
-            ),
-            DownloadDialog(),
-          ],
-        );
-      },
-    );
-  }
-}

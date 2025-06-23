@@ -8,7 +8,7 @@ final GoRouter _router = GoRouter(
   observers: [CommonNavigatorObserver()],
   routes: [
     StatefulShellRoute.indexedStack(
-      builder: (context, state, shell) => Layout(
+      builder: (context, state, shell) => AdminLayout(
         currentIndex: shell.currentIndex,
         shell: shell,
         goRouterState: state,
