@@ -1,4 +1,5 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -39,23 +40,85 @@ class Layout extends StatelessWidget {
           final currentRoute = goRouterState.matchedLocation;
           return InitialPage(redirect: currentRoute);
         }
+
         final isCustomer = state.data.role == "CUSTOMER";
         final fabHidden = currentIndex == 1 || currentIndex == 2;
 
-        return Stack(
-          alignment: Alignment.center,
-          children: [
-            Scaffold(
-              resizeToAvoidBottomInset: false,
-              body: shell,
-              extendBody: true,
-              extendBodyBehindAppBar: true,
-              bottomNavigationBar: ValueListenableBuilder<bool>(
-                valueListenable:
-                    getIt<BottomNavigationBarToggleNotifier>().isVisible,
-                builder: (context, isVisible, child) {
-                  if (!isVisible) return const SizedBox.shrink();
-                  return AnimatedBottomNavigationBar.builder(
+        final labels = isCustomer
+            ? ['Home', 'Shop', 'Chat', 'Profile']
+            : ['Home', 'Store', 'Chat', 'Profile'];
+        final icons = isCustomer
+            ? [
+                Icons.home,
+                Icons.shopping_basket_rounded,
+                Icons.inbox,
+                Icons.person,
+              ]
+            : [
+                Icons.home,
+                Icons.store,
+                Icons.inbox,
+                Icons.person,
+              ];
+
+        final isWebWide = kIsWeb && MediaQuery.of(context).size.width >= 800;
+
+        final navItems = List.generate(4, (index) {
+          final isActive = index == currentIndex;
+          final icon = Icon(
+            icons[index],
+            color: isActive
+                ? Theme.of(context).bottomNavigationBarTheme.selectedItemColor
+                : Theme.of(context)
+                    .bottomNavigationBarTheme
+                    .unselectedItemColor,
+          );
+          final label = Text(
+            labels[index],
+            style: TextStyle(
+              color: isActive
+                  ? Theme.of(context).bottomNavigationBarTheme.selectedItemColor
+                  : Theme.of(context)
+                      .bottomNavigationBarTheme
+                      .unselectedItemColor,
+            ),
+          );
+          return NavigationRailDestination(
+            icon: icon,
+            selectedIcon: icon,
+            label: label,
+          );
+        });
+
+        Widget navWidget = ValueListenableBuilder<bool>(
+          valueListenable: getIt<BottomNavigationBarToggleNotifier>().isVisible,
+          builder: (context, isVisible, child) {
+            if (!isVisible) return const SizedBox.shrink();
+
+            return isWebWide
+                ? NavigationRail(
+                    selectedIndex: currentIndex,
+                    onDestinationSelected: (index) {
+                      if (index != 0) {
+                        getIt<ContentCubit>().pauseContent();
+                        getIt<FollowingContentCubit>().pauseContent();
+                      } else {
+                        getIt<ContentCubit>().resumeContent();
+                        getIt<FollowingContentCubit>().resumeContent();
+                      }
+                      if (index == 1 && isCustomer) {
+                        context.go('/shop');
+                        return;
+                      }
+                      shell.goBranch(index);
+                    },
+                    labelType: NavigationRailLabelType.all,
+                    destinations: navItems,
+                    backgroundColor: Theme.of(context)
+                        .bottomNavigationBarTheme
+                        .backgroundColor,
+                  )
+                : AnimatedBottomNavigationBar.builder(
                     backgroundColor: Theme.of(context)
                         .bottomNavigationBarTheme
                         .backgroundColor,
@@ -79,23 +142,6 @@ class Layout extends StatelessWidget {
                     },
                     itemCount: 4,
                     tabBuilder: (int index, bool isActive) {
-                      final labels = isCustomer
-                          ? ['Home', 'Shop', 'Chat', 'Profile']
-                          : ['Home', 'Store', 'Chat', 'Profile'];
-                      final icons = isCustomer
-                          ? [
-                              Icons.home,
-                              Icons.shopping_basket_rounded,
-                              Icons.inbox,
-                              Icons.person
-                            ]
-                          : [
-                              Icons.home,
-                              Icons.store,
-                              Icons.inbox,
-                              Icons.person
-                            ];
-
                       return Column(
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -132,25 +178,64 @@ class Layout extends StatelessWidget {
                       );
                     },
                   );
-                },
-              ),
-              floatingActionButtonLocation:
-                  FloatingActionButtonLocation.centerDocked,
-              floatingActionButton: fabHidden
-                  ? null
-                  : FloatingActionButton(
-                      onPressed: () =>
-                          Navigator.of(context, rootNavigator: true).push(
-                        MaterialPageRoute(
-                          builder: (context) => CameraPage.provider(),
+          },
+        );
+
+        return Stack(
+          alignment: Alignment.center,
+          children: [
+            isWebWide
+                ? Row(
+                    children: [
+                      navWidget,
+                      const VerticalDivider(width: 1),
+                      Expanded(
+                        child: Scaffold(
+                          resizeToAvoidBottomInset: false,
+                          body: shell,
+                          extendBody: true,
+                          extendBodyBehindAppBar: true,
+                          floatingActionButton: fabHidden
+                              ? null
+                              : FloatingActionButton(
+                                  onPressed: () =>
+                                      Navigator.of(context, rootNavigator: true)
+                                          .push(MaterialPageRoute(
+                                    builder: (context) => CameraPage.provider(),
+                                  )),
+                                  mini: true,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30.0),
+                                  ),
+                                  child: const Icon(Icons.add),
+                                ),
                         ),
                       ),
-                      mini: true,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0)),
-                      child: const Icon(Icons.add, color: Colors.white),
-                    ),
-            ),
+                    ],
+                  )
+                : Scaffold(
+                    resizeToAvoidBottomInset: false,
+                    body: shell,
+                    extendBody: true,
+                    extendBodyBehindAppBar: true,
+                    bottomNavigationBar: navWidget,
+                    floatingActionButtonLocation:
+                        FloatingActionButtonLocation.centerDocked,
+                    floatingActionButton: fabHidden
+                        ? null
+                        : FloatingActionButton(
+                            onPressed: () =>
+                                Navigator.of(context, rootNavigator: true)
+                                    .push(MaterialPageRoute(
+                              builder: (context) => CameraPage.provider(),
+                            )),
+                            mini: true,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                            child: const Icon(Icons.add),
+                          ),
+                  ),
             DownloadDialog(),
           ],
         );
