@@ -25,7 +25,7 @@ class _ShopTabState extends State<ShopTab> {
     _scrollController.addListener(() {
       final cubit = context.read<ShopCubit>();
       if (_scrollController.position.pixels >=
-              _scrollController.position.maxScrollExtent - 200 &&
+              _scrollController.position.maxScrollExtent - 100 &&
           cubit.state.pagination.hasNextPage &&
           cubit.state is! ShopLoading) {
         final nextPage = cubit.state.pagination.page + 1;
@@ -63,7 +63,10 @@ class _ShopTabState extends State<ShopTab> {
               return state is ShopLoading && state.products.isEmpty
                   ? const Center(child: CircularProgressIndicator())
                   : _buildProductGrid(
-                      state.products, state.pagination.hasNextPage);
+                      state.products,
+                      hasNextPage: state.pagination.hasNextPage,
+                      isLoadingMore: state is ShopLoading,
+                    );
             },
           ),
         ),
@@ -99,7 +102,11 @@ class _ShopTabState extends State<ShopTab> {
     );
   }
 
-  Widget _buildProductGrid(List<Product> products, bool hasNextPage) {
+  Widget _buildProductGrid(
+    List<Product> products, {
+    required bool hasNextPage,
+    required bool isLoadingMore,
+  }) {
     return LayoutBuilder(
       builder: (context, constraints) {
         return RefreshIndicator(
@@ -110,7 +117,7 @@ class _ShopTabState extends State<ShopTab> {
           child: GridView.builder(
             controller: _scrollController,
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.fromLTRB(8, 8, 8, 100),
             gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
               maxCrossAxisExtent: 250,
               childAspectRatio: 2 / 3,
@@ -119,8 +126,11 @@ class _ShopTabState extends State<ShopTab> {
             ),
             itemCount: products.length + (hasNextPage ? 1 : 0),
             itemBuilder: (context, index) {
-              if (index == products.length && hasNextPage) {
-                return const Center(child: CircularProgressIndicator());
+              if (index == products.length) {
+                if (hasNextPage && isLoadingMore) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                return const SizedBox.shrink();
               }
               final product = products[index];
               return GestureDetector(
