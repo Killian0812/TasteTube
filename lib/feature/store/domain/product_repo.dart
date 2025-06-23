@@ -172,10 +172,6 @@ class ProductRepository {
         if (sizes != null) 'sizes': sizes.map((e) => e.toJson()).toList(),
         if (toppings != null)
           'toppings': toppings.map((e) => e.toJson()).toList(),
-        if (newImages != null)
-          'images': newImages
-              .map((image) => MultipartFile.fromFileSync(image.path))
-              .toList(),
         'reordered_images': product.images
             .map((image) => {
                   'url': image.url,
@@ -183,6 +179,27 @@ class ProductRepository {
                 })
             .toList()
       });
+
+      if (newImages != null) {
+        final List<MultipartFile> imageFiles = [];
+
+        for (var image in newImages) {
+          if (kIsWeb) {
+            imageFiles.add(MultipartFile.fromBytes(
+              await image.readAsBytes(),
+              filename: image.name,
+            ));
+          } else {
+            imageFiles.add(MultipartFile.fromFileSync(
+              image.path,
+              filename: image.path.split('/').last,
+            ));
+          }
+        }
+
+        formData.files
+            .addAll(imageFiles.map((file) => MapEntry('images', file)));
+      }
 
       final response =
           await http.put('${Api.productApi}/${product.id}', data: formData);
