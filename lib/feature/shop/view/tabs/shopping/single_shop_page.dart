@@ -39,107 +39,113 @@ class _SingleShopPageState extends State<SingleShopPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: BlocBuilder<SingleShopCubit, SingleShopState>(
-            builder: (context, state) {
-              return Row(
-                children: [
-                  CircleAvatar(
-                    radius: 18,
-                    foregroundImage: NetworkImage(state.shopImage),
-                  ),
-                  const SizedBox(width: 8),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            state.shopName,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                          if (state.shopPhone != null &&
-                              state.shopPhone!.isNotEmpty)
-                            Text(
-                              'Hotline: ${state.shopPhone}',
-                              style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      if (state.shopAddress != null)
-                        Text(
-                          state.shopAddress!.value,
-                          style:
-                              const TextStyle(fontSize: 14, color: Colors.grey),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () async {
-                          await makePhoneCall(state.shopPhone!);
-                        },
-                        icon: Icon(Icons.phone),
-                      ),
-                      const SizedBox(width: 4),
-                      IconButton(
-                        onPressed: () async {
-                          await MapsLauncher.launchQuery(
-                              state.shopAddress!.value);
-                        },
-                        icon: Icon(Icons.location_pin),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(width: 4),
-                ],
-              );
-            },
-          ),
-          actions: [CartButton()],
-        ),
-        body: BlocListener<SingleShopCubit, SingleShopState>(
-            listenWhen: (previous, current) => current is SingleShopError,
-            listener: (context, state) {
-              if (state is SingleShopError) {
-                ToastService.showToast(
-                    context, state.message!, ToastType.warning);
-              }
-            },
-            child: Column(
+      appBar: AppBar(
+        title: BlocBuilder<SingleShopCubit, SingleShopState>(
+          builder: (context, state) {
+            return Row(
               children: [
-                _buildSearchBar(context),
-                BlocBuilder<SingleShopCubit, SingleShopState>(
-                  builder: (context, state) {
-                    if (state is SingleShopLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    final categorizedProducts = state.products;
-                    return Expanded(
-                      child: ListView(
-                        children: categorizedProducts.entries.map((entry) {
-                          final category = entry.key;
-                          final products = entry.value;
-                          return _buildCategorySection(category, products);
-                        }).toList(),
-                      ),
-                    );
-                  },
+                CircleAvatar(
+                  radius: 18,
+                  foregroundImage: NetworkImage(state.shopImage),
                 ),
+                const SizedBox(width: 8),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          state.shopName,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        if (state.shopPhone != null &&
+                            state.shopPhone!.isNotEmpty)
+                          Text(
+                            'Hotline: ${state.shopPhone}',
+                            style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    if (state.shopAddress != null)
+                      Text(
+                        state.shopAddress!.value,
+                        style:
+                            const TextStyle(fontSize: 14, color: Colors.grey),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: () async {
+                        await makePhoneCall(state.shopPhone!);
+                      },
+                      icon: Icon(Icons.phone),
+                    ),
+                    const SizedBox(width: 4),
+                    IconButton(
+                      onPressed: () async {
+                        await MapsLauncher.launchQuery(
+                            state.shopAddress!.value);
+                      },
+                      icon: Icon(Icons.location_pin),
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 4),
               ],
-            )));
+            );
+          },
+        ),
+        actions: [CartButton()],
+      ),
+      body: BlocListener<SingleShopCubit, SingleShopState>(
+        listenWhen: (previous, current) => current is SingleShopError,
+        listener: (context, state) {
+          if (state is SingleShopError) {
+            ToastService.showToast(context, state.message!, ToastType.warning);
+          }
+        },
+        child: Column(
+          children: [
+            _buildSearchBar(context),
+            Expanded(
+              child: BlocBuilder<SingleShopCubit, SingleShopState>(
+                builder: (context, state) {
+                  if (state is SingleShopLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  final categorizedProducts = state.products;
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      context.read<SingleShopCubit>().getProducts();
+                    },
+                    child: ListView(
+                      children: categorizedProducts.entries.map((entry) {
+                        final category = entry.key;
+                        final products = entry.value;
+                        return _buildCategorySection(category, products);
+                      }).toList(),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildSearchBar(BuildContext context) {
@@ -279,12 +285,18 @@ class _SingleShopPageState extends State<SingleShopPage> {
                                   ]
                                 : [const SizedBox.shrink()],
                           ),
-                          Text(
-                            product.distanceInKm != null
-                                ? "${product.distanceInKm!.toStringAsFixed(2)} km"
-                                : "",
-                            style: const TextStyle(
-                                fontSize: 12, color: Colors.grey),
+                          BlocBuilder<SingleShopCubit, SingleShopState>(
+                            builder: (context, state) {
+                              final distance =
+                                  product.distanceInKm ?? state.distance;
+                              return Text(
+                                distance != null
+                                    ? "${distance.toStringAsFixed(2)} km"
+                                    : "-- km",
+                                style: const TextStyle(
+                                    fontSize: 12, color: Colors.grey),
+                              );
+                            },
                           ),
                         ],
                       ),

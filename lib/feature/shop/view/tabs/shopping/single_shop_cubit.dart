@@ -23,8 +23,10 @@ abstract class SingleShopState {
   final Map<Category, List<Product>> products;
   final String? message;
   final Address? shopAddress;
+  final double? distance;
 
-  const SingleShopState(this.products, {this.shopAddress, this.message});
+  const SingleShopState(this.products,
+      {this.shopAddress, this.message, this.distance});
 
   String get shopImage =>
       products.values.isNotEmpty ? products.values.first.first.userImage : '';
@@ -39,17 +41,18 @@ class SingleShopInitial extends SingleShopState {
 }
 
 class SingleShopLoading extends SingleShopState {
-  const SingleShopLoading(super.products, {super.shopAddress});
+  const SingleShopLoading(super.products, {super.shopAddress, super.distance});
 }
 
 class SingleShopLoaded extends SingleShopState {
-  const SingleShopLoaded(super.products, {super.shopAddress});
+  const SingleShopLoaded(super.products, {super.shopAddress, super.distance});
 }
 
 class SingleShopError extends SingleShopState {
   final String error;
 
-  const SingleShopError(super.products, this.error, {super.shopAddress});
+  const SingleShopError(super.products, this.error,
+      {super.shopAddress, super.distance});
 }
 
 class SingleShopCubit extends Cubit<SingleShopState> {
@@ -68,17 +71,20 @@ class SingleShopCubit extends Cubit<SingleShopState> {
         (error) => emit(SingleShopError(
           state.products,
           shopAddress: state.shopAddress,
+          distance: state.distance,
           error.message ?? 'Error fetching recommended products',
         )),
         (response) => emit(SingleShopLoaded(
           _categorizeProducts(response.products),
           shopAddress: response.shopAddress,
+          distance: response.distance,
         )),
       );
     } catch (e) {
       emit(SingleShopError(
         state.products,
         shopAddress: state.shopAddress,
+        distance: state.distance,
         e.toString(),
       ));
     }
@@ -93,17 +99,20 @@ class SingleShopCubit extends Cubit<SingleShopState> {
         (error) => emit(SingleShopError(
           state.products,
           shopAddress: state.shopAddress,
+          distance: state.distance,
           error.message ?? 'Error searching products',
         )),
         (products) => emit(SingleShopLoaded(
           _categorizeProducts(products),
           shopAddress: state.shopAddress,
+          distance: state.distance,
         )),
       );
     } catch (e) {
       emit(SingleShopError(
         state.products,
         shopAddress: state.shopAddress,
+        distance: state.distance,
         e.toString(),
       ));
     }
