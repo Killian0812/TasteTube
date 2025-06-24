@@ -244,25 +244,23 @@ class _SingleShopPageState extends State<SingleShopPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            product.name,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            CurrencyUtil.amountWithCurrency(
-                                product.cost, product.currency),
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                        ],
+                      Text(
+                        product.name,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        CurrencyUtil.amountWithCurrency(
+                            product.cost, product.currency),
+                        style: TextStyle(
+                          color: Colors.green[700],
+                          fontSize: 14,
+                        ),
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
