@@ -10,26 +10,18 @@ import 'package:taste_tube/utils/user_data.util.dart';
 
 class ContentRepository {
   final Dio http;
-  final Dio recommendedFeedHttp = Dio(
-    BaseOptions(
-      baseUrl: 'https://taste-tube-personalize.vercel.app',
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10),
-    ),
-  );
 
   ContentRepository({required this.http});
 
   Future<Either<ApiError, List<Video>>> getFeeds({
     int limit = 3,
-    int skip = 0,
+    int page = 1,
   }) async {
     try {
-      final response =
-          await recommendedFeedHttp.get('/api/feed', queryParameters: {
-        'user_id': UserDataUtil.getUserId(),
+      final response = await http.get(Api.feedApi, queryParameters: {
+        'userId': UserDataUtil.getUserId(),
         'limit': limit,
-        'skip': skip,
+        'page': page,
       });
       final videos = (response.data as List<dynamic>)
           .map((videoJson) => Video.fromJson(videoJson as Map<String, dynamic>))

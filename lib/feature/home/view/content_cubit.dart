@@ -61,7 +61,7 @@ class ContentCubit extends Cubit<ContentState> {
   Future<void> getFeeds() async {
     try {
       final result =
-          await contentRepository.getFeeds(skip: state.videos.length);
+          await contentRepository.getFeeds(page: state.videos.length ~/ 3 + 1);
       result.fold(
         (error) => emit(ContentError(
           [],
