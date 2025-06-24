@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taste_tube/feature/shop/data/shop_response.dart';
 import 'package:taste_tube/global_data/pagination.dart';
 import 'package:taste_tube/global_data/product/product.dart';
 import 'package:taste_tube/feature/shop/domain/shop_repo.dart';
@@ -64,6 +65,7 @@ class ShopCubit extends Cubit<ShopState> {
     int page = 1,
     int limit = 10,
     bool loadMore = false,
+    ProductOrderBy orderBy = ProductOrderBy.distance,
   }) async {
     emit(ShopLoading(
       loadMore ? state.products : [],
@@ -73,6 +75,7 @@ class ShopCubit extends Cubit<ShopState> {
       final result = await shopRepository.getRecommendedProducts(
         page: page,
         limit: limit,
+        orderBy: orderBy.value,
       );
       result.fold(
         (error) => emit(ShopError(
@@ -101,6 +104,7 @@ class ShopCubit extends Cubit<ShopState> {
     int page = 1,
     int limit = 10,
     bool loadMore = false,
+    ProductOrderBy orderBy = ProductOrderBy.newest,
   }) async {
     emit(ShopLoading(
       loadMore ? state.products : [],
@@ -111,6 +115,7 @@ class ShopCubit extends Cubit<ShopState> {
         keyword,
         page: page,
         limit: limit,
+        orderBy: orderBy.value,
       );
       result.fold(
         (error) => emit(ShopError(

@@ -14,6 +14,7 @@ class ShopRepository {
   Future<Either<ApiError, ShopResponse>> getRecommendedProducts({
     int page = 1,
     int limit = 10,
+    String orderBy = 'distance',
   }) async {
     try {
       final response = await http.get(
@@ -21,6 +22,7 @@ class ShopRepository {
         queryParameters: {
           'page': page,
           'limit': limit,
+          'orderBy': orderBy,
         },
       );
       final data = response.data as Map<String, dynamic>;
@@ -36,6 +38,7 @@ class ShopRepository {
     String keyword, {
     int page = 1,
     int limit = 10,
+    String orderBy = 'newest',
   }) async {
     try {
       final response = await http.get(
@@ -44,6 +47,7 @@ class ShopRepository {
           'keyword': keyword,
           'page': page,
           'limit': limit,
+          'orderBy': orderBy,
         },
       );
       final data = response.data as Map<String, dynamic>;

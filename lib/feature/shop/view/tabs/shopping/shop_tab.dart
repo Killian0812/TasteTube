@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taste_tube/feature/shop/data/shop_response.dart';
 import 'package:taste_tube/feature/shop/view/tabs/shopping/shop_cubit.dart';
 import 'package:taste_tube/feature/shop/view/tabs/shopping/single_shop_product_page.dart';
 import 'package:taste_tube/global_data/product/product.dart';
@@ -16,6 +17,7 @@ class _ShopTabState extends State<ShopTab> {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final int _limit = 10;
+  ProductOrderBy _selectedOrder = ProductOrderBy.distance;
 
   @override
   void initState() {
@@ -33,12 +35,14 @@ class _ShopTabState extends State<ShopTab> {
           cubit.getRecommendedProducts(
             page: nextPage,
             loadMore: true,
+            orderBy: _selectedOrder,
           );
         } else {
           cubit.searchProducts(
             keyword: _searchController.text,
             page: nextPage,
             loadMore: true,
+            orderBy: _selectedOrder,
           );
         }
       }
@@ -56,7 +60,7 @@ class _ShopTabState extends State<ShopTab> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _buildSearchBar(),
+        _buildSearchBarAndFilterBox(),
         Expanded(
           child: BlocBuilder<ShopCubit, ShopState>(
             builder: (context, state) {
@@ -74,30 +78,73 @@ class _ShopTabState extends State<ShopTab> {
     );
   }
 
-  Widget _buildSearchBar() {
+  Widget _buildSearchBarAndFilterBox() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: TextField(
-        controller: _searchController,
-        onSubmitted: (keyword) {
-          if (keyword.isNotEmpty) {
-            context
-                .read<ShopCubit>()
-                .searchProducts(keyword: keyword, page: 1, limit: _limit);
-          } else {
-            context.read<ShopCubit>().getRecommendedProducts();
-          }
-        },
-        decoration: InputDecoration(
-          hintText: 'Search products...',
-          prefixIcon: const Icon(Icons.search),
-          suffixIcon: IconButton(
-            icon: const Icon(Icons.clear),
-            onPressed: () {
-              _searchController.clear();
-            },
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _searchController,
+              onSubmitted: (keyword) {
+                if (keyword.isNotEmpty) {
+                  context.read<ShopCubit>().searchProducts(
+                        keyword: keyword,
+                        page: 1,
+                        limit: _limit,
+                        orderBy: _selectedOrder,
+                      );
+                } else {
+                  context.read<ShopCubit>().getRecommendedProducts(
+                        orderBy: _selectedOrder,
+                      );
+                }
+              },
+              decoration: InputDecoration(
+                hintText: 'Search products...',
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () {
+                    _searchController.clear();
+                    context.read<ShopCubit>().getRecommendedProducts(
+                          orderBy: _selectedOrder,
+                        );
+                  },
+                ),
+              ),
+            ),
           ),
-        ),
+          const SizedBox(width: 8),
+          DropdownButton<ProductOrderBy>(
+            value: _selectedOrder,
+            underline: const SizedBox(),
+            onChanged: (value) {
+              if (value == null) return;
+              setState(() => _selectedOrder = value);
+
+              final keyword = _searchController.text.trim();
+              if (keyword.isNotEmpty) {
+                context.read<ShopCubit>().searchProducts(
+                      keyword: keyword,
+                      page: 1,
+                      limit: _limit,
+                      orderBy: _selectedOrder,
+                    );
+              } else {
+                context.read<ShopCubit>().getRecommendedProducts(
+                      orderBy: _selectedOrder,
+                    );
+              }
+            },
+            items: ProductOrderBy.values.map((order) {
+              return DropdownMenuItem(
+                value: order,
+                child: Text(order.label),
+              );
+            }).toList(),
+          ),
+        ],
       ),
     );
   }
@@ -112,7 +159,9 @@ class _ShopTabState extends State<ShopTab> {
         return RefreshIndicator(
           onRefresh: () async {
             _searchController.clear();
-            context.read<ShopCubit>().getRecommendedProducts();
+            context
+                .read<ShopCubit>()
+                .getRecommendedProducts(orderBy: _selectedOrder);
           },
           child: GridView.builder(
             controller: _scrollController,

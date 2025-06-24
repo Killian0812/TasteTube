@@ -19,3 +19,29 @@ class ShopResponse {
     );
   }
 }
+
+enum ProductOrderBy { newest, distance, rating }
+
+extension ProductOrderByExt on ProductOrderBy {
+  String get value {
+    switch (this) {
+      case ProductOrderBy.newest:
+        return 'newest';
+      case ProductOrderBy.distance:
+        return 'distance';
+      case ProductOrderBy.rating:
+        return 'rating';
+    }
+  }
+
+  String get label {
+    switch (this) {
+      case ProductOrderBy.newest:
+        return 'Newest';
+      case ProductOrderBy.distance:
+        return 'Nearest';
+      case ProductOrderBy.rating:
+        return 'Top Rated';
+    }
+  }
+}
