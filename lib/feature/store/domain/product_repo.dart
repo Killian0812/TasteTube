@@ -131,8 +131,8 @@ class ProductRepository {
         'category': categoryId,
         'images': files,
         'prepTime': prepTime,
-        'sizes': sizes.map((e) => e.toJson()),
-        'toppings': toppings.map((e) => e.toJson()),
+        'sizes': sizes.map((e) => e.toJson()).toList(),
+        'toppings': toppings.map((e) => e.toJson()).toList(),
       });
 
       final response = await http.post(Api.productApi, data: formData);
