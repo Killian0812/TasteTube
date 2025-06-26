@@ -39,7 +39,7 @@
     },
     {
       "target": "taste-tube-ngrok",
-      "public": "build/web-admin",
+      "public": "build/web-ngrok",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "frameworksBackend": { "region": "asia-east1" },
       "rewrites": [{ "source": "**", "destination": "/index.html" }]

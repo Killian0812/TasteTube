@@ -15,6 +15,20 @@
             ]
         },
         {
+            "name": "taste_tube ngrok (profile)",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "--profile",
+                "--dart-define",
+                "ENVIRONMENT=ngrok",
+                "--web-port",
+                "5555",
+                "-d",
+                "chrome"
+            ]
+        },
+        {
             "name": "taste_tube vercel",
             "request": "launch",
             "type": "dart",
