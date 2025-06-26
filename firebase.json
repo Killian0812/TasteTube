@@ -36,6 +36,13 @@
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "frameworksBackend": { "region": "asia-east1" },
       "rewrites": [{ "source": "**", "destination": "/index.html" }]
+    },
+    {
+      "target": "taste-tube-ngrok",
+      "public": "build/web-admin",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "frameworksBackend": { "region": "asia-east1" },
+      "rewrites": [{ "source": "**", "destination": "/index.html" }]
     }
   ]
 }

@@ -5,6 +5,9 @@
   "targets": {
     "taste-tube": {
       "hosting": {
+        "taste-tube-ngrok": [
+          "taste-tube-ngrok"
+        ],
         "admin-taste-tube": [
           "admin-taste-tube"
         ],
