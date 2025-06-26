@@ -195,19 +195,27 @@ class OrderDeliveryTab extends StatelessWidget {
             const SizedBox(height: 16),
 
             // Delivery status
-            ...state.orderDelivery!.statusLogs.map((e) => _TimelineTile(
-                  status: e.deliveryStatus,
-                  date: e.deliveryTimestamp,
-                  isCompleted: true,
-                  showLine: !e.deliveryStatus.isFinalStatus,
-                )),
-            if (nextStatus != null)
-              _TimelineTile(
-                status: nextStatus,
-                date: null,
-                isCompleted: false,
-                showLine: !nextStatus.isFinalStatus,
+            SizedBox(
+              height: 220,
+              child: ListView(
+                physics: const BouncingScrollPhysics(),
+                children: [
+                  ...state.orderDelivery!.statusLogs.map((e) => _TimelineTile(
+                        status: e.deliveryStatus,
+                        date: e.deliveryTimestamp,
+                        isCompleted: true,
+                        showLine: !e.deliveryStatus.isFinalStatus,
+                      )),
+                  if (nextStatus != null)
+                    _TimelineTile(
+                      status: nextStatus,
+                      date: null,
+                      isCompleted: false,
+                      showLine: !nextStatus.isFinalStatus,
+                    ),
+                ],
               ),
+            ),
 
             // Cancel Delivery Button
             if (cancellable)
