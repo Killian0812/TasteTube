@@ -48,29 +48,27 @@ class ShopAnalytics {
     final rawDailySales = json['dailySales'] as Map<String, dynamic>? ?? {};
     for (var day in weekdays) {
       final value = rawDailySales[day];
-      dailySales[day] = (value is int)
-          ? value.toDouble()
-          : (value as num?)?.toDouble() ?? 0.0;
+      dailySales[day] = (value as num?)?.toDouble() ?? 0.0;
     }
 
     return ShopAnalytics(
       totalRevenue: (json['totalRevenue'] as num).toDouble(),
-      orderCount: json['orderCount'],
+      orderCount: (json['orderCount'] as num).toInt(),
       averageOrderValue: (json['averageOrderValue'] as num).toDouble(),
       dailySales: dailySales,
-      videoViews: json['videoViews'],
-      positiveReviews: json['positiveReviews'],
-      neutralReviews: json['neutralReviews'],
-      negativeReviews: json['negativeReviews'],
+      videoViews: (json['videoViews'] as num).toInt(),
+      positiveReviews: (json['positiveReviews'] as num).toInt(),
+      neutralReviews: (json['neutralReviews'] as num).toInt(),
+      negativeReviews: (json['negativeReviews'] as num).toInt(),
       topProducts: (json['topProducts'] as List)
           .map((item) => ProductSales.fromJson(item))
           .toList(),
       topCategories: (json['topCategories'] as List)
           .map((item) => CategorySales.fromJson(item))
           .toList(),
-      conversionRate: json['conversionRate'],
-      returningCustomers: json['returningCustomers'],
-      newCustomers: json['newCustomers'],
+      conversionRate: (json['conversionRate'] as num).toDouble(),
+      returningCustomers: (json['returningCustomers'] as num).toInt(),
+      newCustomers: (json['newCustomers'] as num).toInt(),
       paymentMethods: (json['paymentMethods'] as List)
           .map((item) => PaymentMethod.fromJson(item))
           .toList(),

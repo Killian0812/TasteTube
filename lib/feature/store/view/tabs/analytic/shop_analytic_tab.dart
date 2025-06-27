@@ -27,81 +27,154 @@ class ShopAnalyticTab extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Key Metrics Row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildMetricCard(
-                        title: 'Total Revenue',
-                        value: CurrencyUtil.amountWithCurrency(
-                            state.analytics.totalRevenue,
-                            state.analytics.currency),
-                        icon: Icons.attach_money,
-                        width: screenWidth * 0.29,
-                      ),
-                      _buildMetricCard(
-                        title: 'Orders',
-                        value: '${state.analytics.orderCount}',
-                        icon: Icons.shopping_cart,
-                        width: screenWidth * 0.29,
-                      ),
-                      _buildMetricCard(
-                        title: 'Conversion',
-                        value:
-                            '${state.analytics.conversionRate.toStringAsFixed(2)}%',
-                        icon: Icons.trending_up,
-                        width: screenWidth * 0.29,
-                      ),
-                    ],
+                  // Key Metrics Row (Responsive)
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final isSmallScreen = constraints.maxWidth < 600;
+                      return isSmallScreen
+                          ? Column(
+                              children: [
+                                _buildMetricCard(
+                                  title: 'Total Revenue',
+                                  value: CurrencyUtil.amountWithCurrency(
+                                      state.analytics.totalRevenue,
+                                      state.analytics.currency),
+                                  icon: Icons.attach_money,
+                                  width: double.infinity,
+                                ),
+                                SizedBox(height: 8),
+                                _buildMetricCard(
+                                  title: 'Orders',
+                                  value: '${state.analytics.orderCount}',
+                                  icon: Icons.shopping_cart,
+                                  width: double.infinity,
+                                ),
+                                SizedBox(height: 8),
+                                _buildMetricCard(
+                                  title: 'Conversion',
+                                  value:
+                                      '${state.analytics.conversionRate.toStringAsFixed(2)}%',
+                                  icon: Icons.trending_up,
+                                  width: double.infinity,
+                                ),
+                              ],
+                            )
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                _buildMetricCard(
+                                  title: 'Total Revenue',
+                                  value: CurrencyUtil.amountWithCurrency(
+                                      state.analytics.totalRevenue,
+                                      state.analytics.currency),
+                                  icon: Icons.attach_money,
+                                  width: screenWidth * 0.29,
+                                ),
+                                _buildMetricCard(
+                                  title: 'Orders',
+                                  value: '${state.analytics.orderCount}',
+                                  icon: Icons.shopping_cart,
+                                  width: screenWidth * 0.29,
+                                ),
+                                _buildMetricCard(
+                                  title: 'Conversion',
+                                  value:
+                                      '${state.analytics.conversionRate.toStringAsFixed(2)}%',
+                                  icon: Icons.trending_up,
+                                  width: screenWidth * 0.29,
+                                ),
+                              ],
+                            );
+                    },
                   ),
                   SizedBox(height: screenHeight * 0.02),
 
-                  // Customer Metrics
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildMetricCard(
-                        title: 'New Customers',
-                        value: '${state.analytics.newCustomers}',
-                        icon: Icons.person_add,
-                        width: screenWidth * 0.45,
-                      ),
-                      _buildMetricCard(
-                        title: 'Returning',
-                        value: '${state.analytics.returningCustomers}',
-                        icon: Icons.repeat,
-                        width: screenWidth * 0.45,
-                      ),
-                    ],
+                  // Customer Metrics (Responsive)
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final isSmallScreen = constraints.maxWidth < 600;
+                      return isSmallScreen
+                          ? Column(
+                              children: [
+                                _buildMetricCard(
+                                  title: 'New Customers',
+                                  value: '${state.analytics.newCustomers}',
+                                  icon: Icons.person_add,
+                                  width: double.infinity,
+                                ),
+                                SizedBox(height: 8),
+                                _buildMetricCard(
+                                  title: 'Returning',
+                                  value:
+                                      '${state.analytics.returningCustomers}',
+                                  icon: Icons.repeat,
+                                  width: double.infinity,
+                                ),
+                              ],
+                            )
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                _buildMetricCard(
+                                  title: 'New Customers',
+                                  value: '${state.analytics.newCustomers}',
+                                  icon: Icons.person_add,
+                                  width: screenWidth * 0.45,
+                                ),
+                                _buildMetricCard(
+                                  title: 'Returning',
+                                  value:
+                                      '${state.analytics.returningCustomers}',
+                                  icon: Icons.repeat,
+                                  width: screenWidth * 0.45,
+                                ),
+                              ],
+                            );
+                    },
                   ),
                   SizedBox(height: screenHeight * 0.03),
 
                   // Daily Sales Chart
                   _buildSectionTitle('Daily Sales'),
-                  _buildChartContainer(
-                    height: screenHeight * 0.25,
-                    child: LineChart(
-                      LineChartData(
-                        gridData: const FlGridData(show: true),
-                        titlesData: _buildLineChartTitles(state.analytics),
-                        borderData: FlBorderData(show: true),
-                        lineBarsData: [
-                          LineChartBarData(
-                            spots: state.analytics.dailySales.entries
-                                .mapIndexed((index, e) =>
-                                    FlSpot(index.toDouble(), e.value))
-                                .toList(),
-                            isCurved: true,
-                            color: Colors.blue,
-                            dotData: const FlDotData(show: true),
-                            belowBarData: BarAreaData(
-                              show: true,
-                              color: Colors.blue.withValues(alpha: 0.1),
-                            ),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final isSmallScreen = constraints.maxWidth < 600;
+                      final chart = _buildChartContainer(
+                        height: screenHeight * 0.25,
+                        child: LineChart(
+                          LineChartData(
+                            gridData: const FlGridData(show: true),
+                            titlesData: _buildLineChartTitles(state.analytics),
+                            borderData: FlBorderData(show: true),
+                            lineBarsData: [
+                              LineChartBarData(
+                                spots: state.analytics.dailySales.entries
+                                    .mapIndexed((index, e) =>
+                                        FlSpot(index.toDouble(), e.value))
+                                    .toList(),
+                                isCurved: true,
+                                color: Colors.blue,
+                                dotData: const FlDotData(show: true),
+                                belowBarData: BarAreaData(
+                                  show: true,
+                                  color: Colors.blue.withValues(alpha: 0.1),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
+                        ),
+                      );
+                      if (isSmallScreen) {
+                        return SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: SizedBox(
+                            width: 600,
+                            child: chart,
+                          ),
+                        );
+                      }
+                      return chart;
+                    },
                   ),
                   SizedBox(height: screenHeight * 0.03),
 
@@ -204,35 +277,52 @@ class ShopAnalyticTab extends StatelessWidget {
                   // Top Products Table with Ratings
                   _buildSectionTitle('Top Selling Products'),
                   _buildTableContainer(
-                    child: DataTable(
-                      columns: const [
-                        DataColumn(
-                            label: Text('Product',
-                                style: TextStyle(fontWeight: FontWeight.bold))),
-                        DataColumn(
-                            label: Text('Sales',
-                                style: TextStyle(fontWeight: FontWeight.bold))),
-                        DataColumn(
-                            label: Text('Revenue',
-                                style: TextStyle(fontWeight: FontWeight.bold))),
-                        DataColumn(
-                            label: Text('Rating',
-                                style: TextStyle(fontWeight: FontWeight.bold))),
-                      ],
-                      rows: state.analytics.topProducts
-                          .map(
-                            (product) => DataRow(
-                              cells: [
-                                DataCell(Text(product.name)),
-                                DataCell(Text(product.sales.toString())),
-                                DataCell(Text(CurrencyUtil.amountWithCurrency(
-                                    product.revenue,
-                                    state.analytics.currency))),
-                                DataCell(Text('${product.rating}/5')),
-                              ],
-                            ),
-                          )
-                          .toList(),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final isSmallScreen = constraints.maxWidth < 600;
+                        final table = DataTable(
+                          columns: const [
+                            DataColumn(
+                                label: Text('Product',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold))),
+                            DataColumn(
+                                label: Text('Sales',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold))),
+                            DataColumn(
+                                label: Text('Revenue',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold))),
+                            DataColumn(
+                                label: Text('Rating',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold))),
+                          ],
+                          rows: state.analytics.topProducts
+                              .map(
+                                (product) => DataRow(
+                                  cells: [
+                                    DataCell(Text(product.name)),
+                                    DataCell(Text(product.sales.toString())),
+                                    DataCell(Text(
+                                        CurrencyUtil.amountWithCurrency(
+                                            product.revenue,
+                                            state.analytics.currency))),
+                                    DataCell(Text('${product.rating}/5')),
+                                  ],
+                                ),
+                              )
+                              .toList(),
+                        );
+                        if (isSmallScreen) {
+                          return SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: table,
+                          );
+                        }
+                        return table;
+                      },
                     ),
                   ),
                   SizedBox(height: screenHeight * 0.03),
